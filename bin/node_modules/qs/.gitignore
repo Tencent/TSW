@@ -1,0 +1,12 @@
+# gitignore
+npm-debug.log
+node_modules
+.DS_Store
+
+# build output
+dist/*
+
+# Only apps should have lockfiles
+yarn.lock
+package-lock.json
+npm-shrinkwrap.json

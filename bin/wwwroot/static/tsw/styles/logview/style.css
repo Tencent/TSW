@@ -1,0 +1,217 @@
+html,body{
+	margin: 0;
+	padding: 0;
+}
+html{
+	background-color: #3f3f3f;
+	overflow-y: scroll;
+	background-size: cover;
+	background-attachment: fixed;
+	background-position: top;
+}
+
+.view-logText{
+	font-size: 14px;
+	margin: 20px 14px 40px 14px;
+	white-space: nowrap;
+	background-color: rgba(24,24,24,.2);
+	border-radius: 3px;
+}
+
+.view-logText-title{
+	padding: 10px 0;
+}
+.view-logText-title .firstReq{
+	color: #e3ceab;
+	margin: .5em 0 0;
+	height: 21px;
+	overflow: hidden;
+}
+.view-logText-log{
+	margin: 0;
+}
+.view-title{
+	margin: 15px;
+	overflow: hidden;
+	color:#dcdcdc;
+}
+.view-title .button{
+	font-size: 14px;
+	float: left;
+	padding: 6px 14px;
+	margin-right: 6px;
+	height: 20px;
+	transition: background .3s;
+	border-radius: 15px;
+}
+.view-title .button.r{
+	float: right;
+}
+.view-title .button:hover{
+	background-color: rgba(0,0,0,.5);
+
+}
+.view-title .curr-group{
+	background-color: rgba(0,0,0,.5);
+}
+
+.view_timer {
+	color: #21BA45;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+}
+.view_timer .view_pass_time, .log_pass_time {
+	//color: red;
+}
+
+
+span{
+	text-decoration: none;
+	color:#dcdcdc;
+}
+.label {
+	color:#EEE;
+	text-decoration: none;
+	font-family: "Microsoft YaHei", "微软雅黑",STXihei, "华文细黑",serif;
+	height: 21px;
+	font-weight: bold;
+}
+.label input{
+	vertical-align: middle;
+	margin-bottom: 4px;
+}
+a {
+	color:#EEE;
+	text-decoration: none;
+	font-weight: bold;
+}
+code {
+	margin: 0;
+	font-size: 13px;
+	color:#dcdcdc;
+	line-height: 1.5;
+	font-family: "Microsoft YaHei", "微软雅黑",STXihei, "华文细黑",serif;
+}
+
+.btn{
+	background-color: rgba(132,132,132,.5);
+	border-radius: 3px;
+	padding : 3px 6px;
+	color: #fff;
+	box-shadow: 0 1px 5px rgba(0,0,0,.2);
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	padding: 0.5em;
+	color: #dcdcdc;
+	-webkit-text-size-adjust: none;
+}
+
+.hljs-keyword,
+.hljs-tag,
+.css .hljs-class,
+.css .hljs-id,
+.lisp .hljs-title,
+.nginx .hljs-title,
+.hljs-request,
+.hljs-status,
+.clojure .hljs-attribute {
+	color: #e3ceab;
+}
+
+.hljs-error {
+	color: red;
+	font-weight:bolder;
+}
+.django .hljs-template_tag,
+.django .hljs-variable,
+.django .hljs-filter .hljs-argument {
+	color: #dcdcdc;
+}
+
+.hljs-number,
+.hljs-date {
+	color: #8cd0d3;
+}
+
+.dos .hljs-envvar,
+.dos .hljs-stream,
+.hljs-variable,
+.apache .hljs-sqbracket,
+.hljs-name {
+	color: #efdcbc;
+}
+
+.dos .hljs-flow,
+.diff .hljs-change,
+.python .exception,
+.python .hljs-built_in,
+.hljs-literal,
+.tex .hljs-special {
+	color: #efefaf;
+}
+
+.diff .hljs-chunk,
+.hljs-subst {
+	color: #adabab;
+}
+
+.dos .hljs-keyword,
+.hljs-decorator,
+.hljs-title,
+.hljs-type,
+.diff .hljs-header,
+.ruby .hljs-class .hljs-parent,
+.apache .hljs-tag,
+.nginx .hljs-built_in,
+.tex .hljs-command,
+.hljs-prompt {
+	color: #efef8f;
+}
+
+.dos .hljs-winutils,
+.ruby .hljs-symbol,
+.ruby .hljs-symbol .hljs-string,
+.ruby .hljs-string {
+	color: #dca3a3;
+}
+
+.diff .hljs-deletion,
+.hljs-string,
+.hljs-tag .hljs-value,
+.hljs-preprocessor,
+.hljs-pragma,
+.hljs-built_in,
+.smalltalk .hljs-class,
+.smalltalk .hljs-localvars,
+.smalltalk .hljs-array,
+.css .hljs-rule .hljs-value,
+.hljs-attr_selector,
+.hljs-pseudo,
+.apache .hljs-cbracket,
+.tex .hljs-formula,
+.coffeescript .hljs-attribute {
+	color: #cc9393;
+}
+
+.hljs-shebang,
+.diff .hljs-addition,
+.hljs-comment,
+.hljs-annotation,
+.hljs-pi,
+.hljs-doctype {
+	color: #adabab;
+}
+
+.coffeescript .javascript,
+.javascript .xml,
+.tex .hljs-formula,
+.xml .javascript,
+.xml .vbscript,
+.xml .css,
+.xml .hljs-cdata {
+	opacity: 0.5;
+}

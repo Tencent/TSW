@@ -1,0 +1,121 @@
+<script id="body" type="text/html" nowith="yes">
+    <h1>TSW</h1>
+    <h2>Tencent Server Web</h2>
+    <p>针对web前端开发同学的server端web开发解决方案。</p>
+</script>
+
+
+<script id="html" type="text/html" nowith="yes" >
+    <%
+    var
+    data	= data || {},
+    body	= data.body || '',
+    head	= data.head || {},
+    undefined;
+    %>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title><%=tmpl.encodeHtml(head.title || '')%></title>
+        <meta name="description" itemprop="description" content="<%=tmpl.encodeHtml(head.description || '')%>" />
+        <meta itemprop="name" content="<%=tmpl.encodeHtml(head.share_name || '')%>">
+        <% if(head.share_image){%>
+        <meta itemprop="image" content="<%= head.share_image %>">
+        <%}%>
+        <meta name="robots" content="none" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="x5-fast-scroller" content="disable" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link rel="stylesheet" type="text/css" href="/static/tsw/styles/semantic-ui/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/tsw/styles/semantic-ui/stylesheets/docs.css">
+    </head>
+    <body>
+    <%=data.header || ''%>
+    <div class="ui grid container">
+        <div class="row" style="margin-top: 30px">
+            <div class="column">
+                <%=body%>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+</script>
+
+
+
+<script id="new_header" type="text/html" nowith="yes" >
+<style type="text/css">
+html{
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+#header.header{
+    height: 50px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: rgba(0,0,0,0.8);
+    *background-color: #000;
+    border-top: 2px solid #F00;
+    z-index: 88;
+    width: 100%;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+#header .nav{
+    width: 1100px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+#header .nav li{
+    list-style: none;
+    float: right;
+    display: block;
+    height: 50px;
+    line-height: 50px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+#header .nav li:hover{
+    background-color: rgba(255,0,0,0.9);
+    color: #fff;
+}
+
+#header .nav li a{
+    display: block;
+    padding: 0 20px;
+    text-decoration: none;
+    color: #FFF;
+    font-family: "Microsoft YaHei";
+}
+
+#header .nav li a:hover,
+#header .nav li a:active{
+    text-decoration: none;
+}
+
+</style>
+<div id="header" class="header">
+    <ul class="nav">
+        <% 
+            var navMenus = data;
+            if(navMenus && navMenus.length>0) {
+                for(var i=0;i<navMenus.length;i++){
+                    if(navMenus[i].href && navMenus[i].title){ %>
+                    <li><a href="<%=tmpl.encodeHtml(navMenus[i].href)%>"><%=tmpl.encodeHtml(navMenus[i].title)%></a></li>
+                <%}
+                }
+            }
+        %>
+    </ul>
+</div>
+</script>

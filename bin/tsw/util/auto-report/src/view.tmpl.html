@@ -1,0 +1,263 @@
+<script type="text/html" id="log_view" nowith="yes">
+<%
+var logArr	= data.logArr || [];
+var groupArr= data.groupArr || [];
+var window	= context.window || {};
+var hls 	= require('./highlight-tsw.js');
+var getResultCodeStyle = function (code) {
+    code = parseInt(code,10);
+    var style = "";
+    if(code > 0){
+        code = Math.floor(code / 100);
+        <!--code = Math.floor(Math.random() * 6);-->
+        <!--code < 2 &&  (code = code + 2);-->
+        switch (code) {
+            case 2 :
+            style = "color:green;";
+			case 6 :
+			style = "color:green;";
+            break;
+            case 3 :
+            style = "color:#bf00ff;";
+            break;
+            case 4 :
+            style = "color:orange;";
+            break;
+            case 5 :
+            style = "color:red;";
+            break;
+        }
+    }
+    return style+"font-weight:;font-size:18px";
+}
+
+var appid	= context.appid;
+var group	= context.group;
+var key		= context.key;
+var logKey	= context.logKey;
+var createLogKey = context.createLogKey;
+var currPath = '/log/view/' + createLogKey(appid,group,key);
+
+//去重
+var tmp = [{name: '全部',href: '/log/view/' + createLogKey(appid,'',key)}];
+var groupMap= {};
+var nameMap = data.nameMap;
+
+for(var i in nameMap){
+	tmp.push({
+		name : nameMap[i],
+		href : '/log/view/' + createLogKey(appid,i,key)
+	})
+}
+
+groupArr.sort().forEach(function(v){
+	if(!v){
+		return;
+	}
+	if(groupMap[v]){
+		return;
+	}
+	//默认展示的就去掉
+	if(data.nameMap[v])
+		return;
+
+	groupMap[v] = 1;
+	var href = '/log/view/' + createLogKey(appid,v,key);
+	tmp.push({name: v, href: href});
+});
+groupArr = tmp;
+
+var XSS = plug('util/xss.js');
+%>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>TSW云抓包&#8482;</title>
+	<link rel="Shortcut Icon" href="/favicon.ico" type="image/x-icon" />
+	<link href="/static/tsw/styles/logview/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="view-title">
+		<a class="button" href="<%=window && window.request && window.request.REQUEST && window.request.REQUEST.pathname && window.request.REQUEST.pathname.replace('/log/view/','/log/download/')%>" target="_blank">下载全部抓包</a>
+		<a class="button r" href="https://www.telerik.com/fiddler" target="_blank">Fiddler下载</a>
+		<a class="button r" href="https://github.com/avwo/whistle" target="_blank">Whistle下载(mac推荐)</a>
+		<label class="button label" style="cursor:pointer;" id="showErrorLogItem"><input type="checkbox" id="showErrorLogItemChk" value="showErrorLogItem">仅显示有错误的</label>
+		<label class="button label" style="cursor:pointer;" id="showRequestListItem"><input type="checkbox" id="showRequestListChk" value="showRequestList">快速显示请求列表</label>
+		<%if(appid){%>
+			<a class="button" href="/app/status" target="_blank">实时监控</a>
+			<a class="button" href="/h5test/page" target="_blank">测试环境</a>
+		<%}else{%>
+			<a class="button" href="/h5test/page/alpha" target="_blank">临时染色</a>
+		<%}%>
+		<label class="button" target="_blank" title="item/user/userLimit"><%=data.logCount%>/<%=data.logKeyCount%>/<%=data.logNumMax%></label>
+	</div>
+
+	<%if(groupArr.length){%>
+	<div class="view-title">
+		<%groupArr.forEach(function(v,i){%>
+		<a class="button <%=currPath === v.href ? 'curr-group' : ''%>" href="<%=v.href%>"><%=XSS.htmlEncode(v.name)%></a>
+		<%});%>
+	</div>
+	<%}%>
+
+	<%if(logArr.length === 0){%>
+	<div class="view-title">
+		<p style="height: 50px;line-height: 50px;">还没有实时log</p>
+	</div>
+	<%}
+
+	logArr.forEach(function(logText,i){
+		logText = logText || '';
+		var logLineArr = logText.split("\n");
+		var reqUrl = logLineArr && logLineArr[0];
+		var reqType = '',
+			resultCode = logArr.extInfos[i].resultCode;
+
+		var hasError = false;
+		for(var j = 0; j < logLineArr.length; j++){
+			var logTextLine = logLineArr[j];
+			if (!logTextLine) {
+				continue;
+			}
+
+			//匹配ajax失败的fail log
+			var retCodeReg = new RegExp("isFail:(.*)");
+			if (retCodeReg.exec(logTextLine)) {
+				var retCode = parseInt(RegExp.$1);
+				if (retCode) {
+					hasError = true;
+					break;
+				}
+			}
+
+			//匹配ERRO log
+			if(!hasError && logTextLine.indexOf(' [ERRO] ') > 0){
+				hasError = true;
+				break;
+			}
+		}
+
+		if(i < 2){
+			logText = hls.highlight('tswlog',(logText),true).value;
+		}else{
+			logText = XSS.htmlEncode(logText)
+		}
+
+	%>
+		<div class="view-logText error<%=hasError?1:0%>" type="<%=reqType%>" error="<%=hasError?1:0%>">
+			<div class="view-logText-title">
+                <span>&nbsp;statusCode: <span style="<%=getResultCodeStyle(resultCode)%>"><%=resultCode%></span></span>
+
+                <a class="btn" href="<%=window.request.REQUEST.pathname.replace('/log/view/','/log/download/')%>?index=<%=parseInt(logArr.keys[i])%>&SNKey=<%=logArr.SNKeys[i]%>&fileFormat=saz"
+				   target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.saz</a>
+
+				<a class="btn" href="<%=window.request.REQUEST.pathname.replace('/log/view/','/log/download/')%>?index=<%=parseInt(logArr.keys[i])%>&SNKey=<%=logArr.SNKeys[i]%>&fileFormat=har"
+				   target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.har</a>
+
+                <span style="display:none">&nbsp;<span class="log_pass_time"></span>前</span>
+				<p style="display: none;" class="firstReq">
+					<label class="button label expand" style="cursor:pointer;" data-j="expand<%=i%>"><input type="checkbox" class="expandChk">展开</label>
+					<%=XSS.htmlEncode(reqUrl.replace(/\[.*?\]/g, '').replace(/\s+/, ' '))%>
+				</p>
+            </div>
+			<pre class="view-logText-log expand<%=i%>_code"><code class="tswlog hljs"><%=(logText)%></code></pre>
+		</div>
+	<%
+	});
+	%>
+    <script src="/static/tsw/zepto/zepto.min.js"></script>
+	<script src="/static/tsw/highlightjs/highlight-tsw.js"></script>
+	<script>
+
+		$('pre code').each(function(i, block) {
+			if(i >= 2){
+				setTimeout(function(){
+					hljs.highlightBlock(block)
+				},0)
+			}
+		});
+
+        var showErrorLogItem = JSON.parse( window.localStorage.getItem('showErrorLogItem') || false ), //仅显示有错误的log记录
+	        showRequestListItem = JSON.parse( window.localStorage.getItem('showRequestListItem') || false ); //快速显示请求列表
+	    
+	   	$("#showErrorLogItemChk").prop('checked', showErrorLogItem);
+	   	$("#showRequestListChk").prop('checked', showRequestListItem);
+
+	   	if(showErrorLogItem){
+	   		$(".view-logText.error0:visible").hide();
+	   	}
+
+	   	if(showRequestListItem){
+   		    $(".firstReq").show();
+   		    $(".view-logText-log").hide();
+	   	}
+
+        //仅显示有错误的log记录
+	    $("#showErrorLogItemChk").click(function () {
+		    if ($("#showErrorLogItemChk").prop('checked')) {    //确定仅显示有错误的log
+			    showErrorLogItem = true;
+			    $(".view-logText.error0:visible").hide();
+			    window.localStorage.setItem('showErrorLogItem', true);
+		    } else {
+			    showErrorLogItem = false;
+				$(".view-logText.error0").show();
+			    window.localStorage.setItem('showErrorLogItem', false);
+		    }
+	    });
+
+        //快速显示请求列表
+	    $("#showRequestListChk").click(function () {
+		    if ($("#showRequestListChk").prop('checked')) {    //确定仅显示有错误的log
+			    showRequestListItem = true;
+			    $(".firstReq").show();
+			    $(".view-logText-log").hide();
+//			    $("#showErrorLogItemChk").attr('disabled', true);
+				window.localStorage.setItem('showRequestListItem', true);
+		    } else {
+			    showRequestListItem = false;
+			    $(".firstReq").hide();
+			    $(".view-logText-log").show();
+//			    $("#showErrorLogItemChk").attr('disabled', false);
+				window.localStorage.setItem('showRequestListItem', false);
+		    }
+	    });
+        //这里打算做仅显示半小时的功能，目前待定；看真实的用户需求
+	    $(".expand").click(function () {
+		    var expandChkDom = $(this).find('.expandChk');
+		    var codeClass = $(this).data('j') + '_code';
+		    if (expandChkDom.prop('checked')) {
+				$('.' + codeClass).show();
+		    } else {
+			    $('.' + codeClass).hide();
+		    }
+	    });
+	    var refreshTime = Date.now();
+	    function getPassTimeStr(preTime ,curTime) {
+	    	var passTime = Math.round( (curTime - preTime) / 1000 );
+	    	var sec = passTime % 60;
+	    	passTime = (passTime - sec) / 60;
+	    	var min = passTime % 60;
+	    	passTime = (passTime - min) / 60;
+	    	var hour = passTime;
+	    	var passTimeStr = '';
+	    	if(hour) passTimeStr = passTimeStr + hour + '小时';
+	    	if(min) passTimeStr = passTimeStr + min + '分钟';
+	    	if(sec) passTimeStr = passTimeStr + sec + '秒';
+	    	return passTimeStr;
+	    }
+
+		function updateTime() {
+			var curTime = Date.now();
+			$('.view-logText').each(function (index) {
+				var logItem = $(this);
+				var timeStr = $(logItem.find('code.tswlog span.hljs-subst')[0]).html();
+				logItem.find('.log_pass_time').html(getPassTimeStr( (new Date(timeStr)).getTime(), curTime )).parent().show();
+			});
+		}
+
+	    setInterval(updateTime, 1000);
+		updateTime();
+    </script>
+</body>
+</html>
+</script>

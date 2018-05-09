@@ -1,0 +1,67 @@
+<script id="body" type="text/html" nowith="yes">
+    <h1>TSW 测试环境分组</h1>
+    <h2>加入</h2>
+    <p>测试机采用自动发现机制，配置为测试环境后自动出现在这里</p>
+    <p>测试机定义 <code>config.isTest = true</code></p>
+    <p>测试机个性配置参见 <code>config.testInfo = {...}</code></p>
+    <h2>分组</h2>
+    <%if(data.allGroup.length === 0){%>
+    <p>还没有发现测试机</p>
+    <%}else{%>
+    <p>点击你喜欢的分组</p>
+    <%}%>
+
+    <ul>
+        <%
+        data.allGroup.forEach(function(v){
+        %>
+        <li><a href="/h5test/page/<%=v.group%>"><%=v.group%> -- <%=v.groupName || '未知'%></a></li>
+        <%
+        });
+        %>
+    </ul>
+</script>
+
+
+<script id="html" type="text/html" nowith="yes" >
+    <%
+    var
+    data	= data || {},
+    body	= data.body || '',
+    head	= data.head || {},
+    undefined;
+    %>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title><%=tmpl.encodeHtml(head.title || '')%></title>
+        <meta name="description" itemprop="description" content="<%=tmpl.encodeHtml(head.description || '')%>" />
+        <meta itemprop="name" content="<%=tmpl.encodeHtml(head.share_name || '')%>">
+        <% if(head.share_image){%>
+        <meta itemprop="image" content="<%= head.share_image %>">
+        <%}%>
+        <meta name="robots" content="none" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="x5-fast-scroller" content="disable" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link rel="stylesheet" type="text/css" href="/static/tsw/styles/semantic-ui/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/tsw/styles/semantic-ui/stylesheets/docs.css">
+    </head>
+    <body>
+    <%=data.header || ''%>
+    <div class="ui grid container">
+        <div class="row" style="margin-top: 30px">
+            <div class="column">
+                <%=body%>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+</script>

@@ -1,0 +1,33 @@
+{
+  "name" : "TSW" ,
+  "version": "1.0.1426",
+  "scripts": {
+    "test" : "node test/node_modules/mocha/bin/mocha test/bin/**/*.js",
+    "coverage": "node test/node_modules/nyc/bin/nyc test/node_modules/mocha/bin/mocha test/bin/**/*.js"
+  },
+   "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tencent/TSW.git"
+  },
+  "dependencies": {
+    "heapdump" : ">=0.3.9",
+    "v8-profiler" : ">=5.7.0"
+  },
+  "keywords": [
+    "TSW"
+  ],
+  "files": [
+    "bin"
+  ],
+   "engines": {
+    "node": ">= 8.0.0"
+  },
+  "nyc" : {
+    
+    "include" : [
+      "bin/tsw/",
+      "bin/lib/"
+      
+    ]
+  }
+}

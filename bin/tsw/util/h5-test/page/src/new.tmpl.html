@@ -1,0 +1,233 @@
+<!--<script type="text/html" id="new_body_sync" nowith="yes">-->
+    <%=tmpl.new_body(data)%>
+    <script src="/static/tsw/zepto/zepto.min.js"></script>
+    <script type="text/javascript">
+        window.getUrlParam = function(name, loc) {
+            loc = loc || window.location;
+            var r = new RegExp('(\\?|#|&)' + name + '=(.*?)(&|#|$)');
+            var m = (loc.href || '').match(r);
+            return decodeURIComponent(m ? m[2] : '');
+        };
+        window.getCookie = function(key){
+            //简单读cookie，没有做编码等过滤
+            var cookies = document.cookie ? document.cookie.split('; ') : [], tmp;
+            for(var i=0;i<cookies.length;i++){
+                tmp = cookies[i].split('=');
+                if(tmp[0] == key){
+                    return tmp[1];
+                }
+            }
+            return '';
+        };
+    	window.api = (function(){
+    		var commomData = {
+    			appid: '<%=data.appid%>',
+    			uid: getCookie('uid'),
+    			token: getCookie('token')
+    		};
+    		var _api = {};
+    		    /*
+				 * 添加白名单
+				 */
+			    _api.addTestUser = function(params){
+					var defer =$.Deferred();
+					$.ajax({
+						url: '/api/h5test/add',
+						data:$.extend({},commomData,{
+							uin: params.uin,
+							val: params.val
+						}),
+						success: function(data){
+							//封装一下
+							if(data && data.code === 0 ) {
+								defer.resolve(data);
+							}else {
+								var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
+								defer.reject( message);
+							}
+						},
+						fail: function(err){
+							var message = "系统繁忙，请稍后再试";
+							if(err && err.msg) {
+								message = err.msg;
+							}
+							defer.reject( message);
+						}
+					});
+
+					return defer;
+			    };
+
+			    /*
+				 * 删除白名单
+				 */
+			    _api.delTestUser = function(params){
+					var defer =$.Deferred();
+					$.ajax({
+						url: '/api/h5test/del',
+						data:$.extend({},commomData,{
+							uin: params.uin
+						}),
+						success: function(data){
+							//封装一下
+							if(data && data.code === 0 ) {
+								defer.resolve(data);
+							}else {
+								var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
+								defer.reject( message);
+							}
+						},
+						fail: function(err){
+							var message = "系统繁忙，请稍后再试";
+							if(err && err.msg) {
+								message = err.msg;
+							}
+							defer.reject( message);
+						}
+					});
+
+					return defer;
+			    };
+
+				//拉取所有
+				_api.getTestUser = function(params){
+					var defer =$.Deferred();
+					
+					$.ajax({
+						url: '/api/h5test/get',
+						data:$.extend({},commomData),
+						success: function(data){
+							//封装一下
+							if(data && data.code === 0 ) {
+								defer.resolve(data);
+							}else {
+								var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
+								defer.reject( message);
+							}
+						},
+						fail: function(err){
+							var message = "系统繁忙，请稍后再试";
+							if(err && err.msg) {
+								message = err.msg;
+							}
+							defer.reject( message);
+						}
+					});
+					
+					return defer;
+				};
+				return _api;
+    	})()
+    </script>
+    <script type="text/javascript">
+    (function() {
+    	var handlerNums = function(val){
+    		return val.split(/(\b[0-9a-zA-Z_\-]{1,64}\b)/gmi);
+    	}
+    	//批量加入
+		$('#join-submit2').click(function(event){
+			var deferArr = [];
+			var val = $('#join-textarea').val();
+			// var arr = val.split(/(\b[0-9A-Za-z]+\b)/gmi);
+			var arr = handlerNums(val);
+			var selectVal = $('.selected')[0].value;
+			for(var i = 1; i < arr.length; i++) {
+				(function(uin){
+					var request = api.addTestUser({
+						uin : uin,
+						val : selectVal
+					});
+					deferArr.push(request);
+				}(arr[i]));
+				i++;
+			}
+			$.when.apply(this, deferArr).done(function(){
+				alert("你的号码，现已加入H5测试环境");
+			}).fail(function(errMsg){
+				errMsg = errMsg || "出了点小问题，请联系shinehuang处理";
+				alert(errMsg);
+			}).always(function () {
+				//$('#number-get').trigger('click');
+			});
+			return false;
+		});
+		//移除
+		$('#remove-submit2').click(function(event){
+			var deferArr = [];
+			var val = $('#join-textarea').val();
+			var arr = handlerNums(val);
+
+			for(var i = 1; i < arr.length; i++) {
+								
+				var request = api.delTestUser({
+					uin : arr[i]
+				});
+				deferArr.push(request);
+				
+				i++;
+			}
+			$.when.apply(this, deferArr).done(function(){
+				alert("H5测试环境删除成功");
+			}).fail(function(errMsg){
+				errMsg = errMsg || "出了点小问题，请联系shinehuang处理";
+				alert(errMsg);
+			}).always(function () {
+				//$('#number-get').trigger('click');
+			});
+			return false;
+		});
+
+		//查看所有
+		$('#number-get').click(function(event){
+            var request = api.getTestUser();
+            request.done(function(data) {
+                var html = "";
+                var num = 0;
+                for (var i in data.data) {
+                    num++;
+                    var val = data.data[i];
+                    html += '<p>' + i + ':' + val + '</p>';
+                }
+                if (num == 0) {
+                    html = "还没有测试号码~"
+                }
+                $('#number-list').html(html);
+            }).fail(function(errMsg) {
+                errMsg = errMsg || "出了点小问题，请联系shinehuang处理";
+                alert(errMsg);
+            });
+            return false;
+		});
+
+		$(document).on('click', '.js-select-btn', function(event){
+			var target = $(this);
+			$('.js-select-btn').removeClass('btn-primary positive');
+			$('.js-select-btn').removeClass('selected positive');
+			target.addClass('btn-primary positive');
+			target.addClass('selected');
+
+            // 选中服务器后，动态变更url方便拷贝
+            if (history.replaceState) {
+                var server = target.attr('value');
+                var newUrl = location.protocol + '//' + location.host + location.pathname + '?server=' + encodeURIComponent(server);
+                history.replaceState({server: server}, '', newUrl);
+            }
+        });
+
+        // 自动选中服务器
+        var server = getUrlParam('server');
+        if (server) {
+            $('.js-select-btn').each(function(i, el) {
+                var $el = $(el);
+                if ($el.attr('value') === server) {
+                    var $box = $el.closest('.column>div');
+                    $box.scrollTop(el.offsetTop - 140);
+                    $el.trigger('click');
+                    return false;
+                }
+            });
+        }
+    })();
+    </script>
+<!--</script>-->
+

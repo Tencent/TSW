@@ -1,0 +1,71 @@
+<!--邮件告警-->
+<script type="text/html" id="email" nowith="yes">
+<%
+
+var window = context.window || {};
+%>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="none" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="MobileOptimized" content="320" />
+<meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />
+<meta name="x5-fast-scroller" content="disable" />
+
+<style>
+p{
+	line-height: 1.5;
+}
+code{
+	font-size: 12px;
+}
+</style>
+
+</head>
+<body>
+	<p><%=data.Content%></p>
+	<p><strong>服务器IP:</strong> <%=data.intranetIp%></p>
+
+	<p><strong>进程名字:</strong> <%=tmpl.encodeHtml(data.processTitle)%></p>
+	<p><strong>进程ID:</strong> <%=data.processPid.pid%></p>
+	<p><strong>mod_act:</strong> <%=context.mod_act || 'null'%></p>
+	<%if(window.request){%>
+	<p><strong>域名:</strong> <%=window.request && window.request.headers.host%></p>
+	<p><strong>path:</strong> <%=window.request && window.request.REQUEST.pathname%></p>
+	<%}%>
+	<p><strong>idc:</strong> <%=data.idc%></p>
+	<p><strong>发送间隔:</strong> <%=data.second%>s</p>
+	<%if(data.headerText){%>
+	<p><strong>请求头:</strong></p>
+	<div style="font-size:12px"><%=tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/gmi,'<br>')%></div>
+	<%}%>
+	<%if(data.logText){%>
+	<p><strong>全息日志:</strong></p>
+	<pre style="font-size:12px"><%=tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/gmi,'<br>')%></pre>
+	<%}%>
+</body>
+</html>
+</script>
+
+<!--RTX告警-->
+<script type="text/html" id="rtx" nowith="yes">
+<%
+
+var window = context.window || {};
+%>
+<%=data.MsgInfo%>
+<%='\r\n\r\n'%>
+服务器IP:<%=data.intranetIp%><%='\r\n'%>
+进程名字: <%=tmpl.encodeHtml(process.title)%><%='\r\n'%>
+进程ID: <%=process.pid%><%='\r\n'%>
+mod_act: <%=context.mod_act || 'null'%><%='\r\n'%>
+域名:<%=window.request && window.request.headers.host%><%='\r\n'%>
+path:<%=window.request && window.request.REQUEST.pathname%><%='\r\n'%>
+发送间隔: <%=data.second%>s<%='\r\n'%>
+</script>
+
+

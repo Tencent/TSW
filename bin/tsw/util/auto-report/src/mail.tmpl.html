@@ -1,0 +1,143 @@
+<!--js错误汇总邮件-->
+<script type="text/html" id="errorSummary" nowith="yes">
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="none" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />
+    <meta name="x5-fast-scroller" content="disable" />
+
+    <style>
+        p{
+            line-height: 1.5;
+        }
+        code{
+            font-size: 12px;
+        }
+
+        table {
+            border-collapse: collapse;
+            text-align: center;
+            position: relative;
+            white-space: nowrap;
+            background: #FFFFFF;
+            border: 1px solid #BFBFBF;
+            /*table-layout:fixed;*/
+        }
+        thead {
+            white-space: nowrap;
+            background: #EEEFF2;
+
+            border-bottom: 1px solid #BFBFBF;
+            border-top: 1px solid #BFBFBF;
+            border-collapse: separate;
+        }
+        table thead th,
+        table tbody td,
+        table tfoot td{
+            padding-left: 10px;
+            padding-right: 10px;
+            white-space: nowrap;
+            border-collapse: collapse;
+            border: 1px solid #BFBFBF;
+        }
+
+        table thead tr th{
+            border-right: 1px solid #BFBFBF;
+            border-left: 1px solid #BFBFBF;
+            background: #EAEAEA;
+
+        }
+
+        table thead th{
+            height: 30px;
+            background: #EAEAEA;
+        }
+        table tbody td,
+        table tfoot td{
+            height: 25px;
+        }
+
+        table tbody tr,
+        table tfoot tr{
+            border-bottom: 1px solid #BFBFBF;
+        }
+
+        .dimension {
+            text-align: left;
+            white-space: nowrap;
+        }
+        .indicator{
+            text-align: right;
+            white-space: nowrap;
+        }
+        .alt {
+            background:#EFEFEF ;
+        }
+
+    </style>
+
+</head>
+<body>
+<%if(data.total_arr.length){%>
+<table>
+    <thead>
+    <tr>
+        <th>项目名称</th>
+        <th>mod_act</th>
+        <th>报错次数</th>
+        <th>负责人</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%for(var i = 0,item; item = data.total_arr[i++];){%>
+    <tr class="<%=(i % 2 == 0 ? 'alt' : '')%>">
+        <td class="dimension"><%=item.config.title%></td>
+        <td class="dimension"><%=item.mod_act%></td>
+        <td class="indicator"><%=item.errorNum%></td>
+        <td class="indicator"><%=item.config.charge%></td>
+    </tr>
+    <%}%>
+    </tbody>
+</table>
+<%}else{%>
+    <p>没有报错项目~</p>
+<%}%>
+</body>
+</html>
+</script>
+
+<!--单个页面1分钟内超过频率限制-->
+<script type="text/html" id="error" nowith="yes">
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="none" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />
+    <meta name="x5-fast-scroller" content="disable" />
+
+    <style>
+        p{
+            line-height: 1.5;
+        }
+        code{
+            font-size: 12px;
+        }
+    </style>
+
+</head>
+<body>
+<p><strong><%=data.mod_act%> </strong> <%=(data.config.title ? '('+data.config.title+')' : '')%>:1分钟脚本报错超过频率限制（<%=data.minMaxNum%>）</p>
+</body>
+</html>
+</script>

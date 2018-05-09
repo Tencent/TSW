@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "dependencies": {
+    "koa": "*",
+    "express": "*",
+    "hapi": "*"
+  },
+  "engines": {
+    "node": ">= 8.0.0"
+  }
+}

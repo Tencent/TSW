@@ -1,0 +1,192 @@
+<html>
+	<head>
+		<title>node-bisection</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1>node-bisection</h1></td><td></td></tr><tr class="filename"><td><h2 id="lib/bisection.js"><a href="#">bisection</a></h2></td><td>lib/bisection.js</td></tr><tr class="code">
+<td class="docs">
+<p>Calculates the index of the Array where item X should be placed, assuming the Array is sorted.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Array</em>  array The array containing the items.</p></li><li><p><strong>param</strong>: <em>Number</em>  x The item that needs to be added to the array.</p></li><li><p><strong>param</strong>: <em>Number</em>  low Inital Index that is used to start searching, optional.</p></li><li><p><strong>param</strong>: <em>Number</em>  high The maximum Index that is used to stop searching, optional.</p></li><li><p><strong>returns</strong>: <em>Number</em>  the index where item X should be placed</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">function</span> <span class="variable">bisection</span>(<span class="variable">array</span>, <span class="variable">x</span>, <span class="variable">low</span>, <span class="variable">high</span>){
+  <span class="comment">// The low and high bounds the inital slice of the array that needs to be searched</span>
+  <span class="comment">// this is optional</span>
+  <span class="variable">low</span> || (<span class="variable">low</span> = <span class="number integer">0</span>);
+  <span class="variable">high</span> || (<span class="variable">high</span> = <span class="variable">array</span>.<span class="variable">length</span>);
+  
+  <span class="keyword">var</span> <span class="variable">mid</span>;
+    
+  <span class="keyword">while</span>(<span class="variable">low</span> &<span class="variable">lt</span>; <span class="variable">high</span>){
+    <span class="variable">mid</span> = (<span class="variable">low</span> + <span class="variable">high</span>) &<span class="variable">gt</span>;&<span class="variable">gt</span>; <span class="number integer">1</span>;
+    
+    <span class="keyword">if</span> (<span class="variable">x</span> &<span class="variable">lt</span>; <span class="variable">array</span>[<span class="variable">mid</span>]){
+      <span class="variable">high</span> = <span class="variable">mid</span>;
+    } <span class="keyword">else</span> {
+      <span class="variable">low</span> = <span class="variable">mid</span> + <span class="number integer">1</span>;
+    }
+  }
+  
+  <span class="keyword">return</span> <span class="variable">low</span>;
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>A right bisection is default, so just reference the same function
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">bisection</span>.<span class="variable">right</span> = <span class="variable">bisection</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Calculates the index of the Array where item X should be placed, assuming the Array is sorted.
+## </p>
+
+<ul><li><p><strong>param</strong>: <em>Array</em>  array The array containing the items.</p></li><li><p><strong>param</strong>: <em>number</em>  x The item that needs to be added to the array.</p></li><li><p><strong>param</strong>: <em>number</em>  low Inital Index that is used to start searching, optional.</p></li><li><p><strong>param</strong>: <em>number</em>  high The maximum Index that is used to stop searching, optional.</p></li><li><p><strong>return</strong>: <em>number</em>  the index where item X should be placed</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">bisection</span>.<span class="variable">left</span> = <span class="keyword">function</span> <span class="variable">left</span>( <span class="variable">array</span>, <span class="variable">x</span>, <span class="variable">low</span> , <span class="variable">high</span> ){
+  <span class="comment">// The low and high bounds the inital slice of the array that needs to be searched</span>
+  <span class="comment">// this is optional</span>
+  <span class="variable">low</span> || (<span class="variable">low</span> = <span class="number integer">0</span>);
+  <span class="variable">high</span> || (<span class="variable">high</span> = <span class="variable">array</span>.<span class="variable">length</span>);
+  
+  <span class="keyword">var</span> <span class="variable">mid</span>;
+  
+  <span class="keyword">while</span>(<span class="variable">low</span> &<span class="variable">lt</span>; <span class="variable">high</span>){
+    <span class="variable">mid</span> = (<span class="variable">low</span> + <span class="variable">high</span>) &<span class="variable">gt</span>;&<span class="variable">gt</span>; <span class="number integer">1</span>;
+  
+    <span class="keyword">if</span>(<span class="variable">x</span> &<span class="variable">lt</span>; <span class="variable">array</span>[<span class="variable">mid</span>]){
+      <span class="variable">low</span> = <span class="variable">mid</span> + <span class="number integer">1</span>;
+    } <span class="keyword">else</span> {
+      <span class="variable">high</span> = <span class="variable">mid</span>;
+    }
+  }
+  
+  <span class="keyword">return</span> <span class="variable">low</span>;
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Library version
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">bisection</span>.<span class="variable">version</span> = <span class="string">'0.0.1'</span>;
+
+<span class="variable">module</span>.<span class="variable">exports</span> = <span class="variable">bisection</span>;</code></pre>
+</td>
+</tr>	</body>
+</html></tbody></table>

@@ -1,0 +1,12 @@
+{
+    "ParseError"        : "数据格式错误",
+    "Error"             : "异常",
+    "warning"           : "警告",
+    "unhandledRejection": "未处理的reject",
+    "LargeCss"          : "内联CSS过大",
+    "Css404"            : "内联CSS不存在",
+    "LargeJs"           : "内联JS过大",
+    "Js404"             : "内联JS不存在",
+    "hello"             : "hello"
+}
+

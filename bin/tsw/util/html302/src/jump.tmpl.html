@@ -1,0 +1,25 @@
+<script type="text/html" id="jump" nowith="yes">
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="edge">
+<meta charset="utf-8">
+
+<meta name="x5-pagetype" content="webapp">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta content="telephone=no" name="format-detection" />
+<title><%=data.title || ''%></title>
+
+<script type="text/javascript">
+    window.location.replace(<%=JSON.stringify(data.url)%>);
+</script>
+</head>
+<body>
+</body>
+</html>
+</script>
+
+

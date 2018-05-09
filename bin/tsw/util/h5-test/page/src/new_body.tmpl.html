@@ -1,0 +1,118 @@
+<!--<script type="text/html" id="new_body" nowith="yes">-->
+<div class="ui grid container">
+    <div class="row" style="margin-top: 30px">
+        <h1>
+            <%=data.project && data.project.name || 'TSW 测试环境配置'%>
+        </h1>
+    </div>
+    <div class="row">
+        <div class="column">
+            <div x-class="ui raised segment" style="max-height: 400px; overflow-y: auto;">
+                <p class="ui"></p>
+
+                <%
+
+                    data = data.group;
+
+                    for(var i = 0; i < data.length; i++){
+                        var item = data[i];
+                        var val = item['ip'] + (item['port']  && (':' + item['port']) || '');
+                        var name= item['name'];
+                        var desc = item['desc'];
+                        var owner = item['owner'];
+                        var module = item['moduleName'];
+                        var isShow = false;
+                        if(val && val != "") {
+                            isShow = true;
+                        }
+                        if(name && name != "") {
+                        }else if(module && module != ""){
+                            name = module;
+                        }else {
+                            name = val;
+                        }
+                        var isShowDesc = false;
+                        if(desc && desc != "") {
+                            if(owner && owner != "") {
+                                desc += "，负责人：" + owner;
+                            }
+                        }else {
+                            desc = "";
+                            if(owner && owner != "") {
+                                desc += "负责人：" + owner;
+                            }
+                        }
+                        if(desc && desc !="") {
+                            isShowDesc = true;
+                        }
+
+                %>
+                    <% if(isShow){ %>
+                    <div class="row">
+                        <button title="<%=val%>" type="button" value="<%=val%>" class="ui button btn  js-select-btn <% if(i==0){ %> selected positive <% } %>"><%=name%></button>
+                        <% if(/^[0-9\.\:]+$/.test(val)){ %>
+                        <a class="ui tag label" href="http://<%=val%>/l5" title="点击修改L5" target="_blank"><%=val%></a><% if(isShowDesc){ %><a class="ui tag label"><%=desc%></a><% } %>
+                        <% }else{ %>
+                        <a class="ui tag label"><%=val%></a><% if(isShowDesc){ %><a class="ui tag label"><%=desc%></a><% } %>
+                        <% } %>
+                    </div>
+                    <br>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <div class="ui raised segment">
+                <a class="ui blue ribbon label">#1 输入用户id（支持批量，换行即可）</a>
+                <p class="ui">
+                    <textarea style="width:100%;height:80px;" id="join-textarea" ></textarea>
+                <p class="ui">
+                    <button id="join-submit2" class="ui button large primary">添加</button>
+                    <button id="remove-submit2" class="ui button primary large">删除</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <h2 class="ui header">查看H5测试环境号码</h2>
+
+            <div class="ui raised segment">
+                <button id="number-get" class="ui button primary large">查看所有H5测试号码</button>
+                <div class="ui divider"></div>
+                <div id="number-list" class="row"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style type="text/css">
+    .top-tip{
+        width: 100%;
+        height: 100px;
+        position: fixed;
+        background-color: rgba(33, 186, 69, 0.75);
+        z-index: 999;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 30px;
+    }
+</style>
+<script type="text/javascript">
+    // hack系统alert提示
+    window.alert = function(msg){
+        $('.top-tip').remove()
+        $('<div class="top-tip">' + msg + '</div>').appendTo('body')
+        setTimeout(function(){
+            $('.top-tip').remove()
+        }, 3000)
+    }
+</script>
+
+<!--</script>-->
