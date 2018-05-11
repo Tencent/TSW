@@ -504,7 +504,7 @@ var download = function(request, response, opt){
 	data.forEach(function(tmp,i){
 		var sid			= ('0000' + (i + 1)).slice(-3);
 		tmp.curr		= tmp.curr || {};
-		tmp.curr.sid	= sid + '.0';
+		tmp.curr.sid	= sid + '.0000';
 		
 		
 		tmp.curr.logText	= tmp.curr.logText || '';
@@ -548,7 +548,7 @@ var download = function(request, response, opt){
 			
 			ajax.curr = curr;
 			
-			curr.sid = sid + '.' + curr.SN;
+			curr.sid = sid + '.' + (`0000${curr.SN}`.slice(-3));
 			
 			viewData.push(ajax);
 		});

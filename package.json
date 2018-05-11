@@ -1,6 +1,6 @@
 {
   "name" : "TSW" ,
-  "version": "1.0.1426",
+  "version": "1.0.1434",
   "scripts": {
     "test" : "node test/node_modules/mocha/bin/mocha test/bin/**/*.js",
     "coverage": "node test/node_modules/nyc/bin/nyc test/node_modules/mocha/bin/mocha test/bin/**/*.js"

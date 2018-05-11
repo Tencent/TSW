@@ -150,8 +150,6 @@ this.captureBody = function(res){
 				this._body = Buffer.concat(this._body);
 			}
 
-			logger.debug('end, total send ' + this._body.length);
-
 			return ret;
 		}
 	}(res._finish));
@@ -201,28 +199,24 @@ this.isSent = function(res){
 	return false;
 }
 
-this.getClientResponseHeaderStr = function(response){
+this.getClientResponseHeaderStr = function(response,bodySize){
 	
 	var headData 	= [],
+		bodySize	= ~~bodySize,
 		key;
-		
-	
+
+
 	headData.push('HTTP/' + response.httpVersion +  ' ' + response.statusCode + ' ' + response.statusMessage);
 	
 	var headers = Deferred.extend({},response.headers);
 	
-	if(response.contentDecode){
+	if(bodySize >= 0 && headers['content-length'] === undefined){
 		delete headers['transfer-encoding'];
-		delete headers['content-encoding'];
+		headers['content-length'] = bodySize;
 	}
-	
-	if(response._bodySize >= 0 && headers['content-length'] === undefined){
-		delete headers['transfer-encoding'];
-		headers['content-length'] = response._bodySize;
-	}
-	
+
 	for(key in headers){
-		
+
 		headData.push(key + ': ' + headers[key]);
 	}
 	

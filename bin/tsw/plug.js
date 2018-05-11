@@ -37,7 +37,7 @@ if(!global.plug){
 	//支持seajs模块
 	require('loader/seajs');
 	require('loader/extentions.js');
-	
+
 	JSON.stringify = function(stringify){
 		return function(){
 			var str = stringify.apply(this,arguments);

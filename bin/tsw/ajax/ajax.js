@@ -236,7 +236,6 @@ Ajax.prototype.doRequest = function(opt){
 		response		: null,			//response事件
 		dataType		: 'html',		//数据类型
 		send			: null,			//send事件
-		captureBody		: false,  		//抓包开关
 		l5api			: {},			//l5api
 		useIPAsHost		: false,		//使用IP覆盖host
 		dcapi			: null, 		//api监控上报
@@ -269,13 +268,6 @@ Ajax.prototype.doRequest = function(opt){
 		);
 	}
 
-		//抓包
-	if(alpha.isAlpha()){
-		logger.debug('capture ajax body on');
-
-		opt.captureBody = true;
-	}
-	
 	if(this._proxyRequest){
 
 		//是代理请求
@@ -308,7 +300,7 @@ Ajax.prototype.doRequest = function(opt){
 		opt.port	= opt.port || obj.port || (opt.protocol === 'https:' ? 443 : 80);
 		opt.path	= opt.path || obj.path;
 
-		logger.debug('host from url: ' + opt.host);
+		logger.debug(logPre + 'host from url: ' + opt.host);
 	}else{
 		opt.port	= opt.port || (opt.protocol === 'https:' ? 443 : 80);
 	}
@@ -579,70 +571,6 @@ Ajax.prototype.doRequest = function(opt){
 	request.setNoDelay(true);
 	request.setSocketKeepAlive(true);
 	
-	opt.captureBody && 
-	defer.always(function(d){
-			
-		var logJson		= logger.getJson();
-		var opt			= d.opt;
-		var response	= d.response || {
-			headers : {
-				'content-length'	: 0,
-				'content-type'		: 'text/html'
-			},
-			httpVersion 	: '1.1',
-			statusCode		: 513,
-			statusMessage	: 'server buisy'
-		};
-		
-		if(!logJson){
-			logger.debug('logger.getJson() is empty!');
-
-			return;
-		}
-		
-		var times		= d.times || {};
-		
-		var curr		= {
-			SN				: AJAXSN,
-			
-			protocol		: 'HTTP',
-			host    		: opt.host,
-			url 			: opt.url,
-			cache   		: '',
-			process 		: 'TSW:' + process.pid,
-			resultCode  	: response.statusCode,
-			contentLength	: (d.buffer && d.buffer.length) || response.headers['content-length'],
-			contentType		: response.headers['content-type'],
-			clientIp     	: serverInfo.intranetIp,
-			clientPort     	: '',
-			serverIp       	: (request.socket && request.socket.remoteAddress) || opt.ip,
-			serverPort		: opt.port,
-			requestRaw   	: httpUtil.getClientRequestHeaderStr(request) + (opt.body || ''),
-			responseHeader 	: httpUtil.getClientResponseHeaderStr(response),
-			responseBody  	: (d.buffer && d.buffer.toString('base64')) || '',
-			timestamps   	: {
-				ClientConnected    : new Date(times.start), 
-				ClientBeginRequest : new Date(times.start), 
-				GotRequestHeaders  : new Date(times.start), 
-				ClientDoneRequest  : new Date(times.start), 
-				GatewayTime        : 0, 
-				DNSTime            : 0, 
-				TCPConnectTime     : 0, 
-				HTTPSHandshakeTime : 0, 
-				ServerConnected    : new Date(times.start), 
-				FiddlerBeginRequest: new Date(times.start), 
-				ServerGotRequest   : new Date(times.start), 
-				ServerBeginResponse: new Date(times.response), 
-				GotResponseHeaders : new Date(times.response), 
-				ServerDoneResponse : new Date(times.end), 
-				ClientBeginResponse: new Date(times.response),
-				ClientDoneResponse : new Date(times.end)
-			}
-		};
-		
-		logJson.ajax.push(curr);
-	});
-	
 	defer.always(function(){
 		clearTimeout(tid);
 		request.removeAllListeners();
@@ -768,27 +696,6 @@ Ajax.prototype.doRequest = function(opt){
 		
 	});
 
-	request.once('socket',function(socket){
-
-		socket._reusedTimes = ~~socket._reusedTimes + 1;
-
-		if(socket.remoteAddress){
-			logger.debug(logPre + 'socket ${localAddress}:${localPort} > ${remoteAddress}:${remotePort}, reusedTimes: ${reusedTimes}',{
-				remoteAddress	: socket.remoteAddress,
-				remotePort		: socket.remotePort,
-				localAddress	: socket.localAddress,
-				localPort		: socket.localPort,
-				reusedTimes		: socket._reusedTimes
-			});
-		}else{
-			logger.debug(logPre + 'socket ${localAddress}:${localPort}, reusedTimes: ${reusedTimes}',{
-				localAddress	: socket.localAddress,
-				localPort		: socket.localPort,
-				reusedTimes		: socket._reusedTimes
-			});
-		}
-	});
-
 	request.once('response',function(response){
 		var result		= [];
 		var pipe		= response;
@@ -823,7 +730,7 @@ Ajax.prototype.doRequest = function(opt){
 		times.response = new Date().getTime();
 		
 		if(opt.dataType === 'proxy'){
-			if(opt.statusCode >= 500 && response.statusCode <= 599 && response.statusCode !== 501){
+			if(response.statusCode >= 500 && response.statusCode <= 599 && response.statusCode !== 501){
 				logger.debug(logPre + '${ip}:${port} response ${statusCode} cost:${cost}ms ${encoding}\nrequest: ${headers}\nresponse: ${resHeaders}',{
 					ip: opt.remoteAddress,
 					port: opt.remotePort,
@@ -895,8 +802,6 @@ Ajax.prototype.doRequest = function(opt){
 		if(opt.dataType === 'buffer' || (isProxy && response.headers['content-encoding']) || response.headers['content-length'] == 0){
 			logger.debug(logPre + 'response type: buffer');
 		}else{
-			response.contentDecode = true;
-			
 			if(response.headers['content-encoding'] === 'gzip'){
 				
 				pipe = zlib.createGunzip();
@@ -990,9 +895,6 @@ Ajax.prototype.doRequest = function(opt){
 					that._proxyResponse.write(chunk);
 				}
 
-				if(opt.captureBody && response._bodySize <= 1024 * 1024){
-					result.push(chunk);
-				}
 			}else{
 				result.push(chunk);
 			}
@@ -1091,7 +993,7 @@ Ajax.prototype.doRequest = function(opt){
 				}
 			}
 			
-			if(responseText && !opt.captureBody){
+			if(responseText){
 				buffer = null;
 			}
 			

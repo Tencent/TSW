@@ -52,7 +52,9 @@ this.isAlpha = function(req){
 
     if(uin && isWindows){
         //windows 抓包用
-        //return true;
+        if(config.skyMode){
+            return true;
+        }
     }
 
     var uinMap = global[__filename] || {};

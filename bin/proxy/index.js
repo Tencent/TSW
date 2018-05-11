@@ -13,6 +13,7 @@ plug('runtime/Console.hack.js');
 plug('runtime/fs.hack.js');
 plug('runtime/Dns.hack.js');
 plug('runtime/overloadProtection.js');
+plug('runtime/capturer.js');
 
 require('./master.js');
 

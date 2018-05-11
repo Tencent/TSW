@@ -166,22 +166,19 @@ module.exports = function(req,res){
 			return;
 		}
 
-		if(httpUtil.isSent(res)){
-			if(err && err.message === 'write ECONNRESET'){
-				logger.warn(err && err.stack);
+		if(err && err.message === 'write ECONNRESET'){
+			logger.warn(err && err.stack);
 
-				//忽略io错误
-				return;
-			}
-
-			if(err && err.message === 'This socket is closed'){
-				logger.warn(err && err.stack);
-
-				//忽略io错误
-				return;
-			}
+			//忽略io错误
+			return;
 		}
 
+		if(err && err.message === 'This socket is closed'){
+			logger.warn(err && err.stack);
+
+			//忽略io错误
+			return;
+		}
 
 		if(err && err.stack && err.stack.indexOf('/') === -1 && err.stack.indexOf('\\') === -1){
 			logger.warn(err && err.stack);
@@ -582,7 +579,7 @@ function doRoute(req,res){
 	logger.debug('node-${version}, name: ${mod_act}, appid: ${appid}',{
 		version: process.version,
 		mod_act: mod_act,
-		appid: config.appid || ''
+		appid: config.appid || null
 	});
 
 	//测试环境
