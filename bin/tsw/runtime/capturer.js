@@ -143,6 +143,8 @@ process.nextTick(function() {
 
 				var socket		= response.socket;
 
+				process.domain && process.domain.add(response);
+
 				remoteAddress	= socket.remoteAddress;
 				remotePort		= socket.remotePort;
 				localAddress	= socket.localAddress;
