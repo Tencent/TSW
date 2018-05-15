@@ -80,9 +80,9 @@ return __p.join("");
 'new_body': function(data){
 
 var __p=[],_p=function(s){__p.push(s)},out=_p;
-__p.push('<div class="ui grid container">\n    <div class="row" style="margin-top: 30px">\n        <h1>');
+__p.push('<div class="ui grid container">\n    <div class="row" style="display:inline;margin-top: 30px">\n        <h1>');
 _p(data.project && data.project.name || 'TSW 测试环境配置');
-__p.push('        </h1>\n    </div>\n    <div class="row">\n        <div class="column">\n            <div x-class="ui raised segment" style="max-height: 400px; overflow-y: auto;">\n                <p class="ui"></p>');
+__p.push('        </h1>\n        <p>注意：每天0点将清空号码</p>\n    </div>\n    <div class="row">\n        <div class="column">\n            <div x-class="ui raised segment" style="max-height: 400px; overflow-y: auto;">\n                <p class="ui"></p>');
 
 
                     data = data.group;
