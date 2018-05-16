@@ -144,7 +144,7 @@
 			$.when.apply(this, deferArr).done(function(){
 				alert("你的号码，现已加入H5测试环境");
 			}).fail(function(errMsg){
-				errMsg = errMsg || "出了点小问题，请联系shinehuang处理";
+				errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
 				alert(errMsg);
 			}).always(function () {
 				//$('#number-get').trigger('click');
@@ -169,7 +169,7 @@
 			$.when.apply(this, deferArr).done(function(){
 				alert("H5测试环境删除成功");
 			}).fail(function(errMsg){
-				errMsg = errMsg || "出了点小问题，请联系shinehuang处理";
+				errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
 				alert(errMsg);
 			}).always(function () {
 				//$('#number-get').trigger('click');
@@ -193,7 +193,7 @@
                 }
                 $('#number-list').html(html);
             }).fail(function(errMsg) {
-                errMsg = errMsg || "出了点小问题，请联系shinehuang处理";
+                errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
                 alert(errMsg);
             });
             return false;
