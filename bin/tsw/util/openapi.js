@@ -26,18 +26,7 @@ this.signature = function(opt) {
 	for (i in opt.data) {
 		i != 'sig' && queryArray.push(i + '=' + opt.data[i]);
 	}
-	queryArray.sort(function(val1, val2) {
-		if (val1 > val2) {
-			return 1;
-		}
-
-		if (val1 < val2) {
-			return -1;
-		}
-
-		return 0;
-	});
-
+	queryArray.sort((val1, val2) => val1 - val2);
 
 	queryArray.length > 0 && busidataArr.push(encode(queryArray.join('&')));
 
