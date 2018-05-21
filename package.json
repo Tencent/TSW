@@ -1,7 +1,9 @@
 {
   "name" : "TSW" ,
-  "version": "1.0.1446",
+  "version": "1.0.1447",
   "scripts": {
+    "pretest" : "cd test && npm install",
+    "precoverage" : "cd test && npm install",
     "test" : "node test/node_modules/mocha/bin/mocha test/bin/**/*.js",
     "coverage": "node test/node_modules/nyc/bin/nyc test/node_modules/mocha/bin/mocha test/bin/**/*.js"
   },
