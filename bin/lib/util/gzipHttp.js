@@ -18,11 +18,15 @@ const defaultChunkSize	= 8 * 1024;
 this.httpUtil	= httpUtil;
 
 this.create = this.getGzipResponse = function(opt){
-	var window   = context.window || {};
+	var window		= context.window || {};
+	var request		= opt.request || window.request;
+	var response	= opt.response ||window.response;
+
+	if(!request || !response || response.headersSent){
+		return {write:()=>{},end:()=>{},flush:()=>{}};
+	}
 
 	var opt				= opt || {},
-		request			= opt.request || window.request,
-		response		= opt.response ||window.response,
 		code			= opt.code || 200,
 		headers			= opt.headers || null,
 		chunkSize		= opt.chunkSize || defaultChunkSize,

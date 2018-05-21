@@ -241,8 +241,8 @@ var initRequestHar =  function (request) {
         var url;
         var host;
         if(curr){
-            host = curr.host;
-            url = curr.url;
+            host = String(curr.host);
+            url = String(curr.url);
             // 不包括host，特殊处理下
             if(url && host && url.indexOf(host) === -1){
                 url = 'https://'+ host + url;

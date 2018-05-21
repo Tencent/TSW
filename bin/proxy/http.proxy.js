@@ -180,7 +180,9 @@ process.on('globaldump',function(GET){
 		depth: depth
 	});
 	
-	fs.writeFile(filename,str,'UTF-8');
+	fs.writeFile(filename,str,'UTF-8',function(){
+		logger.info('globaldump finish');
+	});
 	
 });
 
@@ -304,6 +306,9 @@ function startHeartBeat(){
 			//取进程快照
 			//ps aux --sort=-pcpu
 			cp.exec('top -bcn1',{
+				env: {
+					COLUMNS: 200
+				},
 				timeout: 5000
 			},function(err,data,errData) {
 				var key		= ['cpu80.v4',serverInfo.intranetIp].join(':');
@@ -544,72 +549,6 @@ methodMap.listen = function(message){
 	});
 
 
-
-
-	if(!isWindows){
-		//绑定CPU
-		logger.info('taskset -cp ${pid}',{
-			cpu: serverInfo.cpu,
-			pid: process.pid
-		});
-		
-		//打印shell执行信息
-		cp.exec('taskset -cp ' + process.pid,{
-			timeout: 5000
-		},function(err,data,errData){
-			
-			var str = data.toString('UTF-8');
-			var tmp  = str.split(':');
-			var cpus;
-			
-			if(tmp.length >= 2){
-				cpus = cpuUtil.parseTaskset(tmp[1]);
-			}
-			
-			var cpu = serverInfo.cpu;
-			if(cpus.length > 1){
-				cpu = parseInt(cpus[serverInfo.cpu % cpus.length],10);
-			}else{
-				cpu = serverInfo.cpu % cpuUtil.cpus().length;
-			}
-			
-			if(err){
-				logger.error(err.stack);
-			}
-			
-			if(data.length){
-				logger.info('\n' + data.toString('UTF-8'));
-			}
-			
-			if(errData.length){
-				logger.error('\n' + errData.toString('UTF-8'));
-			}
-			
-			
-			
-			logger.info('taskset -cp ${cpu} ${pid}',{
-				cpu: cpu,
-				pid: process.pid
-			});
-			cp.exec('taskset -cp ' + (cpu) + ' ' + process.pid,{
-				timeout: 5000
-			},function(err,data,errData){
-				if(err){
-					logger.error(err.stack);
-				}
-				
-				if(data.length){
-					logger.info('\n' + data.toString('UTF-8'));
-				}
-				
-				if(errData.length){
-					logger.error('\n' + errData.toString('UTF-8'));
-				}
-			});
-		
-		});
-		
-	}
 }
 
 if(cluster.isMaster){

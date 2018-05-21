@@ -26,7 +26,7 @@ var isDeaded			= false;
 
 //阻止进程因异常而退出
 process.on('uncaughtException',function(e){
-	if (/\blisten EACCES\b/.test(e.message) && config.httpPort < 1024 && (serverOS.isOSX || serverOS.isLinux)) {
+	if (e && e.message && /\blisten EACCES\b/.test(e.message) && config.httpPort < 1024 && (serverOS.isOSX || serverOS.isLinux)) {
 		logger.error('This is OSX/Linux, you may need to use "sudo" prefix to start server.\n');
 	}
 
@@ -192,6 +192,9 @@ function startServer(){
 				pid: currWorker.process.pid,
 				cpu: cpu
 			});
+
+			//绑定cpu
+			cpuUtil.taskset(cpu,currWorker.process.pid);
 			
 			if(workerMap[cpu]){
 				closeWorker(workerMap[cpu]);
