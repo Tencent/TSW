@@ -7,6 +7,6 @@
  */
 "use strict";
 
-this.isOSX = process.platform == 'darwin';
-this.isWindows = /\\/.test(__dirname) || this.isOSX;
+this.isOSX = process.platform === 'darwin';
+this.isWindows = process.platform === 'win32';
 this.isLinux = !(this.isWindows || this.isOSX);
