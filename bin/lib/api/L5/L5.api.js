@@ -15,12 +15,16 @@ const config	= require('config');
 this.ApiGetRoute = function(options,callback){
 	
 	var defer	= Deferred.create();
-	var res		= this.ApiGetRouteSync(options);
+	var res		= this.ApiGetRouteSync(options) || {};
 
-	if(response.ret >= 0){
-		defer.resolve(response);
-	}else{
-		defer.reject(response);
+	if (typeof callback === 'function') {
+		callback(res);
+	}
+
+	if (res.ret >= 0) {
+		defer.resolve(res);
+	} else {
+		defer.reject(res);
 	}
 
 	return defer;
