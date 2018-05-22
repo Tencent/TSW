@@ -24,8 +24,8 @@
     "sinon": "^4.1.2"
   },
   "optionalDependencies": {
-    "heapdump": "~0.3.9",
-    "v8-profiler": "~5.7.0"
+    "heapdump": "^0.3.9",
+    "v8-profiler": "^5.7.0"
   },
   "keywords": [
     "TSW"
