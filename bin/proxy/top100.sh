@@ -12,7 +12,7 @@ echo "begin top100"
 
 curl 127.0.0.1:12701/top100
 
-tail -f ../../log/run.log.0 |grep " top:"
+tail -f ../../log/run.log.0 |grep top
 
 
 

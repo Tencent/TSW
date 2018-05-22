@@ -5,9 +5,8 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
-const fs			= require('fs');
 const config		= require('config');
 const logger		= require('logger');
 const {isWindows} 	= require('util/isWindows');
@@ -23,7 +22,7 @@ this.update = function(map){
 
 this.add = function(uin){
     //
-}
+};
 
 this.isAlpha = function(req){
 
@@ -60,7 +59,7 @@ this.isAlpha = function(req){
     var uinMap = global[__filename] || {};
 
     return uinMap[uin] || TSW.getAlphaUinMapSync()[uin];
-}
+};
 
 this.getUin = function(req){
 
@@ -79,4 +78,4 @@ this.getUin = function(req){
     }
 
     return uin;
-}
+};

@@ -5,28 +5,28 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const tnm2 		= require('api/tnm2');
 
 if(!global[__filename]) {
 
-	global[__filename] = true;
+    global[__filename] = true;
 
-	const watch = function() {
-		var t1 = Date.now();
+    const watch = function() {
+        var t1 = Date.now();
 
-		setTimeout(() => {
-			var t = (Date.now() - t1) * 10;
+        setTimeout(() => {
+            var t = (Date.now() - t1) * 10;
 
-			tnm2.Attr_API_Set('AVG_TSW_ST0_X10', t);
+            tnm2.Attr_API_Set('AVG_TSW_ST0_X10', t);
 
-			//10S检查一次
-			setTimeout(() => {
-				watch();
-			}, 10 * 1000);
-		}, 0);
-	};
+            //10S检查一次
+            setTimeout(() => {
+                watch();
+            }, 10 * 1000);
+        }, 0);
+    };
 
-	watch();
+    watch();
 }

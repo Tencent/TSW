@@ -5,16 +5,16 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const args = {};
 let i;
 
 //解析进程参数
 for(i = 2; i< process.argv.length; i++){
-	process.argv[i].replace(/(.+)=(.+)/,function($0,$1,$2){
-		args[$1] = $2;
-	});
+    process.argv[i].replace(/(.+)=(.+)/,function($0,$1,$2){
+        args[$1] = $2;
+    });
 
 }
 

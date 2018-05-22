@@ -5,39 +5,39 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
-const Context	= require('runtime/Context');
-const Window	= require('runtime/Window');
+const Context   = require('runtime/Context');
+const Window    = require('runtime/Window');
 
 this.currentContext = function(){
-	return (process.domain && process.domain.currentContext) || new Context();
-}
+    return (process.domain && process.domain.currentContext) || new Context();
+};
 
 if(!global.context){
-	
-	Object.defineProperty(global, 'context', {
-	    get : function(){
-			return module.exports.currentContext();
-	    }
-	});
-	
-	Object.defineProperty(global, 'window', {
-	    get : function(){
+    
+    Object.defineProperty(global, 'context', {
+        get : function(){
+            return module.exports.currentContext();
+        }
+    });
+    
+    Object.defineProperty(global, 'window', {
+        get : function(){
 
-			if(Window.windowHasDisabled){
-				return undefined;
-			}
+            if(Window.windowHasDisabled){
+                return undefined;
+            }
 
-			var curr = module.exports.currentContext();
+            var curr = module.exports.currentContext();
 
-			if(!curr.window){
-				curr.window = new Window();
-			}
+            if(!curr.window){
+                curr.window = new Window();
+            }
 
-	        return curr.window;
-	    }
-	});
+            return curr.window;
+        }
+    });
 }
 
 

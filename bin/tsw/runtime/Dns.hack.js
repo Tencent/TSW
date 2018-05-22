@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 if(!global[__filename]){
     
@@ -69,15 +69,15 @@ if(!global[__filename]){
                     isCalled = true;
                     clearTimeout(timer);
                     callback(err, address, family);
-                }
+                };
 
                 if(callback !== options) {
-                    args.push(options)
+                    args.push(options);
                 }
-                args.push(callbackWrap)
+                args.push(callbackWrap);
 
                 timer = setTimeout(function() {
-                    callbackWrap((timeoutError = new Error("Dns Lookup Timeout")));
+                    callbackWrap((timeoutError = new Error('Dns Lookup Timeout')));
                 }, config.timeout && config.timeout.dns || 3000);
 
                 return fn.apply(this, args);

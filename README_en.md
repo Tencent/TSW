@@ -35,7 +35,11 @@ TSW provides powerful logging abilities for developers to locate problems quickl
 
 - Before installing, [download and install Node.js](https://nodejs.org/en/download/). Node.js 8.0.0 or higher is required.
 
-- Clone the repo: ``git clone https://github.com/Tencent/TSW.git``
+- Clone the repo: `git clone https://github.com/Tencent/TSW.git`
+
+- Enter the TSW: `cd TSW`
+
+- NPM : `npm install --no-optional`
 
 - Config ``TSW/conf/config.js``
     ```js
@@ -44,7 +48,7 @@ TSW provides powerful logging abilities for developers to locate problems quickl
     this.httpPort = 80;
     ```
 
-- Run ``node TSW`` to start Node.js server
+- Run `node index.js` to start Node.js server
 
 - Open `http://127.0.0.1/` in your browser.
 

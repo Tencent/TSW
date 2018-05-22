@@ -5,53 +5,57 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 if(!global[__filename]){
 
-	global[__filename] = true;
+    global[__filename] = true;
 
-	process.nextTick(function(){
-		var util	= require('util');
-		var logger	= require('logger');
+    process.nextTick(function(){
+        var util	= require('util');
+        var logger	= require('logger');
 
-		console.debug = function(log) {
-			return function(...args) {
-				return logger.writeLog('DBUG', `${util.format.apply(null, args)}`);
-			}
-		}(console.originDebug = console.debug);
+        /* eslint-disable no-console */
 
-		console.log = function(log) {
-			return function(...args) {
-				return logger.writeLog('DBUG', `${util.format.apply(null, args)}`);
-			}
-		}(console.originLog = console.log);
+        console.debug = function(log) {
+            return function(...args) {
+                return logger.writeLog('DBUG', `${util.format.apply(null, args)}`);
+            };
+        }(console.originDebug = console.debug);
 
-		console.info = function(log) {
-			return function(...args) {
-				return logger.writeLog('INFO', `${util.format.apply(null, args)}`);
-			}
-		}(console.originInfo = console.info);
+        console.log = function(log) {
+            return function(...args) {
+                return logger.writeLog('DBUG', `${util.format.apply(null, args)}`);
+            };
+        }(console.originLog = console.log);
 
-		console.dir = function(log) {
-			return function(object, options) {
-				options = Object.assign({
-					customInspect: false
-				}, options);
-				return logger.writeLog('INFO', `${util.inspect(object, options)}`);
-			}
-		}(console.originDir = console.dir);
+        console.info = function(log) {
+            return function(...args) {
+                return logger.writeLog('INFO', `${util.format.apply(null, args)}`);
+            };
+        }(console.originInfo = console.info);
 
-		console.warn = function(log) {
-			return function(...args) {
-				return logger.writeLog('WARN', `${util.format.apply(null, args)}`);
-			}
-		}(console.originWarn = console.warn);
+        console.dir = function(log) {
+            return function(object, options) {
+                options = Object.assign({
+                    customInspect: false
+                }, options);
+                return logger.writeLog('INFO', `${util.inspect(object, options)}`);
+            };
+        }(console.originDir = console.dir);
 
-		console.error = function(log) {
-			return function(...args) {
-				return logger.writeLog('ERRO', `${util.format.apply(null, args)}`);
-			}
-		}(console.originError = console.error);
-	});
+        console.warn = function(log) {
+            return function(...args) {
+                return logger.writeLog('WARN', `${util.format.apply(null, args)}`);
+            };
+        }(console.originWarn = console.warn);
+
+        console.error = function(log) {
+            return function(...args) {
+                return logger.writeLog('ERRO', `${util.format.apply(null, args)}`);
+            };
+        }(console.originError = console.error);
+
+        /* eslint-enable no-console */
+    });
 }

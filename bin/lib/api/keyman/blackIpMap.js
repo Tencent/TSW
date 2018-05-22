@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const Deferred		= require('util/Deferred');
 const logger		= require('logger');
@@ -16,180 +16,180 @@ const fileUrl		= config.blackIpFileUrl;
 
 var isFirstLoad = false;
 var cache		= {
-	timeUpdate: 0,
-	data: {},
-	dataFile: {}
+    timeUpdate: 0,
+    data: {},
+    dataFile: {}
 };
 
 if(global[__filename]){
-	cache = global[__filename];
+    cache = global[__filename];
 }else{
-	global[__filename] = cache;
-	isFirstLoad = true;
+    global[__filename] = cache;
+    isFirstLoad = true;
 }
 
 if(isFirstLoad){
-	if(config.blackIpFile){
+    if(config.blackIpFile){
 
-		(function(){
-			//导入blackIpFile
-			var text = '';
+        (function(){
+            //导入blackIpFile
+            var text = '';
 
-			try{
-				text = fs.readFileSync(config.blackIpFile,'UTF-8');
-			}catch(e){
-				logger.warn(e.stack);
-			}
+            try{
+                text = fs.readFileSync(config.blackIpFile,'UTF-8');
+            }catch(e){
+                logger.warn(e.stack);
+            }
 
-			if(!text){
-				return;
-			}
+            if(!text){
+                return;
+            }
 
-			if(text.length >= 2 * 1024 * 1024){
-				logger.error('blackIp file limit <=2M');
-				return;
-			}
+            if(text.length >= 2 * 1024 * 1024){
+                logger.error('blackIp file limit <=2M');
+                return;
+            }
 
-			cache.dataFile = getMap(text);
-			updateMap();
-		})();
+            cache.dataFile = getMap(text);
+            updateMap();
+        })();
 
-	}else{
-		logger.debug('config.blackIpFile is: ' + config.blackIpFile);
-	}
+    }else{
+        logger.debug('config.blackIpFile is: ' + config.blackIpFile);
+    }
 }
 
 init();
 
 function init(){
 
-	var buffer = null;
-	var text = '';
+    var buffer = null;
+    var text = '';
 
-	if(fileUrl){
-		buffer = fileCache.getSync(fileUrl).data;
-	}
+    if(fileUrl){
+        buffer = fileCache.getSync(fileUrl).data;
+    }
 
-	if(buffer){
-		text = buffer.toString('utf-8');
-		updateMap(text);
-	};
+    if(buffer){
+        text = buffer.toString('utf-8');
+        updateMap(text);
+    }
 
 }
 
 this.getFileMapSync = function(){
-	return cache.dataFile;
-}
+    return cache.dataFile;
+};
 
 this.getSync = function(){
-	this.get();
+    this.get();
 
-	return cache.data;
-}
+    return cache.data;
+};
 
 function getMap(text){
 
-	var map		= {};
+    var map		= {};
 
-	text = text || '';
+    text = text || '';
 
-	text.replace(/^([0-9][0-9\.\*]+).*$/gm,function($0,key){
-		map[key] = 1;
-	});
+    text.replace(/^([0-9][0-9.*]+).*$/gm,function($0,key){
+        map[key] = 1;
+    });
 
-	return map;
+    return map;
 }
 
 function updateMap(text){
 
-	var map		= getMap(text);
+    var map		= getMap(text);
 
-	//copy
-	Object.assign(map,cache.dataFile)
+    //copy
+    Object.assign(map,cache.dataFile);
 
-	cache.data = map;
+    cache.data = map;
 
-	logger.debug('update ok');
+    logger.debug('update ok');
 }
 
 this.get = function(){
 	
-	var defer 	= Deferred.create();
-	var delay	= ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
-	var l5api	= config.tswL5api['blackIpFileUrl'];
+    var defer 	= Deferred.create();
+    var delay	= ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
+    var l5api	= config.tswL5api['blackIpFileUrl'];
 	
-	if(Date.now() - cache.timeUpdate < 300000 + delay){
-		return defer.resolve(cache.data);
-	}
+    if(Date.now() - cache.timeUpdate < 300000 + delay){
+        return defer.resolve(cache.data);
+    }
 	
-	cache.timeUpdate = Date.now();
+    cache.timeUpdate = Date.now();
 
-	if(!fileUrl){
-		return defer.resolve(cache.data);
-	}
+    if(!fileUrl){
+        return defer.resolve(cache.data);
+    }
 	
-	fileCache.getAsync(fileUrl).done(function(d){
+    fileCache.getAsync(fileUrl).done(function(d){
 		
-		var lastModifyTime = 0;
-		var text = '';
+        var lastModifyTime = 0;
+        var text = '';
 		
-		if(d && d.stats){
-			lastModifyTime = d.stats.mtime.getTime();
-		}
+        if(d && d.stats){
+            lastModifyTime = d.stats.mtime.getTime();
+        }
 		
-		if(d && d.data){
-			text = d.data.toString('utf-8');
-		}
+        if(d && d.data){
+            text = d.data.toString('utf-8');
+        }
 		
-		if(Date.now() - lastModifyTime < 300000){
-			logger.debug('使用本地文件');
+        if(Date.now() - lastModifyTime < 300000){
+            logger.debug('使用本地文件');
 			
-			updateMap(text);
+            updateMap(text);
 			
-			defer.resolve(cache.data);
-			return;
-		}
+            defer.resolve(cache.data);
+            return;
+        }
 		
-		require('ajax').request({
-			url: fileUrl,
-			type: 'get',
-			autoToken: false,
-			l5api: l5api,
-			devIp: config.tswDevIp,
-			devPort: config.tswDevPort,
-			retry: 0,
-			dcapi: {
-				key: 'EVENT_TSW_BLACKIP_FILE_URL'
-			},
-			dataType: 'text'
-		}).fail(function(d){
-			defer.resolve(cache.data);
-		}).done(function(d){
+        require('ajax').request({
+            url: fileUrl,
+            type: 'get',
+            autoToken: false,
+            l5api: l5api,
+            devIp: config.tswDevIp,
+            devPort: config.tswDevPort,
+            retry: 0,
+            dcapi: {
+                key: 'EVENT_TSW_BLACKIP_FILE_URL'
+            },
+            dataType: 'text'
+        }).fail(function(d){
+            defer.resolve(cache.data);
+        }).done(function(d){
 			
-			var text	= '';
+            var text	= '';
 				
-			if(d && d.result && typeof d.result === 'string'){
+            if(d && d.result && typeof d.result === 'string'){
 				
-				text = d.result;
-			}
+                text = d.result;
+            }
 
-			if(text.length >= 2 * 1024 * 1024){
-				logger.error('blackIp file limit <=2M');
-				return defer.resolve(cache.data);
-			}
+            if(text.length >= 2 * 1024 * 1024){
+                logger.error('blackIp file limit <=2M');
+                return defer.resolve(cache.data);
+            }
 			
-			updateMap(text);
+            updateMap(text);
 			
-			//保存在本地
-			fileCache.set(fileUrl,Buffer.from(text,'UTF-8'));
+            //保存在本地
+            fileCache.set(fileUrl,Buffer.from(text,'UTF-8'));
 			
-			defer.resolve(cache.data);
-		});
-	});
+            defer.resolve(cache.data);
+        });
+    });
 	
 	
-	return defer;
-}
+    return defer;
+};
 
 
 

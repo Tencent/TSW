@@ -5,101 +5,92 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const zlib		= require('zlib');
-const stream	= require('stream');
 const logger	= require('logger');
 const crypto	= require('crypto');
 const httpUtil	= require('util/http.js');
-const Deferred	= require('util/Deferred');
 const defaultChunkSize	= 8 * 1024;
 
 this.httpUtil	= httpUtil;
 
 this.create = this.getGzipResponse = function(opt){
-	var window		= context.window || {};
-	var request		= opt.request || window.request;
-	var response	= opt.response ||window.response;
+    var window   = context.window || {};
 
-	if(!request || !response || response.headersSent){
-		return {write:()=>{},end:()=>{},flush:()=>{}};
-	}
+    opt = opt || {};
 
-	var opt				= opt || {},
-		code			= opt.code || 200,
-		headers			= opt.headers || null,
-		chunkSize		= opt.chunkSize || defaultChunkSize,
-		etag			= opt.etag || null,
-		contentType		= opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8',
-		gzipOutputStream,
-		i;
+    var request			= opt.request || window.request,
+        response		= opt.response ||window.response,
+        code			= opt.code || 200,
+        headers			= opt.headers || null,
+        chunkSize		= opt.chunkSize || defaultChunkSize,
+        contentType		= opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8',
+        gzipOutputStream;
 
-	if(headers && headers['content-length'] !== undefined){
-		response.useChunkedEncodingByDefault = false;
-		delete headers['transfer-encoding'];
-		delete headers['content-length'];
-		delete headers['content-encoding'];
-	}
+    if(headers && headers['content-length'] !== undefined){
+        response.useChunkedEncodingByDefault = false;
+        delete headers['transfer-encoding'];
+        delete headers['content-length'];
+        delete headers['content-encoding'];
+    }
 
-	response.setHeader('Content-Type', contentType);
+    response.setHeader('Content-Type', contentType);
 	
-    var headerAcceptDiff = String(request.headers['accept-diff']);
+    if(/\bgzip\b/.test(request.headers['accept-encoding'])){
+		
+        response.setHeader('Content-Encoding', 'gzip');
+        response.writeHead(code,headers);
+		
+        response.socket && response.socket.setNoDelay(true);
+        gzipOutputStream = zlib.createGzip({
+            chunkSize: chunkSize
+        });
+		
+        gzipOutputStream.on('data',function(buffer){
+            logger.debug('gzip chunked send ${len}',{
+                len: buffer.length
+            });
 
-	if(/\bgzip\b/.test(request.headers['accept-encoding'])){
+            if(!response.finished){
+                response.write(buffer);
+            }
+        });
 		
-		response.setHeader('Content-Encoding', 'gzip');
-		response.writeHead(code,headers);
+        gzipOutputStream.once('end',function(){
+            response.end();
+        });
 		
-		response.socket && response.socket.setNoDelay(true);
-		gzipOutputStream = zlib.createGzip({
-			chunkSize: chunkSize
-		});
+        return gzipOutputStream;
 		
-		gzipOutputStream.on('data',function(buffer){
-			logger.debug('gzip chunked send ${len}',{
-				len: buffer.length
-			});
+    }else{
+		
+        response.writeHead(code,headers);
+		
+        response.on('data',function(buffer){
+            logger.debug('chunked send ${len}',{
+                len: buffer.length
+            });
+        });
+		
+        if(!response.flush){
+            response.flush = function(){return true;};
+        }
 
-			if(!response.finished){
-				response.write(buffer);
-			}
-		});
+        if(response.flush && response.flushHeaders){
+            response.flush = function(){return true;};
+        }
 		
-		gzipOutputStream.once('end',function(){
-			response.end();
-		});
-		
-		return gzipOutputStream;
-		
-	}else{
-		
-		response.writeHead(code,headers);
-		
-		response.on('data',function(buffer){
-			logger.debug('chunked send ${len}',{
-				len: buffer.length
-			});
-		});
-		
-		if(!response.flush){
-			response.flush = function(){return true;};
-		}
-
-		if(response.flush && response.flushHeaders){
-			response.flush = function(){return true;};
-		}
-		
-		return response;
-	}
+        return response;
+    }
 	
-}
+};
 
 
 /**
 从buffer获取SHA1的方法，独立出来其实是为了方便测试
 */
 exports.getSHA1 = function(buffer){
-	return crypto.createHash('sha1').update(buffer).digest('hex')	
-}
+    return crypto.createHash('sha1').update(buffer).digest('hex');	
+};
 

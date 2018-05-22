@@ -10,64 +10,64 @@
 
 <script type="text/html" id="download_index" nowith="yes">
 <%
-	data = data || [];
+    data = data || [];
 
-	var i, len, entry;
+    var i, len, entry;
 %>
 <html>
-	<head>
-		<style>
-			body,thead,td,a,p{font-family:verdana,sans-serif;font-size: 10px;}
-		</style>
-	</head>
-	<body>
-		<table cols=13>
-			<thead>
-				<tr>
-					<th>&nbsp;</th>
-					<th>#</th>
-					<th>Result</th>
-					<th>Protocol</th>
-					<th>Host</th>
-					<th>URL</th>
-					<th>Body</th>
-					<th>Caching</th>
-					<th>Content-Type</th>
-					<th>Process</th>
-					<th>Comments</th>
-					<th>Custom</th>
-					<th>ServerIP</th>
-				</tr>
-			</thead>
-			<tbody>
-				<%
-					for(i = 0, len = data.length; i < len; i++){
-						entry = (data[i] || {}).curr || {};
+    <head>
+        <style>
+            body,thead,td,a,p{font-family:verdana,sans-serif;font-size: 10px;}
+        </style>
+    </head>
+    <body>
+        <table cols=13>
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>#</th>
+                    <th>Result</th>
+                    <th>Protocol</th>
+                    <th>Host</th>
+                    <th>URL</th>
+                    <th>Body</th>
+                    <th>Caching</th>
+                    <th>Content-Type</th>
+                    <th>Process</th>
+                    <th>Comments</th>
+                    <th>Custom</th>
+                    <th>ServerIP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                    for(i = 0, len = data.length; i < len; i++){
+                        entry = (data[i] || {}).curr || {};
 
-						%>
-							<tr>
-								<td>
-									<a href='raw\<%=i + 1%>_c.txt'>C</a>&nbsp;<a href='raw\<%=i + 1%>_s.txt'>S</a>&nbsp;<a href='raw\<%=i + 1%>_m.xml'>M</a>
-								</td>
-								<td><%=('0000' + (i + 1)).slice(-3)%></td>
-								<td><%=entry.resultCode%></td>
-								<td><%=entry.protocol%></td>
-								<td><%=entry.host%></td>
-								<td><%=entry.url%></td>
-								<td><%=entry.contentLength%></td>
-								<td><%=entry.cache%></td>
-								<td><%=entry.contentType%></td>
-								<td><%=entry.process%></td>
-								<td></td>
-								<td></td>
-								<td><%=entry.serverIp%></td>
-							</tr>
-						<%
-					}
-				%>
-			</tbody>
-		</table>
-	</body>
+                        %>
+                            <tr>
+                                <td>
+                                    <a href='raw\<%=i + 1%>_c.txt'>C</a>&nbsp;<a href='raw\<%=i + 1%>_s.txt'>S</a>&nbsp;<a href='raw\<%=i + 1%>_m.xml'>M</a>
+                                </td>
+                                <td><%=('0000' + (i + 1)).slice(-3)%></td>
+                                <td><%=entry.resultCode%></td>
+                                <td><%=entry.protocol%></td>
+                                <td><%=entry.host%></td>
+                                <td><%=entry.url%></td>
+                                <td><%=entry.contentLength%></td>
+                                <td><%=entry.cache%></td>
+                                <td><%=entry.contentType%></td>
+                                <td><%=entry.process%></td>
+                                <td></td>
+                                <td></td>
+                                <td><%=entry.serverIp%></td>
+                            </tr>
+                        <%
+                    }
+                %>
+            </tbody>
+        </table>
+    </body>
 </html>
 </script>
 
@@ -75,57 +75,57 @@
 
 <script type="text/html" id="download_timestamp" nowith="yes">
 <%
-	data = data || {};
+    data = data || {};
 
-	var localISOString = function(d){
-	    if(!(d && d.getTimezoneOffset)){
-	    	return d;
-	    }
+    var localISOString = function(d){
+        if(!(d && d.getTimezoneOffset)){
+            return d;
+        }
 
-	    var pad = function(n){return n < 10 ? '0' + n : n;}, 
-			tz  = d.getTimezoneOffset(),
-			tzs = (tz > 0 ? "-" : "+") + pad(parseInt(Math.abs(tz / 60)));
+        var pad = function(n){return n < 10 ? '0' + n : n;}, 
+            tz  = d.getTimezoneOffset(),
+            tzs = (tz > 0 ? "-" : "+") + pad(parseInt(Math.abs(tz / 60)));
 
-	    if (tz === 0){
-	        tzs = 'Z';
-	    }else if (tz % 60 != 0){
-	        tzs += pad(Math.abs(tz % 60));
-	    }else{
-	    	tzs += ':00';
-	    }
+        if (tz === 0){
+            tzs = 'Z';
+        }else if (tz % 60 != 0){
+            tzs += pad(Math.abs(tz % 60));
+        }else{
+            tzs += ':00';
+        }
 
-	     return d.getFullYear()+'-'
-	          + pad(d.getMonth()+1)+'-'
-	          + pad(d.getDate())+'T'
-	          + pad(d.getHours())+':'
-	          + pad(d.getMinutes())+':'
-	          + pad(d.getSeconds())+'.'
-	          + pad(d.getMilliseconds()) + tzs;
-	};
+         return d.getFullYear()+'-'
+              + pad(d.getMonth()+1)+'-'
+              + pad(d.getDate())+'T'
+              + pad(d.getHours())+':'
+              + pad(d.getMinutes())+':'
+              + pad(d.getSeconds())+'.'
+              + pad(d.getMilliseconds()) + tzs;
+    };
 
-	var timeStamp 	= data.timestamps || {},
-		defaultTime = new Date();
-		
+    var timeStamp   = data.timestamps || {},
+        defaultTime = new Date();
+        
 %>
 <?xml version="1.0" encoding="utf-8"?>
 <Session>
   <SessionTimers 
-	ClientConnected     ="<%=localISOString(timeStamp.ClientConnected || defaultTime)%>" 
-	ClientBeginRequest  ="<%=localISOString(timeStamp.ClientBeginRequest || defaultTime)%>" 
-	GotRequestHeaders   ="<%=localISOString(timeStamp.GotRequestHeaders || defaultTime)%>" 
-	ClientDoneRequest   ="<%=localISOString(timeStamp.ClientDoneRequest || defaultTime)%>" 
-	GatewayTime         ="<%=timeStamp.GatewayTime || 0%>" 
-	DNSTime             ="<%=timeStamp.DNSTime || 0%>" 
-	TCPConnectTime      ="<%=timeStamp.TCPConnectTime || 0%>" 
-	HTTPSHandshakeTime  ="<%=timeStamp.HTTPSHandshakeTime || 0%>" 
-	ServerConnected     ="<%=localISOString(timeStamp.ServerConnected || defaultTime)%>" 
-	FiddlerBeginRequest ="<%=localISOString(timeStamp.FiddlerBeginRequest || defaultTime)%>" 
-	ServerGotRequest    ="<%=localISOString(timeStamp.ServerGotRequest || defaultTime)%>" 
-	ServerBeginResponse ="<%=localISOString(timeStamp.ServerBeginResponse || defaultTime)%>" 
-	GotResponseHeaders  ="<%=localISOString(timeStamp.GotResponseHeaders || defaultTime)%>" 
-	ServerDoneResponse  ="<%=localISOString(timeStamp.ServerDoneResponse || defaultTime)%>" 
-	ClientBeginResponse ="<%=localISOString(timeStamp.ClientBeginResponse || defaultTime)%>" 
-	ClientDoneResponse  ="<%=localISOString(timeStamp.ClientDoneResponse || defaultTime)%>"/>
+    ClientConnected     ="<%=localISOString(timeStamp.ClientConnected || defaultTime)%>" 
+    ClientBeginRequest  ="<%=localISOString(timeStamp.ClientBeginRequest || defaultTime)%>" 
+    GotRequestHeaders   ="<%=localISOString(timeStamp.GotRequestHeaders || defaultTime)%>" 
+    ClientDoneRequest   ="<%=localISOString(timeStamp.ClientDoneRequest || defaultTime)%>" 
+    GatewayTime         ="<%=timeStamp.GatewayTime || 0%>" 
+    DNSTime             ="<%=timeStamp.DNSTime || 0%>" 
+    TCPConnectTime      ="<%=timeStamp.TCPConnectTime || 0%>" 
+    HTTPSHandshakeTime  ="<%=timeStamp.HTTPSHandshakeTime || 0%>" 
+    ServerConnected     ="<%=localISOString(timeStamp.ServerConnected || defaultTime)%>" 
+    FiddlerBeginRequest ="<%=localISOString(timeStamp.FiddlerBeginRequest || defaultTime)%>" 
+    ServerGotRequest    ="<%=localISOString(timeStamp.ServerGotRequest || defaultTime)%>" 
+    ServerBeginResponse ="<%=localISOString(timeStamp.ServerBeginResponse || defaultTime)%>" 
+    GotResponseHeaders  ="<%=localISOString(timeStamp.GotResponseHeaders || defaultTime)%>" 
+    ServerDoneResponse  ="<%=localISOString(timeStamp.ServerDoneResponse || defaultTime)%>" 
+    ClientBeginResponse ="<%=localISOString(timeStamp.ClientBeginResponse || defaultTime)%>" 
+    ClientDoneResponse  ="<%=localISOString(timeStamp.ClientDoneResponse || defaultTime)%>"/>
   <PipeInfo />
   <SessionFlags>
     <SessionFlag N="x-clientport" V="<%=data.clientPort%>" />
@@ -134,7 +134,7 @@
     <SessionFlag N="x-hostip" V="<%=data.serverIp%>" />
     <SessionFlag N="x-processinfo" V="<%=data.process%>" />
     <SessionFlag N="x-clientip" V="<%=data.clientIp%>" />
-	<SessionFlag N="ui-comments" V="<%=data.sid%>" />
+    <SessionFlag N="ui-comments" V="<%=data.sid%>" />
   </SessionFlags>
 </Session>
 </script>

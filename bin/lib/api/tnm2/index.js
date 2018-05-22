@@ -5,10 +5,10 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const serverInfo    = require('serverInfo.js');
-const mapping       = require("./mapping.json");
+const mapping       = require('./mapping.json');
 const {isWindows}   = require('util/isWindows.js');
 const url           = require('url');
 const Deferred      = require('util/Deferred');
@@ -85,12 +85,12 @@ var cacheOrRepoet = function(attr, iValue){
     cache.time = now;
 
     reportOpenapi(last);
-}
+};
 
 
 var reportOpenapi = function(last){
     var defer   = Deferred.create();
-    var ajax    = require('ajax');
+    
     var openapi = require('util/openapi');
     var logger  = require('logger');
     var config  = require('config');
@@ -173,4 +173,4 @@ var reportOpenapi = function(last){
     });
 
     return defer;
-}
+};

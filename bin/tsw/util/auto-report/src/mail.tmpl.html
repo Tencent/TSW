@@ -95,7 +95,8 @@
     </tr>
     </thead>
     <tbody>
-    <%for(var i = 0,item; item = data.total_arr[i++];){%>
+    <%for(var i = 0,item; i < data.total_arr.length; i++){%>
+    item = data.total_arr[i++];
     <tr class="<%=(i % 2 == 0 ? 'alt' : '')%>">
         <td class="dimension"><%=item.config.title%></td>
         <td class="dimension"><%=item.mod_act%></td>

@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-var koa = require('koa');
-var app = new koa();
+const koa = require('koa');
+const app = new koa();
 
 //http://127.0.0.1/koa
 app.use(ctx => {
-	ctx.body = 'Hello Koa';
+    ctx.body = 'Hello Koa';
 });
 
 //app.listen(80);

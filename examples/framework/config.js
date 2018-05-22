@@ -14,7 +14,7 @@ this.logger = {
     logLevel: 'debug'
 };
 
-this.wsRouter = require('./wsRouter.js')
+this.wsRouter = require('./wsRouter.js');
 
 this.alphaFile = `${__dirname}/alpha.txt`;
 

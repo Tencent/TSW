@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const path		= require('path');
 const logger	= require('logger');
@@ -17,27 +17,27 @@ const logger	= require('logger');
  */
 this.clear = function(dir,showLog){
 	
-	var dir	= path.normalize(dir),
-		key;
+    dir	= path.normalize(dir);
+        
+    let key;
 	
-	logger.info('clear dir: ${dir}',{
-		dir: dir
-	});
+    logger.info('clear dir: ${dir}',{
+        dir: dir
+    });
 	
-	for(key in require.cache){
-		require.cache[key].children = [];
-		require.cache[key].resolveFilenameCache = {};
+    for(key in require.cache){
+        require.cache[key].children = [];
+        require.cache[key].resolveFilenameCache = {};
 
-		if(key.indexOf(dir) >= 0 && !/\.node$/i.test(key)){
-			delete require.cache[key].parent;
-			delete require.cache[key];
-			if(showLog){
-				logger.debug('clear: ${key}',{
-					key: key.slice(dir.length)
-				});
-			}
-		}
-	}
-	
-}
+        if(key.indexOf(dir) >= 0 && !/\.node$/i.test(key)){
+            delete require.cache[key].parent;
+            delete require.cache[key];
+            if(showLog){
+                logger.debug('clear: ${key}',{
+                    key: key.slice(dir.length)
+                });
+            }
+        }
+    }
+};
 
