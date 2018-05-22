@@ -5,70 +5,70 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 function Queue(){
 	
-	this._queue = [];
+    this._queue = [];
 }
 
 
 this.create = function(){
-	return new Queue();
-}
+    return new Queue();
+};
 
 
 Queue.prototype.queue = function(fn){
 	
-	if(typeof fn !== 'function'){
+    if(typeof fn !== 'function'){
 		
-		return this;
-	}
+        return this;
+    }
 	
-	fn._domain = process.domain;
+    fn._domain = process.domain;
 	
-	this._queue.push(fn);
+    this._queue.push(fn);
 	
-	if(this._queue.length === 1){
-		this.dequeue();
-	}
+    if(this._queue.length === 1){
+        this.dequeue();
+    }
 	
-	return this;
-}
+    return this;
+};
 
 Queue.prototype.dequeue = function(){
 	
-	var domain,that,fn;
+    var domain,that,fn;
 	
-	if(this._queue.length <= 0){
-		return this;
-	}
+    if(this._queue.length <= 0){
+        return this;
+    }
 	
-	if(this._queue[0] === 'ing'){
+    if(this._queue[0] === 'ing'){
 		
-		this._queue.shift();
-		this.dequeue();
+        this._queue.shift();
+        this.dequeue();
 		
-		return this;
-	}
+        return this;
+    }
 	
-	fn = this._queue[0];
-	this._queue[0] = 'ing';
+    fn = this._queue[0];
+    this._queue[0] = 'ing';
 	
-	domain		= fn._domain;
-	that		= this;
-	fn._domain	= undefined;
+    domain		= fn._domain;
+    that		= this;
+    fn._domain	= undefined;
 	
-	if(domain && domain !== process.domain){
-		domain.run(function(){
-			fn.call(that);
-		});
-	}else{
-		fn.call(this);
-	}
+    if(domain && domain !== process.domain){
+        domain.run(function(){
+            fn.call(that);
+        });
+    }else{
+        fn.call(this);
+    }
 	
-	return this;
-}
+    return this;
+};
 
 
 

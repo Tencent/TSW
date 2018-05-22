@@ -23,15 +23,19 @@
                         var owner = item['owner'];
                         var module = item['moduleName'];
                         var isShow = false;
+                        
                         if(val && val != "") {
                             isShow = true;
                         }
-                        if(name && name != "") {
-                        }else if(module && module != ""){
-                            name = module;
-                        }else {
-                            name = val;
+
+                        if(!name) {
+                            if(module && module != ""){
+                                name = module;
+                            }else {
+                                name = val;
+                            }
                         }
+
                         var isShowDesc = false;
                         if(desc && desc != "") {
                             if(owner && owner != "") {
@@ -51,7 +55,7 @@
                     <% if(isShow){ %>
                     <div class="row">
                         <button title="<%=val%>" type="button" value="<%=val%>" class="ui button btn  js-select-btn <% if(i==0){ %> selected positive <% } %>"><%=name%></button>
-                        <% if(/^[0-9\.\:]+$/.test(val)){ %>
+                        <% if(/^[0-9.:]+$/.test(val)){ %>
                         <a class="ui tag label" href="http://<%=val%>/l5" title="点击修改L5" target="_blank"><%=val%></a><% if(isShowDesc){ %><a class="ui tag label"><%=desc%></a><% } %>
                         <% }else{ %>
                         <a class="ui tag label"><%=val%></a><% if(isShowDesc){ %><a class="ui tag label"><%=desc%></a><% } %>

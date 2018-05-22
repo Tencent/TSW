@@ -68,7 +68,3 @@ this.ApiRouteResultUpdateSync = function(options){
 //多一组方法
 this.updateRoute = this.ApiRouteResultUpdateSync;
 this.getRouteAsync = this.ApiGetRoute;
-
-
-
-

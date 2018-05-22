@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 module.exports = require('../../bin/proxy/config.js');
 
@@ -13,6 +13,7 @@ if(Object.keys(module.exports).length === 0){
 
     let curr = module;
 
+    /* eslint-disable no-console */
     console.error('config加载存在循环引用:');
 
     while(curr.parent){
@@ -20,6 +21,7 @@ if(Object.keys(module.exports).length === 0){
         console.error(curr.parent.filename);
         curr = curr.parent;
     }
+    /* eslint-enable no-console */
 
     process.emit('warning','config加载存在循环引用');
 

@@ -5,51 +5,51 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 this.types = {
 
-	"zip": "application/octet-stream",
+    'zip': 'application/octet-stream',
 	
-	"css": "text/css",
+    'css': 'text/css',
 
-	"gif": "image/gif",
+    'gif': 'image/gif',
 
-	"html": "text/html",
+    'html': 'text/html',
 
-	"ico": "image/x-icon",
+    'ico': 'image/x-icon',
 
-	"jpeg": "image/jpeg",
+    'jpeg': 'image/jpeg',
 
-	"jpg": "image/jpeg",
+    'jpg': 'image/jpeg',
 
-	"js": "text/javascript",
+    'js': 'text/javascript',
 
-	"json": "application/json",
+    'json': 'application/json',
 
-	"pdf": "application/pdf",
+    'pdf': 'application/pdf',
 
-	"png": "image/png",
+    'png': 'image/png',
 
-	"svg": "image/svg+xml",
+    'svg': 'image/svg+xml',
 
-	"swf": "application/x-shockwave-flash",
+    'swf': 'application/x-shockwave-flash',
 
-	"tiff": "image/tiff",
+    'tiff': 'image/tiff',
 
-	"txt": "text/plain; charset=UTF-8",
+    'txt': 'text/plain; charset=UTF-8',
 
-	"wav": "audio/x-wav",
+    'wav': 'audio/x-wav',
 
-	"wma": "audio/x-ms-wma",
+    'wma': 'audio/x-ms-wma',
 
-	"mov": "video/mov",
+    'mov': 'video/mov',
 	
-	"mp4": "video/mp4",
+    'mp4': 'video/mp4',
 	
-	"wmv": "video/x-ms-wmv",
+    'wmv': 'video/x-ms-wmv',
 
-	"xml": "text/xml",
+    'xml': 'text/xml',
 
-	"mp3": "audio/mp3"
+    'mp3': 'audio/mp3'
 };

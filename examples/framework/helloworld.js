@@ -1,8 +1,10 @@
+const logger = plug('logger');
 
 module.exports = function(){
-	var req = window.request;
-	var res = window.response;
+    var res = window.response;
 
-	res.end('hello world');
+    logger.setKey('xxx');
+
+    res.end('hello world');
 };
 

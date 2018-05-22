@@ -14,5 +14,11 @@ this.logger = {
     logLevel: 'debug'
 };
 
-this.wsRouter = require('./wsRouter.js')
+this.wsRouter = require('./wsRouter.js');
 
+this.alphaFile = `${__dirname}/alpha.txt`;
+
+//this.appid  = 'appid';
+//this.appkey  = 'appkey';
+
+//https://${appid}.tswjs.org/log/view/xxx

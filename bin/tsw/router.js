@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const logger		= require('logger');
 const httpRoute		= require('../proxy/http.route.js');
@@ -13,40 +13,40 @@ const parseGet		= require('util/http/parseGet.js');
 
 this.route = function(url,mod_act){
 	
-	var req,res;
-	var window   	= context.window || {};
+    var req,res;
+    var window   	= context.window || {};
 	
-	req = window.request;
-	res = window.response;
+    req = window.request;
+    res = window.response;
 	
-	if(!req){
-		return;
-	}
+    if(!req){
+        return;
+    }
 	
-	res.removeAllListeners('afterFinish');
+    res.removeAllListeners('afterFinish');
 	
-	if(url){
+    if(url){
 		
-		logger.debug('route to : ${url}',{
-			url: url
-		});
+        logger.debug('route to : ${url}',{
+            url: url
+        });
 		
-		req.url = url;
-		//解析get参数
-		parseGet(req);
-	}
+        req.url = url;
+        //解析get参数
+        parseGet(req);
+    }
 	
-	if(mod_act){
-		logger.debug('route to mod_act: ${mod_act}',{
-			mod_act: mod_act
-		});
+    if(mod_act){
+        logger.debug('route to mod_act: ${mod_act}',{
+            mod_act: mod_act
+        });
 		
-		context.mod_act   = mod_act;
-	}else{
-		context.mod_act   = null;
-	}
+        context.mod_act   = mod_act;
+    }else{
+        context.mod_act   = null;
+    }
 	
-	httpRoute.doRoute(req,res);
-}
+    httpRoute.doRoute(req,res);
+};
 
 

@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const TEReport	= require('util/auto-report/TEReport.js');
 const gzipHttp	= require('util/gzipHttp.js');
@@ -14,22 +14,22 @@ const navMenus 	= require('./navMenus.js');
 
 module.exports = function(request,response){
 
-	var gzipResponse = gzipHttp.getGzipResponse({
-		request: request,
-		response: response,
-		code: 200,
-		contentType: 'text/html; charset=UTF-8'
-	});
+    var gzipResponse = gzipHttp.getGzipResponse({
+        request: request,
+        response: response,
+        code: 200,
+        contentType: 'text/html; charset=UTF-8'
+    });
 
-	TEReport.getAllGroup().done(function(allGroup){
+    TEReport.getAllGroup().done(function(allGroup){
 
-		var data = {};
+        var data = {};
 
-		data.head	= { title: 'TSW'};
-		data.header = tmpl.new_header(navMenus());
-		data.body	= tmpl.body();
+        data.head	= { title: 'TSW'};
+        data.header = tmpl.new_header(navMenus());
+        data.body	= tmpl.body();
 
-		gzipResponse.end(tmpl.html(data));
-	});
+        gzipResponse.end(tmpl.html(data));
+    });
 
-}
+};

@@ -5,32 +5,32 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const config		= require('config');
 
 module.exports.report = function(data){
-	var	retValue;
-	var reportData = {
-		table:"reportData",
-		data:{
-			type	: data.type,
-			log		: data.logText,
-			uin		: data.key,
-			mod_act	: data.mod_act,
-			ua 		: data.ua,
-			userip 	: data.userip,
-			domain	: data.host,
-			path	: data.pathname,
-			httpCode: data.statusCode
-		}
-	};
+    var	retValue;
+    var reportData = {
+        table:'reportData',
+        data:{
+            type	: data.type,
+            log		: data.logText,
+            uin		: data.key,
+            mod_act	: data.mod_act,
+            ua 		: data.ua,
+            userip 	: data.userip,
+            domain	: data.host,
+            path	: data.pathname,
+            httpCode: data.statusCode
+        }
+    };
 
-	if(config.beforeReportLog && typeof config.beforeReportLog === 'function'){
-		retValue = config.beforeReportLog(reportData);
-	}
+    if(config.beforeReportLog && typeof config.beforeReportLog === 'function'){
+        retValue = config.beforeReportLog(reportData);
+    }
 
-	if(retValue === false){
-		return;
-	}
-}
+    if(retValue === false){
+        return;
+    }
+};

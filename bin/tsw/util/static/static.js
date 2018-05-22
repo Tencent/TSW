@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const path		= require('path');
 const fs		= require('fs');
@@ -15,122 +15,123 @@ const mime		= require('./mime.js');
 
 module.exports = function(request,response,plug){
 
-	var filename	= path.normalize(request.REQUEST.pathname).replace(/\\/g,'/');
+    var filename	= path.normalize(request.REQUEST.pathname).replace(/\\/g,'/');
 
-	try{
-		//支持中文
-		filename = decodeURIComponent(filename);
-	}catch(e){
+    try{
+        //支持中文
+        filename = decodeURIComponent(filename);
+    }catch(e){
+        logger.info(`decode file name fail ${e.message}`);
+    }
+    
+    var wwwroot		= plug.parent + '/wwwroot';
 
-	}
-	var wwwroot		= plug.parent + '/wwwroot';
+    if(filename === '' || filename === '/'){
+        filename = '/index';
+    }
 
-	if(filename === '' || filename === '/'){
-		filename = '/index';
-	}
+    //保证请求的文件是wwwroot目录下的
+    var realPath	= path.join(wwwroot,path.join('/',filename));
+    var ext			= path.extname(realPath);
 
-	//保证请求的文件是wwwroot目录下的
-	var realPath	= path.join(wwwroot,path.join('/',filename));
-	var ext			= path.extname(realPath);
-
-	if(ext){
-		//.js --> js
-		ext = ext.slice(1);
-	}
+    if(ext){
+        //.js --> js
+        ext = ext.slice(1);
+    }
 
 
-	if(fs.existsSync(realPath)){
-		//保证是文件
-		fs.stat(realPath, function(err, stats){
-			if(err){
-				response.writeHead(500, {'Content-Type': 'text/plain'});
-				response.end();
+    if(fs.existsSync(realPath)){
+        //保证是文件
+        fs.stat(realPath, function(err, stats){
+            if(err){
+                response.writeHead(500, {'Content-Type': 'text/plain'});
+                response.end();
 
-				return;
-			}
+                return;
+            }
 
-			var opt, gzipResponse;
+            var opt, gzipResponse;
 
-			if(mime.types[ext] && mime.types[ext] === 'application/json'){
-				opt = {
-					flags: 'r'
-				};
+            if(mime.types[ext] && mime.types[ext] === 'application/json'){
+                opt = {
+                    flags: 'r'
+                };
 
-				gzipResponse = gzipHttp.getGzipResponse({
-					request: request,
-					response: response,
-					cache: 'max-age=600',
-					code: 200,
-					contentType: mime.types[ext]
-				});
-			}else if(mime.types[ext] && mime.types[ext].indexOf('text/') === 0){
-				opt = {
-					flags: 'r'
-				};
+                gzipResponse = gzipHttp.getGzipResponse({
+                    request: request,
+                    response: response,
+                    cache: 'max-age=600',
+                    code: 200,
+                    contentType: mime.types[ext]
+                });
+            }else if(mime.types[ext] && mime.types[ext].indexOf('text/') === 0){
+                opt = {
+                    flags: 'r'
+                };
 
-				gzipResponse = gzipHttp.getGzipResponse({
-					request: request,
-					response: response,
-					cache: 'max-age=600',
-					code: 200,
-					contentType: mime.types[ext]
-				});
-			}else{
-				var range = request.headers.range || '';
-				var positions = range.replace(/bytes=/, "").split("-");
-				var start = parseInt(positions[0], 10) || 0;
-				var end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
+                gzipResponse = gzipHttp.getGzipResponse({
+                    request: request,
+                    response: response,
+                    cache: 'max-age=600',
+                    code: 200,
+                    contentType: mime.types[ext]
+                });
+            }else{
+                var range = request.headers.range || '';
+                var positions = range.replace(/bytes=/, '').split('-');
+                var start = parseInt(positions[0], 10) || 0;
+                var end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
 
-				if(end < start || end >= stats.size){
-					response.writeHead(416, {
-						'Connection': 'close',
-						'Content-Type': mime.types[ext] || 'application/octet-stream',
-						'Content-Length': 0
-					});
-					response.end();
-					return;
-				}
+                if(end < start || end >= stats.size){
+                    response.writeHead(416, {
+                        'Connection': 'close',
+                        'Content-Type': mime.types[ext] || 'application/octet-stream',
+                        'Content-Length': 0
+                    });
+                    response.end();
+                    return;
+                }
 
-				response.writeHead(positions.length === 2 ? 206 : 200, {
-					'Cache-Control' : 'max-age=259200',
+                response.writeHead(positions.length === 2 ? 206 : 200, {
+                    'Cache-Control' : 'max-age=259200',
 
-					'Connection': 'close',
-					'Content-Type': mime.types[ext] || 'application/octet-stream',
-					'Transfer-encoding': '',
-					'Content-Length': end - start + 1,
-					'Content-Range': 'bytes ' + start + '-' + end + '/' + stats.size,
-					'Accept-Ranges': 'bytes'
-				});
+                    'Connection': 'close',
+                    'Content-Type': mime.types[ext] || 'application/octet-stream',
+                    'Transfer-encoding': '',
+                    'Content-Length': end - start + 1,
+                    'Content-Range': 'bytes ' + start + '-' + end + '/' + stats.size,
+                    'Accept-Ranges': 'bytes'
+                });
 
-				opt = {
-					start: start,
-					end: end,
-					flags: 'r'
-				};
+                opt = {
+                    start: start,
+                    end: end,
+                    flags: 'r'
+                };
 
-				gzipResponse = response;
-			}
+                gzipResponse = response;
+            }
 
-			var rs = fs.createReadStream(realPath, opt);
+            var rs = fs.createReadStream(realPath, opt);
 
-			rs.on('error', function(e){
-				logger.error(e.stack);
-				gzipResponse.end();
-			});
+            rs.on('error', function(e){
+                logger.error(e.stack);
+                gzipResponse.end();
+            });
 
-			rs.on('data', function(buffer){
-				gzipResponse.write(buffer);
-			});
+            rs.on('data', function(buffer){
+                gzipResponse.write(buffer);
+            });
 
-			rs.on('end', function(){
-				gzipResponse.end();
-			});
-		});
-	}else{
-		response.writeHead(404, {'Content-Type': 'text/plain'});
-		response.end();
-	}
+            rs.on('end', function(){
+                gzipResponse.end();
+            });
+        });
+    }else{
+        response.writeHead(404, {'Content-Type': 'text/plain'});
+        response.end();
+    }
 
-}
+};
 
 

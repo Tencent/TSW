@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const gzipHttp		= require('util/gzipHttp');
 const logger		= require('logger');
@@ -15,38 +15,38 @@ const httpUtil		= require('util/http.js');
 //用html代替302跳转
 this.go = function(url){
 	
-	var data	= {};
-	var window   	= context.window || {};
-	var request		= window.request;
-	var response	= window.response;
+    var data	= {};
+    var window   	= context.window || {};
+    var request		= window.request;
+    var response	= window.response;
 	
-	data.url = url;
+    data.url = url;
 	
-	logger.debug('jump to : ' + url);
+    logger.debug('jump to : ' + url);
 	
 	
-	if(request && request.headers['x-wns-uin']){
+    if(request && request.headers['x-wns-uin']){
 		
 		
-		var html = tmpl.jump(data);
+        var html = tmpl.jump(data);
 		
-		var gzip = gzipHttp.create({
-			code: 200,
-			offline: 'false'
-		});
+        var gzip = gzipHttp.create({
+            code: 200,
+            offline: 'false'
+        });
 		
-		gzip.write(html);
-		gzip.end();
+        gzip.write(html);
+        gzip.end();
 		
-		return;
-	}
+        return;
+    }
 	
-	if(httpUtil.checkInvalidHeaderChar(url)){
-		url = encodeURI(url);
-	}
+    if(httpUtil.checkInvalidHeaderChar(url)){
+        url = encodeURI(url);
+    }
 
-	response.setHeader('location', url);
-	response.writeHead(302, {'Content-Type': 'text/html; charset=UTF-8'});
-	response.end();
+    response.setHeader('location', url);
+    response.writeHead(302, {'Content-Type': 'text/html; charset=UTF-8'});
+    response.end();
 	
-}
+};

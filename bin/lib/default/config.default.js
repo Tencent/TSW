@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 this.defaultConfigLoadFrom = __filename;
 
@@ -71,17 +71,17 @@ this.workerUid = 'nobody';
 
 //mod_act映射
 this.modAct = {
-	getModAct: function(req){
-		return null;
-	}
+    getModAct: function(req){
+        return null;
+    }
 };
 
 //路由
 this.modMap = {
-	find: function(mod_act,req,res){
-		return null;
-	}
-}
+    find: function(mod_act,req,res){
+        return null;
+    }
+};
 
 this.isCloud = false;
 
@@ -91,7 +91,7 @@ this.page404 = null;
 
 //logger
 this.logger = {
-	logLevel: 'debug'
+    logLevel: 'debug'
 };
 
 //cpu限制
@@ -112,29 +112,29 @@ this.idc = 'sz';
 this.l5api = {};
 
 this.timeout = {
-	socket		: 120000,
-	post		: 30000,
-	get			: 10000,
-	keepAlive	: 10000,
-	dns			: 3000
-}
+    socket		: 120000,
+    post		: 30000,
+    get			: 10000,
+    keepAlive	: 10000,
+    dns			: 3000
+};
 
 
 this.extendMod = {
-	getUin: req => {}
+    getUin: req => {}
 };
 
 //openapi
-this.logReportUrl		= "https://openapi.tswjs.org/v1/log/report";
-this.h5testSyncUrl		= "https://openapi.tswjs.org/v1/h5test/sync";
-this.utilCDUrl			= "https://openapi.tswjs.org/v1/util/cd";
-this.appReportUrl		= "https://openapi.tswjs.org/v1/app/report";
-this.runtimeReportUrl	= "https://openapi.tswjs.org/v1/runtime/report";
+this.logReportUrl		= 'https://openapi.tswjs.org/v1/log/report';
+this.h5testSyncUrl		= 'https://openapi.tswjs.org/v1/h5test/sync';
+this.utilCDUrl			= 'https://openapi.tswjs.org/v1/util/cd';
+this.appReportUrl		= 'https://openapi.tswjs.org/v1/app/report';
+this.runtimeReportUrl	= 'https://openapi.tswjs.org/v1/runtime/report';
 
 this.ignoreTST = false;
 
 this.ajaxDefaultOptions = {
-	useJsonParseOnly : true
+    useJsonParseOnly : true
 };
 
 this.tswL5api	= {};

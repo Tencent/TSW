@@ -5,27 +5,27 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"no use strict";
+'no use strict';
 
 this.getCallInfo = function(level){
 	
-	var orig,err,stack,line,column,filename;
-	var res = {};
+    var orig,err,stack;
+    var res = {};
 	
-	level = level || 0;
+    level = level || 0;
 	
-	orig					= Error.prepareStackTrace;
+    orig					= Error.prepareStackTrace;
     Error.prepareStackTrace = function(_, stack){ return stack; };
     err						= new Error();
     Error.captureStackTrace(err, arguments.callee);
     stack					= err.stack;
     Error.prepareStackTrace = orig;
 	
-	if(stack && stack[level] && typeof stack[level].getLineNumber === 'function'){
-		res.line		= stack[level].getLineNumber();
-		res.column		= stack[level].getColumnNumber();
-		res.filename	= stack[level].getFileName();
-	}
+    if(stack && stack[level] && typeof stack[level].getLineNumber === 'function'){
+        res.line		= stack[level].getLineNumber();
+        res.column		= stack[level].getColumnNumber();
+        res.filename	= stack[level].getFileName();
+    }
 	
-	return res;
-}
+    return res;
+};

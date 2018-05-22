@@ -5,9 +5,8 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
-const fs        = require('fs');
 const https     = require('https');
 const http      = require('http');
 const cache     = {};
@@ -26,11 +25,11 @@ this.getHttpsAgent = function(host){
             maxCachedSessions   : 65535,
             keepAlive	        : true,
             keepAliveMsecs      : 5000
-        })
-    };
+        });
+    }
 
     return cache[key];
-}
+};
 
 this.getHttpAgent = function(host){
 
@@ -42,8 +41,8 @@ this.getHttpAgent = function(host){
             maxFreeSockets      : 32,
             keepAlive           : true,
             keepAliveMsecs      : 5000
-        })
-    };
+        });
+    }
 
     return cache[key];
-}
+};

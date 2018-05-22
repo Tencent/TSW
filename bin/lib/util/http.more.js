@@ -5,25 +5,19 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
-
-const {isWindows} 	= require('util/isWindows');
-const os			= require('os');
-const serverInfo	= require('serverInfo.js');
-const logger		= require('logger');
-const Deferred		= require('util/Deferred');
+'use strict';
 
 this.isFromWns = function(request){
-	return false;
-}
+    return false;
+};
 
 this.getIpCromQuia = function(qvia){
-	return null;
-}
+    return null;
+};
 
 this.getBase = function(request){
-	return '';
-}
+    return '';
+};
 this.fixPicUrl = function(url){
-	return '';
-}
+    return '';
+};

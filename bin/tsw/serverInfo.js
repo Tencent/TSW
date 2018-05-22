@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 const os			= require('os');
 const {isWindows} 	= require('util/isWindows');
@@ -14,62 +14,59 @@ const isInnerIP		= require('util/http.isInnerIP.js');
 this.intranetIp = '127.0.0.1';
 
 if(isWindows){
-	this.intranetIp = getWinLocalIpv4();
+    this.intranetIp = getWinLocalIpv4();
 }else{
-	this.intranetIp = getLinuxLocalIpv4();
+    this.intranetIp = getLinuxLocalIpv4();
 }
 
 function getLinuxLocalIpv4(){
-	var intranetIp = '';
-	var networkInterfaces = os.networkInterfaces();
+    var intranetIp = '';
+    var networkInterfaces = os.networkInterfaces();
 
-	Object.keys(networkInterfaces).forEach(function(key){
-		var eth		= networkInterfaces[key];
-		var address	= eth && eth[0] && eth[0].address;
+    Object.keys(networkInterfaces).forEach(function(key){
+        var eth		= networkInterfaces[key];
+        var address	= eth && eth[0] && eth[0].address;
 
-		if(!address){
-			return;
-		}
+        if(!address){
+            return;
+        }
 
-		var tmp = isInnerIP.isInnerIP(address);
-		if(!tmp){
-			return;
-		}
+        var tmp = isInnerIP.isInnerIP(address);
+        if(!tmp){
+            return;
+        }
 
-		if(tmp === '127.0.0.1'){
-			return;
-		}
+        if(tmp === '127.0.0.1'){
+            return;
+        }
 
-		intranetIp = address;
-	});
+        intranetIp = address;
+    });
 
-	return intranetIp;
+    return intranetIp;
 }
 
 function getWinLocalIpv4(){
 
-	var localNet = os.networkInterfaces();
-	var key,item;
-	var k,v,i;
-	var userIp = null;
+    var localNet = os.networkInterfaces();
+    var key,item;
+    var v,i;
+    var userIp = null;
 
-	for(key in localNet){
-		item = localNet[key];
+    for(key in localNet){
+        item = localNet[key];
 
-		if(String(key).indexOf('本地连接') > -1){
+        if(String(key).indexOf('本地连接') > -1){
 
-			for(i =0 ; i < item.length; i++){
-				v = item[i];
+            for(i =0 ; i < item.length; i++){
+                v = item[i];
 
-				if(v.family === 'IPv4'){
-					userIp = v.address;
-					return userIp;
-				}
-			}
-
-		}
-
-	}
-
+                if(v.family === 'IPv4'){
+                    userIp = v.address;
+                    return userIp;
+                }
+            }
+        }
+    }
 }
 

@@ -5,15 +5,13 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
-const fs		= require('fs');
 const Deferred	= require('util/Deferred');
-const logger	= require('logger');
 
 this.info = function(opt){
-	var defer	= Deferred.create();
+    var defer	= Deferred.create();
 
-	return defer.reject();
-}
+    return defer.reject();
+};
 

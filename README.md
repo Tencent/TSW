@@ -1,7 +1,7 @@
 # [Tencent Server Web](https://tswjs.org)
 
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](./LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](./LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg) [![Build Status](https://travis-ci.org/Tencent/TSW.svg?branch=master)](https://travis-ci.org/Tencent/TSW)
 
 ---
 
@@ -44,8 +44,10 @@ TSW 提供用户维度的全息日志帮助开发者快速定位问题
 
 ## 开始
 
-1. 请先下载安装[Node.js](https://nodejs.org/en/download/)，并且Node.js的版本需不低于8.0.0。
+1. 需先安装[Node.js](https://nodejs.org/en/download/)，并且Node.js的版本需不低于8.0.0。
 1. 安装 -- `git clone https://github.com/Tencent/TSW.git`
+1. 切换工作目录 -- `cd TSW`
+1. 补全依赖 -- `npm install --no-optional`
 1. 配置 -- 修改 `TSW/conf/config.js`，更多配置项参考 [手册](https://tswjs.org/doc/api/config) 
 
     ```js
@@ -54,8 +56,8 @@ TSW 提供用户维度的全息日志帮助开发者快速定位问题
     this.httpPort = 80;
     ```
 
-1. 启动 --  ``node TSW``
-1. 预览 -- 打开浏览器，访问 ``http://127.0.0.1/`` 即可
+1. 启动 --  `node index.js`
+1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
 
 ## 官方网站
 

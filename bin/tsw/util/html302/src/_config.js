@@ -3,15 +3,15 @@
  */
 define(function(require, exports, module){
 
-	return {
+    return {
 		
-		tmpl: {
-			create: true
-		},
-		all: {
-			create: false
-		}
+        tmpl: {
+            create: true
+        },
+        all: {
+            create: false
+        }
 		
-	};
+    };
 	
 });

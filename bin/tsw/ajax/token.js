@@ -5,30 +5,30 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-"use strict";
+'use strict';
 
 this.token = function(skey){
 	
 	
-	var str			= skey || '';
-	var	hash		= 5381;
+    var str			= skey || '';
+    var	hash		= 5381;
 
-	if(typeof context !== 'undefined'){
-		let window   	= context.window || {};
-		if(window.request){
-			str = str
+    if(typeof context !== 'undefined'){
+        let window   	= context.window || {};
+        if(window.request){
+            str = str
 				|| window.request.cookies.p_skey
 				|| window.request.cookies.skey
 				|| window.request.cookies.rv2
 				|| window.request.cookies.access_token
 				|| '';
-		}
-	}
+        }
+    }
 
-	for(var i = 0, len = str.length; i < len; ++i){
-		hash += (hash << 5) + str.charAt(i).charCodeAt();
-	}
-	return hash & 0x7fffffff;
-}
+    for(var i = 0, len = str.length; i < len; ++i){
+        hash += (hash << 5) + str.charAt(i).charCodeAt();
+    }
+    return hash & 0x7fffffff;
+};
 
 
