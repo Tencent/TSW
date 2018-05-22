@@ -47,7 +47,7 @@ var heartBeatCount		= 0;
 
 
 function doRoute(req,res){
-	
+
     if(routeCache === null){
         routeCache = require('./http.route.js');
         config = require('./config.js');
@@ -123,25 +123,25 @@ process.on('top100',function(e){
 
 process.on('heapdump',function(e){
     logger.info('heapdump');
-	
+
     if(!isWindows){
-		
+
         require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot',function(err, filename) {
             logger.info('dump written to ${filename}', {
                 filename: filename
             });
         });
-		
+
     }
-	
+
 });
 
 
 process.on('profiler',function(data = {}){
     logger.info('profiler time: ${time}', data);
-	
+
     if(!isWindows){
-		
+
         require('util/v8-profiler.js').writeProfilerOpt(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.cpuprofile', {
             recordTime: data.time || 5000
         }, function(filename) {
@@ -149,36 +149,36 @@ process.on('profiler',function(data = {}){
                 filename: filename
             });
         });
-		
+
     }
-	
+
 });
 
 //process.emit('globaldump',m.GET);
 process.on('globaldump',function(GET){
-	
+
     var cpu		= GET.cpu || 0;
     var depth	= GET.depth || 6;
-	
+
     if(cpu != serverInfo.cpu){
         return;
     }
-	
+
     var filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
-	
+
     logger.info('globaldump');
     logger.info(GET);
     logger.info(filename);
-	
-	
+
+
     var str = util.inspect(global,{
         depth: depth
     });
-	
+
     fs.writeFile(filename,str,'UTF-8',function(){
         logger.info('globaldump finish');
     });
-	
+
 });
 
 function requestHandler(req, res){
@@ -198,17 +198,18 @@ function requestHandler(req, res){
         cleanCache();
     }
 
+    if('upgrade' === req.headers.connection && 'websocket' === req.headers.upgrade) {
+        //websocket
+        return;
+    }
+
     res.flush = res.flush || function(){return true;};
 
     //解析get参数
     parseGet(req);
 
-    if('upgrade' === req.headers.connection && 'websocket' === req.headers.upgrade) {
-        //websocket
-    }else{
-        //HTTP路由
-        doRoute(req,res);
-    }
+    //HTTP路由
+    doRoute(req,res);
 }
 
 
@@ -225,7 +226,7 @@ global.TSW_HTTP_SERVER = server;
 if(config.httpsOptions){
     serverHttps = https.createServer(config.httpsOptions,function(req,res){
         req.headers['x-client-proto'] = 'https';
-		
+
         requestHandler(req,res);
     });
 
@@ -253,11 +254,11 @@ process.on('message',function(m){
 });
 
 function startHeartBeat(){
-	
+
     if(isStartHeartBeat){
         return;
     }
-	
+
     isStartHeartBeat = true;
 
     global.cpuUsed			= 0;
@@ -282,13 +283,13 @@ function startHeartBeat(){
         global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
         tnm2.Attr_API_Set('AVG_TSW_CPU_USED', global.cpuUsed);
-		
+
         if(global.cpuUsed >= 80) {
             global.cpuUsed80 = ~~global.cpuUsed80 + 1;
         }else{
             global.cpuUsed80 = 0;
         }
-		
+
         var cpuUsed = global.cpuUsed;
 
         //高负载告警
@@ -330,7 +331,7 @@ function startHeartBeat(){
                     if(data.ownerMain){
                         owner = [owner,data.ownerMain].join(';');
                     }
-                    
+
                     if(data.ownerBack){
                         owner = [owner,data.ownerBack].join(';');
                     }
@@ -364,66 +365,66 @@ function startHeartBeat(){
         tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL',	currMemory.external);
 
     },5000);
-	
+
 }
 
 
 
 //restart
 methodMap.restart = function(){
-	
+
     logger.info('cpu: ${cpu} restart',serverInfo);
-	
+
     process.emit('restart');
 };
 
 //reload
 methodMap.reload = function(){
-	
+
     logger.info('cpu: ${cpu} reload',serverInfo);
-	
+
     process.emit('reload');
 };
 
 //heapdump
 methodMap.heapdump = function(m){
-	
+
     logger.info('cpu: ${cpu} heapdump',serverInfo);
-	
+
     process.emit('heapdump',m.GET);
 };
 
 //profiler
 methodMap.profiler = function(m){
-	
+
     logger.info('cpu: ${cpu} profiler',serverInfo);
-	
+
     process.emit('profiler',m.GET);
 };
 
 //globaldump
 methodMap.globaldump = function(m){
-	
+
     logger.info('cpu: ${cpu} globaldump',serverInfo);
-	
+
     process.emit('globaldump',m.GET);
 };
 
 //top100
 methodMap.top100 = function(m){
-	
+
     logger.info('cpu: ${cpu} top100',serverInfo);
-	
+
     process.emit('top100',m.GET);
 };
 
-//监听端口 
+//监听端口
 methodMap.listen = function(message){
-	
+
     var user_00				= config.workerUid || 'user_00';
     serverInfo.cpu			= message.cpu || 0;
     global.cpuUsed			= cpuUtil.getCpuUsed(serverInfo.cpu);
-	
+
     process.title = 'TSW/worker/' + serverInfo.cpu;
     global.TSW_HTTP_WORKER_PORT = config.workerPortBase + serverInfo.cpu;
 
