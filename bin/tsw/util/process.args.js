@@ -8,6 +8,7 @@
 "use strict";
 
 const args = {};
+let i;
 
 //解析进程参数
 for(i = 2; i< process.argv.length; i++){
