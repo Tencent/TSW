@@ -25,6 +25,7 @@ if(!global.plug){
 	plug.__dirname  = __dirname;
 	plug.parent  	= path.join(__dirname , '..');
 	plug.paths 		= [
+		path.join(__dirname , '../deps'),
 		path.join(__dirname , '../tsw'),
 		path.join(__dirname , '../tencent'),
 		path.join(__dirname , '../lib')
@@ -43,7 +44,7 @@ if(!global.plug){
 			var str = stringify.apply(this,arguments);
 			
 			if(str && str.indexOf('<') > -1){
-				str = str.replace(/</gmi,'\\u003C');
+				str = str.replace(/</g,'\\u003C');
 			}
 			return str;
 		}

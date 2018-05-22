@@ -3,7 +3,7 @@
 
 Tencent Server side Web(TSW) is a Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers: online dyeing/packet capture, holographic logging and abnormity discovery. TSW, focusing on the operation and maintenance of businesses, is suitable for web and mobile applications based on http or websocket protocols. It can be readily integrated with existing systems.
 
-![tsw](./structure_en.png)
+![tsw](./static/resource/structure_en.png)
 
 #### Online dyeing/packet capture
 
@@ -71,4 +71,4 @@ Tencent Server Web is released under [MIT license](./LICENSE).
 
 ## Contacts
 
-tsw@tencent.com
+c_TSW@tencent.com

@@ -14,10 +14,10 @@ function Window(){
 }
 
 Window.prototype.disable = function(){
-    global.windowHasDisabled = true;
+    Window.windowHasDisabled = true;
 }
 
 Window.prototype.enable = function(){
-    global.windowHasDisabled = false;
+    Window.windowHasDisabled = false;
 }
 

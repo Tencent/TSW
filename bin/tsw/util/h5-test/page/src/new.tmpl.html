@@ -122,13 +122,13 @@
     <script type="text/javascript">
     (function() {
     	var handlerNums = function(val){
-    		return val.split(/(\b[0-9a-zA-Z_\-]{1,64}\b)/gmi);
+    		return val.split(/(\b[0-9a-zA-Z_\-]{1,64}\b)/g);
     	}
     	//批量加入
 		$('#join-submit2').click(function(event){
 			var deferArr = [];
 			var val = $('#join-textarea').val();
-			// var arr = val.split(/(\b[0-9A-Za-z]+\b)/gmi);
+			// var arr = val.split(/(\b[0-9A-Za-z]+\b)/g);
 			var arr = handlerNums(val);
 			var selectVal = $('.selected')[0].value;
 			for(var i = 1; i < arr.length; i++) {
