@@ -41,11 +41,11 @@ code{
 	<p><strong>发送间隔:</strong> <%=data.second%>s</p>
 	<%if(data.headerText){%>
 	<p><strong>请求头:</strong></p>
-	<div style="font-size:12px"><%=tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/gmi,'<br>')%></div>
+	<div style="font-size:12px"><%=tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/g,'<br>')%></div>
 	<%}%>
 	<%if(data.logText){%>
 	<p><strong>全息日志:</strong></p>
-	<pre style="font-size:12px"><%=tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/gmi,'<br>')%></pre>
+	<pre style="font-size:12px"><%=tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/g,'<br>')%></pre>
 	<%}%>
 </body>
 </html>

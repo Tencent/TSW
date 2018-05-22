@@ -12,7 +12,7 @@ process.on('uncaughtException',function(e){
 });
 
 
-const plug		= require('plug.js');
+const plug		= require('../tsw/plug.js');
 const logger	= require('logger');
 const http		= require('http');
 const https		= require('https');
@@ -320,8 +320,8 @@ function startHeartBeat(){
 
 				if (data) {
 					str = data.toString('utf-8');
-					str = str.replace(/</gmi, '&gt;');
-					str = str.replace(/\r\n|\r|\n/gmi, '<br>');
+					str = str.replace(/</g, '&gt;');
+					str = str.replace(/\r\n|\r|\n/g, '<br>');
 
 					Content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
 				}

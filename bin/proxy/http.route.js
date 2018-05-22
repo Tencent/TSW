@@ -116,6 +116,10 @@ module.exports = function(req,res){
 	d.currentContext.window.request		= req;
 	d.currentContext.window.response	= res;
 
+	if(config.enableWindow){
+		d.currentContext.window.enable();
+	}
+
 	req.timestamps = {
 		ClientConnected    : start,
 		ClientBeginRequest : start,
@@ -576,9 +580,9 @@ function doRoute(req,res){
 		}
 	}
 
-	logger.debug('node-${version}, name: ${mod_act}, appid: ${appid}',{
+	logger.debug('node-${version}, name: ${name}, appid: ${appid}',{
 		version: process.version,
-		mod_act: mod_act,
+		name: mod_act || null,
 		appid: config.appid || null
 	});
 

@@ -8,7 +8,6 @@
 "use strict";
 
 const logger		= require('logger');
-const Memcached		= require('memcached');
 const Queue			= require('util/Queue');
 const dcapi			= require('api/libdcapi/dcapi.js');
 const L5			= require('api/L5/L5.api.js');
@@ -52,10 +51,15 @@ module.exports.getCmem = function(opt){
 		L5.ApiRouteResultUpdate(route);
 		
 	}
-	
+
+	if(!opt.host){
+		return null;
+	}
+
 	key = [opt.modid,opt.cmd,opt.host].join(':');
 	
 	if(!cache[key]){
+		let Memcached = require('memcached');
 		cache[key] = queueWrap(new Memcached(opt.host, opt)); 
 	}
 	

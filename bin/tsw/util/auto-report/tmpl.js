@@ -278,7 +278,7 @@ __p.push('">');
 _p(XSS.htmlEncode(v.name));
 __p.push('</a>');
 });__p.push('	</div>');
-}if(logArr.length === 0){__p.push('	<div class="view-title">\n		<p style="height: 50px;line-height: 50px;">还没有实时log</p>\n	</div>');
+}if(logArr.length === 0){__p.push('	<div class="view-title">\n		<p style="height: 200px;line-height: 200px; text-align: center; font-size: 14px;">还没有实时log，<a target="_blank" href="https://tswjs.org/guide/advance/logger">故障排除？</a></p>\n	</div>');
 }
 
 	logArr.forEach(function(logText,i){

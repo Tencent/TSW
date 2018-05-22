@@ -33,11 +33,11 @@ __p.push('</p>\n	<p><strong>发送间隔:</strong> ');
 _p(data.second);
 __p.push('s</p>');
 if(data.headerText){__p.push('	<p><strong>请求头:</strong></p>\n	<div style="font-size:12px">');
-_p(tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/gmi,'<br>'));
+_p(tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/g,'<br>'));
 __p.push('</div>');
 }__p.push('	');
 if(data.logText){__p.push('	<p><strong>全息日志:</strong></p>\n	<pre style="font-size:12px">');
-_p(tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/gmi,'<br>'));
+_p(tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/g,'<br>'));
 __p.push('</pre>');
 }__p.push('</body>\n</html>');
 

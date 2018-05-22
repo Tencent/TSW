@@ -473,7 +473,7 @@ var download = function(request, response, opt){
 		return;
 	}
 	
-	filename = filename.replace(/[^a-zA-Z0-9_\.\-]/gmi,'_');
+	filename = filename.replace(/[^a-zA-Z0-9_\.\-]/g,'_');
 	
 	response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.saz');
 

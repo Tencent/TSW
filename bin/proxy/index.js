@@ -7,7 +7,7 @@
  */
 "use strict";
 
-const plug = require('plug.js');
+const plug = require('../tsw/plug.js');
 
 plug('runtime/Console.hack.js');
 plug('runtime/fs.hack.js');
