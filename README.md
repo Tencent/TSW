@@ -79,4 +79,4 @@ Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](./LICENSE) 。
 
 ## 联系方式
 
-c_TSW@tencent.com
+tsw@tencent.com

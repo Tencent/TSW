@@ -71,4 +71,4 @@ Tencent Server Web is released under [MIT license](./LICENSE).
 
 ## Contacts
 
-c_TSW@tencent.com
+tsw@tencent.com
