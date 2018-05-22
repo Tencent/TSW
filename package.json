@@ -33,6 +33,7 @@
   "files": [
     "bin"
   ],
+  "license": "MIT",
   "engines": {
     "node": ">= 8.0.0"
   },
