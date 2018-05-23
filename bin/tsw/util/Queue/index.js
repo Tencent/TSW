@@ -40,11 +40,11 @@ Queue.prototype.dequeue = function(){
 	
     var domain,that,fn;
 	
-    if(this._queue.length <= 0){
+    if(this._queue.length === 0){
         return this;
     }
 	
-    if(this._queue[0] === 'ing'){
+    if(this._queue[0] === 'pending'){
 		
         this._queue.shift();
         this.dequeue();
@@ -53,15 +53,14 @@ Queue.prototype.dequeue = function(){
     }
 	
     fn = this._queue[0];
-    this._queue[0] = 'ing';
+    this._queue[0] = 'pending';
 	
     domain		= fn._domain;
-    that		= this;
     fn._domain	= undefined;
 	
     if(domain && domain !== process.domain){
-        domain.run(function(){
-            fn.call(that);
+        domain.run(() => {
+            fn.call(this);
         });
     }else{
         fn.call(this);
