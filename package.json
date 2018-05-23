@@ -5,7 +5,7 @@
     "lint": "eslint examples bin/wwwroot bin/proxy bin/tsw bin/lib test --fix",
     "precommit": "lint-staged",
     "test": "mocha --recursive test/bin",
-    "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
+    "coverage": "nyc --reporter=lcov npm test",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
