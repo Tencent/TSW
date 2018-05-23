@@ -2,7 +2,7 @@
   "name": "TSW",
   "version": "1.0.1449",
   "scripts": {
-    "lint": "eslint examples bin/wwwroot bin/proxy bin/tsw bin/lib test --fix",
+    "lint": "eslint examples bin test --fix",
     "precommit": "lint-staged",
     "test": "mocha --recursive test/bin",
     "coverage": "nyc mocha --recursive test/bin"
