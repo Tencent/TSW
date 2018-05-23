@@ -5,8 +5,7 @@
     "lint": "eslint examples bin/wwwroot bin/proxy bin/tsw bin/lib test --fix",
     "precommit": "lint-staged",
     "test": "mocha --recursive test/bin",
-    "coverage": "nyc --reporter=lcov --reporter=text npm test",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coverage": "nyc --reporter=lcov  --reporter=text npm test && codecov"
   },
   "repository": {
     "type": "git",
@@ -21,7 +20,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "coveralls": "^3.0.1",
+    "codecov": "^3.0.2",
     "eslint": "^4.10.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.0.0",
