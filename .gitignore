@@ -1,7 +1,8 @@
-node_modules
+/node_modules
 .vscode
 .idea
 .DS_Store
 .nyc_output
-conf
-log
+/conf
+/coverage
+/log
