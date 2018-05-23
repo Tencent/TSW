@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "eslint examples bin/wwwroot bin/proxy bin/tsw bin/lib test --fix",
     "precommit": "lint-staged",
-    "test": "mocha --recursive test/bin",
+    "test": "mocha test/**/*.js",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
