@@ -84,6 +84,17 @@
             "globals": {
                 "define": true
             }
+        }, {
+            "files": ["bin/lib/util/mail/tmpl.js", "bin/tsw/util/**/tmpl.js"],
+            "rules": {
+                "no-unused-vars": [
+                    "error",
+                    {
+                        "varsIgnorePattern": "out",
+                        "args": "none"
+                    }
+                ]
+            }
         }
     ]
 }
