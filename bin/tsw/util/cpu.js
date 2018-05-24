@@ -9,7 +9,9 @@
 
 const os            = require('os');
 const fs            = require('fs');
-const {isWindows}   = require('./isWindows.js');
+const cp			= require('child_process');
+const {isWindows} = require('./isWindows.js');
+const logger		= require('logger');
 var cache;
 
 if(!global[__filename]){
@@ -33,7 +35,7 @@ if(!global[__filename]){
 this.getCpuUsed = function(cpu){
 
     var now     = Date.now();
-    
+
     cpu = cpu || '';
 
     if(isWindows){
@@ -100,49 +102,118 @@ this.getCpuUsed = function(cpu){
 
 
 this.cpus = function(){
-    
+
     var res = [];
-    
-    
+
+
     os.cpus().forEach(function(v){
-        
+
         if(v.times && v.times.idle !== 0){
             res.push(v);
         }
-        
+
     });
-    
-    
+
+
     return res;
+};
+
+
+this.taskset = function(oriCpu,pid){
+    if(isWindows){
+        return;
+    }
+
+    //绑定CPU
+    logger.info('taskset -cp ${pid}',{
+        pid: pid
+    });
+
+    //打印shell执行信息
+    cp.exec(`taskset -cp ${pid}`,{
+        timeout: 5000
+    },function(err,data,errData){
+
+        var str = data.toString('UTF-8');
+        var tmp  = str.split(':');
+        var cpus;
+
+        if(tmp.length >= 2){
+            cpus = exports.parseTaskset(tmp[1]);
+        }
+
+        var cpu	= oriCpu;
+        if(cpus.length > 1){
+            //cpu编号修正
+            cpu = parseInt(cpus[cpu % cpus.length],10);
+        }else{
+            //超过cpu编号时，修正
+            cpu = cpu % exports.cpus().length;
+        }
+
+        if(err){
+            logger.error(err.stack);
+        }
+
+        if(data.length){
+            logger.info('\n' + data.toString('UTF-8'));
+        }
+
+        if(errData.length){
+            logger.error('\n' + errData.toString('UTF-8'));
+        }
+
+        logger.info('taskset -cp ${cpu} ${pid}',{
+            cpu: cpu,
+            pid: pid
+        });
+
+        cp.exec(`taskset -cp ${cpu} ${pid}`,{
+            timeout: 5000
+        },function(err,data,errData){
+            if(err){
+                logger.error(err.stack);
+            }
+
+            if(data.length){
+                logger.info('\n' + data.toString('UTF-8'));
+            }
+
+            if(errData.length){
+                logger.error('\n' + errData.toString('UTF-8'));
+            }
+        });
+
+    });
+
 };
 
 
 this.parseTaskset = function(str){
-    
-    var res = [];
+
+    var res	= [];
     var arr = str.split(',');
-    
+
     arr.forEach(function(v){
-        
+
         v = v.trim();
-        
-        var tmp     = v.split('-');
-        var start   = ~~tmp[0];
-        var end     = ~~tmp[1];
+
+        var tmp		= v.split('-');
+        var start	= ~~tmp[0];
+        var end		= ~~tmp[1];
         var i;
-        
+
         if(end < start){
             end = start;
         }
-        
+
         for(i = start; i<=end ;i++){
-            res.push(i);    
+            res.push(i);
         }
     });
-     
+
     return res;
 };
-
 
 if(process.mainModule === module){
     setInterval(function(){
