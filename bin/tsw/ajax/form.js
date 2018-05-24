@@ -41,9 +41,9 @@ function textField(boundary, key, value) {
 function fileField(boundary, key, value = {}) {
     let tmp = [];
 
-    let contentType     = value.contentType || 'application/octet-stream';
+    let contentType = value.contentType || 'application/octet-stream';
     let dispositionType = value.dispositionType || 'form-data';
-    let fileName        = value.fileName || '';
+    let fileName = value.fileName || '';
 
     tmp.push('--' + boundary);
 

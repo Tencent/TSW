@@ -12,8 +12,3 @@ this.check = function(root){};
 
 this.findNodeCpp = function(curr){};
 
-
-
-
-
-

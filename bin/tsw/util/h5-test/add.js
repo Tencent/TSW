@@ -50,7 +50,7 @@ module.exports.addTestUser = function(uin, val){
     val = val || true;
     var memcached	= isTest.cmem();
     var keyText		= isTest.keyBitmap();
-    var defer       = Deferred.create();
+    var defer = Deferred.create();
     var appid		= '';
 
     if(context.appid && context.appkey){

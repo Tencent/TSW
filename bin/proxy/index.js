@@ -17,5 +17,3 @@ plug('runtime/capturer.js');
 
 require('./master.js');
 
-
-

@@ -7,9 +7,9 @@
  */
 'use strict';
 
-const https     = require('https');
-const http      = require('http');
-const cache     = {};
+const https = require('https');
+const http = require('http');
+const cache = {};
 
 
 ///etc/pki/tls/certs/ca-bundle.crt

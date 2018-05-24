@@ -7,12 +7,12 @@
  */
 'use strict';
 
-const serverInfo    = require('serverInfo.js');
-const mapping       = require('./mapping.json');
-const {isWindows}   = require('util/isWindows.js');
-const url           = require('url');
-const Deferred      = require('util/Deferred');
-const cluster       = require('cluster');
+const serverInfo = require('serverInfo.js');
+const mapping = require('./mapping.json');
+const {isWindows} = require('util/isWindows.js');
+const url = require('url');
+const Deferred = require('util/Deferred');
+const cluster = require('cluster');
 
 var cache = {
     curr: {},
@@ -29,8 +29,8 @@ if(global[__filename]){
 
 if(isFirstLoad){
     cluster.worker && cluster.worker.once('disconnect', function(worker){
-        var logger  = require('logger');
-        var last    = cache.curr;
+        var logger = require('logger');
+        var last = cache.curr;
 
         logger.info('report on disconnect event...');
 
@@ -70,8 +70,8 @@ var cacheOrRepoet = function(attr, iValue){
     }
 
     curr = cache.curr[attr];
-    curr.sum    += iValue;
-    curr.count  += 1;
+    curr.sum += iValue;
+    curr.count += 1;
 
     var now = Date.now();
 
@@ -89,11 +89,11 @@ var cacheOrRepoet = function(attr, iValue){
 
 
 var reportOpenapi = function(last){
-    var defer   = Deferred.create();
+    var defer = Deferred.create();
     
     var openapi = require('util/openapi');
-    var logger  = require('logger');
-    var config  = require('config');
+    var logger = require('logger');
+    var config = require('config');
     var retCall;
 
     if(typeof config.beforeReportApp === 'function'){

@@ -54,7 +54,7 @@ this.report = function(){
             };
         }
 
-        logJson.moduleId	=  business.moduleId;
+        logJson.moduleId	= business.moduleId;
         logJson.moduleName	= [business.L1Business,business.L2Business,business.L3Business,business.module].join('->');
 
         logJson		= Deferred.extend(true,{

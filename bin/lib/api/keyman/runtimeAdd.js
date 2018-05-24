@@ -25,5 +25,3 @@ this.hello = function(){
     return;
 };
 
-
-

@@ -74,7 +74,7 @@ define(function(require, exports, module){
                 }
 
                 var pad = function(n){return n < 10 ? '0' + n : n;}, 
-                    tz  = d.getTimezoneOffset(),
+                    tz = d.getTimezoneOffset(),
                     tzs = (tz > 0 ? '-' : '+') + pad(parseInt(Math.abs(tz / 60)));
 
                 if (tz === 0){
@@ -94,7 +94,7 @@ define(function(require, exports, module){
               + pad(d.getMilliseconds()) + tzs;
             };
 
-            var timeStamp   = data.timestamps || {},
+            var timeStamp = data.timestamps || {},
                 defaultTime = new Date();
         
             __p.push('<?xml version="1.0" encoding="utf-8"?>\n<Session>\n  <SessionTimers \n    ClientConnected     ="');
@@ -189,10 +189,10 @@ define(function(require, exports, module){
 
             var __p=[],_p=function(s){__p.push(s);},out=_p;
 
-            var logArr  = data.logArr || [];
+            var logArr = data.logArr || [];
             var groupArr= data.groupArr || [];
-            var window  = context.window || {};
-            var hls     = require('./highlight-tsw.js');
+            var window = context.window || {};
+            var hls = require('./highlight-tsw.js');
             var getResultCodeStyle = function (code) {
                 code = parseInt(code,10);
                 var style = '';
@@ -217,9 +217,9 @@ define(function(require, exports, module){
                 return style+'font-weight:;font-size:18px';
             };
 
-            var appid   = context.appid;
-            var group   = context.group;
-            var key     = context.key;
+            var appid = context.appid;
+            var group = context.group;
+            var key = context.key;
             var createLogKey = context.createLogKey;
             var currPath = '/log/view/' + createLogKey(appid,group,key);
 

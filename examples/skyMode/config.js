@@ -1,4 +1,4 @@
-﻿this.skyMode   = true;
+﻿this.skyMode = true;
 
 //http监听地址
 this.httpAddress = '0.0.0.0';

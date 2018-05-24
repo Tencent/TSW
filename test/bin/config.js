@@ -1,4 +1,4 @@
-const chai  = require('chai');
+const chai = require('chai');
 const {expect} = chai;
 const plug = require('plug');
 const logger = plug('logger');

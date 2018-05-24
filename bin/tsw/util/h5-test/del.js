@@ -52,7 +52,7 @@ module.exports.deleteTestUser = function(uin){
     logger.debug('deleteTestUser:' + uin);
     var memcached	= isTest.cmem();
     var keyText		= isTest.keyBitmap();
-    var defer       = Deferred.create();
+    var defer = Deferred.create();
     var appid		= '';
 
     if(!uin){

@@ -7,15 +7,15 @@
  */
 'use strict';
 
-const logger        = require('logger');
-const gzipHttp      = require('util/gzipHttp.js');
-const Archiver      = require('archiver');
-const OALogin       = require('util/oa-login/index.js');
-const tmpl          = require('./tmpl');
-const post          = require('./post');
-const postOpenapi   = require('./post.openapi.js');
-const canIuse       = /^[0-9a-zA-Z_-]{0,64}$/;
-const zlib          = require('zlib');
+const logger = require('logger');
+const gzipHttp = require('util/gzipHttp.js');
+const Archiver = require('archiver');
+const OALogin = require('util/oa-login/index.js');
+const tmpl = require('./tmpl');
+const post = require('./post');
+const postOpenapi = require('./post.openapi.js');
+const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
+const zlib = require('zlib');
 
 
 module.exports = function(request, response){
@@ -26,25 +26,25 @@ module.exports = function(request, response){
 
 module.exports.go = function(request, response){
 
-    var arr         = request.REQUEST.pathname.split('/');
-    var appid       = context.appid || '';
-    var group       = arr[3];
-    var key         = arr[4];
-    var groupKey    = 'v2.group.alpha';
-    var limit       = ~~context.limit || 64;
-    var currPost    = post;
+    var arr = request.REQUEST.pathname.split('/');
+    var appid = context.appid || '';
+    var group = arr[3];
+    var key = arr[4];
+    var groupKey = 'v2.group.alpha';
+    var limit = ~~context.limit || 64;
+    var currPost = post;
 
 
     var flagOfDownloadFileFormat = request.query.fileFormat;
 
     if(appid){
-        currPost    = postOpenapi;
-        groupKey    = `${appid}/v2.group.alpha`;
+        currPost = postOpenapi;
+        groupKey = `${appid}/v2.group.alpha`;
     }
 
     if(!key){
-        key     = group;
-        group   = '';
+        key = group;
+        group = '';
     }
 
     if(!canIuse.test(appid)){
@@ -60,28 +60,28 @@ module.exports.go = function(request, response){
     }
 
     var createLogKey = function(appid,group,key){
-        var logKey      = key;
+        var logKey = key;
 
         if(group){
-            logKey  = `${group}/${logKey}`;
+            logKey = `${group}/${logKey}`;
         }
 
         return logKey;
     };
 
-    var logKey      = createLogKey(appid,group,key);
+    var logKey = createLogKey(appid,group,key);
 
     if(appid){
-        logKey  = `${appid}/${logKey}`;
+        logKey = `${appid}/${logKey}`;
     }
 
     //上下文设置
-    context.group           = group;
-    context.limit           = limit;
-    context.key             = key;
-    context.groupKey        = groupKey;
-    context.logKey          = logKey;
-    context.createLogKey    = createLogKey;
+    context.group = group;
+    context.limit = limit;
+    context.key = key;
+    context.groupKey = groupKey;
+    context.logKey = logKey;
+    context.createLogKey = createLogKey;
 
     logger.debug('logKey :${logKey}',{
         logKey: logKey
@@ -145,7 +145,7 @@ function returnError(message){
 
 
 //curr
-var initRequestHar =  function (request) {
+var initRequestHar = function (request) {
     var unpackRaw = function (requestRaw) {
         var requestArr = [];
         // 补全没有的数据
@@ -228,7 +228,7 @@ var initRequestHar =  function (request) {
 
         return request;
     };
-    var getUrl    = function (curr) {
+    var getUrl = function (curr) {
         var url;
         var host;
         if(curr){
@@ -247,15 +247,14 @@ var initRequestHar =  function (request) {
         requestHeader,
         responseHeader;
 
-    requestHeader  = unpackRaw((Buffer.from(request.requestRaw ||'')).toString('utf8'));
+    requestHeader = unpackRaw((Buffer.from(request.requestRaw ||'')).toString('utf8'));
     responseHeader = unpackRaw((Buffer.from(request.responseHeader || '')).toString('utf8'));
-
 
 
     requestHaz.startedDateTime = request.timestamps.ClientConnected;
     requestHaz.time = 3000;
 
-    requestHaz.request  = {
+    requestHaz.request = {
         'method':requestHeader.method,
         'url':getUrl(request),
         'httpVersion': requestHeader.protocol,
@@ -316,7 +315,7 @@ var initRequestHar =  function (request) {
 
     if(typeof request.responseBody !== 'undefined' && request.responseBody.length !== 0 ){
         requestHaz.response.content.size = request.responseBody.length;
-        var requestResponseBodyBaseBuffer  = (Buffer.from(request.responseBody || '', 'base64'));
+        var requestResponseBodyBaseBuffer = (Buffer.from(request.responseBody || '', 'base64'));
 
         //  chunked decode
         if(typeof responseHeader['Transfer-Encoding'] !== 'undefined' && responseHeader['Transfer-Encoding'] === 'chunked'){
@@ -351,11 +350,11 @@ var initRequestHar =  function (request) {
 var downloadHaz = function (request, response, opt) {
     opt = opt || {};
 
-    var data        = opt.data || [],
-        viewData    = [],
-        filename    = opt.id || 'log',
-        index       = parseInt(request.GET.index,10),
-        SNKey       = request.GET.SNKey;
+    var data = opt.data || [],
+        viewData = [],
+        filename = opt.id || 'log',
+        index = parseInt(request.GET.index,10),
+        SNKey = request.GET.SNKey;
 
     var hazJson = {
         'log':{
@@ -380,7 +379,7 @@ var downloadHaz = function (request, response, opt) {
         return;
     }
 
-    if(typeof  data == 'string'){
+    if(typeof data == 'string'){
         failRet(request, response, 'key类型不对');
 
         return;
@@ -433,11 +432,11 @@ var downloadHaz = function (request, response, opt) {
 var download = function(request, response, opt){
     opt = opt || {};
 
-    var data        = opt.data || [],
-        viewData    = [],
-        filename    = opt.id || 'log',
-        index       = parseInt(request.GET.index,10),
-        SNKey       = request.GET.SNKey;
+    var data = opt.data || [],
+        viewData = [],
+        filename = opt.id || 'log',
+        index = parseInt(request.GET.index,10),
+        SNKey = request.GET.SNKey;
 
     if(data.length <= 0){
         failRet(request, response, 'not find log');
@@ -453,7 +452,7 @@ var download = function(request, response, opt){
 
     //data = data[0];
 
-    if(typeof  data == 'string'){
+    if(typeof data == 'string'){
         failRet(request, response, 'key类型不对');
 
         return;
@@ -488,13 +487,13 @@ var download = function(request, response, opt){
     archiver.append(tmpl.download_content_types(), {name: '[Content_Types].xml'});
     
     data.forEach(function(tmp,i){
-        var sid         = ('0000' + (i + 1)).slice(-3);
-        tmp.curr        = tmp.curr || {};
-        tmp.curr.sid    = sid + '.0000';
+        var sid = ('0000' + (i + 1)).slice(-3);
+        tmp.curr = tmp.curr || {};
+        tmp.curr.sid = sid + '.0000';
         
         
-        tmp.curr.logText    = tmp.curr.logText || '';
-        tmp.curr.logText    = tmp.curr.logText.replace(/\r\n|\r|\n/gm,'\r\n');
+        tmp.curr.logText = tmp.curr.logText || '';
+        tmp.curr.logText = tmp.curr.logText.replace(/\r\n|\r|\n/gm,'\r\n');
         var logSNKey = post.getLogSN(tmp.curr.logText);
         
         var log = {
@@ -592,7 +591,6 @@ var failRet = function(request, response, msg){
 
     gzipResponse.end(msg || '');
 };
-
 
 
 // chunked decode  buffer ， 格式 ：size +\r\n + rawText +\r\n  + 0|r\n ,  \r\n ====》 13,10, 中间的即为rawText

@@ -14,7 +14,7 @@ this.token = function(skey){
     var	hash		= 5381;
 
     if(typeof context !== 'undefined'){
-        let window   	= context.window || {};
+        let window = context.window || {};
         if(window.request){
             str = str
 				|| window.request.cookies.p_skey
@@ -30,5 +30,4 @@ this.token = function(skey){
     }
     return hash & 0x7fffffff;
 };
-
 

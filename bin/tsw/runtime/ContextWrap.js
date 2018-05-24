@@ -8,12 +8,12 @@
 'use strict';
 
 const EventEmitter = require('events');
-const net          = require('net');
-const http         = require('http');
-const domain       = require('domain');
-const Context      = require('runtime/Context');
-const Window       = require('runtime/Window');
-const parseGet     = require('util/http/parseGet');
+const net = require('net');
+const http = require('http');
+const domain = require('domain');
+const Context = require('runtime/Context');
+const Window = require('runtime/Window');
+const parseGet = require('util/http/parseGet');
 
 class ContextWrap extends EventEmitter {
 
@@ -50,11 +50,11 @@ class ContextWrap extends EventEmitter {
         this._domain.add(this._req);
         this._domain.add(this._rsp);
 
-        this._domain.currentContext                 = new Context();
-        this._domain.currentContext.log             = {};
-        this._domain.currentContext.SN              = ++process.SN;
-        this._domain.currentContext.window          = new Window();
-        this._domain.currentContext.window.request  = this._req;
+        this._domain.currentContext = new Context();
+        this._domain.currentContext.log = {};
+        this._domain.currentContext.SN = ++process.SN;
+        this._domain.currentContext.window = new Window();
+        this._domain.currentContext.window.request = this._req;
         this._domain.currentContext.window.response = this._rsp;
 
         this._domain.on('error', e => {
@@ -69,8 +69,8 @@ class ContextWrap extends EventEmitter {
         this._domain.remove(this._rsp);
 
         this._domain = null;
-        this._req    = null;
-        this._rsp    = null;
+        this._req = null;
+        this._rsp = null;
     }
 }
 

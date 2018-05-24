@@ -35,7 +35,7 @@ function getFileCacheKey(project,key){
  *
  */
 function updateFileCache(project,key,text){
-    text  = text || JSON.stringify({});
+    text = text || JSON.stringify({});
     var cacheFilename = getFileCacheKey(project,key);
 
     //保存到文件
@@ -272,7 +272,7 @@ module.exports.isTestUser = function(req, res){
         return false;
     }
 
-    var reqUrl      	= req.REQUEST.href;
+    var reqUrl = req.REQUEST.href;
     var timeout			= config.timeout[req.method.toLowerCase()] || config.timeout.get;
     var testPort		= testSpaceInfo.testPort || 80;
     var testIp			= testSpaceInfo.testIp || '';
@@ -352,6 +352,4 @@ module.exports.getTestUserMapFromFileCache = function () {
 
     return localJSON;
 };
-
-
 

@@ -16,7 +16,7 @@ const httpUtil		= require('util/http.js');
 this.go = function(url){
 	
     var data	= {};
-    var window   	= context.window || {};
+    var window = context.window || {};
     var request		= window.request;
     var response	= window.response;
 	

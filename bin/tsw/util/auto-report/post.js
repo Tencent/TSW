@@ -57,7 +57,7 @@ module.exports.getLogArr = function(uin,type,key,limit){
         var start	= data || 0;
 
         var keyTextArr	= type === 'text' ? module.exports.keyTextArr(uin,start) : module.exports.keyJsonArr(uin,start);
-        var keyJsonArr  = module.exports.keyJsonArr(uin,start);
+        var keyJsonArr = module.exports.keyJsonArr(uin,start);
 
         //如果传递进来key，则只需要关注传进来的key
         if(key){
@@ -117,7 +117,6 @@ module.exports.getLogArr = function(uin,type,key,limit){
             defer.resolve(arr);
         });
     });
-
 
 	
     return defer;
@@ -291,7 +290,4 @@ module.exports.decode = function(appid,appkey,body){
 
     return data;
 };
-
-
-
 

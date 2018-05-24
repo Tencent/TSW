@@ -1,4 +1,4 @@
-const chai  = require('chai');
+const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const plug = require('plug');
@@ -10,7 +10,7 @@ let CD 			= plug('util/CD.js');
 let logger		= plug('logger');
 let config		= plug('config');
 let Deferred 	= plug('util/Deferred');
-let ajax  		= plug('ajax');
+let ajax = plug('ajax');
 let gzipHttp 	= plug('util/gzipHttp.js');
 
 

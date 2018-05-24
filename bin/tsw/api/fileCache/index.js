@@ -212,7 +212,6 @@ this.get = this.getAsync = function(filepath){
 };
 
 
-
 this.updateMtime = function(filepath, atime, mtime){
 
     var filename	= this.getDir(filepath);

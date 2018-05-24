@@ -18,7 +18,6 @@ server.route({
 });
 
 
-
 /**
  * 业务处理模块，通过config.js路由请求过来
  */
@@ -27,6 +26,4 @@ module.exports = function(req,res){
     //全转给hapi去处理
     server.connections[0].listener.emit('request',req,res);
 };
-
-
 

@@ -65,4 +65,3 @@ this.modAct = this.modMap = {
     }
 };
 
-

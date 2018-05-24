@@ -64,7 +64,7 @@ this.isAlpha = function(req){
 this.getUin = function(req){
 
     var uin;
-    var window   = context.window || {};
+    var window = context.window || {};
 
     req = req || window.request;
 

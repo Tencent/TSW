@@ -177,7 +177,7 @@ Ajax.prototype.l5Request = function(opt){
 //普通请求
 Ajax.prototype.doRequest = function(opt){
 
-    var window   	= context.window || {};
+    var window = context.window || {};
     var defer		= Deferred.create(),
         tid			= null,
         that		= this,
@@ -360,8 +360,6 @@ Ajax.prototype.doRequest = function(opt){
             }
         }
     }
-
-
 		
 
     if(config.isTest){
@@ -1142,7 +1140,6 @@ Ajax.prototype.doRequest = function(opt){
         });
 
     });
-	
 
 	
     if(opt.send){
@@ -1164,5 +1161,4 @@ Ajax.prototype.doRequest = function(opt){
 	
     return defer;
 };
-
 

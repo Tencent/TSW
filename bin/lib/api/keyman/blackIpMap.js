@@ -191,6 +191,3 @@ this.get = function(){
     return defer;
 };
 
-
-
-

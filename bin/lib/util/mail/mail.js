@@ -73,12 +73,11 @@ this.SendMail = function(key,group,second,oriOpt){
 };
 
 
-
 var reportOpenapi = function(data){
-    var defer   = Deferred.create();
-    var config  = require('config');
+    var defer = Deferred.create();
+    var config = require('config');
     var openapi = require('util/openapi');
-    var logger  = require('logger');
+    var logger = require('logger');
 
     var retCall;
 
@@ -161,6 +160,4 @@ this.SendArsMail = function(opt){
 this.findMailARS = function(file){
     return '';
 };
-
-
 

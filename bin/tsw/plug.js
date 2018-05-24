@@ -22,8 +22,8 @@ function plug(id){
 if(!global.plug){
 	
 	
-    plug.__dirname  = __dirname;
-    plug.parent  	= path.join(__dirname , '..');
+    plug.__dirname = __dirname;
+    plug.parent = path.join(__dirname , '..');
     plug.paths 		= [
         path.join(__dirname , '../deps'),
         path.join(__dirname , '../tsw'),
@@ -53,5 +53,4 @@ if(!global.plug){
 }
 
 module.exports = plug;
-
 

@@ -26,4 +26,3 @@ Context.prototype.getModAct = function(){
     return context.mod_act;
 };
 
-

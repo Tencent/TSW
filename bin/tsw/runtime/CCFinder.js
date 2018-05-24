@@ -36,7 +36,7 @@ this.addWhiteList = function(userIp){
 this.checkHost = function(req, res){
 
     var hostAllow	= config.allowHost || [];
-    var host        = req.headers['host'];
+    var host = req.headers['host'];
     var i,len,v;
 
     if(hostAllow.length === 0){
@@ -79,7 +79,7 @@ this.StdX10 = function(ipCache){
     var arr 	= Object.keys(ipCache).filter(function(item){
         var tmp = ipCache[item];
         if(typeof tmp === 'object' && tmp.list){
-            sum   += tmp.list.length;
+            sum += tmp.list.length;
             return true;
         }
         return false;
@@ -141,7 +141,7 @@ this.check = function(req, res){
         cache.ipCache.StdX10= this.StdX10(cache.ipCache);
         cache.ipCacheLast	= cache.ipCache;
         cache.ipCache		= {};
-        cache.whiteList     = {};
+        cache.whiteList = {};
 
         //上报标准方差
         tnm2.Attr_API_Set('AVG_TSW_IP_STD_X10', cache.ipCacheLast.StdX10);
@@ -221,7 +221,7 @@ this.check = function(req, res){
         'CC'			: config.mailCC,
         'Title'			: `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
         'Content'		: '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
-						+ '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10  + '%</p>'
+						+ '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
 						+ '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
 						+ '<p><strong>正常值：</strong>5-50</p>'
 						+ '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start)/1000) + 's</p>'

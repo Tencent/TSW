@@ -45,7 +45,6 @@ var isStartHeartBeat	= false;
 var heartBeatCount		= 0;
 
 
-
 function doRoute(req,res){
 
     if(routeCache === null){
@@ -324,9 +323,9 @@ function startHeartBeat(){
 
                 //获取本机信息，用来分组
                 require('api/cmdb').GetDeviceThisServer().done(function(data){
-                    data            = data || {};
-                    var business    = data.business && data.business[0] || {};
-                    var owner       = '';
+                    data = data || {};
+                    var business = data.business && data.business[0] || {};
+                    var owner = '';
 
                     if(data.ownerMain){
                         owner = [owner,data.ownerMain].join(';');
@@ -367,7 +366,6 @@ function startHeartBeat(){
     },5000);
 
 }
-
 
 
 //restart
@@ -554,7 +552,4 @@ if(cluster.isMaster){
 
 
 require('webapp/Server.js').startServer();
-
-
-
 

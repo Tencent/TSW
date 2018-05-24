@@ -8,10 +8,10 @@
 'use strict';
 
 exports.doRoute = function(ws, type, d1, d2) {
-    var  wsModAct	= require('./ws.mod.act');
+    var wsModAct	= require('./ws.mod.act');
     var	 wsModMap	= require('./ws.mod.map');
-    var  logger		= require('logger');
-    var  contextMod	= require('context.js');
+    var logger		= require('logger');
+    var contextMod	= require('context.js');
 
     var mod_act = wsModAct.getModAct(ws),
         moduleObj = wsModMap.find(mod_act, ws);

@@ -441,7 +441,6 @@ jQuery.Callbacks = function( flags ) {
 };
 
 
-
 var // Static reference to slice
     sliceDeferred = [].slice;
 

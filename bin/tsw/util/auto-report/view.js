@@ -165,5 +165,3 @@ function returnError(message){
     gzipResponse.end(message);
 }
 
-
-

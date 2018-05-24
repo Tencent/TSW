@@ -44,7 +44,6 @@ var limit = {
 };
 
 
-
 module.exports = function(req, res){
 
     var window		= context.window || {};
@@ -133,7 +132,7 @@ module.exports = function(req, res){
         }
 
         if(isTST.isTST(req)){
-            logger.debug('log type origin: '  + type);
+            logger.debug('log type origin: ' + type);
             type		= 'TST';
             typeKey		= 'EVENT_TSW_LOG_TST';
             arrtKey		= 'SUM_TSW_LOG_TST';
@@ -171,7 +170,7 @@ module.exports = function(req, res){
             limit.time	= Date.now();
         }
 
-        logger.debug('logType: '  + type);
+        logger.debug('logType: ' + type);
 
         dcapi.report({
             key			: typeKey,
@@ -497,7 +496,7 @@ module.exports.receiveCloud = function(req,res){
 
     var appid		= context.appid;
     var appkey		= context.appkey;
-    var reportKey  	= [appid,data.key].join('/');
+    var reportKey = [appid,data.key].join('/');
     var currDays	= parseInt(Date.now() / 1000 / 60 / 60 / 24);
     var logNumMax	= context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
@@ -556,9 +555,6 @@ module.exports.receiveCloud = function(req,res){
     });
 
 };
-
-
-
 
 
 module.exports.top100 = function(req, res){
@@ -679,8 +675,6 @@ module.exports.top100 = function(req, res){
     });
 	
     buffer.push('\r\n\r\n');
-	
-	
 	
 	
     result.forEach(function(v,i){

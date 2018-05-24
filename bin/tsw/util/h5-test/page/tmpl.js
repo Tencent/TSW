@@ -88,7 +88,7 @@ define(function(require, exports, module){
 
             for(var i = 0; i < data.length; i++){
                 var item = data[i];
-                var val = item['ip'] + (item['port']  && (':' + item['port']) || '');
+                var val = item['ip'] + (item['port'] && (':' + item['port']) || '');
                 var name= item['name'];
                 var desc = item['desc'];
                 var owner = item['owner'];

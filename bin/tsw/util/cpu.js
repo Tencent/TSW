@@ -7,9 +7,9 @@
  */
 'use strict';
 
-const os            = require('os');
-const fs            = require('fs');
-const {isWindows}   = require('./isWindows.js');
+const os = require('os');
+const fs = require('fs');
+const {isWindows} = require('./isWindows.js');
 var cache;
 
 if(!global[__filename]){
@@ -32,7 +32,7 @@ if(!global[__filename]){
 
 this.getCpuUsed = function(cpu){
 
-    var now     = Date.now();
+    var now = Date.now();
     
     cpu = cpu || '';
 
@@ -71,28 +71,28 @@ this.getCpuUsed = function(cpu){
         }
 
         if(str){
-            arr     = str.split(/\W+/);
+            arr = str.split(/\W+/);
         }else{
             return;
         }
 
-        var user    = parseInt(arr[1],10) || 0;
-        var nice    = parseInt(arr[2],10) || 0;
-        var system  = parseInt(arr[3],10) || 0;
-        var idle    = parseInt(arr[4],10) || 0;
-        var iowait  = parseInt(arr[5],10) || 0;
-        var irq     = parseInt(arr[6],10) || 0;
+        var user = parseInt(arr[1],10) || 0;
+        var nice = parseInt(arr[2],10) || 0;
+        var system = parseInt(arr[3],10) || 0;
+        var idle = parseInt(arr[4],10) || 0;
+        var iowait = parseInt(arr[5],10) || 0;
+        var irq = parseInt(arr[6],10) || 0;
         var softirq = parseInt(arr[7],10) || 0;
         // var  steal   = parseInt(arr[8],10) || 0;
         // var guest    = parseInt(arr[9],10) || 0;
 
-        var total   = user + nice + system + idle + iowait + irq + softirq;
-        var used    = user + nice + system + irq + softirq;
-        var curr    = Math.round((used - cache.used) / (total - cache.total) * 100);
+        var total = user + nice + system + idle + iowait + irq + softirq;
+        var used = user + nice + system + irq + softirq;
+        var curr = Math.round((used - cache.used) / (total - cache.total) * 100);
 
-        cache.curr  = curr;
+        cache.curr = curr;
         cache.total = total;
-        cache.used  = used;
+        cache.used = used;
     });
 
     return cache.curr;
@@ -126,9 +126,9 @@ this.parseTaskset = function(str){
         
         v = v.trim();
         
-        var tmp     = v.split('-');
-        var start   = ~~tmp[0];
-        var end     = ~~tmp[1];
+        var tmp = v.split('-');
+        var start = ~~tmp[0];
+        var end = ~~tmp[1];
         var i;
         
         if(end < start){
