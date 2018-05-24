@@ -20,18 +20,18 @@ if(isWindows) {
 }
 
 function getLinuxLocalIpv4() {
-    var intranetIp = '';
-    var networkInterfaces = os.networkInterfaces();
+    let intranetIp = '';
+    let networkInterfaces = os.networkInterfaces();
 
     Object.keys(networkInterfaces).forEach(function(key) {
-        var eth = networkInterfaces[key];
-        var address = eth && eth[0] && eth[0].address;
+        let eth = networkInterfaces[key];
+        let address = eth && eth[0] && eth[0].address;
 
         if(!address) {
             return;
         }
 
-        var tmp = isInnerIP.isInnerIP(address);
+        let tmp = isInnerIP.isInnerIP(address);
         if(!tmp) {
             return;
         }
@@ -48,10 +48,10 @@ function getLinuxLocalIpv4() {
 
 function getWinLocalIpv4() {
 
-    var localNet = os.networkInterfaces();
-    var key, item;
-    var v, i;
-    var userIp = null;
+    let localNet = os.networkInterfaces();
+    let key, item;
+    let v, i;
+    let userIp = null;
 
     for(key in localNet) {
         item = localNet[key];

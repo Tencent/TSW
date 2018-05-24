@@ -17,7 +17,7 @@ const tnm2 = require('api/tnm2');
 
 module.exports = function(req) {
     
-    var v, key, index1, index2;
+    let v, key, index1, index2;
 
     if(req.url.indexOf('+') > -1) {
         req.REQUEST = url.parse(req.url.replace(/\+/g, ' '));
@@ -67,14 +67,14 @@ module.exports = function(req) {
     }else{
         //fast parse
         req.REQUEST.query.split('&').forEach(function(v) {
-            var index = v.indexOf('=');
+            let index = v.indexOf('=');
 
             if(index < 0) {
                 return;
             }
 
-            var $1 = v.substr(0, index);
-            var $2 = v.substr(index + 1);
+            let $1 = v.substr(0, index);
+            let $2 = v.substr(index + 1);
 
             try{
                 req.GET[$1] = decodeURIComponent($2);
@@ -193,9 +193,9 @@ module.exports = function(req) {
 };
 
 function paramFn(name, defaultValue) {
-    var params = this.params || {};
-    var body = this.body || {};
-    var query = this.query || {};
+    let params = this.params || {};
+    let body = this.body || {};
+    let query = this.query || {};
     if (null != params[name] && params.hasOwnProperty(name)) return params[name];
     if (null != body[name]) return body[name];
     if (null != query[name]) return query[name];

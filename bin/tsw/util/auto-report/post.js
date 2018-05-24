@@ -31,8 +31,8 @@ module.exports.getLogJson = function(uin, limit) {
 
 module.exports.getLogJsonByKey = function (uin, key) {
 
-    var prefix = this.keyJson('');
-    var keyJson;
+    let prefix = this.keyJson('');
+    let keyJson;
 
     if(String(key).startsWith(prefix)) {
         keyJson = key;
@@ -45,19 +45,19 @@ module.exports.getLogJsonByKey = function (uin, key) {
 
 module.exports.getLogArr = function(uin, type, key, limit) {
     
-    var defer = Deferred.create();
-    var memcached = this.cmem();
-    var keyBitmap = this.keyBitmap(uin);
+    let defer = Deferred.create();
+    let memcached = this.cmem();
+    let keyBitmap = this.keyBitmap(uin);
 
     if(!memcached) {
         return defer.resolve([]);
     }
 
     memcached.get(keyBitmap, function(err, data) {
-        var start = data || 0;
+        let start = data || 0;
 
-        var keyTextArr = type === 'text' ? module.exports.keyTextArr(uin, start) : module.exports.keyJsonArr(uin, start);
-        var keyJsonArr = module.exports.keyJsonArr(uin, start);
+        let keyTextArr = type === 'text' ? module.exports.keyTextArr(uin, start) : module.exports.keyJsonArr(uin, start);
+        let keyJsonArr = module.exports.keyJsonArr(uin, start);
 
         //如果传递进来key，则只需要关注传进来的key
         if(key) {
@@ -79,9 +79,9 @@ module.exports.getLogArr = function(uin, type, key, limit) {
                 return;
             }
 
-            var i, len, index;
-            var arr = [], keys = [], SNKeys = [], extInfos = []; //keys和SNKeys挂在arr下面，保持跟arr同序。
-            var currKey, tmpInfo = {};
+            let i, len, index;
+            let arr = [], keys = [], SNKeys = [], extInfos = []; //keys和SNKeys挂在arr下面，保持跟arr同序。
+            let currKey, tmpInfo = {};
 
             for(len = keyTextArr.length, i = 0; i < len ;i++) {
 
@@ -123,7 +123,7 @@ module.exports.getLogArr = function(uin, type, key, limit) {
 };
 
 module.exports.getLogSN = function (logText) {
-    var SNReg = /\[(\d+\scpu\d+\s\d+)\]/;
+    let SNReg = /\[(\d+\scpu\d+\s\d+)\]/;
     if(logText) {
         logText = logText.match && logText.match(SNReg) && logText.match(SNReg)[1] || 'unknown';
         return logText.replace(/\s/igm, '');
@@ -142,12 +142,12 @@ module.exports.getLogFromReg = function (logText, reg) {
 };
 
 module.exports.getLogResultCode = function (logText) {
-    var reg = /response\s(\d+)\s\{/;
+    let reg = /response\s(\d+)\s\{/;
     return this.getLogFromReg(logText, reg);
 };
 
 module.exports.report = function(key, logText, logJson) {
-    var defer = Deferred.create();
+    let defer = Deferred.create();
 
     if(!key) {
         return defer.reject();
@@ -159,10 +159,10 @@ module.exports.report = function(key, logText, logJson) {
     
     logJson = logJson || {};
 
-    var memcached = this.cmem();  //要用this
-    var keyText = module.exports.keyText(key);
-    var keyJson = module.exports.keyJson(key);
-    var keyBitmap = module.exports.keyBitmap(key);
+    let memcached = this.cmem();  //要用this
+    let keyText = module.exports.keyText(key);
+    let keyJson = module.exports.keyJson(key);
+    let keyBitmap = module.exports.keyBitmap(key);
 
     if(!memcached) {
         return defer.resolve();
@@ -170,7 +170,7 @@ module.exports.report = function(key, logText, logJson) {
 
     memcached.add(keyBitmap, 0, 24 * 60 * 60, function(err, ret) {
 
-        var isFirst = false;
+        let isFirst = false;
 
         if(err) {
             //add err是正常的
@@ -188,7 +188,7 @@ module.exports.report = function(key, logText, logJson) {
                 return;
             }
 
-            var index = 0;
+            let index = 0;
 
             if(typeof result === 'number') {
                 index = result % MAX_NUM;
@@ -208,25 +208,25 @@ module.exports.report = function(key, logText, logJson) {
 
 
 module.exports.keyBitmap = function(key) {
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
     return ['bitmap.v4.log', currDays, key].join('.');
 };
 
 module.exports.keyJson = function(key) {
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
     return ['json.v4.log', currDays, key].join('.');
 };
 
 module.exports.keyText = function(key) {
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
     return ['text.v4.log', currDays, key].join('.');
 };
 
 module.exports.keyJsonArr = function(key, index) {
     
-    var i = 0;
-    var arr = [];
-    var keyJson = this.keyJson(key);
+    let i = 0;
+    let arr = [];
+    let keyJson = this.keyJson(key);
 
     index = index || 0;
     for(i = MAX_NUM; i > 0; i--) {
@@ -238,9 +238,9 @@ module.exports.keyJsonArr = function(key, index) {
 
 module.exports.keyTextArr = function(key, index) {
     
-    var i = 0;
-    var arr = [];
-    var keyText = this.keyText(key);
+    let i = 0;
+    let arr = [];
+    let keyText = this.keyText(key);
 
     index = index || 0;
     for(i = MAX_NUM; i > 0; i--) {
@@ -253,20 +253,20 @@ module.exports.keyTextArr = function(key, index) {
 
 //加密
 module.exports.encode = function(appid, appkey, data) {
-    var input = Buffer.from(JSON.stringify(data), 'UTF-8');
-    var buff = zlib.deflateSync(input);
-    var des = crypto.createCipher('des', (appid + appkey));
-    var buf1 = des.update(buff, null, 'hex');
-    var buf2 = des.final('hex');
-    var body = Buffer.from(buf1 + buf2, 'hex').toString('base64');
+    let input = Buffer.from(JSON.stringify(data), 'UTF-8');
+    let buff = zlib.deflateSync(input);
+    let des = crypto.createCipher('des', (appid + appkey));
+    let buf1 = des.update(buff, null, 'hex');
+    let buf2 = des.final('hex');
+    let body = Buffer.from(buf1 + buf2, 'hex').toString('base64');
     return body;
 };
 
 //解密
 module.exports.decode = function(appid, appkey, body) {
-    var des = crypto.createDecipher('des', (appid + appkey));
-    var buf1 = '';
-    var buf2 = '';
+    let des = crypto.createDecipher('des', (appid + appkey));
+    let buf1 = '';
+    let buf2 = '';
 
     try{
         buf1 = des.update(body, 'base64', 'hex');
@@ -276,10 +276,10 @@ module.exports.decode = function(appid, appkey, body) {
         return null;
     }
 
-    var buff = Buffer.from(buf1 + buf2, 'hex');
-    var input = zlib.inflateSync(buff);
+    let buff = Buffer.from(buf1 + buf2, 'hex');
+    let input = zlib.inflateSync(buff);
 
-    var data = null;
+    let data = null;
 
     try{
         data = JSON.parse(input.toString('UTF-8'));

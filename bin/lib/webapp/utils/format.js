@@ -12,9 +12,9 @@ function formatBuffer(buffer) {
         return '';
     }
 
-    var str = '';
+    let str = '';
 
-    for (var i = 0, len = buffer.length; i < len; i++) {
+    for (let i = 0, len = buffer.length; i < len; i++) {
         if(i % 16 === 0) {
             str += '0x' + ('00000000000' + i.toString(16)).slice(-8) + ':  ';
         }

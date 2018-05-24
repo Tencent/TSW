@@ -16,8 +16,8 @@ const mail = require('util/mail/mail.js');
 const tnm2 = require('api/tnm2');
 const CCIPSize = 1000;                        //统计周期
 const CCIPLimit = config.CCIPLimit;            //限制
-var ipConut = CCIPSize;
-var cache = {
+let ipConut = CCIPSize;
+let cache = {
     ipCache: {},
     whiteList: {},
     ipCacheLast: {}
@@ -35,9 +35,9 @@ this.addWhiteList = function(userIp) {
 
 this.checkHost = function(req, res) {
 
-    var hostAllow = config.allowHost || [];
-    var host = req.headers['host'];
-    var i, len, v;
+    let hostAllow = config.allowHost || [];
+    let host = req.headers['host'];
+    let i, len, v;
 
     if(hostAllow.length === 0) {
         return true;
@@ -73,11 +73,11 @@ this.checkHost = function(req, res) {
 //计算标准方差
 this.StdX10 = function(ipCache) {
 
-    var res = 0;
-    var sum = 0;
-    var avg = 0;
-    var arr = Object.keys(ipCache).filter(function(item) {
-        var tmp = ipCache[item];
+    let res = 0;
+    let sum = 0;
+    let avg = 0;
+    let arr = Object.keys(ipCache).filter(function(item) {
+        let tmp = ipCache[item];
         if(typeof tmp === 'object' && tmp.list) {
             sum += tmp.list.length;
             return true;
@@ -91,9 +91,9 @@ this.StdX10 = function(ipCache) {
 
     avg = sum / arr.length;
 
-    var sumXsum = arr.reduce(function(pre, key) {
-        var item = ipCache[key];
-        var value = item.list.length;
+    let sumXsum = arr.reduce(function(pre, key) {
+        let item = ipCache[key];
+        let value = item.list.length;
         item.avg = avg;
 
         return pre + (value - avg)*(value - avg);
@@ -106,11 +106,11 @@ this.StdX10 = function(ipCache) {
 
 this.check = function(req, res) {
 
-    var userIp = httpUtil.getUserIp(req);
-    var userIp24 = httpUtil.getUserIp24(req);
-    var key, Content, curr;
+    let userIp = httpUtil.getUserIp(req);
+    let userIp24 = httpUtil.getUserIp24(req);
+    let key, Content, curr;
 
-    var info = {
+    let info = {
         userIp        : userIp,
         hostname    : req.headers.host,
         pathname    : req.REQUEST.pathname
@@ -203,7 +203,7 @@ this.check = function(req, res) {
 
     Object.keys(cache.ipCacheLast).forEach(function(ip, i) {
 
-        var num = '';
+        let num = '';
 
         if(
             cache.ipCacheLast[ip]

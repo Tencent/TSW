@@ -34,13 +34,13 @@ module.exports.checkLogin = function(request, response, callback) {
 
 module.exports.go = function(request, response) {
 
-    var arr = request.REQUEST.pathname.split('/');
-    var appid = context.appid || '';
-    var group = arr[3];
-    var key = arr[4];
-    var groupKey = 'v2.group.alpha';
-    var limit = ~~context.limit || 64;
-    var currPost = post;
+    let arr = request.REQUEST.pathname.split('/');
+    let appid = context.appid || '';
+    let group = arr[3];
+    let key = arr[4];
+    let groupKey = 'v2.group.alpha';
+    let limit = ~~context.limit || 64;
+    let currPost = post;
 
     if(appid) {
         currPost = postOpenapi;
@@ -64,8 +64,8 @@ module.exports.go = function(request, response) {
         return returnError('key格式非法');
     }
 
-    var createLogKey = function(appid, group, key) {
-        var logKey = key;
+    let createLogKey = function(appid, group, key) {
+        let logKey = key;
 
         if(group) {
             logKey = `${group}/${logKey}`;
@@ -74,7 +74,7 @@ module.exports.go = function(request, response) {
         return logKey;
     };
 
-    var logKey = createLogKey(appid, group, key);
+    let logKey = createLogKey(appid, group, key);
 
     if(appid) {
         logKey = `${appid}/${logKey}`;
@@ -88,10 +88,10 @@ module.exports.go = function(request, response) {
     context.logKey = logKey;
     context.createLogKey = createLogKey;
 
-    var logCount = 0;
-    var logKeyCount = 0;
-    var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let logCount = 0;
+    let logKeyCount = 0;
+    let logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
 
     logger.debug('logKey :${logKey}', {
         logKey: logKey
@@ -99,7 +99,7 @@ module.exports.go = function(request, response) {
 
     if(request.GET.type === 'json') {
         currPost.getLogJson(logKey, limit).done(function(logArr) {
-            var gzipResponse = gzipHttp.getGzipResponse({
+            let gzipResponse = gzipHttp.getGzipResponse({
                 request: request,
                 response: response,
                 code: 200,
@@ -118,7 +118,7 @@ module.exports.go = function(request, response) {
                 currPost.getLog(logKey, limit).done(function(logArr) {
                     currPost.getLog(groupKey, limit).done(function(groupArr) {
 
-                        var html = tmpl.log_view({
+                        let html = tmpl.log_view({
                             logKeyCount: logKeyCount,
                             logNumMax: logNumMax,
                             logCount: logCount,
@@ -138,7 +138,7 @@ module.exports.go = function(request, response) {
                             }
                         });
 
-                        var gzipResponse = gzipHttp.getGzipResponse({
+                        let gzipResponse = gzipHttp.getGzipResponse({
                             request: request,
                             response: response,
                             code: 200,
@@ -154,8 +154,8 @@ module.exports.go = function(request, response) {
 };
 
 function returnError(message) {
-    var window = context.window;
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let window = context.window;
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: window.request,
         response: window.response,
         code: 200,

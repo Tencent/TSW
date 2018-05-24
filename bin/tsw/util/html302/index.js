@@ -15,10 +15,10 @@ const httpUtil = require('util/http.js');
 //用html代替302跳转
 this.go = function(url) {
     
-    var data = {};
-    var window = context.window || {};
-    var request = window.request;
-    var response = window.response;
+    let data = {};
+    let window = context.window || {};
+    let request = window.request;
+    let response = window.response;
     
     data.url = url;
     
@@ -28,9 +28,9 @@ this.go = function(url) {
     if(request && request.headers['x-wns-uin']) {
         
         
-        var html = tmpl.jump(data);
+        let html = tmpl.jump(data);
         
-        var gzip = gzipHttp.create({
+        let gzip = gzipHttp.create({
             code: 200,
             offline: 'false'
         });

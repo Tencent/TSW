@@ -10,8 +10,8 @@
 const config = require('config');
 
 module.exports.report = function(data) {
-    var retValue;
-    var reportData = {
+    let retValue;
+    let reportData = {
         table:'reportData',
         data:{
             type    : data.type,

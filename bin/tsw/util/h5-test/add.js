@@ -22,21 +22,21 @@ module.exports = function(request, response) {
 };
 
 module.exports.go = async function(request, response) {
-    
-    var uin = request.param('uin');
-    var val = request.param('val');
 
-    var data = await module.exports.addTestUser(uin, val).toES6Promise().catch(function() {
+    let uin = request.param('uin');
+    let val = request.param('val');
+
+    let data = await module.exports.addTestUser(uin, val).toES6Promise().catch(function() {
         return null;
     });
 
-    var result = {code: 0, data: data};
+    let result = {code: 0, data: data};
 
     returnJson(result);
 };
 
-var returnJson = function(json) {
-    var gzip = gzipHttp.create({
+const returnJson = function(json) {
+    let gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });
@@ -48,10 +48,10 @@ var returnJson = function(json) {
 module.exports.addTestUser = function(uin, val) {
     logger.debug('addTestUser:' + uin);
     val = val || true;
-    var memcached = isTest.cmem();
-    var keyText = isTest.keyBitmap();
-    var defer = Deferred.create();
-    var appid = '';
+    let memcached = isTest.cmem();
+    let keyText = isTest.keyBitmap();
+    let defer = Deferred.create();
+    let appid = '';
 
     if(context.appid && context.appkey) {
         //开平过来的
@@ -82,14 +82,14 @@ module.exports.addTestUser = function(uin, val) {
             data = post.decode(context.appid, context.appkey, data);
         }
 
-        var expire = 24*60*60;
+        let expire = 24*60*60;
 
         if(err) {
             logger.error('memcache get error:' + err);
             return defer.reject('memcache get error');
         }
 
-        var text;
+        let text;
 
         if(typeof data === 'object') {
             text = data || {};

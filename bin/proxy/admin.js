@@ -17,7 +17,7 @@ const cp = require('child_process');
 
 const server = http.createServer(function(req, res) {
 
-    var action;
+    let action;
 
     logger.info('admin request by： ${url}', {
         url: req.url

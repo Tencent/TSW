@@ -26,16 +26,16 @@ module.exports = function(request, response) {
 
 module.exports.go = function(request, response) {
 
-    var arr = request.REQUEST.pathname.split('/');
-    var appid = context.appid || '';
-    var group = arr[3];
-    var key = arr[4];
-    var groupKey = 'v2.group.alpha';
-    var limit = ~~context.limit || 64;
-    var currPost = post;
+    let arr = request.REQUEST.pathname.split('/');
+    let appid = context.appid || '';
+    let group = arr[3];
+    let key = arr[4];
+    let groupKey = 'v2.group.alpha';
+    let limit = ~~context.limit || 64;
+    let currPost = post;
 
 
-    var flagOfDownloadFileFormat = request.query.fileFormat;
+    let flagOfDownloadFileFormat = request.query.fileFormat;
 
     if(appid) {
         currPost = postOpenapi;
@@ -59,8 +59,8 @@ module.exports.go = function(request, response) {
         return returnError('key格式非法');
     }
 
-    var createLogKey = function(appid, group, key) {
-        var logKey = key;
+    let createLogKey = function(appid, group, key) {
+        let logKey = key;
 
         if(group) {
             logKey = `${group}/${logKey}`;
@@ -69,7 +69,7 @@ module.exports.go = function(request, response) {
         return logKey;
     };
 
-    var logKey = createLogKey(appid, group, key);
+    let logKey = createLogKey(appid, group, key);
 
     if(appid) {
         logKey = `${appid}/${logKey}`;
@@ -88,7 +88,7 @@ module.exports.go = function(request, response) {
     });
 
     //下标。
-    var index = parseInt(request.GET.index, 10);
+    let index = parseInt(request.GET.index, 10);
 
     key = logKey + '.' + index;
 
@@ -132,8 +132,8 @@ module.exports.go = function(request, response) {
 
 
 function returnError(message) {
-    var window = context.window;
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let window = context.window;
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: window.request,
         response: window.response,
         code: 200,
@@ -145,11 +145,11 @@ function returnError(message) {
 
 
 //curr
-var initRequestHar = function (request) {
-    var unpackRaw = function (requestRaw) {
-        var requestArr = [];
+let initRequestHar = function (request) {
+    let unpackRaw = function (requestRaw) {
+        let requestArr = [];
         // 补全没有的数据
-        var request = {
+        let request = {
             cookie:'',
             headers:[],
             postData:{},
@@ -167,7 +167,7 @@ var initRequestHar = function (request) {
                     if(item!=='' && item.length !== 0) {
                         // 第一行，请求头：GET url；回包：HTTP/1.1 200 OK
                         if(index === 0) {
-                            var firstItem = item.split(' ');
+                            let firstItem = item.split(' ');
                             // 请求头：GET url；
                             if(firstItem.length === 3) {
                                 request.protocol = firstItem[2];
@@ -189,7 +189,7 @@ var initRequestHar = function (request) {
                     }
                 });
                 if(request.method && request.method === 'POST') {
-                    var postDataArr = requestArr[requestArr.length - 1];
+                    let postDataArr = requestArr[requestArr.length - 1];
                     request.postData.mimeType = 'multipart/form-data';
                     request.postData.text = postDataArr;
                 }
@@ -199,7 +199,7 @@ var initRequestHar = function (request) {
         }
         // 补齐cookie
         if(request.cookie) {
-            var cookieArray = request.cookie.split(';');
+            let cookieArray = request.cookie.split(';');
             if(cookieArray.length > 0) {
                 request.cookieArray = [];
                 cookieArray.forEach(function (item) {
@@ -213,7 +213,7 @@ var initRequestHar = function (request) {
         }
         // 补齐query
         if(request.path && request.path.indexOf('?') !== -1) {
-            var query = request.path.slice(request.path.indexOf('?') + 1);
+            let query = request.path.slice(request.path.indexOf('?') + 1);
             if(query) {
                 query = query.split('&');// re=va
                 query.forEach(function (item) {
@@ -228,9 +228,9 @@ var initRequestHar = function (request) {
 
         return request;
     };
-    var getUrl = function (curr) {
-        var url;
-        var host;
+    let getUrl = function (curr) {
+        let url;
+        let host;
         if(curr) {
             host = String(curr.host);
             url = String(curr.url);
@@ -241,8 +241,8 @@ var initRequestHar = function (request) {
         }
         return url;
     };
-    
-    var
+
+    let
         requestHaz = {},
         requestHeader,
         responseHeader;
@@ -276,8 +276,8 @@ var initRequestHar = function (request) {
     //     console.log(buffer.toString())
     // });
 
-    var mimeTypeTemp = responseHeader['Content-Type'] ;
-    var mimeType= (typeof mimeTypeTemp === 'undefined')? responseHeader['content-type']: mimeTypeTemp ;
+    let mimeTypeTemp = responseHeader['Content-Type'] ;
+    let mimeType= (typeof mimeTypeTemp === 'undefined')? responseHeader['content-type']: mimeTypeTemp ;
     mimeType = (typeof mimeType=== 'undefined') ? mimeType : mimeType.trim();
 
     requestHaz.response = {
@@ -315,7 +315,7 @@ var initRequestHar = function (request) {
 
     if(typeof request.responseBody !== 'undefined' && request.responseBody.length !== 0 ) {
         requestHaz.response.content.size = request.responseBody.length;
-        var requestResponseBodyBaseBuffer = (Buffer.from(request.responseBody || '', 'base64'));
+        let requestResponseBodyBaseBuffer = (Buffer.from(request.responseBody || '', 'base64'));
 
         //  chunked decode
         if(typeof responseHeader['Transfer-Encoding'] !== 'undefined' && responseHeader['Transfer-Encoding'] === 'chunked') {
@@ -326,7 +326,7 @@ var initRequestHar = function (request) {
 
         if(typeof responseHeader['Content-Encoding'] !== 'undefined' && responseHeader['Content-Encoding'] === 'gzip') {
             try {
-                var ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
+                let ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
                 requestHaz.response.content.text = ungziprawText.toString('utf8');// 暂时文件
             } catch (e) {
                 requestHaz.response.content.text = requestResponseBodyBaseBuffer;// 暂时文件
@@ -347,16 +347,16 @@ var initRequestHar = function (request) {
 
 };
 
-var downloadHaz = function (request, response, opt) {
+const downloadHaz = function (request, response, opt) {
     opt = opt || {};
 
-    var data = opt.data || [],
+    let data = opt.data || [],
         viewData = [],
         filename = opt.id || 'log',
         index = parseInt(request.GET.index, 10),
         SNKey = request.GET.SNKey;
 
-    var hazJson = {
+    let hazJson = {
         'log':{
             'version': '1.2',
             'creator': {
@@ -386,7 +386,7 @@ var downloadHaz = function (request, response, opt) {
     }
 
     response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.har');
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -424,15 +424,15 @@ var downloadHaz = function (request, response, opt) {
 
 
     });
-    var buf = Buffer.from(JSON.stringify(hazJson), 'UTF-8');
+    let buf = Buffer.from(JSON.stringify(hazJson), 'UTF-8');
     gzipResponse.write(buf);
     gzipResponse.end();
 };
 
-var download = function(request, response, opt) {
+const download = function(request, response, opt) {
     opt = opt || {};
 
-    var data = opt.data || [],
+    let data = opt.data || [],
         viewData = [],
         filename = opt.id || 'log',
         index = parseInt(request.GET.index, 10),
@@ -457,12 +457,12 @@ var download = function(request, response, opt) {
 
         return;
     }
-    
+
     filename = filename.replace(/[^a-zA-Z0-9_.-]/g, '_');
-    
+
     response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.saz');
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -480,26 +480,26 @@ var download = function(request, response, opt) {
     }else{
         data = data.reverse();
     }
-    
-    var archiver = new Archiver('zip');
+
+    let archiver = new Archiver('zip');
 
     archiver.append(tmpl.download_index(data), {name: '_index.htm'});
     archiver.append(tmpl.download_content_types(), {name: '[Content_Types].xml'});
-    
+
     data.forEach(function(tmp, i) {
-        var sid = ('0000' + (i + 1)).slice(-3);
+        let sid = ('0000' + (i + 1)).slice(-3);
         tmp.curr = tmp.curr || {};
         tmp.curr.sid = sid + '.0000';
-        
-        
+
+
         tmp.curr.logText = tmp.curr.logText || '';
         tmp.curr.logText = tmp.curr.logText.replace(/\r\n|\r|\n/gm, '\r\n');
-        var logSNKey = post.getLogSN(tmp.curr.logText);
-        
-        var log = {
+        let logSNKey = post.getLogSN(tmp.curr.logText);
+
+        let log = {
             curr: {
                 sid             : sid,
-                
+
                 protocol        : 'HTTP',
                 host            : '',
                 url             : '',
@@ -518,30 +518,30 @@ var download = function(request, response, opt) {
                 timestamps      : tmp.curr.timestamps
             }
         };
-        
+
         viewData.push(tmp);
         viewData.push(log);
-        
+
         tmp.ajax &&
         tmp.ajax.forEach(function(curr, i) {
-            
-            var ajax = {};
-            
+
+            let ajax = {};
+
             if(!curr.SN) {
                 return;
             }
-            
+
             ajax.curr = curr;
-            
+
             curr.sid = sid + '.' + (`0000${curr.SN}`.slice(-3));
-            
+
             viewData.push(ajax);
         });
     });
-    
+
     viewData.forEach(function(tmp, i) {
         archiver.append(
-            tmp.curr.requestRaw || '', 
+            tmp.curr.requestRaw || '',
             {
                 name: 'raw/' + (tmp.curr.sid) + '_c.txt'
             }
@@ -562,9 +562,9 @@ var download = function(request, response, opt) {
             }
         );
     });
-    
+
     // archiver.pipe(gzipResponse);
-    
+
     archiver.on('error', function(e) {
         logger.error('archive log error \n' + e.message);
     });
@@ -580,8 +580,8 @@ var download = function(request, response, opt) {
     archiver.finalize();
 };
 
-var failRet = function(request, response, msg) {
-    var gzipResponse = gzipHttp.getGzipResponse({
+const failRet = function(request, response, msg) {
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -595,22 +595,22 @@ var failRet = function(request, response, msg) {
 
 // chunked decode  buffer ， 格式 ：size +\r\n + rawText +\r\n  + 0|r\n ,  \r\n ====》 13,10, 中间的即为rawText
 
-var decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
-    var rawText = [];
-    var startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
+const decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
+    let rawText = [];
+    let startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
     while( startOfTheRawText !== -1 && startOfTheRawText !== 0 ) {
-        var rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
-        var rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
+        let rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
+        let rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
         if(rawTextSizeUint8ArrayInt === 0 ) {
             break;
         }
-        var chunkedText = Uint8ArrayBuffer.slice(startOfTheRawText+2, startOfTheRawText+2 +rawTextSizeUint8ArrayInt );
+        let chunkedText = Uint8ArrayBuffer.slice(startOfTheRawText+2, startOfTheRawText+2 +rawTextSizeUint8ArrayInt );
         rawText.push(Buffer.from(chunkedText));
         Uint8ArrayBuffer = Uint8ArrayBuffer.slice(startOfTheRawText+2 +rawTextSizeUint8ArrayInt+2);
         startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
     }
-    var bufferText = new Uint8Array( 0 );
-    for(var ji=0; ji<rawText.length;ji++) {
+    let bufferText = new Uint8Array( 0 );
+    for(let ji=0; ji<rawText.length;ji++) {
         bufferText = Buffer.concat([bufferText, rawText[ji]]);
     }
     return bufferText ;

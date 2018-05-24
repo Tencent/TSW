@@ -8,7 +8,7 @@
 'use strict';
 
 const config = require('./config.js');
-var base = null;
+let base = null;
 
 if(config.skyMode) {
     base = require('default/config.default.sky.js');
@@ -18,7 +18,7 @@ if(config.skyMode) {
 
 if(base) {
     module.exports.find = function(mod_act, req, res) {
-        var mod = base.modMap.find(mod_act, req, res);
+        let mod = base.modMap.find(mod_act, req, res);
 
         if(mod) {
             return mod;

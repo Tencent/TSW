@@ -19,11 +19,11 @@ const cmemTSW = require('data/cmem.tsw.js');
 const url = require('url');
 const fileCache = require('api/fileCache');
 const openapi = require('util/openapi');
-var isFirstLoad = false;
+let isFirstLoad = false;
 
 //以下是提高稳定性用的
 function getFileCacheKey(project, key) {
-    var cacheFilename = [project, key.replace(/\?.+$/, '')].join('/');
+    let cacheFilename = [project, key.replace(/\?.+$/, '')].join('/');
 
     cacheFilename += '.cache';
     return cacheFilename;
@@ -36,7 +36,7 @@ function getFileCacheKey(project, key) {
  */
 function updateFileCache(project, key, text) {
     text = text || JSON.stringify({});
-    var cacheFilename = getFileCacheKey(project, key);
+    let cacheFilename = getFileCacheKey(project, key);
 
     //保存到文件
     fileCache.set(cacheFilename, Buffer.from(text, 'UTF-8'));
@@ -71,12 +71,12 @@ function onDisconnect (type) {
 //提高稳定性结束
 
 //1分钟从memcache中更新一次足够了
-var getTimeout = 60000;
-var lastUpdateTime = 0;
+let getTimeout = 60000;
+let lastUpdateTime = 0;
 
 //获取测试用户
-var getTestUserMap = function() {
-    
+let getTestUserMap = function() {
+
     //看下fileCache里面有没有
     if(!global[__filename]) {
         //进入这个逻辑，是worker restart后的一分钟内的[第一次]，从硬盘同步数据过来；一旦取到数据之后，这里将不再执行
@@ -87,11 +87,11 @@ var getTestUserMap = function() {
         lastUpdateTime = Date.now();
         syncFromMemcachedOrCloud();
     }
-    
+
     return global[__filename] || {};
 };
 
-var syncFromMemcachedOrCloud = function() {
+const syncFromMemcachedOrCloud = function() {
     if(config.appid && config.appkey) {
         return syncFromCloud();
     }
@@ -99,11 +99,11 @@ var syncFromMemcachedOrCloud = function() {
     return syncFromMemcached();
 };
 
-var syncFromMemcached = function() {
+const syncFromMemcached = function() {
 
     //从内存中读取testTargetMap
-    var memcached = module.exports.cmem();
-    var keyText = module.exports.keyBitmap();
+    let memcached = module.exports.cmem();
+    let keyText = module.exports.keyBitmap();
 
     if(!memcached) {
         return;
@@ -118,7 +118,7 @@ var syncFromMemcached = function() {
             logger.error('memcache get data true');
             data = {};
         }
-        
+
         global[__filename] = data || {};
 
         //加到白名单里
@@ -132,7 +132,7 @@ var syncFromMemcached = function() {
 };
 
 //从云端同步
-var syncFromCloud = function(merge) {
+const syncFromCloud = function(merge) {
 
     if(!config.appid) {
         return;
@@ -146,12 +146,12 @@ var syncFromCloud = function(merge) {
         return;
     }
 
-    var postData = {
+    let postData = {
         appid: config.appid,
         now: Date.now()
     };
 
-    var sig = openapi.signature({
+    let sig = openapi.signature({
         pathname: url.parse(config.h5testSyncUrl).pathname,
         method: 'POST',
         data: postData,
@@ -178,7 +178,7 @@ var syncFromCloud = function(merge) {
         }
         global[__filename] = {};
     }).done(function(d) {
-        var data = null;
+        let data = null;
         if(d.result && d.result.code === 0) {
             data = d.result.data || {};
         }
@@ -222,16 +222,16 @@ module.exports.getTestSpaceInfo = function(req) {
     }
 
     //测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
-    var testTargetMap = getTestUserMap();
+    let testTargetMap = getTestUserMap();
 
     //如果已经是测试环境，就不用转发了
     if(config.isTest) {
         return;
     }
 
-    var uin = logger.getKey() || alpha.getUin(req);
-    var testIp = '';
-    var testPort = 80;
+    let uin = logger.getKey() || alpha.getUin(req);
+    let testIp = '';
+    let testPort = 80;
 
     if(
         uin
@@ -266,16 +266,16 @@ module.exports.getTestSpaceInfo = function(req) {
 //是否命中测试环境
 //命中则直接转发请求，return true;不命中则return false
 module.exports.isTestUser = function(req, res) {
-    var testSpaceInfo = module.exports.getTestSpaceInfo(req);
+    let testSpaceInfo = module.exports.getTestSpaceInfo(req);
 
     if(!testSpaceInfo) {
         return false;
     }
 
-    var reqUrl = req.REQUEST.href;
-    var timeout = config.timeout[req.method.toLowerCase()] || config.timeout.get;
-    var testPort = testSpaceInfo.testPort || 80;
-    var testIp = testSpaceInfo.testIp || '';
+    let reqUrl = req.REQUEST.href;
+    let timeout = config.timeout[req.method.toLowerCase()] || config.timeout.get;
+    let testPort = testSpaceInfo.testPort || 80;
+    let testIp = testSpaceInfo.testIp || '';
     timeout = parseInt(timeout * 0.8);
 
     logger.debug('isTestUser...');
@@ -321,7 +321,7 @@ module.exports.cmem = function() {
 
 //uin对应的存储key，每天一变
 module.exports.keyBitmap = function(uin) {
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
     return 'bitmap.h5.test.' + currDays;
 };
 
@@ -329,9 +329,9 @@ module.exports.keyBitmap = function(uin) {
 module.exports.getTestUserMap = getTestUserMap;
 
 module.exports.getTestUserMapFromFileCache = function () {
-    var fileCacheKey = getFileCacheKey('h5test', 'test.user.list');
-    var localData = fileCache.getSync(fileCacheKey).data;
-    var localJSON = {};
+    let fileCacheKey = getFileCacheKey('h5test', 'test.user.list');
+    let localData = fileCache.getSync(fileCacheKey).data;
+    let localJSON = {};
 
     if(localData) {
         //发现有数据

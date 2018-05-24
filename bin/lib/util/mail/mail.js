@@ -17,10 +17,10 @@ const url = require('url');
 
 this.SendMail = function(key, group, second, oriOpt) {
 
-    var opt = Deferred.extend({}, oriOpt);
-    var data = {};
-    var now = new Date();
-    var prefix = '[runtime]';
+    let opt = Deferred.extend({}, oriOpt);
+    let data = {};
+    let now = new Date();
+    let prefix = '[runtime]';
 
     if(isWindows.isWindows) {
         return;
@@ -73,13 +73,13 @@ this.SendMail = function(key, group, second, oriOpt) {
 };
 
 
-var reportOpenapi = function(data) {
-    var defer = Deferred.create();
-    var config = require('config');
-    var openapi = require('util/openapi');
-    var logger = require('logger');
+const reportOpenapi = function(data) {
+    let defer = Deferred.create();
+    let config = require('config');
+    let openapi = require('util/openapi');
+    let logger = require('logger');
 
-    var retCall;
+    let retCall;
 
     if(typeof config.beforeRuntimeReport === 'function') {
         retCall = config.beforeRuntimeReport(data);
@@ -98,12 +98,12 @@ var reportOpenapi = function(data) {
         return;
     }
 
-    var postData = data;
+    let postData = data;
 
     postData.appid = config.appid;
     postData.now = Date.now();
 
-    var sig = openapi.signature({
+    let sig = openapi.signature({
         pathname    : url.parse(config.runtimeReportUrl).pathname,
         method        : 'POST',
         data        : postData,
@@ -152,7 +152,7 @@ this.SendTSWMail = function(opt) {
 
 //发送周知邮件
 this.SendArsMail = function(opt) {
-    
+
 
 };
 

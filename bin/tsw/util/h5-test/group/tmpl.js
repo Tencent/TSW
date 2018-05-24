@@ -11,7 +11,7 @@ define(function(require, exports, module) {
 
         'body': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s);
                 }, out=_p;
             __p.push('    <h1>TSW 测试环境分组</h1>\n    <h2>加入</h2>\n    <p>测试机采用自动发现机制，配置为测试环境后自动出现在这里</p>\n    <p>测试机定义 <code>config.isTest = true</code></p>\n    <p>测试机个性配置参见 <code>config.testInfo = {...}</code></p>\n    <h2>分组</h2>');
@@ -38,14 +38,14 @@ define(function(require, exports, module) {
 
         'html': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s); 
                 }, out=_p;
             __p.push('    ');
 
             data = data || {};
 
-            var body = data.body || '',
+            let body = data.body || '',
                 head = data.head || {};
             __p.push('    <!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset="UTF-8">\n        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n        <meta http-equiv="X-UA-Compatible" content="IE=edge" />\n        <title>');
             _p(tmpl.encodeHtml(head.title || ''));

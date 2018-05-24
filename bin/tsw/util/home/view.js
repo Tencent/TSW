@@ -14,7 +14,7 @@ const navMenus = require('./navMenus.js');
 
 module.exports = function(request, response) {
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
@@ -23,7 +23,7 @@ module.exports = function(request, response) {
 
     TEReport.getAllGroup().done(function(allGroup) {
 
-        var data = {};
+        let data = {};
 
         data.head = { title: 'TSW'};
         data.header = tmpl.new_header(navMenus());

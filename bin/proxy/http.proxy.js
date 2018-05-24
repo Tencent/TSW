@@ -110,21 +110,21 @@ process.on('profiler', function(data = {}) {
 //process.emit('globaldump',m.GET);
 process.on('globaldump', function(GET) {
 
-    var cpu = GET.cpu || 0;
-    var depth = GET.depth || 6;
+    let cpu = GET.cpu || 0;
+    let depth = GET.depth || 6;
 
     if(cpu != serverInfo.cpu) {
         return;
     }
 
-    var filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
+    let filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
 
     logger.info('globaldump');
     logger.info(GET);
     logger.info(filename);
 
 
-    var str = util.inspect(global, {
+    let str = util.inspect(global, {
         depth: depth
     });
 
@@ -245,7 +245,7 @@ function startHeartBeat() {
             global.cpuUsed80 = 0;
         }
 
-        var cpuUsed = global.cpuUsed;
+        let cpuUsed = global.cpuUsed;
 
         //高负载告警
         if (
@@ -261,12 +261,12 @@ function startHeartBeat() {
                 },
                 timeout: 5000
             }, function(err, data, errData) {
-                var key = ['cpu80.v4', serverInfo.intranetIp].join(':');
-                var Content = [
+                let key = ['cpu80.v4', serverInfo.intranetIp].join(':');
+                let Content = [
                     '<strong>单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%, 最近5秒钟CPU Profiler见附件</strong>'
                 ].join('<br>');
 
-                var str = '';
+                let str = '';
 
                 if (data) {
                     str = data.toString('utf-8');
@@ -280,8 +280,8 @@ function startHeartBeat() {
                 //获取本机信息，用来分组
                 require('api/cmdb').GetDeviceThisServer().done(function(data) {
                     data = data || {};
-                    var business = data.business && data.business[0] || {};
-                    var owner = '';
+                    let business = data.business && data.business[0] || {};
+                    let owner = '';
 
                     if(data.ownerMain) {
                         owner = [owner, data.ownerMain].join(';');
@@ -375,7 +375,7 @@ methodMap.top100 = function(m) {
 //监听端口
 methodMap.listen = function(message) {
 
-    var user_00 = config.workerUid || 'user_00';
+    let user_00 = config.workerUid || 'user_00';
     serverInfo.cpu = message.cpu || 0;
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
@@ -412,7 +412,7 @@ methodMap.listen = function(message) {
             port: config.httpPort
         });
 
-        var finish = function() {
+        let finish = function() {
 
             //开始发送心跳
             logger.info('start heart beat');

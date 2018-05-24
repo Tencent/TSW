@@ -27,7 +27,7 @@ const errFreqConfig = {     ////错误log频率限制
     'count': 20             //最大次数
 };
 
-var logger;
+let logger;
 
 
 global[__filename] = cache;
@@ -51,7 +51,7 @@ Logger.prototype = {
 
     occurError: function() {
 
-        var curr = contextMod.currentContext();
+        let curr = contextMod.currentContext();
 
         if(curr.window && curr.window.request) {
             curr.log = curr.log || {};
@@ -64,13 +64,13 @@ Logger.prototype = {
     },
 
     getLog: function() {
-        var log = contextMod.currentContext().log || null;
+        let log = contextMod.currentContext().log || null;
 
         return log;
     },
 
     drop: function(dropAlpha) {
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(log && log.showLineNumber && !dropAlpha) {
             return;
@@ -80,8 +80,8 @@ Logger.prototype = {
     },
 
     getJson: function() {
-        var log = this.getLog();
-        var json = {
+        let log = this.getLog();
+        let json = {
             curr: {},
             ajax: []
         };
@@ -100,8 +100,8 @@ Logger.prototype = {
     },
 
     getText: function() {
-        var log = this.getLog();
-        var arr = [];
+        let log = this.getLog();
+        let arr = [];
 
         if(log && log.arr) {
 
@@ -124,8 +124,8 @@ Logger.prototype = {
 
         this.debug('setKey: ${key}', {key:key});
 
-        var log = this.getLog();
-        var alpha = require('util/alpha.js');
+        let log = this.getLog();
+        let alpha = require('util/alpha.js');
 
         if(!log) {
             return;
@@ -139,7 +139,7 @@ Logger.prototype = {
     },
 
     getKey: function() {
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(log) {
             return log.key;
@@ -157,7 +157,7 @@ Logger.prototype = {
 
         this.debug('setGroup: ${group}', {group:group});
 
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(log) {
             log.group = group;
@@ -165,7 +165,7 @@ Logger.prototype = {
     },
 
     getGroup: function() {
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(log) {
             return log.group;
@@ -175,7 +175,7 @@ Logger.prototype = {
     },
 
     isReport: function() {
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(!log) {
             return false;
@@ -196,7 +196,7 @@ Logger.prototype = {
 
         this.debug('report ${key}', {key:key});
 
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(log) {
             log.force = 1;
@@ -208,7 +208,7 @@ Logger.prototype = {
     },
 
     fillBuffer: function(type, fn) {
-        var log = this.getLog();
+        let log = this.getLog();
 
         if(log) {
 
@@ -235,7 +235,7 @@ Logger.prototype = {
     },
 
     getCpu: function() {
-        var cpu = process.serverInfo && process.serverInfo.cpu;
+        let cpu = process.serverInfo && process.serverInfo.cpu;
 
         if(cpu === undefined) {
             cpu = '';
@@ -263,10 +263,10 @@ Logger.prototype = {
 
     writeLog : function(type, str, obj) {
 
-        var level = this.type2level(type);
-        var log = this.getLog();
-        var allow = filter(level, str, obj);
-        var logStr = null;
+        let level = this.type2level(type);
+        let log = this.getLog();
+        let allow = filter(level, str, obj);
+        let logStr = null;
 
         if(log || allow === true || level >= config.getLogLevel()) {
             logStr = this._getLog(type, level, str, obj);
@@ -318,13 +318,13 @@ Logger.prototype = {
 
     _getLog: function(type, level, str, obj) {
 
-        var log = this.getLog();
-        var that = this;
-        var filename = '';
-        var column = '';
-        var line = '';
-        var enable = false;
-        var info = {};
+        let log = this.getLog();
+        let that = this;
+        let filename = '';
+        let column = '';
+        let line = '';
+        let enable = false;
+        let info = {};
 
         if(level >= config.getLogLevel()) {
             enable = true;
@@ -349,10 +349,10 @@ Logger.prototype = {
         }
 
 
-        var now = new Date();
-        var text = null;
+        let now = new Date();
+        let text = null;
 
-        var fn = function() {
+        let fn = function() {
 
             if(text!== null) {
                 return text;
@@ -364,8 +364,8 @@ Logger.prototype = {
                 filename = filename.replace(/\\/g, '/');
             }
 
-            var type = typeof str;
-            var index = filename.lastIndexOf('/node_modules/');
+            let type = typeof str;
+            let index = filename.lastIndexOf('/node_modules/');
 
             if(index >= 0) {
                 index += 14;
@@ -404,7 +404,7 @@ Logger.prototype = {
 
     asyncLog: function(fn, level) {
 
-        var str;
+        let str;
 
         if(typeof fn === 'function') {
             str = fn();
@@ -438,7 +438,7 @@ Logger.prototype = {
 
     format: function(data) {
 
-        var str = data.yyyy
+        let str = data.yyyy
             + '-'
             + data.MM
             + '-'
@@ -483,8 +483,8 @@ function merge(str, obj) {
 
     return str && str.replace(/\$\{(.+?)\}/g, function($0, $1) {
 
-        var rs = obj && obj[$1];
-        var undefined;
+        let rs = obj && obj[$1];
+        let undefined;
 
         return rs === undefined ? '' :
             typeof rs === 'object' ? util.inspect(rs) : String(rs);
@@ -500,7 +500,7 @@ function merge(str, obj) {
  *
  */
 function zeroize(num, width) {
-    var s = String(num),
+    let s = String(num),
         len = s.length;
     return len >= width ? s : '0000000000000000'.slice(len - width) + s;
 }
@@ -515,7 +515,7 @@ function zeroize(num, width) {
  */
 function isExceedFreq(level, str, obj) {
 
-    var mod_act = contextMod.currentContext().mod_act || 'null',
+    let mod_act = contextMod.currentContext().mod_act || 'null',
         curTime = Date.now(),
         exceed = false,
         cfg;

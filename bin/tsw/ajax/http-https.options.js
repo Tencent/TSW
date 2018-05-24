@@ -16,7 +16,7 @@ const cache = {};
 
 this.getHttpsAgent = function(host) {
 
-    var key = ['https', host].join('.');
+    let key = ['https', host].join('.');
 
     if(!cache[key]) {
         cache[key] = new https.Agent({
@@ -33,7 +33,7 @@ this.getHttpsAgent = function(host) {
 
 this.getHttpAgent = function(host) {
 
-    var key = ['http', host].join('.');
+    let key = ['http', host].join('.');
 
     if(!cache[key]) {
         cache[key] = new http.Agent({

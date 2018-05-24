@@ -15,7 +15,7 @@ const mime = require('./mime.js');
 
 module.exports = function(request, response, plug) {
 
-    var filename = path.normalize(request.REQUEST.pathname).replace(/\\/g, '/');
+    let filename = path.normalize(request.REQUEST.pathname).replace(/\\/g, '/');
 
     try{
         //支持中文
@@ -24,15 +24,15 @@ module.exports = function(request, response, plug) {
         logger.info(`decode file name fail ${e.message}`);
     }
     
-    var wwwroot = plug.parent + '/wwwroot';
+    let wwwroot = plug.parent + '/wwwroot';
 
     if(filename === '' || filename === '/') {
         filename = '/index';
     }
 
     //保证请求的文件是wwwroot目录下的
-    var realPath = path.join(wwwroot, path.join('/', filename));
-    var ext = path.extname(realPath);
+    let realPath = path.join(wwwroot, path.join('/', filename));
+    let ext = path.extname(realPath);
 
     if(ext) {
         //.js --> js
@@ -50,7 +50,7 @@ module.exports = function(request, response, plug) {
                 return;
             }
 
-            var opt, gzipResponse;
+            let opt, gzipResponse;
 
             if(mime.types[ext] && mime.types[ext] === 'application/json') {
                 opt = {
@@ -77,10 +77,10 @@ module.exports = function(request, response, plug) {
                     contentType: mime.types[ext]
                 });
             }else{
-                var range = request.headers.range || '';
-                var positions = range.replace(/bytes=/, '').split('-');
-                var start = parseInt(positions[0], 10) || 0;
-                var end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
+                let range = request.headers.range || '';
+                let positions = range.replace(/bytes=/, '').split('-');
+                let start = parseInt(positions[0], 10) || 0;
+                let end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
 
                 if(end < start || end >= stats.size) {
                     response.writeHead(416, {
@@ -112,7 +112,7 @@ module.exports = function(request, response, plug) {
                 gzipResponse = response;
             }
 
-            var rs = fs.createReadStream(realPath, opt);
+            let rs = fs.createReadStream(realPath, opt);
 
             rs.on('error', function(e) {
                 logger.error(e.stack);

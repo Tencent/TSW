@@ -28,11 +28,11 @@ this.modAct = this.modMap = {
     },
 
     getModAct: function(req) {
-        var pathname= req.REQUEST.pathname || '';
-        var arr = pathname.split('/', 3);
-        var mod = arr[1] || 'default';
-        var act = arr[2] || 'page';
-        var mod_act = mod + '_' + act;
+        let pathname= req.REQUEST.pathname || '';
+        let arr = pathname.split('/', 3);
+        let mod = arr[1] || 'default';
+        let act = arr[2] || 'page';
+        let mod_act = mod + '_' + act;
 
 
         if(this.map[pathname]) {
@@ -50,7 +50,7 @@ this.modAct = this.modMap = {
     find: function(mod_act, req, res) {
         mod_act = req.__mod_act;
 
-        var mod = this.map[mod_act];
+        let mod = this.map[mod_act];
 
         if(mod_act === 'default_page') {
             req.REQUEST.pathname = '/static/tsw/index.html';

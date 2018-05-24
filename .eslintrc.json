@@ -73,6 +73,9 @@
         "space-before-blocks": [
             "error",
             "always"
+        ],
+        "no-var": [
+            "error"
         ]
     },
     "overrides": [
@@ -93,6 +96,9 @@
                         "varsIgnorePattern": "out",
                         "args": "none"
                     }
+                ],
+                "no-var": [
+                    "off"
                 ]
             }
         }

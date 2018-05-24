@@ -18,7 +18,7 @@ const existsCache = {};
 
 this.getDir = function(filepath) {
     
-    var res, tmp;
+    let res, tmp;
     
     filepath = filepath || '';
 
@@ -49,9 +49,9 @@ this.mkdir = function(dirname) {
         return;
     }
 
-    var arr = dirname.split('/');
-    var i = 0;
-    var curr;
+    let arr = dirname.split('/');
+    let i = 0;
+    let curr;
     
     for(i = 1; i < arr.length; i++) {
         curr = arr.slice(0, i + 1).join('/');
@@ -70,12 +70,12 @@ this.mkdir = function(dirname) {
 };
 
 this.set = function(filepath, data) {
-    var start = Date.now();
-    var buffer = null;
-    var filename = this.getDir(filepath);
-    var dirname = path.dirname(filename);
-    var basename = path.basename(filename);
-    var randomname = basename + '.tmp.' + String(Math.random()).slice(2);
+    let start = Date.now();
+    let buffer = null;
+    let filename = this.getDir(filepath);
+    let dirname = path.dirname(filename);
+    let basename = path.basename(filename);
+    let randomname = basename + '.tmp.' + String(Math.random()).slice(2);
     
     logger.debug('[set] filename : ${filename}', {
         filename: filename
@@ -114,7 +114,7 @@ this.set = function(filepath, data) {
         }
         
         fs.rename([dirname, randomname].join('/'), [dirname, basename].join('/'), function(err) {
-            var end = Date.now();
+            let end = Date.now();
             
             if(err) {
                 logger.debug(err);
@@ -133,10 +133,10 @@ this.set = function(filepath, data) {
 
 this.getSync = function(filepath) {
     
-    var start = Date.now();
-    var buffer = null;
-    var filename = this.getDir(filepath);
-    var res = {
+    let start = Date.now();
+    let buffer = null;
+    let filename = this.getDir(filepath);
+    let res = {
         stats: null,
         data: null
     };
@@ -155,7 +155,7 @@ this.getSync = function(filepath) {
         buffer = null;
     }
     
-    var end = Date.now();
+    let end = Date.now();
     
     logger.debug('[get] done: ${filename}, size: ${size}, cost: ${cost}ms', {
         filename: filename,
@@ -169,11 +169,11 @@ this.getSync = function(filepath) {
 
 this.get = this.getAsync = function(filepath) {
     
-    var defer = Deferred.create();
-    var filename = this.getDir(filepath);
+    let defer = Deferred.create();
+    let filename = this.getDir(filepath);
     
     
-    var res = {
+    let res = {
         stats: null,
         data: null
     };
@@ -214,7 +214,7 @@ this.get = this.getAsync = function(filepath) {
 
 this.updateMtime = function(filepath, atime, mtime) {
 
-    var filename = this.getDir(filepath);
+    let filename = this.getDir(filepath);
     
     
     logger.debug('[updateMtime] ${filename}', {

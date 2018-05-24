@@ -23,22 +23,22 @@ module.exports = function(request, response) {
 };
 
 module.exports.go = async function(request, response) {
-    
-    var uin = request.param('uin');
-    
-    var data = await module.exports.deleteTestUser(
+
+    let uin = request.param('uin');
+
+    let data = await module.exports.deleteTestUser(
         uin
     ).toES6Promise().catch(function() {
         return null;
     });
 
-    var result = {code: 0, data: data};
+    let result = {code: 0, data: data};
 
     returnJson(result);
 };
 
-var returnJson = function(json) {
-    var gzip = gzipHttp.create({
+const returnJson = function(json) {
+    let gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });
@@ -50,10 +50,10 @@ var returnJson = function(json) {
 
 module.exports.deleteTestUser = function(uin) {
     logger.debug('deleteTestUser:' + uin);
-    var memcached = isTest.cmem();
-    var keyText = isTest.keyBitmap();
-    var defer = Deferred.create();
-    var appid = '';
+    let memcached = isTest.cmem();
+    let keyText = isTest.keyBitmap();
+    let defer = Deferred.create();
+    let appid = '';
 
     if(!uin) {
         return defer.reject();
@@ -80,13 +80,13 @@ module.exports.deleteTestUser = function(uin) {
             data = post.decode(context.appid, context.appkey, data);
         }
 
-        var expire = 24*60*60;
+        let expire = 24*60*60;
 
         if(err) {
             return defer.reject('memcache get error');
         }
 
-        var text = data || {};
+        let text = data || {};
 
         if(typeof data === 'object') {
             text = data || {};

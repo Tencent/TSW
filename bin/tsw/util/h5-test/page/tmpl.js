@@ -13,13 +13,13 @@ define(function(require, exports, module) {
 
         'new_main': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s);
                 }, out=_p;
 
             data = data || {};
 
-            var body = data.body || '',
+            let body = data.body || '',
                 head = data.head || {};
             __p.push('<!DOCTYPE html>\n<html>\n    <head>\n        <meta charset="UTF-8">\n        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n        <meta http-equiv="X-UA-Compatible" content="IE=edge" />\n        <title>');
             _p(tmpl.encodeHtml(head.title || ''));
@@ -44,14 +44,14 @@ define(function(require, exports, module) {
 
         'new_header': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s);
                 }, out=_p;
             __p.push('<style type="text/css">\nhtml{\n    overflow-x: hidden;\n    overflow-y: scroll;\n}\n#header.header{\n    height: 50px;\n    margin: 0 auto;\n    overflow: hidden;\n    background-color: rgba(0,0,0,0.8);\n    *background-color: #000;\n    border-top: 2px solid #F00;\n    z-index: 88;\n    width: 100%;\n    font-size: 16px;\n    box-sizing: border-box;\n}\n\n#header .nav{\n    width: 1100px;\n    margin: 0 auto;\n    padding: 0;\n}\n\n#header .nav li{\n    list-style: none;\n    float: right;\n    display: block;\n    height: 50px;\n    line-height: 50px;\n    overflow: hidden;\n    cursor: pointer;\n}\n\n#header .nav li:hover{\n    background-color: rgba(255,0,0,0.9);\n    color: #fff;\n}\n\n#header .nav li a{\n    display: block;\n    padding: 0 20px;\n    text-decoration: none;\n    color: #FFF;\n    font-family: "Microsoft YaHei";\n}\n\n#header .nav li a:hover,\n#header .nav li a:active{\n    text-decoration: none;\n}\n.tooltips {\n    color: red;\n    text-align: center;\n    background-color: rgba(215, 215, 215, 0.8);\n    border-bottom: 2px solid #fff;\n    position: fixed;\n    top: 50px;\n    z-index: 999;\n    width: 100%;\n}\n</style>\n<div id="header" class="header">\n    <ul class="nav">');
  
-            var navMenus = data;
+            let navMenus = data;
             if(navMenus && navMenus.length>0) {
-                for(var i=0;i<navMenus.length;i++) {
+                for(let i=0;i<navMenus.length;i++) {
                     if(navMenus[i].href && navMenus[i].title) {
                         __p.push('                    <li><a href="');
                         _p(tmpl.encodeHtml(navMenus[i].href));
@@ -73,7 +73,7 @@ define(function(require, exports, module) {
 
         'new_body_sync': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s); 
                 }, out=_p;
             __p.push('    ');
@@ -93,7 +93,7 @@ define(function(require, exports, module) {
 
         'new_body': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s); 
                 }, out=_p;
             __p.push('<div class="ui grid container">\n    <div class="row" style="display:inline;margin-top: 30px">\n        <h1>');
@@ -103,14 +103,14 @@ define(function(require, exports, module) {
 
             data = data.group;
 
-            for(var i = 0; i < data.length; i++) {
-                var item = data[i];
-                var val = item['ip'] + (item['port'] && (':' + item['port']) || '');
-                var name= item['name'];
-                var desc = item['desc'];
-                var owner = item['owner'];
-                var module = item['moduleName'];
-                var isShow = false;
+            for(let i = 0; i < data.length; i++) {
+                let item = data[i];
+                let val = item['ip'] + (item['port'] && (':' + item['port']) || '');
+                let name= item['name'];
+                let desc = item['desc'];
+                let owner = item['owner'];
+                let module = item['moduleName'];
+                let isShow = false;
                         
                 if(val && val != '') {
                     isShow = true;
@@ -124,7 +124,7 @@ define(function(require, exports, module) {
                     }
                 }
 
-                var isShowDesc = false;
+                let isShowDesc = false;
                 if(desc && desc != '') {
                     if(owner && owner != '') {
                         desc += '，负责人：' + owner;

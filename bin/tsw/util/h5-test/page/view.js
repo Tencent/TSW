@@ -21,30 +21,30 @@ module.exports = function(request, response) {
 
 module.exports.go = async function(request, response, plug) {
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
         contentType: 'text/html; charset=UTF-8'
     });
 
-    var arr = request.REQUEST.pathname.split('/');
+    let arr = request.REQUEST.pathname.split('/');
 
-    var groupName = '';
+    let groupName = '';
     if (arr && arr.length > 3) {
         groupName = arr[3];
     }
 
-    var group = await TEReport.list(groupName).toES6Promise().catch(function() {
+    let group = await TEReport.list(groupName).toES6Promise().catch(function() {
         return null;
     });
 
-    var bodyHtml = pagetmpl.new_body_sync({
+    let bodyHtml = pagetmpl.new_body_sync({
         appid: '', //私有化部署不存在
         group: group
     });
 
-    var navMenus = context.navMenus;
+    let navMenus = context.navMenus;
 
     if(!navMenus) {
         navMenus = [
@@ -67,7 +67,7 @@ module.exports.go = async function(request, response, plug) {
         ];
     }
 
-    var responseHtml = pagetmpl.new_main({
+    let responseHtml = pagetmpl.new_main({
         head: {
             title: 'H5测试环境配置'
         },

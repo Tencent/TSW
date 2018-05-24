@@ -12,7 +12,7 @@ const fs = require('fs');
 const cp = require('child_process');
 const {isWindows} = require('./isWindows.js');
 const logger = require('logger');
-var cache;
+let cache;
 
 if(!global[__filename]) {
     cache = {
@@ -34,7 +34,7 @@ if(!global[__filename]) {
 
 this.getCpuUsed = function(cpu) {
 
-    var now = Date.now();
+    let now = Date.now();
 
     cpu = cpu || '';
 
@@ -61,11 +61,11 @@ this.getCpuUsed = function(cpu) {
             return;
         }
 
-        var lines = buffer.toString('UTF-8').split('\n');
-        var str = '';
-        var arr = [];
+        let lines = buffer.toString('UTF-8').split('\n');
+        let str = '';
+        let arr = [];
 
-        for(var i = 0; i < lines.length; i++) {
+        for(let i = 0; i < lines.length; i++) {
             if(lines[i].startsWith(`cpu${cpu} `)) {
                 str = lines[i];
                 break;
@@ -78,19 +78,19 @@ this.getCpuUsed = function(cpu) {
             return;
         }
 
-        var user = parseInt(arr[1], 10) || 0;
-        var nice = parseInt(arr[2], 10) || 0;
-        var system = parseInt(arr[3], 10) || 0;
-        var idle = parseInt(arr[4], 10) || 0;
-        var iowait = parseInt(arr[5], 10) || 0;
-        var irq = parseInt(arr[6], 10) || 0;
-        var softirq = parseInt(arr[7], 10) || 0;
+        let user = parseInt(arr[1], 10) || 0;
+        let nice = parseInt(arr[2], 10) || 0;
+        let system = parseInt(arr[3], 10) || 0;
+        let idle = parseInt(arr[4], 10) || 0;
+        let iowait = parseInt(arr[5], 10) || 0;
+        let irq = parseInt(arr[6], 10) || 0;
+        let softirq = parseInt(arr[7], 10) || 0;
         // var  steal   = parseInt(arr[8],10) || 0;
         // var guest    = parseInt(arr[9],10) || 0;
 
-        var total = user + nice + system + idle + iowait + irq + softirq;
-        var used = user + nice + system + irq + softirq;
-        var curr = Math.round((used - cache.used) / (total - cache.total) * 100);
+        let total = user + nice + system + idle + iowait + irq + softirq;
+        let used = user + nice + system + irq + softirq;
+        let curr = Math.round((used - cache.used) / (total - cache.total) * 100);
 
         cache.curr = curr;
         cache.total = total;
@@ -103,7 +103,7 @@ this.getCpuUsed = function(cpu) {
 
 this.cpus = function() {
 
-    var res = [];
+    let res = [];
 
 
     os.cpus().forEach(function(v) {
@@ -134,15 +134,15 @@ this.taskset = function(oriCpu, pid) {
         timeout: 5000
     }, function(err, data, errData) {
 
-        var str = data.toString('UTF-8');
-        var tmp = str.split(':');
-        var cpus;
+        let str = data.toString('UTF-8');
+        let tmp = str.split(':');
+        let cpus;
 
         if(tmp.length >= 2) {
             cpus = exports.parseTaskset(tmp[1]);
         }
 
-        var cpu = oriCpu;
+        let cpu = oriCpu;
         if(cpus.length > 1) {
             //cpu编号修正
             cpu = parseInt(cpus[cpu % cpus.length], 10);
@@ -191,17 +191,17 @@ this.taskset = function(oriCpu, pid) {
 
 this.parseTaskset = function(str) {
 
-    var res = [];
-    var arr = str.split(',');
+    let res = [];
+    let arr = str.split(',');
 
     arr.forEach(function(v) {
 
         v = v.trim();
 
-        var tmp = v.split('-');
-        var start = ~~tmp[0];
-        var end = ~~tmp[1];
-        var i;
+        let tmp = v.split('-');
+        let start = ~~tmp[0];
+        let end = ~~tmp[1];
+        let i;
 
         if(end < start) {
             end = start;

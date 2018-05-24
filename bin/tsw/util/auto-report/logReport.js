@@ -25,7 +25,7 @@ const CD = require('util/CD.js');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 const MAX_ALPHA_LOG = post.MAX_ALPHA_LOG;
 
-var limit = {
+let limit = {
     count: {
         error    : 0,
         alpha    : 0,
@@ -46,8 +46,8 @@ var limit = {
 
 module.exports = function(req, res) {
 
-    var window = context.window || {};
-    var isWebSocket = !!window.websocket;
+    let window = context.window || {};
+    let isWebSocket = !!window.websocket;
 
     if(isWebSocket) {
         req = window.websocket.upgradeReq;
@@ -68,7 +68,7 @@ module.exports = function(req, res) {
     req.removeAllListeners('reportLog');
     req.once('reportLog', function() {
         
-        var log = logger.getLog(),
+        let log = logger.getLog(),
             type = '',
             typeKey = '',
             arrtKey = '',
@@ -229,7 +229,7 @@ module.exports = function(req, res) {
 
         }
 
-        var reportData = {
+        let reportData = {
             type        : type || '',
             logText        : logText || '',
             logJson        : logJson,
@@ -247,8 +247,8 @@ module.exports = function(req, res) {
         if(type === 'alpha') {
             //根据content-type设置group便于分类查询抓包
             if(!reportData.group) {
-                var pathName = req.REQUEST.pathname;
-                var fileName = pathName.substr( pathName.lastIndexOf('/') + 1);
+                let pathName = req.REQUEST.pathname;
+                let fileName = pathName.substr( pathName.lastIndexOf('/') + 1);
                 reportData.group = module.exports.fingureCroup({
                     resHeaders : res._headers,
                     reqHeaders : req.headers,
@@ -273,7 +273,7 @@ module.exports = function(req, res) {
 };
 
 module.exports.fingureCroup = function(opts) {
-    var group = 'other',
+    let group = 'other',
         contentType = opts.resHeaders['content-type'] || '',
         suffix = opts.suffix.toLowerCase(),
         //一些特殊后缀的映射
@@ -329,7 +329,7 @@ module.exports.fingureCroup = function(opts) {
 };
 
 module.exports.reportAlpha = function(data) {
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
 
     if(!data.key) {
         return;
@@ -339,8 +339,8 @@ module.exports.reportAlpha = function(data) {
         return;
     }
 
-    var reportKey = [data.key].join('/');
-    var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    let reportKey = [data.key].join('/');
+    let logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
     post.report(reportKey, data.logText, data.logJson).done(function(isFirst) {
         if(isFirst) {
@@ -363,7 +363,7 @@ module.exports.reportAlpha = function(data) {
         return;
     }
 
-    var reportGroupKey = [data.group, data.key].join('/');
+    let reportGroupKey = [data.group, data.key].join('/');
 
     post.report(reportGroupKey, data.logText, data.logJson).done(function(isFirst) {
         //这里不用计数了
@@ -406,7 +406,7 @@ module.exports.reportCloud = function(data) {
     logger.debug('reportCloud');
     logger.debug('report log type: ${type}, key ${key}', data);
 
-    var postData = Object.assign({}, data);
+    let postData = Object.assign({}, data);
 
     //加密
     postData.logText = post.encode(config.appid, config.appkey, data.logText);
@@ -416,7 +416,7 @@ module.exports.reportCloud = function(data) {
     postData.now = Date.now();
 
 
-    var sig = openapi.signature({
+    let sig = openapi.signature({
         pathname: url.parse(config.logReportUrl).pathname,
         method: 'POST',
         data: postData,
@@ -446,7 +446,7 @@ module.exports.reportCloud = function(data) {
 
 module.exports.receiveCloud = function(req, res) {
 
-    var returnJson = function(message) {
+    let returnJson = function(message) {
         res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         res.writeHead(200);
         res.end(JSON.stringify({
@@ -455,7 +455,7 @@ module.exports.receiveCloud = function(req, res) {
         }, null, 2));
     };
 
-    var data = req.POST || {};
+    let data = req.POST || {};
 
     if(!data.appid) {
         return returnJson('appid is required');
@@ -494,11 +494,11 @@ module.exports.receiveCloud = function(req, res) {
         return returnJson('get appkey error');
     }
 
-    var appid = context.appid;
-    var appkey = context.appkey;
-    var reportKey = [appid, data.key].join('/');
-    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
-    var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    let appid = context.appid;
+    let appkey = context.appkey;
+    let reportKey = [appid, data.key].join('/');
+    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    let logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
     logger.setKey(`report_${appid}_${data.key}`);    //上报key
     logger.debug('report log type: ${type}, key ${key}', data);
@@ -534,7 +534,7 @@ module.exports.receiveCloud = function(req, res) {
             return returnJson();
         }
 
-        var reportGroupKey = [appid, data.group, data.key].join('/');
+        let reportGroupKey = [appid, data.group, data.key].join('/');
 
         postOpenapi.report(reportGroupKey, data.logText, data.logJson).done(function(isFirst) {
             //这里不用计数了
@@ -544,8 +544,8 @@ module.exports.receiveCloud = function(req, res) {
                 returnJson();
             }).done(function() {
 
-                var logText = postOpenapi.encode(appid, appkey, data.group);
-                var logJson = postOpenapi.encode(appid, appkey, {group: data.group});
+                let logText = postOpenapi.encode(appid, appkey, data.group);
+                let logJson = postOpenapi.encode(appid, appkey, {group: data.group});
 
                 postOpenapi.report(`${appid}/v2.group.alpha`, logText, logJson).always(function() {
                     returnJson();
@@ -559,7 +559,7 @@ module.exports.receiveCloud = function(req, res) {
 
 module.exports.top100 = function(req, res) {
     
-    var item, str, filename, result;
+    let item, str, filename, result;
     
     if(!global.top100) {
         return;
@@ -588,17 +588,17 @@ module.exports.top100 = function(req, res) {
     global.top100 = null;
     
     
-    var map = {};
-    var arr = [];
-    var key;
-    var buffer = [];
+    let map = {};
+    let arr = [];
+    let key;
+    let buffer = [];
     
     //分析pathname聚集
     map = {};
     arr = [];
     result.forEach(function(v, i) {
         
-        var key = v.hostname + v.pathname;
+        let key = v.hostname + v.pathname;
         
         if(map[key]) {
             map[key] ++;

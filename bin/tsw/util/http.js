@@ -17,7 +17,7 @@ const more = require('util/http.more.js');
 
 this.formatHeader = function(headers) {
 
-    var res = {};
+    let res = {};
 
     if(!headers) {
         return headers;
@@ -29,7 +29,7 @@ this.formatHeader = function(headers) {
             return;
         }
 
-        var formatKey = key.trim().replace(/(\w)(\w+)/g, function(v, v1, v2) {
+        let formatKey = key.trim().replace(/(\w)(\w+)/g, function(v, v1, v2) {
             return v1.toUpperCase()+v2.toLowerCase();
         });
 
@@ -52,9 +52,9 @@ this.checkInvalidHeaderChar = function(val) {
         return false;
     }
 
-    var ch;
+    let ch;
 
-    for (var i = 0; i < val.length; i++) {
+    for (let i = 0; i < val.length; i++) {
         ch = val.charCodeAt(i);
         if (ch === 9) continue;
         if (ch <= 31 || ch > 255 || ch === 127) return true;
@@ -86,8 +86,8 @@ this.captureBody = function(res) {
 
     res.captrueBody = function(data, encoding) {
         //大于1M的不抓包
-        var buffer;
-        var size;
+        let buffer;
+        let size;
 
         if (typeof data === 'function') {
             data = null;
@@ -141,7 +141,7 @@ this.captureBody = function(res) {
 
             this.ServerDoneResponse = new Date();
             
-            var ret = fn.apply(this, args);
+            let ret = fn.apply(this, args);
 
             if(this.useChunkedEncodingByDefaultNoNeed) {
                 this._body.push(Buffer.from('0\r\n\r\n'));
@@ -157,7 +157,7 @@ this.captureBody = function(res) {
 };
 
 this.isPostLike = function(req) {
-    var method = typeof req === 'string' ? req : req.method;
+    let method = typeof req === 'string' ? req : req.method;
 
     if(method === 'POST') {
         return true;
@@ -173,7 +173,7 @@ this.isPostLike = function(req) {
 
 this.isGetLike = function(req) {
 
-    var method = typeof req === 'string' ? req : req.method;
+    let method = typeof req === 'string' ? req : req.method;
 
     if(method === 'GET') {
         return true;
@@ -202,14 +202,14 @@ this.isSent = function(res) {
 
 this.getClientResponseHeaderStr = function(response, bodySize) {
     
-    var headData = [],
+    let headData = [],
         key;
 
     bodySize = ~~bodySize;
 
     headData.push('HTTP/' + response.httpVersion + ' ' + response.statusCode + ' ' + response.statusMessage);
     
-    var headers = Deferred.extend({}, response.headers);
+    let headers = Deferred.extend({}, response.headers);
     
     if(bodySize >= 0 && headers['content-length'] === undefined) {
         delete headers['transfer-encoding'];
@@ -234,8 +234,8 @@ this.getClientRequestHeaderStr = function(request) {
 
 this.getRequestHeaderStr = function(request) {
 
-    var window = context.window || {};
-    var headData = [],
+    let window = context.window || {};
+    let headData = [],
         key;
         
     if(!request) {
@@ -260,8 +260,8 @@ this.getRequestHeaderStr = function(request) {
 };
 
 this.getResponseHeaderStr = function(response) {
-    var window = context.window || {};
-    var headData = [],
+    let window = context.window || {};
+    let headData = [],
         key;
         
     if(!response) {
@@ -289,7 +289,7 @@ this.getResponseHeaderStr = function(response) {
 };
 
 this.getUserIp24 = function(request) {
-    var window = context.window || {};
+    let window = context.window || {};
     if(!request) {
         request = window.request;
     }
@@ -298,7 +298,7 @@ this.getUserIp24 = function(request) {
         return '';
     }
 
-    var userIp = this.getUserIp(request);
+    let userIp = this.getUserIp(request);
 
     if(!userIp) {
         return '';
@@ -315,8 +315,8 @@ this.getUserIp24 = function(request) {
 
 this.getUserIp = function(request) {
 
-    var window = context.window || {};
-    var userIp = '';
+    let window = context.window || {};
+    let userIp = '';
 
     if(!request) {
         request = window.request;
@@ -347,9 +347,9 @@ this.getUserIp = function(request) {
         return '';
     }
     
-    var xff = request.headers['x-forwarded-for'] || '';
-    var qvia = request.headers['qvia'] || '';
-    var realIp = request.headers['x-real-ip'] || '';
+    let xff = request.headers['x-forwarded-for'] || '';
+    let qvia = request.headers['qvia'] || '';
+    let realIp = request.headers['x-real-ip'] || '';
 
     if(xff) {
 
@@ -382,7 +382,7 @@ this.getUserIp = function(request) {
 
 
 this.isHttps = function(request) {
-    var window = context.window || {};
+    let window = context.window || {};
     if(!request) {
         request = window.request;
     }

@@ -38,7 +38,7 @@ Queue.prototype.queue = function(fn) {
 
 Queue.prototype.dequeue = function() {
     
-    var domain, fn;
+    let domain, fn;
     
     if(this._queue.length === 0) {
         return this;

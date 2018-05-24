@@ -5,7 +5,7 @@
 //auto-report/src/view.tmpl.html
 //auto-report/src/zenburn.tmpl.html
 define(function(require, exports, module) {
-    var tmpl = { 
+    let tmpl = { 
         'encodeHtml': function(s) {
             return (s+'').replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
                 return '&#'+$0.charCodeAt(0)+';';
@@ -14,7 +14,7 @@ define(function(require, exports, module) {
 
         'download_content_types': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s);
                 }, out=_p;
             __p.push('<?xml version="1.0" encoding="utf-8" ?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n<Default Extension="htm" ContentType="text/html" />\n<Default Extension="xml" ContentType="application/xml" />\n<Default Extension="txt" ContentType="text/plain" />\n</Types>');
@@ -24,13 +24,13 @@ define(function(require, exports, module) {
 
         'download_index': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s); 
                 }, out=_p;
 
             data = data || [];
 
-            var i, len, entry;
+            let i, len, entry;
             __p.push('<html>\n    <head>\n        <style>\n            body,thead,td,a,p{font-family:verdana,sans-serif;font-size: 10px;}\n        </style>\n    </head>\n    <body>\n        <table cols=13>\n            <thead>\n                <tr>\n                    <th>&nbsp;</th>\n                    <th>#</th>\n                    <th>Result</th>\n                    <th>Protocol</th>\n                    <th>Host</th>\n                    <th>URL</th>\n                    <th>Body</th>\n                    <th>Caching</th>\n                    <th>Content-Type</th>\n                    <th>Process</th>\n                    <th>Comments</th>\n                    <th>Custom</th>\n                    <th>ServerIP</th>\n                </tr>\n            </thead>\n            <tbody>');
 
             for(i = 0, len = data.length; i < len; i++) {
@@ -72,18 +72,18 @@ define(function(require, exports, module) {
 
         'download_timestamp': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s);
                 }, out=_p;
 
             data = data || {};
 
-            var localISOString = function(d) {
+            let localISOString = function(d) {
                 if(!(d && d.getTimezoneOffset)) {
                     return d;
                 }
 
-                var pad = function(n) {
+                let pad = function(n) {
                         return n < 10 ? '0' + n : n;
                     }, 
                     tz = d.getTimezoneOffset(),
@@ -106,7 +106,7 @@ define(function(require, exports, module) {
               + pad(d.getMilliseconds()) + tzs;
             };
 
-            var timeStamp = data.timestamps || {},
+            let timeStamp = data.timestamps || {},
                 defaultTime = new Date();
         
             __p.push('<?xml version="1.0" encoding="utf-8"?>\n<Session>\n  <SessionTimers \n    ClientConnected     ="');
@@ -162,7 +162,7 @@ define(function(require, exports, module) {
 
         'errorSummary': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s); 
                 }, out=_p;
             __p.push('<html>\n<head>\n    <meta charset="utf-8" />\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <meta name="robots" content="none" />\n    <meta name="format-detection" content="telephone=no" />\n    <meta name="HandheldFriendly" content="True" />\n    <meta name="MobileOptimized" content="320" />\n    <meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n    <meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n    <meta name="x5-fast-scroller" content="disable" />\n\n    <style>\n        p{\n            line-height: 1.5;\n        }\n        code{\n            font-size: 12px;\n        }\n\n        table {\n            border-collapse: collapse;\n            text-align: center;\n            position: relative;\n            white-space: nowrap;\n            background: #FFFFFF;\n            border: 1px solid #BFBFBF;\n            /*table-layout:fixed;*/\n        }\n        thead {\n            white-space: nowrap;\n            background: #EEEFF2;\n\n            border-bottom: 1px solid #BFBFBF;\n            border-top: 1px solid #BFBFBF;\n            border-collapse: separate;\n        }\n        table thead th,\n        table tbody td,\n        table tfoot td{\n            padding-left: 10px;\n            padding-right: 10px;\n            white-space: nowrap;\n            border-collapse: collapse;\n            border: 1px solid #BFBFBF;\n        }\n\n        table thead tr th{\n            border-right: 1px solid #BFBFBF;\n            border-left: 1px solid #BFBFBF;\n            background: #EAEAEA;\n\n        }\n\n        table thead th{\n            height: 30px;\n            background: #EAEAEA;\n        }\n        table tbody td,\n        table tfoot td{\n            height: 25px;\n        }\n\n        table tbody tr,\n        table tfoot tr{\n            border-bottom: 1px solid #BFBFBF;\n        }\n\n        .dimension {\n            text-align: left;\n            white-space: nowrap;\n        }\n        .indicator{\n            text-align: right;\n            white-space: nowrap;\n        }\n        .alt {\n            background:#EFEFEF ;\n        }\n\n    </style>\n\n</head>\n<body>');
@@ -190,7 +190,7 @@ define(function(require, exports, module) {
 
         'error': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s);
                 }, out=_p;
             __p.push('<html>\n<head>\n    <meta charset="utf-8" />\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <meta name="robots" content="none" />\n    <meta name="format-detection" content="telephone=no" />\n    <meta name="HandheldFriendly" content="True" />\n    <meta name="MobileOptimized" content="320" />\n    <meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n    <meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n    <meta name="x5-fast-scroller" content="disable" />\n\n    <style>\n        p{\n            line-height: 1.5;\n        }\n        code{\n            font-size: 12px;\n        }\n    </style>\n\n</head>\n<body>\n<p><strong>');
@@ -206,17 +206,17 @@ define(function(require, exports, module) {
 
         'log_view': function(data) {
 
-            var __p=[], _p=function(s) {
+            let __p=[], _p=function(s) {
                     __p.push(s); 
                 }, out=_p;
 
-            var logArr = data.logArr || [];
-            var groupArr= data.groupArr || [];
-            var window = context.window || {};
-            var hls = require('./highlight-tsw.js');
-            var getResultCodeStyle = function (code) {
+            let logArr = data.logArr || [];
+            let groupArr= data.groupArr || [];
+            let window = context.window || {};
+            let hls = require('./highlight-tsw.js');
+            let getResultCodeStyle = function (code) {
                 code = parseInt(code, 10);
-                var style = '';
+                let style = '';
                 if(code > 0) {
                     code = Math.floor(code / 100);
                     switch (code) {
@@ -238,18 +238,18 @@ define(function(require, exports, module) {
                 return style+'font-weight:;font-size:18px';
             };
 
-            var appid = context.appid;
-            var group = context.group;
-            var key = context.key;
-            var createLogKey = context.createLogKey;
-            var currPath = '/log/view/' + createLogKey(appid, group, key);
+            let appid = context.appid;
+            let group = context.group;
+            let key = context.key;
+            let createLogKey = context.createLogKey;
+            let currPath = '/log/view/' + createLogKey(appid, group, key);
 
             //去重
-            var tmp = [{name: '全部', href: '/log/view/' + createLogKey(appid, '', key)}];
-            var groupMap= {};
-            var nameMap = data.nameMap;
+            let tmp = [{name: '全部', href: '/log/view/' + createLogKey(appid, '', key)}];
+            let groupMap= {};
+            let nameMap = data.nameMap;
 
-            for(var i in nameMap) {
+            for(let i in nameMap) {
                 tmp.push({
                     name : nameMap[i],
                     href : '/log/view/' + createLogKey(appid, i, key)
@@ -268,12 +268,12 @@ define(function(require, exports, module) {
                     return;
 
                 groupMap[v] = 1;
-                var href = '/log/view/' + createLogKey(appid, v, key);
+                let href = '/log/view/' + createLogKey(appid, v, key);
                 tmp.push({name: v, href: href});
             });
             groupArr = tmp;
 
-            var XSS = plug('util/xss.js');
+            let XSS = plug('util/xss.js');
             __p.push('<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n    <title>TSW云抓包&#8482;</title>\n    <link rel="Shortcut Icon" href="/favicon.ico" type="image/x-icon" />\n    <link href="/static/tsw/styles/logview/style.css" rel="stylesheet">\n</head>\n<body>\n    <div class="view-title">\n        <a class="button" href="');
             _p(window && window.request && window.request.REQUEST && window.request.REQUEST.pathname && window.request.REQUEST.pathname.replace('/log/view/', '/log/download/'));
             __p.push('" target="_blank">下载全部抓包</a>\n        <a class="button r" href="https://www.telerik.com/fiddler" target="_blank">Fiddler下载</a>\n        <a class="button r" href="https://github.com/avwo/whistle" target="_blank">Whistle下载(mac推荐)</a>\n        <label class="button label" style="cursor:pointer;" id="showErrorLogItem"><input type="checkbox" id="showErrorLogItemChk" value="showErrorLogItem">仅显示有错误的</label>\n        <label class="button label" style="cursor:pointer;" id="showRequestListItem"><input type="checkbox" id="showRequestListChk" value="showRequestList">快速显示请求列表</label>');
@@ -305,22 +305,22 @@ define(function(require, exports, module) {
 
             logArr.forEach(function(logText, i) {
                 logText = logText || '';
-                var logLineArr = logText.split('\n');
-                var reqUrl = logLineArr && logLineArr[0];
-                var reqType = '',
+                let logLineArr = logText.split('\n');
+                let reqUrl = logLineArr && logLineArr[0];
+                let reqType = '',
                     resultCode = logArr.extInfos[i].resultCode;
 
-                var hasError = false;
-                for(var j = 0; j < logLineArr.length; j++) {
-                    var logTextLine = logLineArr[j];
+                let hasError = false;
+                for(let j = 0; j < logLineArr.length; j++) {
+                    let logTextLine = logLineArr[j];
                     if (!logTextLine) {
                         continue;
                     }
 
                     //匹配ajax失败的fail log
-                    var retCodeReg = new RegExp('isFail:(.*)');
+                    let retCodeReg = new RegExp('isFail:(.*)');
                     if (retCodeReg.exec(logTextLine)) {
-                        var retCode = parseInt(RegExp.$1);
+                        let retCode = parseInt(RegExp.$1);
                         if (retCode) {
                             hasError = true;
                             break;

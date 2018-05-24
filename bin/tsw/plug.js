@@ -41,7 +41,7 @@ if(!global.plug) {
 
     JSON.stringify = function(stringify) {
         return function() {
-            var str = stringify.apply(this, arguments);
+            let str = stringify.apply(this, arguments);
             
             if(str && str.indexOf('<') > -1) {
                 str = str.replace(/</g, '\\u003C');

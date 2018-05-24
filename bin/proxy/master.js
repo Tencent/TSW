@@ -17,7 +17,7 @@ const {debugOptions} = process.binding('config');
 const methodMap = {};
 const workerMap = {};
 const cpuMap = [];
-var isDeaded = false;
+let isDeaded = false;
 
 //阻止进程因异常而退出
 process.on('uncaughtException', function(e) {
@@ -30,12 +30,12 @@ process.on('uncaughtException', function(e) {
 
 
 process.on('warning', function(warning) {
-    var key = String(warning);
-    var errStr = warning && warning.stack || String(warning);
+    let key = String(warning);
+    let errStr = warning && warning.stack || String(warning);
 
     logger.error(errStr);
 
-    var Content = [
+    let Content = [
         '<p><strong>错误堆栈</strong></p>',
         '<p><pre><code>',
         errStr,
@@ -81,7 +81,7 @@ process.on('unhandledRejection', (reason = {}, p = {}) => {
 
     logger.error(errStr);
 
-    var Content = [
+    let Content = [
         '<p><strong>错误堆栈</strong></p>',
         '<p><pre><code>',
         errStr,
@@ -118,7 +118,7 @@ startServer();
 // 通过cluster启动master && worker
 function startServer() {
 
-    var useWorker = true;
+    let useWorker = true;
 
     if(debugOptions && debugOptions.inspectorEnabled) {
         useWorker = false;
@@ -161,7 +161,7 @@ function startServer() {
         //监听子进程是否fork成功
         cluster.on('fork', function(currWorker) {
 
-            var cpu = getToBindCpu(currWorker);
+            let cpu = getToBindCpu(currWorker);
 
             logger.info('worker fork success! pid:${pid} cpu: ${cpu}', {
                 pid: currWorker.process.pid,
@@ -180,7 +180,7 @@ function startServer() {
 
             //监听子进程发来的消息并处理
             currWorker.on('message', function(...args) {
-                var m = args[0];
+                let m = args[0];
                 if(m && methodMap[m.cmd]) {
                     methodMap[m.cmd].apply(this, args);
                 }
@@ -197,7 +197,7 @@ function startServer() {
 
         //子进程退出时做下处理
         cluster.on('disconnect', function(worker) {
-            var cpu = getToBindCpu(worker);
+            let cpu = getToBindCpu(worker);
 
             if(worker.hasRestart) {
                 return;
@@ -214,7 +214,7 @@ function startServer() {
         //子进程被杀死的时候做下处理，原地复活
         cluster.on('exit', function(worker) {
 
-            var cpu = getToBindCpu(worker);
+            let cpu = getToBindCpu(worker);
 
             if(worker.hasRestart) {
                 return;
@@ -230,7 +230,7 @@ function startServer() {
 
         process.on('reload', function(GET) {
 
-            var timeout = 1000,
+            let timeout = 1000,
                 cpu = 0,
                 key, worker;
 
@@ -278,9 +278,9 @@ function startServer() {
 
         process.on('sendCmd2workerOnce', function(data) {
 
-            var key, worker;
-            var CMD = data.CMD;
-            var GET = data.GET;
+            let key, worker;
+            let CMD = data.CMD;
+            let GET = data.GET;
 
             if(isDeaded) {
                 process.exit(0);
@@ -290,7 +290,7 @@ function startServer() {
                 CMD
             });
 
-            var targetCpu = GET.cpu || 0;
+            let targetCpu = GET.cpu || 0;
 
             for(key in workerMap) {
                 worker = workerMap[key];
@@ -333,8 +333,8 @@ function startServer() {
 //处理子进程的心跳消息
 methodMap.heartBeat = function(m) {
 
-    var worker = this;
-    var now = new Date().getTime();
+    let worker = this;
+    let now = new Date().getTime();
 
     worker.lastMessage = m;
     worker.lastLiveTime = now;
@@ -342,8 +342,8 @@ methodMap.heartBeat = function(m) {
 
 //关闭一个worker
 function closeWorker(worker) {
-    var cpu = worker.cpuid;
-    var closeTimeWait = 10000;
+    let cpu = worker.cpuid;
+    let closeTimeWait = 10000;
 
     closeTimeWait = Math.max(closeTimeWait, config.timeout.socket);
     closeTimeWait = Math.max(closeTimeWait, config.timeout.post);
@@ -360,9 +360,9 @@ function closeWorker(worker) {
         delete workerMap[cpu];
     }
 
-    var closeFn = function(worker) {
-        var closed = false;
-        var pid = worker.process.pid;
+    let closeFn = function(worker) {
+        let closed = false;
+        let pid = worker.process.pid;
 
         return function() {
             if(closed) {
@@ -397,7 +397,7 @@ function closeWorker(worker) {
 
 //重启worker
 function restartWorker(worker) {
-    var cpu = getToBindCpu(worker);
+    let cpu = getToBindCpu(worker);
 
     if(worker.hasRestart) {
         return;
@@ -423,7 +423,7 @@ function checkWorkerAlive() {
 
     setInterval(function() {
 
-        var
+        let
             nowDate = new Date(),
             now = nowDate.getTime(),
             key,
@@ -488,14 +488,16 @@ function checkWorkerAlive() {
 //获取需要绑定的CPU编号
 function getToBindCpu(worker) {
 
-    var cpu = 0;//如果只有一个cpu或者都占用了
+    let cpu = 0;//如果只有一个cpu或者都占用了
+    let i;
 
     if(worker.cpuid !== undefined) {
         cpu = worker.cpuid;
         return cpu;
     }else{
-        for(var i=0;i<cpuMap.length;i++) {
-            var c = cpuMap[i];
+
+        for(i = 0; i < cpuMap.length; i++) {
+            let c = cpuMap[i];
             if(c == 0) {
                 cpu = i;
                 worker.cpuid = cpu;

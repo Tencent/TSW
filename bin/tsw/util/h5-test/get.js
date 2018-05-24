@@ -21,12 +21,12 @@ module.exports = function(request, response) {
 };
 
 module.exports.go = async function(request, response) {
-        
-    var data = await module.exports.getTestUser().toES6Promise().catch(function() {
+
+    let data = await module.exports.getTestUser().toES6Promise().catch(function() {
         return null;
     });
 
-    var result = {code: 0, data: data};
+    let result = {code: 0, data: data};
 
     returnJson(result);
 };
@@ -35,10 +35,10 @@ module.exports.getTestUser = function() {
     logger.debug('getTestUser');
 
     //从内存中读取testTargetMap
-    var memcached = isTest.cmem();
-    var keyText = isTest.keyBitmap();
-    var defer = Deferred.create();
-    var appid = '';
+    let memcached = isTest.cmem();
+    let keyText = isTest.keyBitmap();
+    let defer = Deferred.create();
+    let appid = '';
 
     if(context.appid && context.appkey) {
         //开平过来的
@@ -68,15 +68,15 @@ module.exports.getTestUser = function() {
             defer.resolve({});
         }
     });
-    
+
     return defer;
 };
 
 
 module.exports.openapi = async function(req, res) {
 
-    var appid = context.appid;
-    var appkey = context.appkey;
+    let appid = context.appid;
+    let appkey = context.appkey;
 
     if(req.param('appid') !== appid) {
         returnJson({ code: -2, message: 'appid错误'});
@@ -100,17 +100,17 @@ module.exports.openapi = async function(req, res) {
 
     logger.setKey(`h5testSync_${appid}`);    //上报key
 
-    var data = await module.exports.getTestUser().toES6Promise().catch(function() {
+    let data = await module.exports.getTestUser().toES6Promise().catch(function() {
         return null;
     });
 
-    var result = {code: 0, data: data};
+    let result = {code: 0, data: data};
 
     returnJson(result);
 };
 
-var returnJson = function(json) {
-    var gzip = gzipHttp.create({
+const returnJson = function(json) {
+    let gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });

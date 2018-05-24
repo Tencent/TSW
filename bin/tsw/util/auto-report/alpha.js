@@ -26,7 +26,7 @@ this.add = function(uin) {
 
 this.isAlpha = function(req) {
 
-    var uin;
+    let uin;
 
     if(typeof req === 'object') {
 
@@ -56,15 +56,15 @@ this.isAlpha = function(req) {
         }
     }
 
-    var uinMap = global[__filename] || {};
+    let uinMap = global[__filename] || {};
 
     return uinMap[uin] || TSW.getAlphaUinMapSync()[uin];
 };
 
 this.getUin = function(req) {
 
-    var uin;
-    var window = context.window || {};
+    let uin;
+    let window = context.window || {};
 
     req = req || window.request;
 

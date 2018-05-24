@@ -31,7 +31,7 @@ fs.exists(logDir, function(exists) {
     });
 });
 
-var LogMan = {
+let LogMan = {
     
     /**
      * 按分钟\小时\天去备份log
@@ -47,7 +47,7 @@ var LogMan = {
      */
     start: function(config) {
         logger.info('start log manager');
-        var self = this;
+        let self = this;
         this.delayType = config.delay || 'D';
         this.delay = this.delayMap[this.delayType];
         this.timer = setInterval(function() {
@@ -60,15 +60,15 @@ var LogMan = {
      */
     backLog: function() {
         logger.info('start backup log');
-        var self = this;
-        var curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date, 'YYYY-MM-DD'));
+        let self = this;
+        let curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date, 'YYYY-MM-DD'));
         fs.exists(curBackupDir, function(exists) {
             if(!exists) {
                 fs.mkdirSync(curBackupDir);
             }
-            var logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date, self.delayType + self.delayType) + '.log');
-            var cmdCat = 'cat ' + runlogPath + ' >> ' + logFilePath;
-            var cmdClear = 'cat /dev/null > ' + runlogPath;
+            let logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date, self.delayType + self.delayType) + '.log');
+            let cmdCat = 'cat ' + runlogPath + ' >> ' + logFilePath;
+            let cmdClear = 'cat /dev/null > ' + runlogPath;
             
             //兼容windows
             if(isWindows) {

@@ -24,8 +24,8 @@ function bind_listen(server) {
     });
 
     server.on('connection', function(ws) {
-        var req = ws.upgradeReq;
-        var wsClient;
+        let req = ws.upgradeReq;
+        let wsClient;
         tnm2.Attr_API('SUM_TSW_WEBSOCKET_CONNECT', 1);
 
         parseGet(req);
@@ -36,9 +36,9 @@ function bind_listen(server) {
             req.REQUEST.protocol = 'ws';
         }
 
-        var testSpaceInfo = h5test.getTestSpaceInfo(req);
+        let testSpaceInfo = h5test.getTestSpaceInfo(req);
         if(testSpaceInfo) {
-            var clientReqHeaders = Object.assign({}, req.headers);
+            let clientReqHeaders = Object.assign({}, req.headers);
             delete clientReqHeaders['sec-websocket-key'];
             wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, {
                 headers : clientReqHeaders
@@ -76,7 +76,7 @@ function bind_listen(server) {
                 return;
             }
 
-            var requestData = {};
+            let requestData = {};
             try {
                 requestData = JSON.parse(message);
             } catch(e) {
@@ -84,7 +84,7 @@ function bind_listen(server) {
             }
 
             // var mod_act = wsModAct.getModAct(ws);
-            var cwrap = new ContextWrap({
+            let cwrap = new ContextWrap({
                 url: req.url
                 //reqSocket: ws,
                 //rspSocket: ws
@@ -92,20 +92,20 @@ function bind_listen(server) {
 
             //cwrap.add(ws);
             cwrap.run(function() {
-                var window = context.window || {};
+                let window = context.window || {};
                 window.websocket = ws;
 
-                var timeout = 3000;
-                var hasEnd = false;
-                var tid = setTimeout(function() {
+                let timeout = 3000;
+                let hasEnd = false;
+                let tid = setTimeout(function() {
                     logger.debug('[websocket server] respond timeout');
                     if(hasEnd) {
                         return;
                     }
                     hasEnd = true;
 
-                    var respond;
-                    var window = context.window || {};
+                    let respond;
+                    let window = context.window || {};
 
                     if(requestData.seq) {
                         respond = JSON.stringify({
@@ -143,7 +143,7 @@ function bind_listen(server) {
                 logReport(window.request, window.response);
                 window.response.removeAllListeners('sendMessage');
                 window.response.once('sendMessage', function(respondData) {
-                    var respond;
+                    let respond;
 
                     if(tid) {
                         clearTimeout(tid);
@@ -214,13 +214,13 @@ function bind_listen(server) {
 }
 
 exports.start_listen = function() {
-    var ws = new WSServer({
+    let ws = new WSServer({
         server: global.TSW_HTTP_SERVER
     });
     bind_listen(ws);
 
     if(global.TSW_HTTPS_SERVER) {
-        var wss = new WSServer({
+        let wss = new WSServer({
             server: global.TSW_HTTPS_SERVER
         });
         bind_listen(wss);

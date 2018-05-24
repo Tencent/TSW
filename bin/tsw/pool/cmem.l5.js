@@ -12,7 +12,7 @@ const Queue = require('util/Queue');
 const dcapi = require('api/libdcapi/dcapi.js');
 const L5 = require('api/L5/L5.api.js');
 const {isWindows} = require('util/isWindows.js');
-var cache = global[__filename];
+let cache = global[__filename];
 
 if(!cache) {
     cache = {};
@@ -29,8 +29,8 @@ module.exports = function(opt) {
 };
 
 module.exports.getCmem = function(opt) {
-    var route;
-    var key;
+    let route;
+    let key;
 
     if(!opt) {
         return null;
@@ -78,18 +78,18 @@ function queueWrap(memcached) {
     memcached.command = function(command) {
         
         return function(queryCompiler, server) {
-            var memcached = this;
-            var queue = memcached.__queue;
-            var servers = memcached.servers && memcached.servers[0];
-            var start = Date.now();
+            let memcached = this;
+            let queue = memcached.__queue;
+            let servers = memcached.servers && memcached.servers[0];
+            let start = Date.now();
         
             queue.queue(function() {
                 
-                var fn = (function(queryCompiler) {
+                let fn = (function(queryCompiler) {
                     return function() {
-                        var query = queryCompiler();
-                        var command = query.command || '';
-                        var index = command.indexOf('\r\n');    //不要数据部分
+                        let query = queryCompiler();
+                        let command = query.command || '';
+                        let index = command.indexOf('\r\n');    //不要数据部分
                         if(index > 0) {
                             command = command.slice(0, Math.min(128, index));
                         }
@@ -101,11 +101,11 @@ function queueWrap(memcached) {
 
                         query.callback = function(callback) {
                             return function(...args) {
-                                var err = args[0];
-                                var code = 0;
-                                var isFail = 0;
-                                var delay = Date.now() - start;
-                                var toIp = servers.split(':')[0];
+                                let err = args[0];
+                                let code = 0;
+                                let isFail = 0;
+                                let delay = Date.now() - start;
+                                let toIp = servers.split(':')[0];
 
                                 if(err && err.message !== 'Item is not stored') {
                                     if(err.stack) {

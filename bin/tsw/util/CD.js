@@ -18,8 +18,8 @@ const openapi = require('util/openapi');
 const crypto = require('crypto');
 const cacheTime = 10 * 60 * 1000;    //最大cache时间
 
-var cacheStart = Date.now();
-var cache = {};
+let cacheStart = Date.now();
+let cache = {};
 
 if(global[__filename]) {
     cache = global[__filename];
@@ -38,12 +38,12 @@ this.check = function(key, count, second) {
 };
 
 
-var checkByOpenapi = function(keyOri, count, second) {
-    var defer = Deferred.create();
-    var appid = context.appid || null;
+const checkByOpenapi = function(keyOri, count, second) {
+    let defer = Deferred.create();
+    let appid = context.appid || null;
 
-    var key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
-    var start = Date.now();
+    let key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    let start = Date.now();
 
     if(cache[key]) {
         if(start - cache[key] < second * 1000) {
@@ -67,7 +67,7 @@ var checkByOpenapi = function(keyOri, count, second) {
         cache[key] = start;
     });
 
-    var postData = {
+    let postData = {
         appid: config.appid,
         key: key,
         count: count,
@@ -79,7 +79,7 @@ var checkByOpenapi = function(keyOri, count, second) {
         return defer.reject();
     }
 
-    var sig = openapi.signature({
+    let sig = openapi.signature({
         pathname: url.parse(config.utilCDUrl).pathname,
         method: 'POST',
         data: postData,
@@ -103,7 +103,7 @@ var checkByOpenapi = function(keyOri, count, second) {
         logger.error('checkByOpenapi fail.');
         defer.reject();
     }).done(function(d) {
-        var data = null;
+        let data = null;
         if(d.result && d.result.code === 0) {
             data = d.result.data;
         }
@@ -122,12 +122,12 @@ var checkByOpenapi = function(keyOri, count, second) {
 
 this.curr = function(keyOri, count, second) {
 
-    var defer = Deferred.create();
-    var appid = context.appid || null;
+    let defer = Deferred.create();
+    let appid = context.appid || null;
 
-    var key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    let key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
 
-    var memcached = module.exports.cmem();
+    let memcached = module.exports.cmem();
 
     if(!memcached) {
         return defer.reject();
@@ -145,13 +145,13 @@ this.curr = function(keyOri, count, second) {
     return defer;
 };
 
-var checkByCmem = function(keyOri, count, second) {
+const checkByCmem = function(keyOri, count, second) {
 
-    var defer = Deferred.create();
-    var appid = context.appid || null;
+    let defer = Deferred.create();
+    let appid = context.appid || null;
 
-    var key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
-    var start = Date.now();
+    let key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    let start = Date.now();
 
     if(cache[key]) {
         if(start - cache[key] < second * 1000) {
@@ -169,7 +169,7 @@ var checkByCmem = function(keyOri, count, second) {
         cacheStart = Date.now();
     }
 
-    var memcached = module.exports.cmem();
+    let memcached = module.exports.cmem();
 
     if(!memcached) {
         return defer.reject();
@@ -233,8 +233,8 @@ this.cmem = function() {
 //开放接口
 this.openapi = async function(req, res) {
 
-    var appid = context.appid;
-    var appkey = context.appkey;
+    let appid = context.appid;
+    let appkey = context.appkey;
 
     if(req.param('appid') !== appid) {
         returnJson({ code: -2, message: 'appid错误'});
@@ -258,9 +258,9 @@ this.openapi = async function(req, res) {
 
     logger.setKey(`CD_${appid}`);    //上报key
 
-    var key = req.param('key');
-    var second = ~~req.param('second');    //单位秒
-    var count = ~~req.param('count');        //默认是1
+    let key = req.param('key');
+    let second = ~~req.param('second');    //单位秒
+    let count = ~~req.param('count');        //默认是1
 
     if(!key) {
         returnJson({ code: -2, message: 'key is required'});
@@ -282,17 +282,17 @@ this.openapi = async function(req, res) {
         return;
     }
 
-    var data = await checkByCmem(key, count, second).toES6Promise().catch(function() {
+    let data = await checkByCmem(key, count, second).toES6Promise().catch(function() {
         return null;
     });
 
-    var result = {code: 0, data: data};
+    let result = {code: 0, data: data};
 
     returnJson(result);
 };
 
-var returnJson = function(json) {
-    var gzip = gzipHttp.create({
+const returnJson = function(json) {
+    let gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });

@@ -13,8 +13,8 @@ const parseGet = require('util/http/parseGet.js');
 
 this.route = function(url, mod_act) {
     
-    var req, res;
-    var window = context.window || {};
+    let req, res;
+    let window = context.window || {};
     
     req = window.request;
     res = window.response;

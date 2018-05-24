@@ -35,11 +35,12 @@ module.exports = function(req, res) {
 
     process.SN = process.SN || 0;
 
-    var timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
-    var start = new Date();
-    var d = domain.create();
-    var tid = null;
-    var clear = function() {
+    let timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
+    let start = new Date();
+    let d = domain.create();
+    let tid = null;
+
+    let clear = function() {
 
         if(tid === null) {
             return;
@@ -52,7 +53,7 @@ module.exports = function(req, res) {
 
         process.nextTick(function() {
 
-            var timeout = timeLimit - (Date.now() - start.getTime());
+            let timeout = timeLimit - (Date.now() - start.getTime());
 
             if(timeout > 2000) {
                 timeout = 2000;
@@ -238,10 +239,10 @@ module.exports = function(req, res) {
         try{
             res.emit('done');
         }catch(e) {
-            logger.info(`emit done event fail ${e.message}`); 
+            logger.info(`emit done event fail ${e.message}`);
         }
 
-        var key, Content;
+        let key, Content;
 
         if(err && err.stack && err.message) {
 
@@ -301,7 +302,7 @@ module.exports = function(req, res) {
 
     res.once('done', function() {
 
-        var isFail = 0, now;
+        let isFail = 0, now;
 
         if(clear === null) {
             return;
@@ -460,31 +461,31 @@ module.exports = function(req, res) {
             if(res.__hasClosed) {
 
                 try{
-                    res.writeHead(202); 
+                    res.writeHead(202);
                 }catch(e) {
-                    logger.info(`response 202 fail ${e.message}`); 
+                    logger.info(`response 202 fail ${e.message}`);
                 }
                 try{
-                    res.end(); 
+                    res.end();
                 }catch(e) {
-                    logger.info(`response end fail ${e.message}`); 
+                    logger.info(`response end fail ${e.message}`);
                 }
                 try{
                     res.emit('done');
                 }catch(e) {
-                    logger.info(`emit done event fail ${e.message}`); 
+                    logger.info(`emit done event fail ${e.message}`);
                 }
             }else if(res.finished) {
 
                 try{
                     res.end();
                 }catch(e) {
-                    logger.info(`response end fail ${e.message}`); 
+                    logger.info(`response end fail ${e.message}`);
                 }
                 try{
                     res.emit('done');
                 }catch(e) {
-                    logger.info(`emit done event fail ${e.message}`); 
+                    logger.info(`emit done event fail ${e.message}`);
                 }
             }else if(!res._headerSent && !res.headersSent && !res.finished && res.statusCode === 200) {
                 logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}', res);
@@ -496,7 +497,7 @@ module.exports = function(req, res) {
                 });
 
                 try{
-                    res.writeHead(513); 
+                    res.writeHead(513);
                 }catch(e) {
                     logger.info(`response 513 fail ${e.message}`);
                 }
@@ -515,7 +516,7 @@ module.exports = function(req, res) {
                 logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}', res);
 
                 try{
-                    res.end(); 
+                    res.end();
                 }catch(e) {
                     logger.info(`response end fail ${e.message}`);
                 }
@@ -538,8 +539,8 @@ module.exports.doRoute = doRoute;
 
 function doRoute(req, res) {
 
-    var clientIp = httpUtil.getUserIp(req);
-    var userIp24 = httpUtil.getUserIp24(req);
+    let clientIp = httpUtil.getUserIp(req);
+    let userIp24 = httpUtil.getUserIp24(req);
 
     //增加测试环境header
     if(config.isTest) {
@@ -616,7 +617,7 @@ function doRoute(req, res) {
         };
     }(res.writeHead));
 
-    var mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    let mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
     contextMod.currentContext().mod_act = mod_act;
 
     if(alpha.isAlpha(req)) {
@@ -638,7 +639,7 @@ function doRoute(req, res) {
     }
 
     //跟踪url调用深度
-    var steps = parseInt(req.headers['tsw-trace-steps'] || '0') || 0;
+    let steps = parseInt(req.headers['tsw-trace-steps'] || '0') || 0;
 
     //深度超过5层，直接拒绝
     if(steps >= 5) {
@@ -657,7 +658,7 @@ function doRoute(req, res) {
 
     req.headers['tsw-trace-steps'] = steps + 1;
 
-    var modulePath = httpModMap.find(mod_act, req, res);
+    let modulePath = httpModMap.find(mod_act, req, res);
 
     if(res.headersSent || res._headerSent || res.finished) {
         return;
@@ -701,8 +702,8 @@ function doRoute(req, res) {
         return;
     }
 
-    var modulePathHandler = function() {
-        var maybePromise = modulePath(req, res, plug);
+    let modulePathHandler = function() {
+        let maybePromise = modulePath(req, res, plug);
         if(
             typeof maybePromise === 'object'
             &&
@@ -715,7 +716,7 @@ function doRoute(req, res) {
         }
     };
 
-    var blackIpMap = TSW.getBlockIpMapSync() || {};
+    let blackIpMap = TSW.getBlockIpMapSync() || {};
 
     if(blackIpMap[clientIp] || blackIpMap[userIp24] || !clientIp) {
         logger.debug('连接已断开');
@@ -775,7 +776,7 @@ function doRoute(req, res) {
 
     }
 
-    var contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
+    let contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
     if(req.method === 'GET' || req.method === 'HEAD') {
 
@@ -808,8 +809,8 @@ function doRoute(req, res) {
 
 
 function onerror(req, res, err) {
-    var listener = req.listeners('fail');
-    var window = context.window || {};
+    let listener = req.listeners('fail');
+    let window = context.window || {};
 
     if(res.headersSent || res._headerSent || res.finished) {
         return;

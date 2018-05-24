@@ -25,8 +25,8 @@ const httpUtil = require('util/http.js');
 const isTST = require('util/isTST.js');
 const optionsUtil = require('./http-https.options.js');
 const sbFunction = vm.runInNewContext('(Function)', Object.create(null));        //沙堆
-var lastRetry = 0;
-var undefined;
+let lastRetry = 0;
+let undefined;
 
 
 module.exports = new Ajax();
@@ -41,7 +41,7 @@ function Ajax(req, res) {
 
 Ajax.prototype.proxy = function(req, res) {
 
-    var window = context.window || {};
+    let window = context.window || {};
 
     if(!req) {
         req = window.request;
@@ -86,7 +86,7 @@ Ajax.prototype.dnsRequest = function(opt) {
 //L5带你去ajax
 Ajax.prototype.l5Request = function(opt) {
     
-    var 
+    let 
         defer = Deferred.create(),
         that = this,
         l5api;
@@ -107,7 +107,7 @@ Ajax.prototype.l5Request = function(opt) {
     
     L5.ApiGetRoute(l5api).done(function(route) {
         
-        var start = new Date();
+        let start = new Date();
         
         opt.ip = route.ip;
         opt.port = route.port;
@@ -125,7 +125,7 @@ Ajax.prototype.l5Request = function(opt) {
                 return;
             }
 
-            var end = new Date();
+            let end = new Date();
 
             //上报调用结果
             L5.ApiRouteResultUpdate({
@@ -177,8 +177,8 @@ Ajax.prototype.l5Request = function(opt) {
 //普通请求
 Ajax.prototype.doRequest = function(opt) {
 
-    var window = context.window || {};
-    var defer = Deferred.create(),
+    let window = context.window || {};
+    let defer = Deferred.create(),
         tid = null,
         that = this,
         currAgent = false,
@@ -682,9 +682,9 @@ Ajax.prototype.doRequest = function(opt) {
     });
 
     request.once('response', function(response) {
-        var result = [];
-        var pipe = response;
-        var isProxy = false;
+        let result = [];
+        let pipe = response;
+        let isProxy = false;
         
         if(opt.dataType === 'proxy' && that._proxyResponse) {
             isProxy = true;
@@ -890,7 +890,7 @@ Ajax.prototype.doRequest = function(opt) {
         });
         
         pipe.once('end', function() {
-            var cost = Date.now() - pipe.timeStart;
+            let cost = Date.now() - pipe.timeStart;
 
             logger.debug('${logPre}end：${size},\treceive data cost: ${cost}ms', {
                 logPre: logPre,
@@ -903,8 +903,8 @@ Ajax.prototype.doRequest = function(opt) {
         
         pipe.once('done', function() {
             
-            var obj, responseText, buffer, code;
-            var key, Content;
+            let obj, responseText, buffer, code;
+            let key, Content;
             
             this.removeAllListeners('close');
             this.removeAllListeners('end');

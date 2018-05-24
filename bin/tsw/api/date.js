@@ -7,7 +7,7 @@
  */
 'use strict';
 
-var Date = {
+let Date = {
     
     /**
      * 格式化时间
@@ -16,7 +16,7 @@ var Date = {
      * @param {String} fmt 格式化形式，如 MM月dd日 HH:mm
      */
     format: function(mDate, fmt) {
-        var o = {
+        let o = {
                 'M+': mDate.getMonth() + 1, //月份
                 'D+': mDate.getDate(), //日
                 'h+': mDate.getHours() % 12 == 0 ? 12 : mDate.getHours() % 12, //小时
@@ -42,7 +42,7 @@ var Date = {
             fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '\u661f\u671f' : '\u5468') : '') + week[mDate.getDay() + '']);
         }
         
-        for (var k in o) {
+        for (let k in o) {
             if (new RegExp('(' + k + ')').test(fmt)) {
                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
             }

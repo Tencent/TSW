@@ -3,17 +3,17 @@
  * @author lifesinger@gmail.com
  */
 
-var Module = module.constructor;
-var helper = require('./helper');
-var vm = require('vm');
+let Module = module.constructor;
+let helper = require('./helper');
+let vm = require('vm');
 
 
-var _compile = Module.prototype._compile;
-var _resolveFilename = Module._resolveFilename;
-var moduleStack = [];
+let _compile = Module.prototype._compile;
+let _resolveFilename = Module._resolveFilename;
+let moduleStack = [];
 
 Module._resolveFilename = function(request, parent) {
-    var res;
+    let res;
     //request = request.replace(/\?.*$/, '') // remove timestamp etc.
 
     //性能优化
@@ -61,15 +61,15 @@ global.seajs = {
 /* eslint-enable no-console */
 
 global.define = function() {
-    var factory = arguments[arguments.length - 1];
-    var ret = factory;
-    var module = moduleStack[moduleStack.length - 1] || require.main;
+    let factory = arguments[arguments.length - 1];
+    let ret = factory;
+    let module = moduleStack[moduleStack.length - 1] || require.main;
 
     // define(function(require, exports, module) { ... })
     if (typeof factory === 'function') {
         module.uri = module.id;
 
-        var req = function(id) {
+        let req = function(id) {
             return module.require(id);
         };
         req.async = createAsync(module);
@@ -93,15 +93,15 @@ function createAsync(module) {
     return function(ids, callback) {
         if (typeof ids === 'string') ids = [ids];
 
-        var args = [];
-        var remain = ids.length;
+        let args = [];
+        let remain = ids.length;
 
         ids.forEach(function(id, index) {
 
             // http or https file
             if (/^https?:\/\//.test(id)) {
                 helper.readFile(id, function(data) {
-                    var m = {
+                    let m = {
                         id: id,
                         exports: {}
                     };

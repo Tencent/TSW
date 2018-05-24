@@ -14,8 +14,8 @@ const fs = require('fs');
 const fileCache = require('api/fileCache');
 const fileUrl = config.blackIpFileUrl;
 
-var isFirstLoad = false;
-var cache = {
+let isFirstLoad = false;
+let cache = {
     timeUpdate: 0,
     data: {},
     dataFile: {}
@@ -33,7 +33,7 @@ if(isFirstLoad) {
 
         (function() {
             //导入blackIpFile
-            var text = '';
+            let text = '';
 
             try{
                 text = fs.readFileSync(config.blackIpFile, 'UTF-8');
@@ -63,8 +63,8 @@ init();
 
 function init() {
 
-    var buffer = null;
-    var text = '';
+    let buffer = null;
+    let text = '';
 
     if(fileUrl) {
         buffer = fileCache.getSync(fileUrl).data;
@@ -89,7 +89,7 @@ this.getSync = function() {
 
 function getMap(text) {
 
-    var map = {};
+    let map = {};
 
     text = text || '';
 
@@ -102,7 +102,7 @@ function getMap(text) {
 
 function updateMap(text) {
 
-    var map = getMap(text);
+    let map = getMap(text);
 
     //copy
     Object.assign(map, cache.dataFile);
@@ -114,9 +114,9 @@ function updateMap(text) {
 
 this.get = function() {
     
-    var defer = Deferred.create();
-    var delay = ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
-    var l5api = config.tswL5api['blackIpFileUrl'];
+    let defer = Deferred.create();
+    let delay = ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
+    let l5api = config.tswL5api['blackIpFileUrl'];
     
     if(Date.now() - cache.timeUpdate < 300000 + delay) {
         return defer.resolve(cache.data);
@@ -130,8 +130,8 @@ this.get = function() {
     
     fileCache.getAsync(fileUrl).done(function(d) {
         
-        var lastModifyTime = 0;
-        var text = '';
+        let lastModifyTime = 0;
+        let text = '';
         
         if(d && d.stats) {
             lastModifyTime = d.stats.mtime.getTime();
@@ -166,7 +166,7 @@ this.get = function() {
             defer.resolve(cache.data);
         }).done(function(d) {
             
-            var text = '';
+            let text = '';
                 
             if(d && d.result && typeof d.result === 'string') {
                 
