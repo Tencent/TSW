@@ -541,11 +541,11 @@ methodMap.listen = function(message){
 
 if(cluster.isMaster){
     if(isWindows){
-        logger.info('isWindows, start litening');
+        logger.info('isWindows, start listening');
         methodMap.listen({cpu : 0});
     }else if(debugOptions && debugOptions.inspectorEnabled){
         logger.setLogLevel('debug');
-        logger.info('inspectorEnabled, start litening');
+        logger.info('inspectorEnabled, start listening');
         methodMap.listen({cpu : 0});
     }
 }

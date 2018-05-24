@@ -43,29 +43,29 @@ module.exports.Logger = Logger;
 
 
 function Logger(){
-    
+
     return this;
 }
 
 Logger.prototype = {
-    
+
     occurError: function(){
-        
+
         var curr = contextMod.currentContext();
-        
+
         if(curr.window && curr.window.request){
             curr.log = curr.log || {};
         }
-        
+
         if(curr.log){
             curr.log.showLineNumber = true;
         }
-        
+
     },
-    
+
     getLog: function(){
         var log = contextMod.currentContext().log || null;
-        
+
         return log;
     },
 
@@ -78,18 +78,18 @@ Logger.prototype = {
 
         contextMod.currentContext().log = null;
     },
-    
+
     getJson: function(){
         var log = this.getLog();
         var json = {
             curr: {},
             ajax: []
         };
-        
+
         if(log === null){
             return null;
         }
-        
+
         if(log.json){
             json = log.json;
         }else{
@@ -98,23 +98,23 @@ Logger.prototype = {
 
         return json;
     },
-    
+
     getText: function(){
         var log = this.getLog();
         var arr = [];
-        
+
         if(log && log.arr){
-            
+
             log.arr.forEach(function(fn){
                 arr.push(fn());
             });
-            
+
             return arr.join('\n');
         }
 
         return '';
     },
-    
+
     setKey: function(key){
 
         if(!canIuse.test(key)){
@@ -123,7 +123,7 @@ Logger.prototype = {
         }
 
         this.debug('setKey: ${key}',{key:key});
-        
+
         var log = this.getLog();
         var alpha = require('util/alpha.js');
 
@@ -140,11 +140,11 @@ Logger.prototype = {
 
     getKey: function(){
         var log = this.getLog();
-        
+
         if(log){
             return log.key;
         }
-        
+
         return null;
     },
 
@@ -173,53 +173,53 @@ Logger.prototype = {
 
         return null;
     },
-    
+
     isReport: function(){
         var log = this.getLog();
-        
+
         if(!log){
             return false;
         }
-        
+
         if(log.force){
             return true;
         }
-        
+
         if(log.ERRO){
             return true;
         }
-        
+
         return false;
     },
-    
+
     report: function(key){
-        
+
         this.debug('report ${key}',{key:key});
-        
+
         var log = this.getLog();
-        
+
         if(log){
             log.force = 1;
         }
-        
+
         if(key){
             this.setKey(key);
         }
     },
-    
+
     fillBuffer: function(type,fn){
         var log = this.getLog();
-        
+
         if(log){
-            
+
             if(!log.arr){
                 log.arr = [];
             }
-            
+
             if(fn){
                 log.arr.push(fn);
             }
-            
+
             if(type){
                 if(log[type]){
                     log[type]++;
@@ -229,95 +229,95 @@ Logger.prototype = {
             }
         }
     },
-    
+
     getSN: function(){
         return contextMod.currentContext().SN || 0;
     },
-    
+
     getCpu: function(){
         var cpu = process.serverInfo && process.serverInfo.cpu;
-        
+
         if(cpu === undefined){
             cpu = '';
         }
-        
+
         return cpu;
     },
-    
+
     debug : function(str,obj){
         this.writeLog('DBUG',str,obj);
     },
-    
+
     info : function(str,obj){
         this.writeLog('INFO',str,obj);
     },
-    
+
     warn : function(str,obj){
         this.writeLog('WARN',str,obj);
     },
-    
+
     error : function(str,obj){
         //this.occurError();
         this.writeLog('ERRO',str,obj);
     },
-    
+
     writeLog : function(type,str,obj){
-        
+
         var level = this.type2level(type);
         var log = this.getLog();
         var allow = filter(level,str,obj);
         var logStr = null;
-        
+
         if(log || allow === true || level >= config.getLogLevel()){
             logStr = this._getLog(type,level,str,obj);
         }
-        
+
         if(logStr === null){
             return this;
         }
-        
+
         this.fillBuffer(type,logStr);
-        
+
         if(allow === false){
             return this;
         }
-        
+
         if(allow === true){
             return this.asyncLog(logStr,level);
         }
-        
+
         if(level >= config.getLogLevel()){
             return this.asyncLog(logStr,level);
         }
     },
-    
+
     type2level: function(type){
-        
+
         if(type === 'DBUG'){
             return 10;
         }
-        
+
         if(type === 'INFO'){
             return 20;
         }
-        
+
         if(type === 'WARN'){
             return 30;
         }
-        
+
         if(type === 'ERRO'){
             return 40;
         }
-        
+
         return 0;
     },
 
     setLogLevel: function(level){
         config.logLevel = level;
     },
-    
+
     _getLog: function(type,level,str,obj){
-        
+
         var log = this.getLog();
         var that = this;
         var filename = '';
@@ -325,7 +325,7 @@ Logger.prototype = {
         var line = '';
         var enable = false;
         var info = {};
-        
+
         if(level >= config.getLogLevel()){
             enable = true;
         }
@@ -334,48 +334,49 @@ Logger.prototype = {
         //if(log && log['ERRO']){
         //  enable = true;
         //}
-        
+
         if(log && log['showLineNumber']){
             enable = true;
         }
 
         if((enable && global.cpuUsed < 70) || isWindows){
-            
+
             info = callInfo.getCallInfo(3);
-            
+
             line = info.line;
             column = info.column;
             filename = info.filename || '';
         }
-        
-        
+
+
         var now = new Date();
         var text = null;
-                
+
         var fn = function(){
-            
+
             if(text!== null){
                 return text;
             }
-            
+
             filename = filename || '';
-            
+
             if(isWindows){
                 filename = filename.replace(/\\/g,'/');
             }
-            
+
+            var type = typeof str;
             var index = filename.lastIndexOf('/node_modules/');
-        
+
             if(index >= 0){
-                index += 14; 
+                index += 14;
             }else{
                 index = filename.lastIndexOf('/') + 1;
             }
-            
+
             if(index >= 0){
                 filename = filename.slice(index);
             }
-            
+
             text = that.format({
                 SN      : that.getSN(),
                 yyyy    : now.getFullYear(),
@@ -388,34 +389,34 @@ Logger.prototype = {
                 type    : type,
                 mod_act : contextMod.currentContext().mod_act || null,
                 file    : filename,
-                txt     : typeof str === 'string' ? merge(str,obj) : '\n' + util.inspect(str),
+                txt     : type === 'string' ? merge(str,obj) : (type === 'object' ? '\n' : '') + util.inspect(str),
                 line    : line,
                 column  : column,
                 cpu     : that.getCpu(),
                 pid     : process.pid
             });
-            
+
             return text;
         };
-        
+
         return fn;
     },
-    
+
     asyncLog: function(fn,level){
-        
+
         var str;
-        
+
         if(typeof fn === 'function'){
             str = fn();
         }else{
             str = fn;
         }
-        
+
         this.print(str,level);
-        
+
         return this;
     },
-    
+
     print: function(str,level){
 
         /* eslint-disable no-console */
@@ -434,42 +435,42 @@ Logger.prototype = {
         //process.stdout.write(str);
         //process.stdout.write('\n');
     },
-    
+
     format: function(data){
-        
+
         var str = data.yyyy
-             + '-'
-             + data.MM
-             + '-'
-             + data.dd
-             + ' '
-             + data.HH
-             + ':'
-             + data.mm
-             + ':'
-             + data.ss
-             + '.'
-             + data.msec
-             + ' ['
-             + data.type
-             + '] ['
-             + data.pid
-             + ' cpu'
-             + data.cpu
-             + ' '
-             + data.SN
-             + '] ['
-             + data.mod_act
-             + '] ['
-             + data.file
-             + ':'
-             + data.line
-             + '] '
-             + data.txt;
-             
+            + '-'
+            + data.MM
+            + '-'
+            + data.dd
+            + ' '
+            + data.HH
+            + ':'
+            + data.mm
+            + ':'
+            + data.ss
+            + '.'
+            + data.msec
+            + ' ['
+            + data.type
+            + '] ['
+            + data.pid
+            + ' cpu'
+            + data.cpu
+            + ' '
+            + data.SN
+            + '] ['
+            + data.mod_act
+            + '] ['
+            + data.file
+            + ':'
+            + data.line
+            + '] '
+            + data.txt;
+
         return str;
     },
-    
+
     merge: merge,
     zeroize: zeroize
 };
@@ -481,12 +482,12 @@ function merge(str,obj){
     }
 
     return str && str.replace(/\$\{(.+?)\}/g,function($0,$1){
-        
+
         var rs = obj && obj[$1];
         var undefined;
-        
+
         return rs === undefined ? '' :
-            typeof rs === 'string' ? rs : util.inspect(rs);
+            typeof rs === 'object' ? util.inspect(rs) : String(rs);
     });
 }
 
@@ -496,7 +497,7 @@ function merge(str,obj){
  * @param {Number} num 一个整数
  * @param {Number} width 总宽度
  * @return {String} 加完前导0的字符串
- * 
+ *
  */
 function zeroize(num,width){
     var s = String(num),
@@ -534,7 +535,7 @@ function isExceedFreq(level,str,obj){
         tnm2.Attr_API_Set('AVG_TSW_ERROE_LOG_5S', freqCache.count);
 
         freqCache.count = 0;
-        
+
         freqCache.detail = {};
     }
 
@@ -579,5 +580,5 @@ function filter(level,str,obj){
 
 }
 
-logger = new Logger(__filename);
+logger = new Logger();
 
