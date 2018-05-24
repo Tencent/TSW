@@ -81,7 +81,7 @@ process.on('heapdump',function(e){
 
         require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot',function(err, filename) {
             logger.info('dump written to ${filename}', {
-                filenamelet: filename
+                filename: filename
             });
         });
 
