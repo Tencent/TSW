@@ -29,7 +29,7 @@ if(!global.context) {
                 return undefined;
             }
 
-            let curr = module.exports.currentContext();
+            const curr = module.exports.currentContext();
 
             if(!curr.window) {
                 curr.window = new Window();

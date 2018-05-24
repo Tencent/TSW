@@ -28,8 +28,8 @@ if(global[__filename]) {
 
 if(isFirstLoad) {
     cluster.worker && cluster.worker.once('disconnect', function(worker) {
-        let logger = require('logger');
-        let last = cache.curr;
+        const logger = require('logger');
+        const last = cache.curr;
 
         logger.info('report on disconnect event...');
 
@@ -72,13 +72,13 @@ const cacheOrRepoet = function(attr, iValue) {
     curr.sum += iValue;
     curr.count += 1;
 
-    let now = Date.now();
+    const now = Date.now();
 
     if(now - cache.time < 60000) {
         return;
     }
 
-    let last = cache.curr;
+    const last = cache.curr;
 
     cache.curr = {};
     cache.time = now;
@@ -88,11 +88,11 @@ const cacheOrRepoet = function(attr, iValue) {
 
 
 const reportOpenapi = function(last) {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
-    let openapi = require('util/openapi');
-    let logger = require('logger');
-    let config = require('config');
+    const openapi = require('util/openapi');
+    const logger = require('logger');
+    const config = require('config');
     let retCall;
 
     if(typeof config.beforeReportApp === 'function') {
@@ -120,20 +120,20 @@ const reportOpenapi = function(last) {
         return defer.resolve();
     }
 
-    let arr = [];
+    const arr = [];
 
     Object.keys(last).forEach(function(v, i) {
         arr.push([v, last[v].sum, last[v].count].join('.'));
     });
 
-    let postData = {
+    const postData = {
         appid   : config.appid,
         ip      : serverInfo.intranetIp,
         arr     : arr.join('-'),
         now     : Date.now()
     };
 
-    let sig = openapi.signature({
+    const sig = openapi.signature({
         pathname: url.parse(config.appReportUrl).pathname,
         method: 'POST',
         data: postData,

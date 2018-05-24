@@ -6,12 +6,12 @@ const plug = require('plug');
 /**
 这一部分是CD.js依赖的模块，我们需要弄一些stub,以避免干扰
 */
-let CD = plug('util/CD.js');
-let logger = plug('logger');
-let config = plug('config');
-let Deferred = plug('util/Deferred');
-let ajax = plug('ajax');
-let gzipHttp = plug('util/gzipHttp.js');
+const CD = plug('util/CD.js');
+const logger = plug('logger');
+const config = plug('config');
+const Deferred = plug('util/Deferred');
+const ajax = plug('ajax');
+const gzipHttp = plug('util/gzipHttp.js');
 
 
 logger.setLogLevel('error');
@@ -66,7 +66,7 @@ describe('test CD module', ()=>{
             gzipHttp.create.restore();
         });
         it('appid不匹配', async ()=>{
-            let req = {param:_=>{
+            const req = {param:_=>{
                 return '123'; 
             }};
             context.appid = 'tsw123';
@@ -76,7 +76,7 @@ describe('test CD module', ()=>{
         });
 
         it('上下文不存在appid', async ()=>{
-            let req = {param:_=>{
+            const req = {param:_=>{
                 return ''; 
             }};
             context.appid = '';
@@ -87,7 +87,7 @@ describe('test CD module', ()=>{
         });
 
         it('上下文不存在appkey', async ()=>{
-            let req = {param:_=>{
+            const req = {param:_=>{
                 return 'tsw123';
             }};
             context.appid = 'tsw123';
@@ -97,7 +97,7 @@ describe('test CD module', ()=>{
         });
 
         it('appid不符合规范', async ()=>{
-            let req = {param:_=>{
+            const req = {param:_=>{
                 return 'tsw123，'; 
             }};
             context.appid = 'tsw123，';
@@ -108,7 +108,7 @@ describe('test CD module', ()=>{
         });
 
         it('checkByCmem', async ()=>{
-            let req = {param:_=>{
+            const req = {param:_=>{
                 switch(_) {
                 case 'key':
                     return '123';

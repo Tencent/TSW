@@ -49,7 +49,7 @@ this.mkdir = function(dirname) {
         return;
     }
 
-    let arr = dirname.split('/');
+    const arr = dirname.split('/');
     let i = 0;
     let curr;
     
@@ -70,12 +70,12 @@ this.mkdir = function(dirname) {
 };
 
 this.set = function(filepath, data) {
-    let start = Date.now();
+    const start = Date.now();
     let buffer = null;
-    let filename = this.getDir(filepath);
-    let dirname = path.dirname(filename);
-    let basename = path.basename(filename);
-    let randomname = basename + '.tmp.' + String(Math.random()).slice(2);
+    const filename = this.getDir(filepath);
+    const dirname = path.dirname(filename);
+    const basename = path.basename(filename);
+    const randomname = basename + '.tmp.' + String(Math.random()).slice(2);
     
     logger.debug('[set] filename : ${filename}', {
         filename: filename
@@ -114,7 +114,7 @@ this.set = function(filepath, data) {
         }
         
         fs.rename([dirname, randomname].join('/'), [dirname, basename].join('/'), function(err) {
-            let end = Date.now();
+            const end = Date.now();
             
             if(err) {
                 logger.debug(err);
@@ -133,10 +133,10 @@ this.set = function(filepath, data) {
 
 this.getSync = function(filepath) {
     
-    let start = Date.now();
+    const start = Date.now();
     let buffer = null;
-    let filename = this.getDir(filepath);
-    let res = {
+    const filename = this.getDir(filepath);
+    const res = {
         stats: null,
         data: null
     };
@@ -155,7 +155,7 @@ this.getSync = function(filepath) {
         buffer = null;
     }
     
-    let end = Date.now();
+    const end = Date.now();
     
     logger.debug('[get] done: ${filename}, size: ${size}, cost: ${cost}ms', {
         filename: filename,
@@ -169,11 +169,11 @@ this.getSync = function(filepath) {
 
 this.get = this.getAsync = function(filepath) {
     
-    let defer = Deferred.create();
-    let filename = this.getDir(filepath);
+    const defer = Deferred.create();
+    const filename = this.getDir(filepath);
     
     
-    let res = {
+    const res = {
         stats: null,
         data: null
     };
@@ -214,7 +214,7 @@ this.get = this.getAsync = function(filepath) {
 
 this.updateMtime = function(filepath, atime, mtime) {
 
-    let filename = this.getDir(filepath);
+    const filename = this.getDir(filepath);
     
     
     logger.debug('[updateMtime] ${filename}', {

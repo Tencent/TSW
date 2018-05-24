@@ -35,7 +35,7 @@ module.exports = function(req, res) {
 
     process.SN = process.SN || 0;
 
-    let timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
+    const timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
     let start = new Date();
     let d = domain.create();
     let tid = null;
@@ -539,8 +539,8 @@ module.exports.doRoute = doRoute;
 
 function doRoute(req, res) {
 
-    let clientIp = httpUtil.getUserIp(req);
-    let userIp24 = httpUtil.getUserIp24(req);
+    const clientIp = httpUtil.getUserIp(req);
+    const userIp24 = httpUtil.getUserIp24(req);
 
     //增加测试环境header
     if(config.isTest) {
@@ -617,7 +617,7 @@ function doRoute(req, res) {
         };
     }(res.writeHead));
 
-    let mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    const mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
     contextMod.currentContext().mod_act = mod_act;
 
     if(alpha.isAlpha(req)) {
@@ -639,7 +639,7 @@ function doRoute(req, res) {
     }
 
     //跟踪url调用深度
-    let steps = parseInt(req.headers['tsw-trace-steps'] || '0') || 0;
+    const steps = parseInt(req.headers['tsw-trace-steps'] || '0') || 0;
 
     //深度超过5层，直接拒绝
     if(steps >= 5) {
@@ -665,7 +665,7 @@ function doRoute(req, res) {
     }
 
     if(modulePath && typeof modulePath.handle === 'function') {
-        let app = modulePath;
+        const app = modulePath;
 
         modulePath = function(req, res, plug) {
             return app.handle(req, res);
@@ -673,7 +673,7 @@ function doRoute(req, res) {
     }
 
     if(modulePath && typeof modulePath.callback === 'function') {
-        let app = modulePath;
+        const app = modulePath;
 
         modulePath = function(req, res, plug) {
             return app.callback()(req, res);
@@ -702,8 +702,8 @@ function doRoute(req, res) {
         return;
     }
 
-    let modulePathHandler = function() {
-        let maybePromise = modulePath(req, res, plug);
+    const modulePathHandler = function() {
+        const maybePromise = modulePath(req, res, plug);
         if(
             typeof maybePromise === 'object'
             &&
@@ -716,7 +716,7 @@ function doRoute(req, res) {
         }
     };
 
-    let blackIpMap = TSW.getBlockIpMapSync() || {};
+    const blackIpMap = TSW.getBlockIpMapSync() || {};
 
     if(blackIpMap[clientIp] || blackIpMap[userIp24] || !clientIp) {
         logger.debug('连接已断开');
@@ -776,7 +776,7 @@ function doRoute(req, res) {
 
     }
 
-    let contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
+    const contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
     if(req.method === 'GET' || req.method === 'HEAD') {
 
@@ -809,8 +809,8 @@ function doRoute(req, res) {
 
 
 function onerror(req, res, err) {
-    let listener = req.listeners('fail');
-    let window = context.window || {};
+    const listener = req.listeners('fail');
+    const window = context.window || {};
 
     if(res.headersSent || res._headerSent || res.finished) {
         return;

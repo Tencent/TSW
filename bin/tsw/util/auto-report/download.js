@@ -26,16 +26,16 @@ module.exports = function(request, response) {
 
 module.exports.go = function(request, response) {
 
-    let arr = request.REQUEST.pathname.split('/');
-    let appid = context.appid || '';
+    const arr = request.REQUEST.pathname.split('/');
+    const appid = context.appid || '';
     let group = arr[3];
     let key = arr[4];
     let groupKey = 'v2.group.alpha';
-    let limit = ~~context.limit || 64;
+    const limit = ~~context.limit || 64;
     let currPost = post;
 
 
-    let flagOfDownloadFileFormat = request.query.fileFormat;
+    const flagOfDownloadFileFormat = request.query.fileFormat;
 
     if(appid) {
         currPost = postOpenapi;
@@ -59,7 +59,7 @@ module.exports.go = function(request, response) {
         return returnError('key格式非法');
     }
 
-    let createLogKey = function(appid, group, key) {
+    const createLogKey = function(appid, group, key) {
         let logKey = key;
 
         if(group) {
@@ -88,7 +88,7 @@ module.exports.go = function(request, response) {
     });
 
     //下标。
-    let index = parseInt(request.GET.index, 10);
+    const index = parseInt(request.GET.index, 10);
 
     key = logKey + '.' + index;
 
@@ -132,8 +132,8 @@ module.exports.go = function(request, response) {
 
 
 function returnError(message) {
-    let window = context.window;
-    let gzipResponse = gzipHttp.getGzipResponse({
+    const window = context.window;
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: window.request,
         response: window.response,
         code: 200,
@@ -145,11 +145,11 @@ function returnError(message) {
 
 
 //curr
-let initRequestHar = function (request) {
-    let unpackRaw = function (requestRaw) {
+const initRequestHar = function (request) {
+    const unpackRaw = function (requestRaw) {
         let requestArr = [];
         // 补全没有的数据
-        let request = {
+        const request = {
             cookie:'',
             headers:[],
             postData:{},
@@ -167,7 +167,7 @@ let initRequestHar = function (request) {
                     if(item!=='' && item.length !== 0) {
                         // 第一行，请求头：GET url；回包：HTTP/1.1 200 OK
                         if(index === 0) {
-                            let firstItem = item.split(' ');
+                            const firstItem = item.split(' ');
                             // 请求头：GET url；
                             if(firstItem.length === 3) {
                                 request.protocol = firstItem[2];
@@ -189,7 +189,7 @@ let initRequestHar = function (request) {
                     }
                 });
                 if(request.method && request.method === 'POST') {
-                    let postDataArr = requestArr[requestArr.length - 1];
+                    const postDataArr = requestArr[requestArr.length - 1];
                     request.postData.mimeType = 'multipart/form-data';
                     request.postData.text = postDataArr;
                 }
@@ -199,7 +199,7 @@ let initRequestHar = function (request) {
         }
         // 补齐cookie
         if(request.cookie) {
-            let cookieArray = request.cookie.split(';');
+            const cookieArray = request.cookie.split(';');
             if(cookieArray.length > 0) {
                 request.cookieArray = [];
                 cookieArray.forEach(function (item) {
@@ -228,7 +228,7 @@ let initRequestHar = function (request) {
 
         return request;
     };
-    let getUrl = function (curr) {
+    const getUrl = function (curr) {
         let url;
         let host;
         if(curr) {
@@ -276,7 +276,7 @@ let initRequestHar = function (request) {
     //     console.log(buffer.toString())
     // });
 
-    let mimeTypeTemp = responseHeader['Content-Type'] ;
+    const mimeTypeTemp = responseHeader['Content-Type'] ;
     let mimeType= (typeof mimeTypeTemp === 'undefined')? responseHeader['content-type']: mimeTypeTemp ;
     mimeType = (typeof mimeType=== 'undefined') ? mimeType : mimeType.trim();
 
@@ -326,7 +326,7 @@ let initRequestHar = function (request) {
 
         if(typeof responseHeader['Content-Encoding'] !== 'undefined' && responseHeader['Content-Encoding'] === 'gzip') {
             try {
-                let ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
+                const ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
                 requestHaz.response.content.text = ungziprawText.toString('utf8');// 暂时文件
             } catch (e) {
                 requestHaz.response.content.text = requestResponseBodyBaseBuffer;// 暂时文件
@@ -356,7 +356,7 @@ const downloadHaz = function (request, response, opt) {
         index = parseInt(request.GET.index, 10),
         SNKey = request.GET.SNKey;
 
-    let hazJson = {
+    const hazJson = {
         'log':{
             'version': '1.2',
             'creator': {
@@ -386,7 +386,7 @@ const downloadHaz = function (request, response, opt) {
     }
 
     response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.har');
-    let gzipResponse = gzipHttp.getGzipResponse({
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -424,7 +424,7 @@ const downloadHaz = function (request, response, opt) {
 
 
     });
-    let buf = Buffer.from(JSON.stringify(hazJson), 'UTF-8');
+    const buf = Buffer.from(JSON.stringify(hazJson), 'UTF-8');
     gzipResponse.write(buf);
     gzipResponse.end();
 };
@@ -462,7 +462,7 @@ const download = function(request, response, opt) {
 
     response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.saz');
 
-    let gzipResponse = gzipHttp.getGzipResponse({
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -481,22 +481,22 @@ const download = function(request, response, opt) {
         data = data.reverse();
     }
 
-    let archiver = new Archiver('zip');
+    const archiver = new Archiver('zip');
 
     archiver.append(tmpl.download_index(data), {name: '_index.htm'});
     archiver.append(tmpl.download_content_types(), {name: '[Content_Types].xml'});
 
     data.forEach(function(tmp, i) {
-        let sid = ('0000' + (i + 1)).slice(-3);
+        const sid = ('0000' + (i + 1)).slice(-3);
         tmp.curr = tmp.curr || {};
         tmp.curr.sid = sid + '.0000';
 
 
         tmp.curr.logText = tmp.curr.logText || '';
         tmp.curr.logText = tmp.curr.logText.replace(/\r\n|\r|\n/gm, '\r\n');
-        let logSNKey = post.getLogSN(tmp.curr.logText);
+        const logSNKey = post.getLogSN(tmp.curr.logText);
 
-        let log = {
+        const log = {
             curr: {
                 sid             : sid,
 
@@ -525,7 +525,7 @@ const download = function(request, response, opt) {
         tmp.ajax &&
         tmp.ajax.forEach(function(curr, i) {
 
-            let ajax = {};
+            const ajax = {};
 
             if(!curr.SN) {
                 return;
@@ -581,7 +581,7 @@ const download = function(request, response, opt) {
 };
 
 const failRet = function(request, response, msg) {
-    let gzipResponse = gzipHttp.getGzipResponse({
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -596,15 +596,15 @@ const failRet = function(request, response, msg) {
 // chunked decode  buffer ， 格式 ：size +\r\n + rawText +\r\n  + 0|r\n ,  \r\n ====》 13,10, 中间的即为rawText
 
 const decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
-    let rawText = [];
+    const rawText = [];
     let startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
     while( startOfTheRawText !== -1 && startOfTheRawText !== 0 ) {
-        let rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
-        let rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
+        const rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
+        const rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
         if(rawTextSizeUint8ArrayInt === 0 ) {
             break;
         }
-        let chunkedText = Uint8ArrayBuffer.slice(startOfTheRawText+2, startOfTheRawText+2 +rawTextSizeUint8ArrayInt );
+        const chunkedText = Uint8ArrayBuffer.slice(startOfTheRawText+2, startOfTheRawText+2 +rawTextSizeUint8ArrayInt );
         rawText.push(Buffer.from(chunkedText));
         Uint8ArrayBuffer = Uint8ArrayBuffer.slice(startOfTheRawText+2 +rawTextSizeUint8ArrayInt+2);
         startOfTheRawText = Uint8ArrayBuffer.indexOf(13);

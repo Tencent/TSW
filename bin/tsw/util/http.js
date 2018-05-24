@@ -17,7 +17,7 @@ const more = require('util/http.more.js');
 
 this.formatHeader = function(headers) {
 
-    let res = {};
+    const res = {};
 
     if(!headers) {
         return headers;
@@ -29,7 +29,7 @@ this.formatHeader = function(headers) {
             return;
         }
 
-        let formatKey = key.trim().replace(/(\w)(\w+)/g, function(v, v1, v2) {
+        const formatKey = key.trim().replace(/(\w)(\w+)/g, function(v, v1, v2) {
             return v1.toUpperCase()+v2.toLowerCase();
         });
 
@@ -141,7 +141,7 @@ this.captureBody = function(res) {
 
             this.ServerDoneResponse = new Date();
             
-            let ret = fn.apply(this, args);
+            const ret = fn.apply(this, args);
 
             if(this.useChunkedEncodingByDefaultNoNeed) {
                 this._body.push(Buffer.from('0\r\n\r\n'));
@@ -157,7 +157,7 @@ this.captureBody = function(res) {
 };
 
 this.isPostLike = function(req) {
-    let method = typeof req === 'string' ? req : req.method;
+    const method = typeof req === 'string' ? req : req.method;
 
     if(method === 'POST') {
         return true;
@@ -173,7 +173,7 @@ this.isPostLike = function(req) {
 
 this.isGetLike = function(req) {
 
-    let method = typeof req === 'string' ? req : req.method;
+    const method = typeof req === 'string' ? req : req.method;
 
     if(method === 'GET') {
         return true;
@@ -209,7 +209,7 @@ this.getClientResponseHeaderStr = function(response, bodySize) {
 
     headData.push('HTTP/' + response.httpVersion + ' ' + response.statusCode + ' ' + response.statusMessage);
     
-    let headers = Deferred.extend({}, response.headers);
+    const headers = Deferred.extend({}, response.headers);
     
     if(bodySize >= 0 && headers['content-length'] === undefined) {
         delete headers['transfer-encoding'];
@@ -234,7 +234,7 @@ this.getClientRequestHeaderStr = function(request) {
 
 this.getRequestHeaderStr = function(request) {
 
-    let window = context.window || {};
+    const window = context.window || {};
     let headData = [],
         key;
         
@@ -260,7 +260,7 @@ this.getRequestHeaderStr = function(request) {
 };
 
 this.getResponseHeaderStr = function(response) {
-    let window = context.window || {};
+    const window = context.window || {};
     let headData = [],
         key;
         
@@ -289,7 +289,7 @@ this.getResponseHeaderStr = function(response) {
 };
 
 this.getUserIp24 = function(request) {
-    let window = context.window || {};
+    const window = context.window || {};
     if(!request) {
         request = window.request;
     }
@@ -298,7 +298,7 @@ this.getUserIp24 = function(request) {
         return '';
     }
 
-    let userIp = this.getUserIp(request);
+    const userIp = this.getUserIp(request);
 
     if(!userIp) {
         return '';
@@ -315,7 +315,7 @@ this.getUserIp24 = function(request) {
 
 this.getUserIp = function(request) {
 
-    let window = context.window || {};
+    const window = context.window || {};
     let userIp = '';
 
     if(!request) {
@@ -348,8 +348,8 @@ this.getUserIp = function(request) {
     }
     
     let xff = request.headers['x-forwarded-for'] || '';
-    let qvia = request.headers['qvia'] || '';
-    let realIp = request.headers['x-real-ip'] || '';
+    const qvia = request.headers['qvia'] || '';
+    const realIp = request.headers['x-real-ip'] || '';
 
     if(xff) {
 
@@ -382,7 +382,7 @@ this.getUserIp = function(request) {
 
 
 this.isHttps = function(request) {
-    let window = context.window || {};
+    const window = context.window || {};
     if(!request) {
         request = window.request;
     }

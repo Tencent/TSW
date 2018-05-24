@@ -7,7 +7,7 @@
  */
 'use strict';
 
-let Date = {
+const Date = {
     
     /**
      * 格式化时间
@@ -42,7 +42,7 @@ let Date = {
             fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '\u661f\u671f' : '\u5468') : '') + week[mDate.getDay() + '']);
         }
         
-        for (let k in o) {
+        for (const k in o) {
             if (new RegExp('(' + k + ')').test(fmt)) {
                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
             }

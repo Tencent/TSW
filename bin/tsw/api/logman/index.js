@@ -31,7 +31,7 @@ fs.exists(logDir, function(exists) {
     });
 });
 
-let LogMan = {
+const LogMan = {
     
     /**
      * 按分钟\小时\天去备份log
@@ -47,7 +47,7 @@ let LogMan = {
      */
     start: function(config) {
         logger.info('start log manager');
-        let self = this;
+        const self = this;
         this.delayType = config.delay || 'D';
         this.delay = this.delayMap[this.delayType];
         this.timer = setInterval(function() {
@@ -60,8 +60,8 @@ let LogMan = {
      */
     backLog: function() {
         logger.info('start backup log');
-        let self = this;
-        let curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date, 'YYYY-MM-DD'));
+        const self = this;
+        const curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date, 'YYYY-MM-DD'));
         fs.exists(curBackupDir, function(exists) {
             if(!exists) {
                 fs.mkdirSync(curBackupDir);

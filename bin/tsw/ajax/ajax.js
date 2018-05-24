@@ -41,7 +41,7 @@ function Ajax(req, res) {
 
 Ajax.prototype.proxy = function(req, res) {
 
-    let window = context.window || {};
+    const window = context.window || {};
 
     if(!req) {
         req = window.request;
@@ -107,7 +107,7 @@ Ajax.prototype.l5Request = function(opt) {
     
     L5.ApiGetRoute(l5api).done(function(route) {
         
-        let start = new Date();
+        const start = new Date();
         
         opt.ip = route.ip;
         opt.port = route.port;
@@ -125,7 +125,7 @@ Ajax.prototype.l5Request = function(opt) {
                 return;
             }
 
-            let end = new Date();
+            const end = new Date();
 
             //上报调用结果
             L5.ApiRouteResultUpdate({
@@ -177,7 +177,7 @@ Ajax.prototype.l5Request = function(opt) {
 //普通请求
 Ajax.prototype.doRequest = function(opt) {
 
-    let window = context.window || {};
+    const window = context.window || {};
     let defer = Deferred.create(),
         tid = null,
         that = this,
@@ -350,7 +350,7 @@ Ajax.prototype.doRequest = function(opt) {
         }
     }else{
         if(!opt.isRetriedRequest) {
-            let query = qs.stringify(opt.data, { arrayFormat: 'brackets', skipNulls: true, encoder: opt.encoder });
+            const query = qs.stringify(opt.data, { arrayFormat: 'brackets', skipNulls: true, encoder: opt.encoder });
             if(query) {
                 if(opt.path.indexOf('?') === -1) {
                     opt.path = opt.path + '?' + query;
@@ -890,7 +890,7 @@ Ajax.prototype.doRequest = function(opt) {
         });
         
         pipe.once('end', function() {
-            let cost = Date.now() - pipe.timeStart;
+            const cost = Date.now() - pipe.timeStart;
 
             logger.debug('${logPre}end：${size},\treceive data cost: ${cost}ms', {
                 logPre: logPre,

@@ -11,7 +11,7 @@ const config = require('config');
 
 module.exports.report = function(data) {
     let retValue;
-    let reportData = {
+    const reportData = {
         table:'reportData',
         data:{
             type    : data.type,

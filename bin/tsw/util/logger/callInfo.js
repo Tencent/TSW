@@ -10,7 +10,7 @@
 this.getCallInfo = function(level) {
     
     let orig, err, stack;
-    let res = {};
+    const res = {};
     
     level = level || 0;
     

@@ -16,7 +16,7 @@ define(function(require, exports, module) {
                 }, out=_p;
 
 
-            let window = context.window || {};
+            const window = context.window || {};
             __p.push('<html>\n<head>\n<meta charset="utf-8" />\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n<meta name="robots" content="none" />\n<meta name="format-detection" content="telephone=no" />\n<meta name="HandheldFriendly" content="True" />\n<meta name="MobileOptimized" content="320" />\n<meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n<meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n<meta name="x5-fast-scroller" content="disable" />\n\n<style>\np{\n    line-height: 1.5;\n}\ncode{\n    font-size: 12px;\n}\n</style>\n\n</head>\n<body>\n    <p>');
             _p(data.Content);
             __p.push('</p>\n    <p><strong>服务器IP:</strong> ');
@@ -60,7 +60,7 @@ define(function(require, exports, module) {
                 }, out=_p;
 
 
-            let window = context.window || {};
+            const window = context.window || {};
             _p(data.MsgInfo);
             _p('\r\n\r\n');
             __p.push('服务器IP:');

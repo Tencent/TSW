@@ -19,7 +19,7 @@ if(config.skyMode) {
 if(base) {
     module.exports.getModAct = function(req) {
 
-        let mod = base.modAct.getModAct(req);
+        const mod = base.modAct.getModAct(req);
 
         if(mod) {
             return mod;
