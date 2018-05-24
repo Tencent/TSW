@@ -12,6 +12,7 @@ const util = require('util');
 const contextMod = require('context.js');
 const callInfo = require('./callInfo.js');
 const {isWindows} = require('util/isWindows.js');
+const {debugOptions} = process.binding('config');
 const tnm2 = require('api/tnm2');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 const cache = global[__filename] || {
@@ -51,7 +52,7 @@ Logger.prototype = {
 
     occurError: function() {
 
-        let curr = contextMod.currentContext();
+        const curr = contextMod.currentContext();
 
         if(curr.window && curr.window.request) {
             curr.log = curr.log || {};
@@ -64,13 +65,13 @@ Logger.prototype = {
     },
 
     getLog: function() {
-        let log = contextMod.currentContext().log || null;
+        const log = contextMod.currentContext().log || null;
 
         return log;
     },
 
     drop: function(dropAlpha) {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log && log.showLineNumber && !dropAlpha) {
             return;
@@ -80,7 +81,7 @@ Logger.prototype = {
     },
 
     getJson: function() {
-        let log = this.getLog();
+        const log = this.getLog();
         let json = {
             curr: {},
             ajax: []
@@ -100,8 +101,8 @@ Logger.prototype = {
     },
 
     getText: function() {
-        let log = this.getLog();
-        let arr = [];
+        const log = this.getLog();
+        const arr = [];
 
         if(log && log.arr) {
 
@@ -124,8 +125,8 @@ Logger.prototype = {
 
         this.debug('setKey: ${key}', {key:key});
 
-        let log = this.getLog();
-        let alpha = require('util/alpha.js');
+        const log = this.getLog();
+        const alpha = require('util/alpha.js');
 
         if(!log) {
             return;
@@ -139,7 +140,7 @@ Logger.prototype = {
     },
 
     getKey: function() {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             return log.key;
@@ -157,7 +158,7 @@ Logger.prototype = {
 
         this.debug('setGroup: ${group}', {group:group});
 
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             log.group = group;
@@ -165,7 +166,7 @@ Logger.prototype = {
     },
 
     getGroup: function() {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             return log.group;
@@ -175,7 +176,7 @@ Logger.prototype = {
     },
 
     isReport: function() {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(!log) {
             return false;
@@ -196,7 +197,7 @@ Logger.prototype = {
 
         this.debug('report ${key}', {key:key});
 
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             log.force = 1;
@@ -208,7 +209,7 @@ Logger.prototype = {
     },
 
     fillBuffer: function(type, fn) {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
 
@@ -263,9 +264,9 @@ Logger.prototype = {
 
     writeLog : function(type, str, obj) {
 
-        let level = this.type2level(type);
-        let log = this.getLog();
-        let allow = filter(level, str, obj);
+        const level = this.type2level(type);
+        const log = this.getLog();
+        const allow = filter(level, str, obj);
         let logStr = null;
 
         if(log || allow === true || level >= config.getLogLevel()) {
@@ -276,19 +277,25 @@ Logger.prototype = {
             return this;
         }
 
+        //全息日志写入原始日志
         this.fillBuffer(type, logStr);
 
-        if(allow === false) {
+        if(allow === false || level < config.getLogLevel()) {
             return this;
         }
 
-        if(allow === true) {
-            return this.asyncLog(logStr, level);
+        if(debugOptions && debugOptions.inspectorEnabled) {
+            //Chrome写入原始日志
+            this.fillInspect(logStr, level);
+            //控制台写入高亮日志
+            const logColor = this._getLog(type, level, str, obj, 'color');
+            this.fillStdout(logColor, level);
+        }else{
+            //非调试模式写入原始日志
+            this.fillStdout(logStr, level);
         }
 
-        if(level >= config.getLogLevel()) {
-            return this.asyncLog(logStr, level);
-        }
+        return this;
     },
 
     type2level: function(type) {
@@ -316,10 +323,9 @@ Logger.prototype = {
         config.logLevel = level;
     },
 
-    _getLog: function(type, level, str, obj) {
+    _getLog: function(type, level, str, obj, useColor) {
 
-        let log = this.getLog();
-        let that = this;
+        const log = this.getLog();
         let filename = '';
         let column = '';
         let line = '';
@@ -339,7 +345,7 @@ Logger.prototype = {
             enable = true;
         }
 
-        if((enable && global.cpuUsed < 70) || isWindows) {
+        if((enable) || isWindows) {
 
             info = callInfo.getCallInfo(3);
 
@@ -349,10 +355,10 @@ Logger.prototype = {
         }
 
 
-        let now = new Date();
+        const now = new Date();
         let text = null;
 
-        let fn = function() {
+        const fn = () => {
 
             if(text!== null) {
                 return text;
@@ -376,8 +382,8 @@ Logger.prototype = {
                 filename = filename.slice(index);
             }
 
-            text = that.format({
-                SN      : that.getSN(),
+            text = (useColor ? this.formatColor : this.format)({
+                SN      : this.getSN(),
                 yyyy    : now.getFullYear(),
                 MM      : zeroize(now.getMonth() + 1, 2),
                 dd      : zeroize(now.getDate(), 2),
@@ -391,7 +397,7 @@ Logger.prototype = {
                 txt     : typeof str === 'string' ? merge(str, obj) : (typeof str === 'object' ? '\n' : '') + util.inspect(str),
                 line    : line,
                 column  : column,
-                cpu     : that.getCpu(),
+                cpu     : this.getCpu(),
                 pid     : process.pid
             });
 
@@ -401,7 +407,37 @@ Logger.prototype = {
         return fn;
     },
 
-    asyncLog: function(fn, level) {
+    fillInspect: function(fn, level) {
+        let str;
+
+        if(typeof fn === 'function') {
+            str = fn();
+        }else{
+            str = fn;
+        }
+
+        /* eslint-disable no-console */
+
+        if(console._stdout === process.stdout) {
+            const EventEmitter = require('events');
+            const empty = new EventEmitter();
+
+            empty.write = () => {};
+            empty.end = () => {};
+            console._stdout = empty;
+        }
+
+        if(level <= 20) {
+            (console.originLog || console.log)(str);
+        }else if(level <= 30) {
+            (console.originWarn || console.warn)(str);
+        }else{
+            (console.originError || console.error)(str);
+        }
+        /* eslint-disable no-console */
+    },
+
+    fillStdout: function(fn, level) {
 
         let str;
 
@@ -411,62 +447,28 @@ Logger.prototype = {
             str = fn;
         }
 
-        this.print(str, level);
-
-        return this;
+        process.stdout.write(str);
+        process.stdout.write('\n');
     },
 
-    print: function(str, level) {
+    format: function(d) {
+        const str = `${d.yyyy}-${d.MM}-${d.dd} ${d.HH}:${d.mm}:${d.ss}.${d.msec} [${d.type}] [${d.pid} cpu${d.cpu} ${d.SN}] [${d.mod_act}] [${d.file}:${d.line}] ${d.txt}`;
+        return str;
+    },
 
-        /* eslint-disable no-console */
-
-        if(level <= 20) {
-            (console.originLog || console.log)(str);
-        }else if(level <= 30) {
-            (console.originWarn || console.warn)(str);
-        }else{
-            (console.originError || console.error)(str);
+    formatColor: function(d) {
+        let typeColor = '\u001b[90m';   //grey
+        if(d.type === 'ERRO') {
+            typeColor = '\u001b[31m';   //red
+        }else if(d.type === 'WARN') {
+            typeColor = '\u001b[35m';   //magenta
+        }else if(d.type === 'INFO') {
+            typeColor = '\u001b[32m';   //green
+        }else if(d.type === 'DBUG') {
+            typeColor = '\u001b[33m';   //yellow
         }
 
-        /* eslint-enable no-console */
-
-        //console.Console.prototype.log.call(console,str);
-        //process.stdout.write(str);
-        //process.stdout.write('\n');
-    },
-
-    format: function(data) {
-
-        let str = data.yyyy
-            + '-'
-            + data.MM
-            + '-'
-            + data.dd
-            + ' '
-            + data.HH
-            + ':'
-            + data.mm
-            + ':'
-            + data.ss
-            + '.'
-            + data.msec
-            + ' ['
-            + data.type
-            + '] ['
-            + data.pid
-            + ' cpu'
-            + data.cpu
-            + ' '
-            + data.SN
-            + '] ['
-            + data.mod_act
-            + '] ['
-            + data.file
-            + ':'
-            + data.line
-            + '] '
-            + data.txt;
-
+        const str = `\u001b[90m${d.yyyy}-${d.MM}-${d.dd} ${d.HH}:${d.mm}:${d.ss}.${d.msec}\u001b[0m ${typeColor}[${d.type}]\u001b[0m \u001b[90m[${d.pid} cpu${d.cpu} ${d.SN}]\u001b[0m \u001b[33m[${d.mod_act}]\u001b[0m \u001b[36m[${d.file}:${d.line}]\u001b[0m ${d.txt}`;
         return str;
     },
 
@@ -482,7 +484,7 @@ function merge(str, obj) {
 
     return str && str.replace(/\$\{(.+?)\}/g, function($0, $1) {
 
-        let rs = obj && obj[$1];
+        const rs = obj && obj[$1];
         let undefined;
 
         return rs === undefined ? '' :
@@ -499,8 +501,8 @@ function merge(str, obj) {
  *
  */
 function zeroize(num, width) {
-    let s = String(num),
-        len = s.length;
+    const s = String(num);
+    const len = s.length;
     return len >= width ? s : '0000000000000000'.slice(len - width) + s;
 }
 
@@ -514,10 +516,10 @@ function zeroize(num, width) {
  */
 function isExceedFreq(level, str, obj) {
 
-    let mod_act = contextMod.currentContext().mod_act || 'null',
-        curTime = Date.now(),
-        exceed = false,
-        cfg;
+    const mod_act = contextMod.currentContext().mod_act || 'null';
+    const curTime = Date.now();
+    let exceed = false;
+    let cfg;
 
     if(isWindows) {
         return false;

@@ -36,7 +36,7 @@ function getFileCacheKey(project, key) {
  */
 function updateFileCache(project, key, text) {
     text = text || JSON.stringify({});
-    let cacheFilename = getFileCacheKey(project, key);
+    const cacheFilename = getFileCacheKey(project, key);
 
     //保存到文件
     fileCache.set(cacheFilename, Buffer.from(text, 'UTF-8'));
@@ -71,11 +71,11 @@ function onDisconnect (type) {
 //提高稳定性结束
 
 //1分钟从memcache中更新一次足够了
-let getTimeout = 60000;
+const getTimeout = 60000;
 let lastUpdateTime = 0;
 
 //获取测试用户
-let getTestUserMap = function() {
+const getTestUserMap = function() {
 
     //看下fileCache里面有没有
     if(!global[__filename]) {
@@ -102,8 +102,8 @@ const syncFromMemcachedOrCloud = function() {
 const syncFromMemcached = function() {
 
     //从内存中读取testTargetMap
-    let memcached = module.exports.cmem();
-    let keyText = module.exports.keyBitmap();
+    const memcached = module.exports.cmem();
+    const keyText = module.exports.keyBitmap();
 
     if(!memcached) {
         return;
@@ -146,12 +146,12 @@ const syncFromCloud = function(merge) {
         return;
     }
 
-    let postData = {
+    const postData = {
         appid: config.appid,
         now: Date.now()
     };
 
-    let sig = openapi.signature({
+    const sig = openapi.signature({
         pathname: url.parse(config.h5testSyncUrl).pathname,
         method: 'POST',
         data: postData,
@@ -222,14 +222,14 @@ module.exports.getTestSpaceInfo = function(req) {
     }
 
     //测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
-    let testTargetMap = getTestUserMap();
+    const testTargetMap = getTestUserMap();
 
     //如果已经是测试环境，就不用转发了
     if(config.isTest) {
         return;
     }
 
-    let uin = logger.getKey() || alpha.getUin(req);
+    const uin = logger.getKey() || alpha.getUin(req);
     let testIp = '';
     let testPort = 80;
 
@@ -242,7 +242,7 @@ module.exports.getTestSpaceInfo = function(req) {
     ) {
         testIp = testTargetMap[uin];
 
-        let arr = testIp.split(':');
+        const arr = testIp.split(':');
 
         if(arr.length === 2) {
             testIp = arr[0];
@@ -266,16 +266,16 @@ module.exports.getTestSpaceInfo = function(req) {
 //是否命中测试环境
 //命中则直接转发请求，return true;不命中则return false
 module.exports.isTestUser = function(req, res) {
-    let testSpaceInfo = module.exports.getTestSpaceInfo(req);
+    const testSpaceInfo = module.exports.getTestSpaceInfo(req);
 
     if(!testSpaceInfo) {
         return false;
     }
 
-    let reqUrl = req.REQUEST.href;
+    const reqUrl = req.REQUEST.href;
     let timeout = config.timeout[req.method.toLowerCase()] || config.timeout.get;
-    let testPort = testSpaceInfo.testPort || 80;
-    let testIp = testSpaceInfo.testIp || '';
+    const testPort = testSpaceInfo.testPort || 80;
+    const testIp = testSpaceInfo.testIp || '';
     timeout = parseInt(timeout * 0.8);
 
     logger.debug('isTestUser...');
@@ -321,7 +321,7 @@ module.exports.cmem = function() {
 
 //uin对应的存储key，每天一变
 module.exports.keyBitmap = function(uin) {
-    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
     return 'bitmap.h5.test.' + currDays;
 };
 
@@ -329,8 +329,8 @@ module.exports.keyBitmap = function(uin) {
 module.exports.getTestUserMap = getTestUserMap;
 
 module.exports.getTestUserMapFromFileCache = function () {
-    let fileCacheKey = getFileCacheKey('h5test', 'test.user.list');
-    let localData = fileCache.getSync(fileCacheKey).data;
+    const fileCacheKey = getFileCacheKey('h5test', 'test.user.list');
+    const localData = fileCache.getSync(fileCacheKey).data;
     let localJSON = {};
 
     if(localData) {

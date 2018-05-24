@@ -17,9 +17,9 @@ const url = require('url');
 
 this.SendMail = function(key, group, second, oriOpt) {
 
-    let opt = Deferred.extend({}, oriOpt);
-    let data = {};
-    let now = new Date();
+    const opt = Deferred.extend({}, oriOpt);
+    const data = {};
+    const now = new Date();
     let prefix = '[runtime]';
 
     if(isWindows.isWindows) {
@@ -74,10 +74,10 @@ this.SendMail = function(key, group, second, oriOpt) {
 
 
 const reportOpenapi = function(data) {
-    let defer = Deferred.create();
-    let config = require('config');
-    let openapi = require('util/openapi');
-    let logger = require('logger');
+    const defer = Deferred.create();
+    const config = require('config');
+    const openapi = require('util/openapi');
+    const logger = require('logger');
 
     let retCall;
 
@@ -98,12 +98,12 @@ const reportOpenapi = function(data) {
         return;
     }
 
-    let postData = data;
+    const postData = data;
 
     postData.appid = config.appid;
     postData.now = Date.now();
 
-    let sig = openapi.signature({
+    const sig = openapi.signature({
         pathname    : url.parse(config.runtimeReportUrl).pathname,
         method        : 'POST',
         data        : postData,

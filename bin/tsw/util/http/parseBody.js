@@ -14,7 +14,7 @@ const qs = require('qs');
 
 module.exports = function(req, res, next) {
     
-    let arr = [];
+    const arr = [];
     
     if(!httpUtil.isPostLike(req)) {
         next();
@@ -39,13 +39,13 @@ module.exports = function(req, res, next) {
         
         logger.debug('receive end');
 
-        let buffer = Buffer.concat(arr);
+        const buffer = Buffer.concat(arr);
         let willParseBody = '';
         req.REQUEST.body = buffer.toString('UTF-8');
         req.POST = {};
         req.body = req.POST;
 
-        let contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
+        const contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
         if(contentType.indexOf('application/x-www-form-urlencoded') > -1) {
 

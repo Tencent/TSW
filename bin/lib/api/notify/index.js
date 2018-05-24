@@ -10,14 +10,14 @@
 const Deferred = require('util/Deferred');
 
 this.DecryptTicketWithClientIP = function(opt) {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };
 
 
 this.SendRTX = function(opt) {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };
@@ -45,7 +45,7 @@ this.SendMail = function(opt) {
         'attachment'    : ''        //邮件附件的文件名以及文件的内容（在发送请求时，文件内容是二进制数据流的形式发送）
     }, opt);
 
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };
@@ -62,7 +62,7 @@ this.SendWeiXin = function(opt) {
         'Sender'        : ''        //发送人
     }, opt);
 
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };
@@ -79,7 +79,7 @@ this.SendSMS = function(opt) {
         'Sender'        : ''        //发送人
     }, opt);
 
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };

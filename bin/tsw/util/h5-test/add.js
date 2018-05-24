@@ -23,20 +23,20 @@ module.exports = function(request, response) {
 
 module.exports.go = async function(request, response) {
 
-    let uin = request.param('uin');
-    let val = request.param('val');
+    const uin = request.param('uin');
+    const val = request.param('val');
 
-    let data = await module.exports.addTestUser(uin, val).toES6Promise().catch(function() {
+    const data = await module.exports.addTestUser(uin, val).toES6Promise().catch(function() {
         return null;
     });
 
-    let result = {code: 0, data: data};
+    const result = {code: 0, data: data};
 
     returnJson(result);
 };
 
 const returnJson = function(json) {
-    let gzip = gzipHttp.create({
+    const gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });
@@ -48,9 +48,9 @@ const returnJson = function(json) {
 module.exports.addTestUser = function(uin, val) {
     logger.debug('addTestUser:' + uin);
     val = val || true;
-    let memcached = isTest.cmem();
+    const memcached = isTest.cmem();
     let keyText = isTest.keyBitmap();
-    let defer = Deferred.create();
+    const defer = Deferred.create();
     let appid = '';
 
     if(context.appid && context.appkey) {
@@ -82,7 +82,7 @@ module.exports.addTestUser = function(uin, val) {
             data = post.decode(context.appid, context.appkey, data);
         }
 
-        let expire = 24*60*60;
+        const expire = 24*60*60;
 
         if(err) {
             logger.error('memcache get error:' + err);

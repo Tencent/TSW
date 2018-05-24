@@ -34,7 +34,7 @@ if(!global[__filename]) {
 
 this.getCpuUsed = function(cpu) {
 
-    let now = Date.now();
+    const now = Date.now();
 
     cpu = cpu || '';
 
@@ -61,7 +61,7 @@ this.getCpuUsed = function(cpu) {
             return;
         }
 
-        let lines = buffer.toString('UTF-8').split('\n');
+        const lines = buffer.toString('UTF-8').split('\n');
         let str = '';
         let arr = [];
 
@@ -78,19 +78,19 @@ this.getCpuUsed = function(cpu) {
             return;
         }
 
-        let user = parseInt(arr[1], 10) || 0;
-        let nice = parseInt(arr[2], 10) || 0;
-        let system = parseInt(arr[3], 10) || 0;
-        let idle = parseInt(arr[4], 10) || 0;
-        let iowait = parseInt(arr[5], 10) || 0;
-        let irq = parseInt(arr[6], 10) || 0;
-        let softirq = parseInt(arr[7], 10) || 0;
+        const user = parseInt(arr[1], 10) || 0;
+        const nice = parseInt(arr[2], 10) || 0;
+        const system = parseInt(arr[3], 10) || 0;
+        const idle = parseInt(arr[4], 10) || 0;
+        const iowait = parseInt(arr[5], 10) || 0;
+        const irq = parseInt(arr[6], 10) || 0;
+        const softirq = parseInt(arr[7], 10) || 0;
         // var  steal   = parseInt(arr[8],10) || 0;
         // var guest    = parseInt(arr[9],10) || 0;
 
-        let total = user + nice + system + idle + iowait + irq + softirq;
-        let used = user + nice + system + irq + softirq;
-        let curr = Math.round((used - cache.used) / (total - cache.total) * 100);
+        const total = user + nice + system + idle + iowait + irq + softirq;
+        const used = user + nice + system + irq + softirq;
+        const curr = Math.round((used - cache.used) / (total - cache.total) * 100);
 
         cache.curr = curr;
         cache.total = total;
@@ -103,7 +103,7 @@ this.getCpuUsed = function(cpu) {
 
 this.cpus = function() {
 
-    let res = [];
+    const res = [];
 
 
     os.cpus().forEach(function(v) {
@@ -134,8 +134,8 @@ this.taskset = function(oriCpu, pid) {
         timeout: 5000
     }, function(err, data, errData) {
 
-        let str = data.toString('UTF-8');
-        let tmp = str.split(':');
+        const str = data.toString('UTF-8');
+        const tmp = str.split(':');
         let cpus;
 
         if(tmp.length >= 2) {
@@ -191,15 +191,15 @@ this.taskset = function(oriCpu, pid) {
 
 this.parseTaskset = function(str) {
 
-    let res = [];
-    let arr = str.split(',');
+    const res = [];
+    const arr = str.split(',');
 
     arr.forEach(function(v) {
 
         v = v.trim();
 
-        let tmp = v.split('-');
-        let start = ~~tmp[0];
+        const tmp = v.split('-');
+        const start = ~~tmp[0];
         let end = ~~tmp[1];
         let i;
 

@@ -25,7 +25,7 @@ const CD = require('util/CD.js');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 const MAX_ALPHA_LOG = post.MAX_ALPHA_LOG;
 
-let limit = {
+const limit = {
     count: {
         error    : 0,
         alpha    : 0,
@@ -46,8 +46,8 @@ let limit = {
 
 module.exports = function(req, res) {
 
-    let window = context.window || {};
-    let isWebSocket = !!window.websocket;
+    const window = context.window || {};
+    const isWebSocket = !!window.websocket;
 
     if(isWebSocket) {
         req = window.websocket.upgradeReq;
@@ -229,7 +229,7 @@ module.exports = function(req, res) {
 
         }
 
-        let reportData = {
+        const reportData = {
             type        : type || '',
             logText        : logText || '',
             logJson        : logJson,
@@ -247,8 +247,8 @@ module.exports = function(req, res) {
         if(type === 'alpha') {
             //根据content-type设置group便于分类查询抓包
             if(!reportData.group) {
-                let pathName = req.REQUEST.pathname;
-                let fileName = pathName.substr( pathName.lastIndexOf('/') + 1);
+                const pathName = req.REQUEST.pathname;
+                const fileName = pathName.substr( pathName.lastIndexOf('/') + 1);
                 reportData.group = module.exports.fingureCroup({
                     resHeaders : res._headers,
                     reqHeaders : req.headers,
@@ -329,7 +329,7 @@ module.exports.fingureCroup = function(opts) {
 };
 
 module.exports.reportAlpha = function(data) {
-    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
 
     if(!data.key) {
         return;
@@ -339,8 +339,8 @@ module.exports.reportAlpha = function(data) {
         return;
     }
 
-    let reportKey = [data.key].join('/');
-    let logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    const reportKey = [data.key].join('/');
+    const logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
     post.report(reportKey, data.logText, data.logJson).done(function(isFirst) {
         if(isFirst) {
@@ -363,7 +363,7 @@ module.exports.reportAlpha = function(data) {
         return;
     }
 
-    let reportGroupKey = [data.group, data.key].join('/');
+    const reportGroupKey = [data.group, data.key].join('/');
 
     post.report(reportGroupKey, data.logText, data.logJson).done(function(isFirst) {
         //这里不用计数了
@@ -406,7 +406,7 @@ module.exports.reportCloud = function(data) {
     logger.debug('reportCloud');
     logger.debug('report log type: ${type}, key ${key}', data);
 
-    let postData = Object.assign({}, data);
+    const postData = Object.assign({}, data);
 
     //加密
     postData.logText = post.encode(config.appid, config.appkey, data.logText);
@@ -416,7 +416,7 @@ module.exports.reportCloud = function(data) {
     postData.now = Date.now();
 
 
-    let sig = openapi.signature({
+    const sig = openapi.signature({
         pathname: url.parse(config.logReportUrl).pathname,
         method: 'POST',
         data: postData,
@@ -446,7 +446,7 @@ module.exports.reportCloud = function(data) {
 
 module.exports.receiveCloud = function(req, res) {
 
-    let returnJson = function(message) {
+    const returnJson = function(message) {
         res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         res.writeHead(200);
         res.end(JSON.stringify({
@@ -455,7 +455,7 @@ module.exports.receiveCloud = function(req, res) {
         }, null, 2));
     };
 
-    let data = req.POST || {};
+    const data = req.POST || {};
 
     if(!data.appid) {
         return returnJson('appid is required');
@@ -494,11 +494,11 @@ module.exports.receiveCloud = function(req, res) {
         return returnJson('get appkey error');
     }
 
-    let appid = context.appid;
-    let appkey = context.appkey;
-    let reportKey = [appid, data.key].join('/');
-    let currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
-    let logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    const appid = context.appid;
+    const appkey = context.appkey;
+    const reportKey = [appid, data.key].join('/');
+    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    const logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
     logger.setKey(`report_${appid}_${data.key}`);    //上报key
     logger.debug('report log type: ${type}, key ${key}', data);
@@ -534,7 +534,7 @@ module.exports.receiveCloud = function(req, res) {
             return returnJson();
         }
 
-        let reportGroupKey = [appid, data.group, data.key].join('/');
+        const reportGroupKey = [appid, data.group, data.key].join('/');
 
         postOpenapi.report(reportGroupKey, data.logText, data.logJson).done(function(isFirst) {
             //这里不用计数了
@@ -544,8 +544,8 @@ module.exports.receiveCloud = function(req, res) {
                 returnJson();
             }).done(function() {
 
-                let logText = postOpenapi.encode(appid, appkey, data.group);
-                let logJson = postOpenapi.encode(appid, appkey, {group: data.group});
+                const logText = postOpenapi.encode(appid, appkey, data.group);
+                const logJson = postOpenapi.encode(appid, appkey, {group: data.group});
 
                 postOpenapi.report(`${appid}/v2.group.alpha`, logText, logJson).always(function() {
                     returnJson();
@@ -591,14 +591,14 @@ module.exports.top100 = function(req, res) {
     let map = {};
     let arr = [];
     let key;
-    let buffer = [];
+    const buffer = [];
     
     //分析pathname聚集
     map = {};
     arr = [];
     result.forEach(function(v, i) {
         
-        let key = v.hostname + v.pathname;
+        const key = v.hostname + v.pathname;
         
         if(map[key]) {
             map[key] ++;

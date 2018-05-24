@@ -56,7 +56,7 @@ this.isAlpha = function(req) {
         }
     }
 
-    let uinMap = global[__filename] || {};
+    const uinMap = global[__filename] || {};
 
     return uinMap[uin] || TSW.getAlphaUinMapSync()[uin];
 };
@@ -64,7 +64,7 @@ this.isAlpha = function(req) {
 this.getUin = function(req) {
 
     let uin;
-    let window = context.window || {};
+    const window = context.window || {};
 
     req = req || window.request;
 

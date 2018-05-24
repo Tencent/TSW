@@ -39,11 +39,11 @@ function textField(boundary, key, value) {
  * @return {[type]}          [description]
  */
 function fileField(boundary, key, value = {}) {
-    let tmp = [];
+    const tmp = [];
 
-    let contentType = value.contentType || 'application/octet-stream';
-    let dispositionType = value.dispositionType || 'form-data';
-    let fileName = value.fileName || '';
+    const contentType = value.contentType || 'application/octet-stream';
+    const dispositionType = value.dispositionType || 'form-data';
+    const fileName = value.fileName || '';
 
     tmp.push('--' + boundary);
 
@@ -76,7 +76,7 @@ function getFormBuffer(opt = {}) {
 
     let v;
 
-    for(let key in opt.data) {
+    for(const key in opt.data) {
         
         v = opt.data[key];
         

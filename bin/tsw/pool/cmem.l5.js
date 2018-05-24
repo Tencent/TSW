@@ -59,7 +59,7 @@ module.exports.getCmem = function(opt) {
     key = [opt.modid, opt.cmd, opt.host].join(':');
     
     if(!cache[key]) {
-        let Memcached = require('memcached');
+        const Memcached = require('memcached');
         cache[key] = queueWrap(new Memcached(opt.host, opt)); 
     }
     
@@ -78,18 +78,18 @@ function queueWrap(memcached) {
     memcached.command = function(command) {
         
         return function(queryCompiler, server) {
-            let memcached = this;
-            let queue = memcached.__queue;
-            let servers = memcached.servers && memcached.servers[0];
-            let start = Date.now();
+            const memcached = this;
+            const queue = memcached.__queue;
+            const servers = memcached.servers && memcached.servers[0];
+            const start = Date.now();
         
             queue.queue(function() {
                 
-                let fn = (function(queryCompiler) {
+                const fn = (function(queryCompiler) {
                     return function() {
-                        let query = queryCompiler();
+                        const query = queryCompiler();
                         let command = query.command || '';
-                        let index = command.indexOf('\r\n');    //不要数据部分
+                        const index = command.indexOf('\r\n');    //不要数据部分
                         if(index > 0) {
                             command = command.slice(0, Math.min(128, index));
                         }
@@ -101,11 +101,11 @@ function queueWrap(memcached) {
 
                         query.callback = function(callback) {
                             return function(...args) {
-                                let err = args[0];
+                                const err = args[0];
                                 let code = 0;
                                 let isFail = 0;
-                                let delay = Date.now() - start;
-                                let toIp = servers.split(':')[0];
+                                const delay = Date.now() - start;
+                                const toIp = servers.split(':')[0];
 
                                 if(err && err.message !== 'Item is not stored') {
                                     if(err.stack) {

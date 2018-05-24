@@ -9,7 +9,7 @@ logger.setLogLevel('error');
 
 describe('测试获取cpu信息的接口', () => {
     it('#cpus() 3个cpu，3个空闲，结果为数组', () => {
-        let os = require('os');
+        const os = require('os');
         sinon.stub(os, 'cpus').callsFake(() => {
             return [{
                 model: 'Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz',
@@ -44,14 +44,14 @@ describe('测试获取cpu信息的接口', () => {
             }];
         });
 
-        let cpus = cpuUtil.cpus();
+        const cpus = cpuUtil.cpus();
         expect(cpus.length).to.equal(3);
         expect(Array.isArray(cpus)).to.equal(true);
         os.cpus.restore();
     });
 
     it('#cpus() 3个cpu，2个空闲，结果为数组', () => {
-        let os = require('os');
+        const os = require('os');
         sinon.stub(os, 'cpus').callsFake(() => {
             return [{
                 model: 'Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz',
@@ -86,7 +86,7 @@ describe('测试获取cpu信息的接口', () => {
             }];
         });
 
-        let cpus = cpuUtil.cpus();
+        const cpus = cpuUtil.cpus();
         expect(cpus.length).to.equal(2);
         expect(Array.isArray(cpus)).to.equal(true);
         os.cpus.restore();

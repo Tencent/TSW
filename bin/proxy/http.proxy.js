@@ -110,21 +110,21 @@ process.on('profiler', function(data = {}) {
 //process.emit('globaldump',m.GET);
 process.on('globaldump', function(GET) {
 
-    let cpu = GET.cpu || 0;
-    let depth = GET.depth || 6;
+    const cpu = GET.cpu || 0;
+    const depth = GET.depth || 6;
 
     if(cpu != serverInfo.cpu) {
         return;
     }
 
-    let filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
+    const filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
 
     logger.info('globaldump');
     logger.info(GET);
     logger.info(filename);
 
 
-    let str = util.inspect(global, {
+    const str = util.inspect(global, {
         depth: depth
     });
 
@@ -245,7 +245,7 @@ function startHeartBeat() {
             global.cpuUsed80 = 0;
         }
 
-        let cpuUsed = global.cpuUsed;
+        const cpuUsed = global.cpuUsed;
 
         //高负载告警
         if (
@@ -261,7 +261,7 @@ function startHeartBeat() {
                 },
                 timeout: 5000
             }, function(err, data, errData) {
-                let key = ['cpu80.v4', serverInfo.intranetIp].join(':');
+                const key = ['cpu80.v4', serverInfo.intranetIp].join(':');
                 let Content = [
                     '<strong>单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%, 最近5秒钟CPU Profiler见附件</strong>'
                 ].join('<br>');
@@ -280,7 +280,7 @@ function startHeartBeat() {
                 //获取本机信息，用来分组
                 require('api/cmdb').GetDeviceThisServer().done(function(data) {
                     data = data || {};
-                    let business = data.business && data.business[0] || {};
+                    const business = data.business && data.business[0] || {};
                     let owner = '';
 
                     if(data.ownerMain) {
@@ -313,7 +313,7 @@ function startHeartBeat() {
             });
         }
 
-        let currMemory = process.memoryUsage();
+        const currMemory = process.memoryUsage();
 
         tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS', currMemory.rss);
         tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
@@ -375,7 +375,7 @@ methodMap.top100 = function(m) {
 //监听端口
 methodMap.listen = function(message) {
 
-    let user_00 = config.workerUid || 'user_00';
+    const user_00 = config.workerUid || 'user_00';
     serverInfo.cpu = message.cpu || 0;
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
@@ -412,7 +412,7 @@ methodMap.listen = function(message) {
             port: config.httpPort
         });
 
-        let finish = function() {
+        const finish = function() {
 
             //开始发送心跳
             logger.info('start heart beat');

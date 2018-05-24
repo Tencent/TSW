@@ -12,17 +12,17 @@ if(!global[__filename]) {
     global[__filename] = true;
 
     process.nextTick(function() {
-        let config = require('config');
-        let dns = require('dns');
-        let dcapi = require('api/libdcapi/dcapi');
-        let logger = require('logger');
-        let net = require('net');
+        const config = require('config');
+        const dns = require('dns');
+        const dcapi = require('api/libdcapi/dcapi');
+        const logger = require('logger');
+        const net = require('net');
 
         dns.lookup = (function(fn) {
 
             return function(hostname, options, callback) {
-                let args = [hostname];
-                let start = Date.now();
+                const args = [hostname];
+                const start = Date.now();
 
                 if(net.isIP(hostname)) {
                     return fn.apply(this, arguments);
@@ -38,7 +38,7 @@ if(!global[__filename]) {
                 let timeoutError;
                 let isCalled = false;
 
-                let callbackWrap = function(err, address, family) {
+                const callbackWrap = function(err, address, family) {
                     if (isCalled) return;
 
                     if(!err) {

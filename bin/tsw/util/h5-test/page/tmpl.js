@@ -49,7 +49,7 @@ define(function(require, exports, module) {
                 }, out=_p;
             __p.push('<style type="text/css">\nhtml{\n    overflow-x: hidden;\n    overflow-y: scroll;\n}\n#header.header{\n    height: 50px;\n    margin: 0 auto;\n    overflow: hidden;\n    background-color: rgba(0,0,0,0.8);\n    *background-color: #000;\n    border-top: 2px solid #F00;\n    z-index: 88;\n    width: 100%;\n    font-size: 16px;\n    box-sizing: border-box;\n}\n\n#header .nav{\n    width: 1100px;\n    margin: 0 auto;\n    padding: 0;\n}\n\n#header .nav li{\n    list-style: none;\n    float: right;\n    display: block;\n    height: 50px;\n    line-height: 50px;\n    overflow: hidden;\n    cursor: pointer;\n}\n\n#header .nav li:hover{\n    background-color: rgba(255,0,0,0.9);\n    color: #fff;\n}\n\n#header .nav li a{\n    display: block;\n    padding: 0 20px;\n    text-decoration: none;\n    color: #FFF;\n    font-family: "Microsoft YaHei";\n}\n\n#header .nav li a:hover,\n#header .nav li a:active{\n    text-decoration: none;\n}\n.tooltips {\n    color: red;\n    text-align: center;\n    background-color: rgba(215, 215, 215, 0.8);\n    border-bottom: 2px solid #fff;\n    position: fixed;\n    top: 50px;\n    z-index: 999;\n    width: 100%;\n}\n</style>\n<div id="header" class="header">\n    <ul class="nav">');
  
-            let navMenus = data;
+            const navMenus = data;
             if(navMenus && navMenus.length>0) {
                 for(let i=0;i<navMenus.length;i++) {
                     if(navMenus[i].href && navMenus[i].title) {
@@ -104,12 +104,12 @@ define(function(require, exports, module) {
             data = data.group;
 
             for(let i = 0; i < data.length; i++) {
-                let item = data[i];
-                let val = item['ip'] + (item['port'] && (':' + item['port']) || '');
+                const item = data[i];
+                const val = item['ip'] + (item['port'] && (':' + item['port']) || '');
                 let name= item['name'];
                 let desc = item['desc'];
-                let owner = item['owner'];
-                let module = item['moduleName'];
+                const owner = item['owner'];
+                const module = item['moduleName'];
                 let isShow = false;
                         
                 if(val && val != '') {

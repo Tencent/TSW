@@ -39,11 +39,11 @@ this.check = function(key, count, second) {
 
 
 const checkByOpenapi = function(keyOri, count, second) {
-    let defer = Deferred.create();
-    let appid = context.appid || null;
+    const defer = Deferred.create();
+    const appid = context.appid || null;
 
-    let key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
-    let start = Date.now();
+    const key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    const start = Date.now();
 
     if(cache[key]) {
         if(start - cache[key] < second * 1000) {
@@ -67,7 +67,7 @@ const checkByOpenapi = function(keyOri, count, second) {
         cache[key] = start;
     });
 
-    let postData = {
+    const postData = {
         appid: config.appid,
         key: key,
         count: count,
@@ -79,7 +79,7 @@ const checkByOpenapi = function(keyOri, count, second) {
         return defer.reject();
     }
 
-    let sig = openapi.signature({
+    const sig = openapi.signature({
         pathname: url.parse(config.utilCDUrl).pathname,
         method: 'POST',
         data: postData,
@@ -122,12 +122,12 @@ const checkByOpenapi = function(keyOri, count, second) {
 
 this.curr = function(keyOri, count, second) {
 
-    let defer = Deferred.create();
-    let appid = context.appid || null;
+    const defer = Deferred.create();
+    const appid = context.appid || null;
 
-    let key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    const key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
 
-    let memcached = module.exports.cmem();
+    const memcached = module.exports.cmem();
 
     if(!memcached) {
         return defer.reject();
@@ -147,11 +147,11 @@ this.curr = function(keyOri, count, second) {
 
 const checkByCmem = function(keyOri, count, second) {
 
-    let defer = Deferred.create();
-    let appid = context.appid || null;
+    const defer = Deferred.create();
+    const appid = context.appid || null;
 
-    let key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
-    let start = Date.now();
+    const key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    const start = Date.now();
 
     if(cache[key]) {
         if(start - cache[key] < second * 1000) {
@@ -169,7 +169,7 @@ const checkByCmem = function(keyOri, count, second) {
         cacheStart = Date.now();
     }
 
-    let memcached = module.exports.cmem();
+    const memcached = module.exports.cmem();
 
     if(!memcached) {
         return defer.reject();
@@ -233,8 +233,8 @@ this.cmem = function() {
 //开放接口
 this.openapi = async function(req, res) {
 
-    let appid = context.appid;
-    let appkey = context.appkey;
+    const appid = context.appid;
+    const appkey = context.appkey;
 
     if(req.param('appid') !== appid) {
         returnJson({ code: -2, message: 'appid错误'});
@@ -258,9 +258,9 @@ this.openapi = async function(req, res) {
 
     logger.setKey(`CD_${appid}`);    //上报key
 
-    let key = req.param('key');
-    let second = ~~req.param('second');    //单位秒
-    let count = ~~req.param('count');        //默认是1
+    const key = req.param('key');
+    const second = ~~req.param('second');    //单位秒
+    const count = ~~req.param('count');        //默认是1
 
     if(!key) {
         returnJson({ code: -2, message: 'key is required'});
@@ -282,17 +282,17 @@ this.openapi = async function(req, res) {
         return;
     }
 
-    let data = await checkByCmem(key, count, second).toES6Promise().catch(function() {
+    const data = await checkByCmem(key, count, second).toES6Promise().catch(function() {
         return null;
     });
 
-    let result = {code: 0, data: data};
+    const result = {code: 0, data: data};
 
     returnJson(result);
 };
 
 const returnJson = function(json) {
-    let gzip = gzipHttp.create({
+    const gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });

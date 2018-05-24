@@ -19,17 +19,17 @@ if(global[__filename]) {
 
     //追踪重复读写
     process.nextTick(function() {
-        let cache = global[__filename];
-        let isWindows = require('util/isWindows');
-        let fs = require('fs');
-        let logger = require('logger');
-        let config = require('config');
-        let tnm2 = require('api/tnm2');
+        const cache = global[__filename];
+        const isWindows = require('util/isWindows');
+        const fs = require('fs');
+        const logger = require('logger');
+        const config = require('config');
+        const tnm2 = require('api/tnm2');
 
         fs.existsSync = hack(fs.existsSync, function(file) {
             let sum = 0;
-            let name = 'fs.existsSync';
-            let key = name + file;
+            const name = 'fs.existsSync';
+            const key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
@@ -48,8 +48,8 @@ if(global[__filename]) {
 
         fs.writeFileSync = hack(fs.writeFileSync, function(file) {
             let sum = 0;
-            let name = 'fs.writeFileSync';
-            let key = name + file;
+            const name = 'fs.writeFileSync';
+            const key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
@@ -68,8 +68,8 @@ if(global[__filename]) {
 
         fs.statSync = hack(fs.statSync, function(file) {
             let sum = 0;
-            let name = 'fs.statSync';
-            let key = name + file;
+            const name = 'fs.statSync';
+            const key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
@@ -88,8 +88,8 @@ if(global[__filename]) {
 
         fs.accessSync = hack(fs.accessSync, function(file) {
             let sum = 0;
-            let name = 'fs.accessSync';
-            let key = name + file;
+            const name = 'fs.accessSync';
+            const key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
@@ -108,8 +108,8 @@ if(global[__filename]) {
 
         fs.readFileSync = hack(fs.readFileSync, function(file) {
             let sum = 0;
-            let name = 'fs.readFileSync';
-            let key = name + file;
+            const name = 'fs.readFileSync';
+            const key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
@@ -128,8 +128,8 @@ if(global[__filename]) {
 
         fs.readdirSync = hack(fs.readdirSync, function(file) {
             let sum = 0;
-            let name = 'fs.readdirSync';
-            let key = name + file;
+            const name = 'fs.readdirSync';
+            const key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];

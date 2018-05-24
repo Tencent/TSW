@@ -24,21 +24,21 @@ module.exports = function(request, response) {
 
 module.exports.go = async function(request, response) {
 
-    let uin = request.param('uin');
+    const uin = request.param('uin');
 
-    let data = await module.exports.deleteTestUser(
+    const data = await module.exports.deleteTestUser(
         uin
     ).toES6Promise().catch(function() {
         return null;
     });
 
-    let result = {code: 0, data: data};
+    const result = {code: 0, data: data};
 
     returnJson(result);
 };
 
 const returnJson = function(json) {
-    let gzip = gzipHttp.create({
+    const gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
     });
@@ -50,9 +50,9 @@ const returnJson = function(json) {
 
 module.exports.deleteTestUser = function(uin) {
     logger.debug('deleteTestUser:' + uin);
-    let memcached = isTest.cmem();
+    const memcached = isTest.cmem();
     let keyText = isTest.keyBitmap();
-    let defer = Deferred.create();
+    const defer = Deferred.create();
     let appid = '';
 
     if(!uin) {
@@ -80,7 +80,7 @@ module.exports.deleteTestUser = function(uin) {
             data = post.decode(context.appid, context.appkey, data);
         }
 
-        let expire = 24*60*60;
+        const expire = 24*60*60;
 
         if(err) {
             return defer.reject('memcache get error');
