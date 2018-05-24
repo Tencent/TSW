@@ -7,10 +7,10 @@
  */
 'use strict';
 
-this.startServer = function(){
+this.startServer = function() {
 
 };
 
-this.stopServer = function(){
+this.stopServer = function() {
 
 };

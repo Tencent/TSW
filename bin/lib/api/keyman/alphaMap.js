@@ -14,14 +14,14 @@ const fs = require('fs');
 const fileCache = require('api/fileCache');
 const fileUrl = config.alphaFileUrl;
 
-var isFirstLoad = false;
-var cache = {
+let isFirstLoad = false;
+let cache = {
     timeUpdate: 0,
     data: {},
     dataFile: {}
 };
 
-if(global[__filename]){
+if(global[__filename]) {
     cache = global[__filename];
 }else{
     global[__filename] = cache;
@@ -29,24 +29,24 @@ if(global[__filename]){
 }
 
 
-if(isFirstLoad){
-    if(config.alphaFile){
+if(isFirstLoad) {
+    if(config.alphaFile) {
 
-        (function(){
+        (function() {
             //导入alphaFile
-            var text = '';
+            let text = '';
 
             try{
-                text = fs.readFileSync(config.alphaFile,'UTF-8');
-            }catch(e){
+                text = fs.readFileSync(config.alphaFile, 'UTF-8');
+            }catch(e) {
                 logger.warn(e.stack);
             }
 
-            if(!text){
+            if(!text) {
                 return;
             }
 
-            if(text.length >= 2 * 1024 * 1024){
+            if(text.length >= 2 * 1024 * 1024) {
                 logger.error('alpha file limit <=2M');
                 return;
             }
@@ -61,25 +61,25 @@ if(isFirstLoad){
 }
 
 
-function getMap(text){
+function getMap(text) {
 
-    var map = {};
+    let map = {};
 
     text = text || '';
 
-    text.replace(/^([0-9a-zA-Z_-]+).*$/gm,function($0,key){
+    text.replace(/^([0-9a-zA-Z_-]+).*$/gm, function($0, key) {
         map[key] = 1;
     });
 
     return map;
 }
 
-function updateMap(text){
+function updateMap(text) {
 
-    var map = getMap(text);
+    let map = getMap(text);
 
     //copy
-    Object.assign(map,cache.dataFile);
+    Object.assign(map, cache.dataFile);
 
     cache.data = map;
 
@@ -87,42 +87,42 @@ function updateMap(text){
 }
 
 
-this.getSync = function(){
+this.getSync = function() {
     this.get();
     
     return cache.data;
 };
 
-this.get = function(){
+this.get = function() {
     
-    var defer = Deferred.create();
-    var delay = (process.serverInfo && process.serverInfo.cpu * 1000) || 0;
-    var l5api = config.tswL5api['alphaFileUrl'];
+    let defer = Deferred.create();
+    let delay = (process.serverInfo && process.serverInfo.cpu * 1000) || 0;
+    let l5api = config.tswL5api['alphaFileUrl'];
 
-    if(Date.now() - cache.timeUpdate < 60000 + delay){
+    if(Date.now() - cache.timeUpdate < 60000 + delay) {
         return defer.resolve(cache.data);
     }
     
     cache.timeUpdate = Date.now();
 
-    if(!fileUrl){
+    if(!fileUrl) {
         return defer.resolve(cache.data);
     }
     
-    fileCache.getAsync(fileUrl).done(function(d){
+    fileCache.getAsync(fileUrl).done(function(d) {
         
-        var lastModifyTime = 0;
-        var text = '';
+        let lastModifyTime = 0;
+        let text = '';
         
-        if(d && d.stats){
+        if(d && d.stats) {
             lastModifyTime = d.stats.mtime.getTime();
         }
         
-        if(d && d.data){
+        if(d && d.data) {
             text = d.data.toString('utf-8');
         }
         
-        if(Date.now() - lastModifyTime < 60000){
+        if(Date.now() - lastModifyTime < 60000) {
             logger.debug('使用本地文件');
             
             updateMap(text);
@@ -143,18 +143,18 @@ this.get = function(){
                 key: 'EVENT_TSW_ALPHA_FILE_URL'
             },
             dataType: 'text'
-        }).fail(function(d){
+        }).fail(function(d) {
             defer.resolve(cache.data);
-        }).done(function(d){
+        }).done(function(d) {
             
-            var text = '';
+            let text = '';
                 
-            if(d && d.result && typeof d.result === 'string'){
+            if(d && d.result && typeof d.result === 'string') {
                 
                 text = d.result;
             }
 
-            if(text.length >= 2 * 1024 * 1024){
+            if(text.length >= 2 * 1024 * 1024) {
                 logger.error('alpha file limit <=2M');
                 return defer.resolve(cache.data);
             }
@@ -162,7 +162,7 @@ this.get = function(){
             updateMap(text);
             
             //保存在本地
-            fileCache.set(fileUrl,Buffer.from(text,'UTF-8'));
+            fileCache.set(fileUrl, Buffer.from(text, 'UTF-8'));
             
             defer.resolve(cache.data);
         });
@@ -173,16 +173,16 @@ this.get = function(){
 };
 
 
-function init(){
+function init() {
 
-    var buffer = null;
-    var text = '';
+    let buffer = null;
+    let text = '';
 
-    if(fileUrl){
+    if(fileUrl) {
         buffer = fileCache.getSync(fileUrl).data;
     }
 
-    if(buffer){
+    if(buffer) {
         text = buffer.toString('utf-8');
         updateMap(text);
     }

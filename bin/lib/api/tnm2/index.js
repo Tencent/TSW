@@ -13,23 +13,23 @@ const url = require('url');
 const Deferred = require('util/Deferred');
 const cluster = require('cluster');
 
-var cache = {
+let cache = {
     curr: {},
     time: Date.now() - 50000
 };
-var isFirstLoad = false;
+let isFirstLoad = false;
 
-if(global[__filename]){
+if(global[__filename]) {
     cache = global[__filename];
 }else{
     global[__filename] = cache;
     isFirstLoad = true;
 }
 
-if(isFirstLoad){
-    cluster.worker && cluster.worker.once('disconnect', function(worker){
-        var logger = require('logger');
-        var last = cache.curr;
+if(isFirstLoad) {
+    cluster.worker && cluster.worker.once('disconnect', function(worker) {
+        let logger = require('logger');
+        let last = cache.curr;
 
         logger.info('report on disconnect event...');
 
@@ -54,14 +54,14 @@ this.Attr_API = function (attr, iValue) {
     cacheOrRepoet(attr, iValue);
 };
 
-var cacheOrRepoet = function(attr, iValue){
-    var curr;
+const cacheOrRepoet = function(attr, iValue) {
+    let curr;
 
-    if(!mapping[attr]){
+    if(!mapping[attr]) {
         return;
     }
 
-    if(!cache.curr[attr]){
+    if(!cache.curr[attr]) {
         cache.curr[attr] = {
             count: 0,
             sum: 0
@@ -72,13 +72,13 @@ var cacheOrRepoet = function(attr, iValue){
     curr.sum += iValue;
     curr.count += 1;
 
-    var now = Date.now();
+    let now = Date.now();
 
-    if(now - cache.time < 60000){
+    if(now - cache.time < 60000) {
         return;
     }
 
-    var last = cache.curr;
+    let last = cache.curr;
 
     cache.curr = {};
     cache.time = now;
@@ -87,53 +87,53 @@ var cacheOrRepoet = function(attr, iValue){
 };
 
 
-var reportOpenapi = function(last){
-    var defer = Deferred.create();
+const reportOpenapi = function(last) {
+    let defer = Deferred.create();
 
-    var openapi = require('util/openapi');
-    var logger = require('logger');
-    var config = require('config');
-    var retCall;
+    let openapi = require('util/openapi');
+    let logger = require('logger');
+    let config = require('config');
+    let retCall;
 
-    if(typeof config.beforeReportApp === 'function'){
+    if(typeof config.beforeReportApp === 'function') {
         retCall = config.beforeReportApp(last);
     }
 
     //阻止默认上报
-    if(retCall === false){
+    if(retCall === false) {
         return defer.resolve();
     }
 
-    if(config.isTest){
+    if(config.isTest) {
         return defer.resolve();
     }
 
-    if(config.devMode){
+    if(config.devMode) {
         return defer.resolve();
     }
 
-    if(!config.appid || !config.appkey){
+    if(!config.appid || !config.appkey) {
         return defer.resolve();
     }
 
-    if(!config.appReportUrl){
+    if(!config.appReportUrl) {
         return defer.resolve();
     }
 
-    var arr = [];
+    let arr = [];
 
-    Object.keys(last).forEach(function(v,i){
-        arr.push([v,last[v].sum,last[v].count].join('.'));
+    Object.keys(last).forEach(function(v, i) {
+        arr.push([v, last[v].sum, last[v].count].join('.'));
     });
 
-    var postData = {
+    let postData = {
         appid   : config.appid,
         ip      : serverInfo.intranetIp,
         arr     : arr.join('-'),
         now     : Date.now()
     };
 
-    var sig = openapi.signature({
+    let sig = openapi.signature({
         pathname: url.parse(config.appReportUrl).pathname,
         method: 'POST',
         data: postData,
@@ -153,12 +153,12 @@ var reportOpenapi = function(last){
         keepAlive    : true,
         autoToken    : false,
         dataType    : 'json'
-    }).fail(function(){
+    }).fail(function() {
         logger.error('app report fail.');
         defer.reject();
-    }).done(function(d){
-        if(d.result){
-            if(d.result.code === 0){
+    }).done(function(d) {
+        if(d.result) {
+            if(d.result.code === 0) {
                 logger.debug('app report success.');
                 return defer.resolve();
             }else{

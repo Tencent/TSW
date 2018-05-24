@@ -10,28 +10,28 @@
 const Context = require('runtime/Context');
 const Window = require('runtime/Window');
 
-this.currentContext = function(){
+this.currentContext = function() {
     return (process.domain && process.domain.currentContext) || new Context();
 };
 
-if(!global.context){
+if(!global.context) {
     
     Object.defineProperty(global, 'context', {
-        get : function(){
+        get : function() {
             return module.exports.currentContext();
         }
     });
     
     Object.defineProperty(global, 'window', {
-        get : function(){
+        get : function() {
 
-            if(Window.windowHasDisabled){
+            if(Window.windowHasDisabled) {
                 return undefined;
             }
 
-            var curr = module.exports.currentContext();
+            let curr = module.exports.currentContext();
 
-            if(!curr.window){
+            if(!curr.window) {
                 curr.window = new Window();
             }
 

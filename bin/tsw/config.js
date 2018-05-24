@@ -9,21 +9,21 @@
 
 module.exports = require('../../bin/proxy/config.js');
 
-if(Object.keys(module.exports).length === 0){
+if(Object.keys(module.exports).length === 0) {
 
     let curr = module;
 
     /* eslint-disable no-console */
     console.error('config加载存在循环引用:');
 
-    while(curr.parent){
+    while(curr.parent) {
 
         console.error(curr.parent.filename);
         curr = curr.parent;
     }
     /* eslint-enable no-console */
 
-    process.emit('warning','config加载存在循环引用');
+    process.emit('warning', 'config加载存在循环引用');
 
 }
 

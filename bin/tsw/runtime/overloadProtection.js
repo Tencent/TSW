@@ -10,12 +10,12 @@
 // 过载保护
 process.nextTick(function() {
 
-    var logger = require('logger');
-    var tnm2 = require('api/tnm2');
-    var config = require('config');
+    let logger = require('logger');
+    let tnm2 = require('api/tnm2');
+    let config = require('config');
 
     // 高负载时丢弃部分请求
-    var cpuLimit = 85;
+    let cpuLimit = 85;
     if (config.cpuLimit >= 0) {
         cpuLimit = config.cpuLimit;
     }
@@ -27,7 +27,7 @@ process.nextTick(function() {
         if (!distribute.hasHack) {
             RoundRobinHandle.prototype.distribute = function(err, handle) {
                 if (global.cpuUsed > cpuLimit) {
-                    var rejectRate = Math.pow((global.cpuUsed - cpuLimit) / (100 - cpuLimit), 1.5);
+                    let rejectRate = Math.pow((global.cpuUsed - cpuLimit) / (100 - cpuLimit), 1.5);
                     if (Math.random() > rejectRate) {
                         handle.close();
                         tnm2.Attr_API('SUM_TSW_OVERLOAD_REJECT', 1);

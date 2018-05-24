@@ -14,11 +14,11 @@ const cache = {};
 
 ///etc/pki/tls/certs/ca-bundle.crt
 
-this.getHttpsAgent = function(host){
+this.getHttpsAgent = function(host) {
 
-    var key = ['https',host].join('.');
+    let key = ['https', host].join('.');
 
-    if(!cache[key]){
+    if(!cache[key]) {
         cache[key] = new https.Agent({
             maxSockets          : 65535,
             maxFreeSockets      : 32,
@@ -31,11 +31,11 @@ this.getHttpsAgent = function(host){
     return cache[key];
 };
 
-this.getHttpAgent = function(host){
+this.getHttpAgent = function(host) {
 
-    var key = ['http',host].join('.');
+    let key = ['http', host].join('.');
 
-    if(!cache[key]){
+    if(!cache[key]) {
         cache[key] = new http.Agent({
             maxSockets          : 65535,
             maxFreeSockets      : 32,

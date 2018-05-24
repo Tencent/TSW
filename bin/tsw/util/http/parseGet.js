@@ -15,12 +15,12 @@ const logger = require('logger');
 const httpUtil = require('util/http.js');
 const tnm2 = require('api/tnm2');
 
-module.exports = function(req){
+module.exports = function(req) {
     
-    var v,key,index1,index2;
+    let v, key, index1, index2;
 
-    if(req.url.indexOf('+') > -1){
-        req.REQUEST = url.parse(req.url.replace(/\+/g,' '));
+    if(req.url.indexOf('+') > -1) {
+        req.REQUEST = url.parse(req.url.replace(/\+/g, ' '));
     }else{
         req.REQUEST = url.parse(req.url);
     }
@@ -31,19 +31,19 @@ module.exports = function(req){
     req.body = req.POST;
     req.params = {};
     if('upgrade' === req.headers.connection && 'websocket' === req.headers.upgrade) {
-        if(req.headers['x-client-proto'] === 'https'){
+        if(req.headers['x-client-proto'] === 'https') {
             req.REQUEST.protocol = 'wss';
         } else {
             req.REQUEST.protocol = 'ws';
         }
-    } else if(req.headers['x-client-proto'] === 'https'){
+    } else if(req.headers['x-client-proto'] === 'https') {
         req.REQUEST.protocol = 'https';
     } else {
         req.REQUEST.protocol = 'http';
     }
-    if(req.headers.host){
+    if(req.headers.host) {
         req.REQUEST.host = req.REQUEST.hostname = req.headers.host;
-    }else if(req.REQUEST.hostname){
+    }else if(req.REQUEST.hostname) {
         req.REQUEST.host = req.headers.host = req.REQUEST.hostname;
     }
 
@@ -51,30 +51,30 @@ module.exports = function(req){
     
     req.REQUEST.query = req.REQUEST.query || '';
     
-    if(req.REQUEST.query.length > 16384){
+    if(req.REQUEST.query.length > 16384) {
         logger.debug('query large than 16KB :' + req.REQUEST.query.length);
-        req.REQUEST.query = req.REQUEST.query.slice(0,16384);
+        req.REQUEST.query = req.REQUEST.query.slice(0, 16384);
     }
 
-    if(config.allowArrayInUrl){
+    if(config.allowArrayInUrl) {
         try{
             req.GET = qs.parse(req.REQUEST.query);
-        }catch(e){
+        }catch(e) {
             req.GET = {};
             logger.debug(e.stack);
             logger.report();
         }
     }else{
         //fast parse
-        req.REQUEST.query.split('&').forEach(function(v){
-            var index = v.indexOf('=');
+        req.REQUEST.query.split('&').forEach(function(v) {
+            let index = v.indexOf('=');
 
-            if(index < 0){
+            if(index < 0) {
                 return;
             }
 
-            var $1 = v.substr(0,index);
-            var $2 = v.substr(index + 1);
+            let $1 = v.substr(0, index);
+            let $2 = v.substr(index + 1);
 
             try{
                 req.GET[$1] = decodeURIComponent($2);
@@ -87,12 +87,12 @@ module.exports = function(req){
 
     req.query = req.GET;
 
-    if(req.headers.cookie && req.headers.cookie.length > 16384){
+    if(req.headers.cookie && req.headers.cookie.length > 16384) {
         logger.debug('cookie large than 16KB :' + req.headers.cookie.length);
-        req.headers.cookie = req.headers.cookie.slice(0,16384);
+        req.headers.cookie = req.headers.cookie.slice(0, 16384);
     }
     
-    if(req.headers.cookie){
+    if(req.headers.cookie) {
         index1 = req.headers.cookie.indexOf('; ');
     }
 
@@ -102,14 +102,14 @@ module.exports = function(req){
         && req.headers.cookie
         && req.headers.cookie.charAt(0) === ','
         && req.headers.cookie.charAt(1) === ' '
-    ){
+    ) {
         
         //logger.info('fix bad cookie(-3002):\n' + httpUtil.getUserIp(req) + '\n'  + httpUtil.getRequestHeaderStr(req));
 
         logger.debug('orign cookie: ' + req.headers.cookie);
 
         //兼容wap  cookie开头错误问题
-        req.headers.cookie = req.headers.cookie.replace(/, /g,'; ');
+        req.headers.cookie = req.headers.cookie.replace(/, /g, '; ');
         
         logger.report();
         
@@ -120,32 +120,32 @@ module.exports = function(req){
         !httpUtil.isFromWns(req)
         && global.cpuUsed < config.cpuLimit
         && index1 === -1
-    ){
+    ) {
 
         index2 = req.headers.cookie.indexOf(';');
         
-        if(index2 > 0 && index2 !== req.headers.cookie.length - 1){
+        if(index2 > 0 && index2 !== req.headers.cookie.length - 1) {
             
             //logger.info('fix bad cookie(-3000):\n' + httpUtil.getUserIp(req) + '\n'  + httpUtil.getRequestHeaderStr(req));
             logger.debug('orign cookie: ' + req.headers.cookie);
 
             //兼容wap  cookie分号没空格的问题    
-            req.headers.cookie = req.headers.cookie.replace(/;/g,'; ');
+            req.headers.cookie = req.headers.cookie.replace(/;/g, '; ');
             
-            if(req.headers['x-wns-uin']){
+            if(req.headers['x-wns-uin']) {
                 //...
             }else{
                 logger.report();
             }
 
             tnm2.Attr_API('SUM_TSW_BAD_COOKIE', 1);
-        }else if(req.headers.cookie.indexOf(',') > 0){
+        }else if(req.headers.cookie.indexOf(',') > 0) {
             
             //logger.info('fix bad cookie(-3001):\n' + httpUtil.getUserIp(req) + '\n' + httpUtil.getRequestHeaderStr(req));
             logger.debug('orign cookie: ' + req.headers.cookie);
 
             //兼容wap  cookie里全是逗号的问题
-            req.headers.cookie = req.headers.cookie.replace(/,/g,'; ');
+            req.headers.cookie = req.headers.cookie.replace(/,/g, '; ');
             
             logger.report();
             
@@ -156,14 +156,14 @@ module.exports = function(req){
     if(
         !httpUtil.isFromWns(req)
         && global.cpuUsed < config.cpuLimit
-    ){
+    ) {
         
         //去掉header里的\u0000
-        for(key in req.headers){
+        for(key in req.headers) {
             v = req.headers[key];
             
-            if(key.indexOf(' ') > -1){
-                logger.debug('delete headers : ${key} : ${v}',{
+            if(key.indexOf(' ') > -1) {
+                logger.debug('delete headers : ${key} : ${v}', {
                     key    : key,
                     v    : v
                 });
@@ -175,10 +175,10 @@ module.exports = function(req){
 
             v = httpUtil.filterInvalidHeaderChar(v);
 
-            if(v !== req.headers[key]){
+            if(v !== req.headers[key]) {
                 req.headers[key] = v;
 
-                logger.debug('find invalid characters in header: ${key}',{
+                logger.debug('find invalid characters in header: ${key}', {
                     key: key
                 });
             }
@@ -192,10 +192,10 @@ module.exports = function(req){
 
 };
 
-function paramFn(name, defaultValue){
-    var params = this.params || {};
-    var body = this.body || {};
-    var query = this.query || {};
+function paramFn(name, defaultValue) {
+    let params = this.params || {};
+    let body = this.body || {};
+    let query = this.query || {};
     if (null != params[name] && params.hasOwnProperty(name)) return params[name];
     if (null != body[name]) return body[name];
     if (null != query[name]) return query[name];

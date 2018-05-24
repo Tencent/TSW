@@ -27,13 +27,13 @@ const errFreqConfig = {     ////错误log频率限制
     'count': 20             //最大次数
 };
 
-var logger;
+let logger;
 
 
 global[__filename] = cache;
 
-module.exports = function(){
-    if(!logger){
+module.exports = function() {
+    if(!logger) {
         logger = new Logger();
     }
     return logger;
@@ -42,55 +42,55 @@ module.exports = function(){
 module.exports.Logger = Logger;
 
 
-function Logger(){
+function Logger() {
 
     return this;
 }
 
 Logger.prototype = {
 
-    occurError: function(){
+    occurError: function() {
 
-        var curr = contextMod.currentContext();
+        let curr = contextMod.currentContext();
 
-        if(curr.window && curr.window.request){
+        if(curr.window && curr.window.request) {
             curr.log = curr.log || {};
         }
 
-        if(curr.log){
+        if(curr.log) {
             curr.log.showLineNumber = true;
         }
 
     },
 
-    getLog: function(){
-        var log = contextMod.currentContext().log || null;
+    getLog: function() {
+        let log = contextMod.currentContext().log || null;
 
         return log;
     },
 
-    drop: function(dropAlpha){
-        var log = this.getLog();
+    drop: function(dropAlpha) {
+        let log = this.getLog();
 
-        if(log && log.showLineNumber && !dropAlpha){
+        if(log && log.showLineNumber && !dropAlpha) {
             return;
         }
 
         contextMod.currentContext().log = null;
     },
 
-    getJson: function(){
-        var log = this.getLog();
-        var json = {
+    getJson: function() {
+        let log = this.getLog();
+        let json = {
             curr: {},
             ajax: []
         };
 
-        if(log === null){
+        if(log === null) {
             return null;
         }
 
-        if(log.json){
+        if(log.json) {
             json = log.json;
         }else{
             log.json = json;
@@ -99,13 +99,13 @@ Logger.prototype = {
         return json;
     },
 
-    getText: function(){
-        var log = this.getLog();
-        var arr = [];
+    getText: function() {
+        let log = this.getLog();
+        let arr = [];
 
-        if(log && log.arr){
+        if(log && log.arr) {
 
-            log.arr.forEach(function(fn){
+            log.arr.forEach(function(fn) {
                 arr.push(fn());
             });
 
@@ -115,113 +115,113 @@ Logger.prototype = {
         return '';
     },
 
-    setKey: function(key){
+    setKey: function(key) {
 
-        if(!canIuse.test(key)){
-            this.debug('bad key: ${key}',{key:key});
+        if(!canIuse.test(key)) {
+            this.debug('bad key: ${key}', {key:key});
             return;
         }
 
-        this.debug('setKey: ${key}',{key:key});
+        this.debug('setKey: ${key}', {key:key});
 
-        var log = this.getLog();
-        var alpha = require('util/alpha.js');
+        let log = this.getLog();
+        let alpha = require('util/alpha.js');
 
-        if(!log){
+        if(!log) {
             return;
         }
 
         log.key = key;
 
-        if(alpha.isAlpha(key)){
+        if(alpha.isAlpha(key)) {
             log.showLineNumber = true;
         }
     },
 
-    getKey: function(){
-        var log = this.getLog();
+    getKey: function() {
+        let log = this.getLog();
 
-        if(log){
+        if(log) {
             return log.key;
         }
 
         return null;
     },
 
-    setGroup: function(group){
+    setGroup: function(group) {
 
-        if(!canIuse.test(group)){
-            this.debug('bad group: ${group}',{group:group});
+        if(!canIuse.test(group)) {
+            this.debug('bad group: ${group}', {group:group});
             return;
         }
 
-        this.debug('setGroup: ${group}',{group:group});
+        this.debug('setGroup: ${group}', {group:group});
 
-        var log = this.getLog();
+        let log = this.getLog();
 
-        if(log){
+        if(log) {
             log.group = group;
         }
     },
 
-    getGroup: function(){
-        var log = this.getLog();
+    getGroup: function() {
+        let log = this.getLog();
 
-        if(log){
+        if(log) {
             return log.group;
         }
 
         return null;
     },
 
-    isReport: function(){
-        var log = this.getLog();
+    isReport: function() {
+        let log = this.getLog();
 
-        if(!log){
+        if(!log) {
             return false;
         }
 
-        if(log.force){
+        if(log.force) {
             return true;
         }
 
-        if(log.ERRO){
+        if(log.ERRO) {
             return true;
         }
 
         return false;
     },
 
-    report: function(key){
+    report: function(key) {
 
-        this.debug('report ${key}',{key:key});
+        this.debug('report ${key}', {key:key});
 
-        var log = this.getLog();
+        let log = this.getLog();
 
-        if(log){
+        if(log) {
             log.force = 1;
         }
 
-        if(key){
+        if(key) {
             this.setKey(key);
         }
     },
 
-    fillBuffer: function(type,fn){
-        var log = this.getLog();
+    fillBuffer: function(type, fn) {
+        let log = this.getLog();
 
-        if(log){
+        if(log) {
 
-            if(!log.arr){
+            if(!log.arr) {
                 log.arr = [];
             }
 
-            if(fn){
+            if(fn) {
                 log.arr.push(fn);
             }
 
-            if(type){
-                if(log[type]){
+            if(type) {
+                if(log[type]) {
                     log[type]++;
                 }else{
                     log[type] = 1;
@@ -230,103 +230,103 @@ Logger.prototype = {
         }
     },
 
-    getSN: function(){
+    getSN: function() {
         return contextMod.currentContext().SN || 0;
     },
 
-    getCpu: function(){
-        var cpu = process.serverInfo && process.serverInfo.cpu;
+    getCpu: function() {
+        let cpu = process.serverInfo && process.serverInfo.cpu;
 
-        if(cpu === undefined){
+        if(cpu === undefined) {
             cpu = '';
         }
 
         return cpu;
     },
 
-    debug : function(str,obj){
-        this.writeLog('DBUG',str,obj);
+    debug : function(str, obj) {
+        this.writeLog('DBUG', str, obj);
     },
 
-    info : function(str,obj){
-        this.writeLog('INFO',str,obj);
+    info : function(str, obj) {
+        this.writeLog('INFO', str, obj);
     },
 
-    warn : function(str,obj){
-        this.writeLog('WARN',str,obj);
+    warn : function(str, obj) {
+        this.writeLog('WARN', str, obj);
     },
 
-    error : function(str,obj){
+    error : function(str, obj) {
         //this.occurError();
-        this.writeLog('ERRO',str,obj);
+        this.writeLog('ERRO', str, obj);
     },
 
-    writeLog : function(type,str,obj){
+    writeLog : function(type, str, obj) {
 
-        var level = this.type2level(type);
-        var log = this.getLog();
-        var allow = filter(level,str,obj);
-        var logStr = null;
+        let level = this.type2level(type);
+        let log = this.getLog();
+        let allow = filter(level, str, obj);
+        let logStr = null;
 
-        if(log || allow === true || level >= config.getLogLevel()){
-            logStr = this._getLog(type,level,str,obj);
+        if(log || allow === true || level >= config.getLogLevel()) {
+            logStr = this._getLog(type, level, str, obj);
         }
 
-        if(logStr === null){
+        if(logStr === null) {
             return this;
         }
 
-        this.fillBuffer(type,logStr);
+        this.fillBuffer(type, logStr);
 
-        if(allow === false){
+        if(allow === false) {
             return this;
         }
 
-        if(allow === true){
-            return this.asyncLog(logStr,level);
+        if(allow === true) {
+            return this.asyncLog(logStr, level);
         }
 
-        if(level >= config.getLogLevel()){
-            return this.asyncLog(logStr,level);
+        if(level >= config.getLogLevel()) {
+            return this.asyncLog(logStr, level);
         }
     },
 
-    type2level: function(type){
+    type2level: function(type) {
 
-        if(type === 'DBUG'){
+        if(type === 'DBUG') {
             return 10;
         }
 
-        if(type === 'INFO'){
+        if(type === 'INFO') {
             return 20;
         }
 
-        if(type === 'WARN'){
+        if(type === 'WARN') {
             return 30;
         }
 
-        if(type === 'ERRO'){
+        if(type === 'ERRO') {
             return 40;
         }
 
         return 0;
     },
 
-    setLogLevel: function(level){
+    setLogLevel: function(level) {
         config.logLevel = level;
     },
 
-    _getLog: function(type,level,str,obj){
+    _getLog: function(type, level, str, obj) {
 
-        var log = this.getLog();
-        var that = this;
-        var filename = '';
-        var column = '';
-        var line = '';
-        var enable = false;
-        var info = {};
+        let log = this.getLog();
+        let that = this;
+        let filename = '';
+        let column = '';
+        let line = '';
+        let enable = false;
+        let info = {};
 
-        if(level >= config.getLogLevel()){
+        if(level >= config.getLogLevel()) {
             enable = true;
         }
 
@@ -335,11 +335,11 @@ Logger.prototype = {
         //  enable = true;
         //}
 
-        if(log && log['showLineNumber']){
+        if(log && log['showLineNumber']) {
             enable = true;
         }
 
-        if((enable && global.cpuUsed < 70) || isWindows){
+        if((enable && global.cpuUsed < 70) || isWindows) {
 
             info = callInfo.getCallInfo(3);
 
@@ -349,47 +349,46 @@ Logger.prototype = {
         }
 
 
-        var now = new Date();
-        var text = null;
+        let now = new Date();
+        let text = null;
 
-        var fn = function(){
+        let fn = function() {
 
-            if(text!== null){
+            if(text!== null) {
                 return text;
             }
 
             filename = filename || '';
 
-            if(isWindows){
-                filename = filename.replace(/\\/g,'/');
+            if(isWindows) {
+                filename = filename.replace(/\\/g, '/');
             }
 
-            var type = typeof str;
-            var index = filename.lastIndexOf('/node_modules/');
+            let index = filename.lastIndexOf('/node_modules/');
 
-            if(index >= 0){
+            if(index >= 0) {
                 index += 14;
             }else{
                 index = filename.lastIndexOf('/') + 1;
             }
 
-            if(index >= 0){
+            if(index >= 0) {
                 filename = filename.slice(index);
             }
 
             text = that.format({
                 SN      : that.getSN(),
                 yyyy    : now.getFullYear(),
-                MM      : zeroize(now.getMonth() + 1,2),
-                dd      : zeroize(now.getDate(),2),
-                HH      : zeroize(now.getHours(),2),
-                mm      : zeroize(now.getMinutes(),2),
-                ss      : zeroize(now.getSeconds(),2),
-                msec    : zeroize(now.getTime() % 1000,3),
+                MM      : zeroize(now.getMonth() + 1, 2),
+                dd      : zeroize(now.getDate(), 2),
+                HH      : zeroize(now.getHours(), 2),
+                mm      : zeroize(now.getMinutes(), 2),
+                ss      : zeroize(now.getSeconds(), 2),
+                msec    : zeroize(now.getTime() % 1000, 3),
                 type    : type,
                 mod_act : contextMod.currentContext().mod_act || null,
                 file    : filename,
-                txt     : type === 'string' ? merge(str,obj) : (type === 'object' ? '\n' : '') + util.inspect(str),
+                txt     : typeof str === 'string' ? merge(str, obj) : (typeof str === 'object' ? '\n' : '') + util.inspect(str),
                 line    : line,
                 column  : column,
                 cpu     : that.getCpu(),
@@ -402,28 +401,28 @@ Logger.prototype = {
         return fn;
     },
 
-    asyncLog: function(fn,level){
+    asyncLog: function(fn, level) {
 
-        var str;
+        let str;
 
-        if(typeof fn === 'function'){
+        if(typeof fn === 'function') {
             str = fn();
         }else{
             str = fn;
         }
 
-        this.print(str,level);
+        this.print(str, level);
 
         return this;
     },
 
-    print: function(str,level){
+    print: function(str, level) {
 
         /* eslint-disable no-console */
 
-        if(level <= 20){
+        if(level <= 20) {
             (console.originLog || console.log)(str);
-        }else if(level <= 30){
+        }else if(level <= 30) {
             (console.originWarn || console.warn)(str);
         }else{
             (console.originError || console.error)(str);
@@ -436,9 +435,9 @@ Logger.prototype = {
         //process.stdout.write('\n');
     },
 
-    format: function(data){
+    format: function(data) {
 
-        var str = data.yyyy
+        let str = data.yyyy
             + '-'
             + data.MM
             + '-'
@@ -475,16 +474,16 @@ Logger.prototype = {
     zeroize: zeroize
 };
 
-function merge(str,obj){
+function merge(str, obj) {
 
-    if(typeof obj !== 'object'){
+    if(typeof obj !== 'object') {
         return str;
     }
 
-    return str && str.replace(/\$\{(.+?)\}/g,function($0,$1){
+    return str && str.replace(/\$\{(.+?)\}/g, function($0, $1) {
 
-        var rs = obj && obj[$1];
-        var undefined;
+        let rs = obj && obj[$1];
+        let undefined;
 
         return rs === undefined ? '' :
             typeof rs === 'object' ? util.inspect(rs) : String(rs);
@@ -499,8 +498,8 @@ function merge(str,obj){
  * @return {String} 加完前导0的字符串
  *
  */
-function zeroize(num,width){
-    var s = String(num),
+function zeroize(num, width) {
+    let s = String(num),
         len = s.length;
     return len >= width ? s : '0000000000000000'.slice(len - width) + s;
 }
@@ -513,23 +512,23 @@ function zeroize(num,width){
  * @param  {[type]}  obj   [description]
  * @return {Boolean}       [description]
  */
-function isExceedFreq(level,str,obj){
+function isExceedFreq(level, str, obj) {
 
-    var mod_act = contextMod.currentContext().mod_act || 'null',
+    let mod_act = contextMod.currentContext().mod_act || 'null',
         curTime = Date.now(),
         exceed = false,
         cfg;
 
-    if(isWindows){
+    if(isWindows) {
         return false;
     }
 
     //先只限制error + warn log
-    if(level < config.levelMap['warn']){
+    if(level < config.levelMap['warn']) {
         return false;
     }
 
-    if(curTime - freqCache.clearTime >= errFreqConfig.time){
+    if(curTime - freqCache.clearTime >= errFreqConfig.time) {
         freqCache.clearTime = curTime;
 
         tnm2.Attr_API_Set('AVG_TSW_ERROE_LOG_5S', freqCache.count);
@@ -543,7 +542,7 @@ function isExceedFreq(level,str,obj){
 
     cfg = freqCache.detail[mod_act];
 
-    if(!cfg){
+    if(!cfg) {
         cfg = {
             count: 0,
             errMsg: ''
@@ -558,7 +557,7 @@ function isExceedFreq(level,str,obj){
     // cfg.errMsg = merge(str, obj);
 
     //总错误量超过了上限
-    if(freqCache.count > errFreqConfig.count){
+    if(freqCache.count > errFreqConfig.count) {
         exceed = true;
 
         logger && logger.drop();
@@ -572,9 +571,9 @@ function isExceedFreq(level,str,obj){
 /**
  * 返回过滤器
  */
-function filter(level,str,obj){
+function filter(level, str, obj) {
 
-    if(isExceedFreq(level, str, obj)){
+    if(isExceedFreq(level, str, obj)) {
         return false;
     }
 

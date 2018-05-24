@@ -65,43 +65,51 @@ describe('test CD module', ()=>{
         afterEach(()=>{
             gzipHttp.create.restore();
         });
-        it('appid不匹配',async ()=>{
-            let req = {param:_=>{ return '123';}};
+        it('appid不匹配', async ()=>{
+            let req = {param:_=>{
+                return '123'; 
+            }};
             context.appid = 'tsw123';
-            await CD.openapi(req,{});
+            await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appid错误');
         });
 
-        it('上下文不存在appid',async ()=>{
-            let req = {param:_=>{ return '';}};
+        it('上下文不存在appid', async ()=>{
+            let req = {param:_=>{
+                return ''; 
+            }};
             context.appid = '';
-            await CD.openapi(req,{});
+            await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appid is required');
 
         });
 
-        it('上下文不存在appkey',async ()=>{
-            let req = {param:_=>{ return 'tsw123';}};
+        it('上下文不存在appkey', async ()=>{
+            let req = {param:_=>{
+                return 'tsw123';
+            }};
             context.appid = 'tsw123';
-            await CD.openapi(req,{});
+            await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appkey is required');
         });
 
-        it('appid不符合规范',async ()=>{
-            let req = {param:_=>{ return 'tsw123，';}};
+        it('appid不符合规范', async ()=>{
+            let req = {param:_=>{
+                return 'tsw123，'; 
+            }};
             context.appid = 'tsw123，';
             context.appkey = 'tsw123，';
-            await CD.openapi(req,{});
+            await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appid is required');
         });
 
-        it('checkByCmem',async ()=>{
+        it('checkByCmem', async ()=>{
             let req = {param:_=>{
-                switch(_){
+                switch(_) {
                 case 'key':
                     return '123';
                 case 'count':
@@ -113,7 +121,7 @@ describe('test CD module', ()=>{
             }};
             context.appid = 'tsw123';
             context.appkey = 'tsw123';
-            await CD.openapi(req,{});
+            await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(0);
         });
 

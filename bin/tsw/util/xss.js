@@ -7,12 +7,12 @@
  */
 'use strict';
 
-this.filterParams = function(params){
+this.filterParams = function(params) {
 
-    var _params = params || {};
+    let _params = params || {};
 
     /* eslint-disable no-control-regex */
-    var replaceMap = {
+    let replaceMap = {
         reg  : /(['"<\r\n\t\s\u0000-\u001f])/gim,
         '\'' : '\u0027',
         '"' : '\u0022',
@@ -20,17 +20,17 @@ this.filterParams = function(params){
     };
     /* eslint-enable no-control-regex */
 
-    var replaceFunc = function(n){
+    let replaceFunc = function(n) {
         return replaceMap[n] || '';
     };
 
-    for(var key in _params){
-        if(Array.isArray(_params[key])){
-            for(var i=_params[key].length-1; i>=0; i--){
-                _params[key][i] = _params[key][i] && (_params[key][i]+'').replace(replaceMap.reg,replaceFunc);
+    for(let key in _params) {
+        if(Array.isArray(_params[key])) {
+            for(let i=_params[key].length-1; i>=0; i--) {
+                _params[key][i] = _params[key][i] && (_params[key][i]+'').replace(replaceMap.reg, replaceFunc);
             }
         }else{
-            _params[key] = _params[key] && (_params[key]+'').replace(replaceMap.reg,replaceFunc);
+            _params[key] = _params[key] && (_params[key]+'').replace(replaceMap.reg, replaceFunc);
         }
     }
 
@@ -38,7 +38,7 @@ this.filterParams = function(params){
 };
 
 this.filterXSS = function (str) {
-    var _param = {
+    let _param = {
         xss : str || ''
     };
 
@@ -46,7 +46,7 @@ this.filterXSS = function (str) {
 };
 
 
-var encodeMap = {
+let encodeMap = {
         reg    : /([&"'<>])/g,
         '&' : '&amp;',
         '"'    : '&quot;',
@@ -64,20 +64,24 @@ var encodeMap = {
         '&#39;' : '\'',
         '&amp;' : '&'
     },
-    encode = function($0,c){return encodeMap[c];},
-    decode = function(c){return decodeMap[c];};
+    encode = function($0, c) {
+        return encodeMap[c]; 
+    },
+    decode = function(c) {
+        return decodeMap[c];
+    };
 
 //encode
-this.htmlEncode = function(str){
-    if(typeof str != 'string'){
+this.htmlEncode = function(str) {
+    if(typeof str != 'string') {
         str = str + '';
     }
-    return str.replace(encodeMap.reg,encode);
+    return str.replace(encodeMap.reg, encode);
 };
 //decode
-this.htmlDecode = function(str){
-    if(typeof str != 'string'){
+this.htmlDecode = function(str) {
+    if(typeof str != 'string') {
         str = str + '';
     }
-    return str.replace(decodeMap.reg,decode);
+    return str.replace(decodeMap.reg, decode);
 };

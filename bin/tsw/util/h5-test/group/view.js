@@ -12,18 +12,18 @@ const gzipHttp = require('util/gzipHttp.js');
 const tmpl = require('./tmpl.js');
 const pagetmpl = require('../page/tmpl.js');
 
-module.exports = function(request,response){
+module.exports = function(request, response) {
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
         contentType: 'text/html; charset=UTF-8'
     });
 
-    var navMenus = context.navMenus;
+    let navMenus = context.navMenus;
 
-    if(!navMenus){
+    if(!navMenus) {
         navMenus = [
             {
                 href: '/group/page',
@@ -44,9 +44,9 @@ module.exports = function(request,response){
         ];
     }
 
-    TEReport.getAllGroup().done(function(allGroup){
+    TEReport.getAllGroup().done(function(allGroup) {
 
-        var data = {};
+        let data = {};
 
         data.head = { title: '测试环境'};
         data.header = pagetmpl.new_header(navMenus);

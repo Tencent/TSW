@@ -8,7 +8,7 @@
 'use strict';
 
 
-this.check = function(root){};
+this.check = function(root) {};
 
-this.findNodeCpp = function(curr){};
+this.findNodeCpp = function(curr) {};
 

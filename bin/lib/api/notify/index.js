@@ -9,21 +9,21 @@
 
 const Deferred = require('util/Deferred');
 
-this.DecryptTicketWithClientIP = function(opt){
-    var defer = Deferred.create();
+this.DecryptTicketWithClientIP = function(opt) {
+    let defer = Deferred.create();
 
     return defer.resolve();
 };
 
 
-this.SendRTX = function(opt){
-    var defer = Deferred.create();
+this.SendRTX = function(opt) {
+    let defer = Deferred.create();
 
     return defer.resolve();
 };
 
 
-this.SendMail = function(opt){
+this.SendMail = function(opt) {
     
     opt = Deferred.extend({
         'appKey'        : '',
@@ -43,15 +43,15 @@ this.SendMail = function(opt){
         'StartTime'     : '',       //当邮件为约会邮件时，约会开始时间
         'EndTime'       : '',       //当邮件为约会邮件时，约会结束时间
         'attachment'    : ''        //邮件附件的文件名以及文件的内容（在发送请求时，文件内容是二进制数据流的形式发送）
-    },opt);
+    }, opt);
 
-    var defer = Deferred.create();
+    let defer = Deferred.create();
 
     return defer.resolve();
 };
 
 
-this.SendWeiXin = function(opt){
+this.SendWeiXin = function(opt) {
 
     opt = Deferred.extend({
         'appKey'        : '',
@@ -60,15 +60,15 @@ this.SendWeiXin = function(opt){
         'Priority'      : 0,        //优先级，-1低优先级，0普通，1高优先级
         'Receiver'      : '',       //接收人，英文名，多人用英文分号分隔
         'Sender'        : ''        //发送人
-    },opt);
+    }, opt);
 
-    var defer = Deferred.create();
+    let defer = Deferred.create();
 
     return defer.resolve();
 };
 
 
-this.SendSMS = function(opt){
+this.SendSMS = function(opt) {
 
     opt = Deferred.extend({
         'appKey'        : '',
@@ -77,9 +77,9 @@ this.SendSMS = function(opt){
         'Priority'      : 0,        //优先级，-1低优先级，0普通，1高优先级
         'Receiver'      : '',       //接收人，英文名，多人用英文分号分隔
         'Sender'        : ''        //发送人
-    },opt);
+    }, opt);
 
-    var defer = Deferred.create();
+    let defer = Deferred.create();
 
     return defer.resolve();
 };

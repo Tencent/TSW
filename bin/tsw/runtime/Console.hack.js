@@ -7,13 +7,13 @@
  */
 'use strict';
 
-if(!global[__filename]){
+if(!global[__filename]) {
 
     global[__filename] = true;
 
-    process.nextTick(function(){
-        var util = require('util');
-        var logger = require('logger');
+    process.nextTick(function() {
+        let util = require('util');
+        let logger = require('logger');
 
         /* eslint-disable no-console */
 

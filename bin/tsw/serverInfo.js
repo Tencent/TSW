@@ -13,30 +13,30 @@ const isInnerIP = require('util/http.isInnerIP.js');
 
 this.intranetIp = '127.0.0.1';
 
-if(isWindows){
+if(isWindows) {
     this.intranetIp = getWinLocalIpv4();
 }else{
     this.intranetIp = getLinuxLocalIpv4();
 }
 
-function getLinuxLocalIpv4(){
-    var intranetIp = '';
-    var networkInterfaces = os.networkInterfaces();
+function getLinuxLocalIpv4() {
+    let intranetIp = '';
+    let networkInterfaces = os.networkInterfaces();
 
-    Object.keys(networkInterfaces).forEach(function(key){
-        var eth = networkInterfaces[key];
-        var address = eth && eth[0] && eth[0].address;
+    Object.keys(networkInterfaces).forEach(function(key) {
+        let eth = networkInterfaces[key];
+        let address = eth && eth[0] && eth[0].address;
 
-        if(!address){
+        if(!address) {
             return;
         }
 
-        var tmp = isInnerIP.isInnerIP(address);
-        if(!tmp){
+        let tmp = isInnerIP.isInnerIP(address);
+        if(!tmp) {
             return;
         }
 
-        if(tmp === '127.0.0.1'){
+        if(tmp === '127.0.0.1') {
             return;
         }
 
@@ -46,22 +46,22 @@ function getLinuxLocalIpv4(){
     return intranetIp;
 }
 
-function getWinLocalIpv4(){
+function getWinLocalIpv4() {
 
-    var localNet = os.networkInterfaces();
-    var key,item;
-    var v,i;
-    var userIp = null;
+    let localNet = os.networkInterfaces();
+    let key, item;
+    let v, i;
+    let userIp = null;
 
-    for(key in localNet){
+    for(key in localNet) {
         item = localNet[key];
 
-        if(String(key).indexOf('本地连接') > -1){
+        if(String(key).indexOf('本地连接') > -1) {
 
-            for(i =0 ; i < item.length; i++){
+            for(i =0 ; i < item.length; i++) {
                 v = item[i];
 
-                if(v.family === 'IPv4'){
+                if(v.family === 'IPv4') {
                     userIp = v.address;
                     return userIp;
                 }

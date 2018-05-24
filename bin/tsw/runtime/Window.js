@@ -9,15 +9,15 @@
 
 module.exports = Window;
 
-function Window(){
+function Window() {
 
 }
 
-Window.prototype.disable = function(){
+Window.prototype.disable = function() {
     Window.windowHasDisabled = true;
 };
 
-Window.prototype.enable = function(){
+Window.prototype.enable = function() {
     Window.windowHasDisabled = false;
 };
 

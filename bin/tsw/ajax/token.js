@@ -7,15 +7,15 @@
  */
 'use strict';
 
-this.token = function(skey){
+this.token = function(skey) {
     
     
-    var str = skey || '';
-    var hash = 5381;
+    let str = skey || '';
+    let hash = 5381;
 
-    if(typeof context !== 'undefined'){
+    if(typeof context !== 'undefined') {
         let window = context.window || {};
-        if(window.request){
+        if(window.request) {
             str = str
                 || window.request.cookies.p_skey
                 || window.request.cookies.skey
@@ -25,7 +25,7 @@ this.token = function(skey){
         }
     }
 
-    for(var i = 0, len = str.length; i < len; ++i){
+    for(let i = 0, len = str.length; i < len; ++i) {
         hash += (hash << 5) + str.charAt(i).charCodeAt();
     }
     return hash & 0x7fffffff;

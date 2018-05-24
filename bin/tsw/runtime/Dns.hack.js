@@ -7,24 +7,24 @@
  */
 'use strict';
 
-if(!global[__filename]){
+if(!global[__filename]) {
     
     global[__filename] = true;
 
-    process.nextTick(function(){
-        var config = require('config');
-        var dns = require('dns');
-        var dcapi = require('api/libdcapi/dcapi');
-        var logger = require('logger');
-        var net = require('net');
+    process.nextTick(function() {
+        let config = require('config');
+        let dns = require('dns');
+        let dcapi = require('api/libdcapi/dcapi');
+        let logger = require('logger');
+        let net = require('net');
 
         dns.lookup = (function(fn) {
 
             return function(hostname, options, callback) {
-                var args = [hostname];
-                var start = Date.now();
+                let args = [hostname];
+                let start = Date.now();
 
-                if(net.isIP(hostname)){
+                if(net.isIP(hostname)) {
                     return fn.apply(this, arguments);
                 }
 
@@ -32,13 +32,13 @@ if(!global[__filename]){
                     callback = options;
                 }
 
-                var timer;
-                var code;
-                var isFail;
-                var timeoutError;
-                var isCalled = false;
+                let timer;
+                let code;
+                let isFail;
+                let timeoutError;
+                let isCalled = false;
 
-                var callbackWrap = function(err, address, family) {
+                let callbackWrap = function(err, address, family) {
                     if (isCalled) return;
 
                     if(!err) {
@@ -52,7 +52,7 @@ if(!global[__filename]){
                         isFail = 1;
                     }
 
-                    if(err){
+                    if(err) {
                         logger.error('dns lookup error: ' + err.stack);
                     }else{
                         logger.debug(`dns lookup: ${hostname} --> ${address}`);

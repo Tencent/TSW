@@ -8,14 +8,14 @@
 'use strict';
 
 function formatBuffer(buffer) {
-    if(!(buffer && buffer.length)){
+    if(!(buffer && buffer.length)) {
         return '';
     }
 
-    var str = '';
+    let str = '';
 
-    for (var i = 0, len = buffer.length; i < len; i++) {
-        if(i % 16 === 0){
+    for (let i = 0, len = buffer.length; i < len; i++) {
+        if(i % 16 === 0) {
             str += '0x' + ('00000000000' + i.toString(16)).slice(-8) + ':  ';
         }
 
