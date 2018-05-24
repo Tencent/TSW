@@ -9,7 +9,6 @@
 
 const serverInfo = require('serverInfo.js');
 const mapping = require('./mapping.json');
-const {isWindows} = require('util/isWindows.js');
 const url = require('url');
 const Deferred = require('util/Deferred');
 const cluster = require('cluster');
@@ -90,7 +89,7 @@ var cacheOrRepoet = function(attr, iValue){
 
 var reportOpenapi = function(last){
     var defer = Deferred.create();
-    
+
     var openapi = require('util/openapi');
     var logger = require('logger');
     var config = require('config');
@@ -105,11 +104,11 @@ var reportOpenapi = function(last){
         return;
     }
 
-    if(isWindows){
+    if(config.isTest){
         return;
     }
 
-    if(config.isTest){
+    if(config.devMode){
         return;
     }
 
