@@ -4,6 +4,7 @@
   "scripts": {
     "lint": "eslint examples bin test --fix",
     "precommit": "lint-staged",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
     "test": "mocha --recursive test/bin",
     "coverage": "nyc --reporter=lcov  --reporter=text npm test && codecov"
   },
@@ -19,6 +20,8 @@
     "memcached": "~0.2.8"
   },
   "devDependencies": {
+    "@commitlint/cli": "^6.2.0",
+    "@commitlint/config-conventional": "^6.1.3",
     "chai": "^4.1.2",
     "codecov": "^3.0.2",
     "eslint": "^4.10.0",
