@@ -7,7 +7,7 @@
  */
 'use strict';
 
-module.exports  = function(request, response, callback, tofCfg){
+module.exports = function(request, response, callback, tofCfg){
     callback();
 };
 

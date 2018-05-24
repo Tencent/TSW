@@ -27,7 +27,7 @@ function createFlags( flags ) {
 }
 
 var jQuery = {
-	
+    
     // See test/unit/core.js for details concerning isFunction.
     // Since version 1.3, DOM methods and functions like alert
     // aren't supported. They return false on IE (#2968).
@@ -65,8 +65,8 @@ var jQuery = {
         try {
             // Not own constructor property must be Object
             if ( obj.constructor &&
-				!hasOwn.call(obj, 'constructor') &&
-				!hasOwn.call(obj.constructor.prototype, 'isPrototypeOf') ) {
+                !hasOwn.call(obj, 'constructor') &&
+                !hasOwn.call(obj.constructor.prototype, 'isPrototypeOf') ) {
                 return false;
             }
         } catch ( e ) {
@@ -137,7 +137,7 @@ var jQuery = {
 
         return object;
     }
-	
+    
 };
 
 // Populate the class2type map
@@ -213,23 +213,23 @@ jQuery.extend = function() {
 /*
  * Create a callback list using the following parameters:
  *
- *	flags:	an optional list of space-separated flags that will change how
- *			the callback list behaves
+ *    flags:    an optional list of space-separated flags that will change how
+ *            the callback list behaves
  *
  * By default a callback list will act like an event callback list and can be
  * "fired" multiple times.
  *
  * Possible flags:
  *
- *	once:			will ensure the callback list can only be fired once (like a Deferred)
+ *    once:            will ensure the callback list can only be fired once (like a Deferred)
  *
- *	memory:			will keep track of previous values and will call any callback added
- *					after the list has been fired right away with the latest "memorized"
- *					values (like a Deferred)
+ *    memory:            will keep track of previous values and will call any callback added
+ *                    after the list has been fired right away with the latest "memorized"
+ *                    values (like a Deferred)
  *
- *	unique:			will ensure a callback can only be added once (no duplicate in the list)
+ *    unique:            will ensure a callback can only be added once (no duplicate in the list)
  *
- *	stopOnFalse:	interrupt callings when a callback returns false
+ *    stopOnFalse:    interrupt callings when a callback returns false
  *
  */
 jQuery.Callbacks = function( flags ) {
@@ -276,9 +276,9 @@ jQuery.Callbacks = function( flags ) {
         },
         // Fire callbacks
         fire = function( context, args ) {
-			
+            
             var fn,domain,ret;
-			
+            
             args = args || [];
             memory = !flags.memory || [context, args];
             firing = true;
@@ -286,11 +286,11 @@ jQuery.Callbacks = function( flags ) {
             firingStart = 0;
             firingLength = list.length;
             for (; list && firingIndex < firingLength; firingIndex++) {
-				
+                
                 fn = list[firingIndex];
                 domain = fn.__domain;
                 fn.__domain = undefined;
-				
+                
                 // restore domain if needed
                 if (domain && domain !== process.domain) {
                     domain.run(function(){
@@ -299,7 +299,7 @@ jQuery.Callbacks = function( flags ) {
                 }else {
                     ret = fn.apply(context, args);
                 }
-				
+                
                 if (ret === false && flags.stopOnFalse) {
                     memory = true; // Mark as halted
                     break;
@@ -439,7 +439,6 @@ jQuery.Callbacks = function( flags ) {
 
     return self;
 };
-
 
 
 var // Static reference to slice

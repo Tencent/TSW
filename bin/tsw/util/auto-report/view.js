@@ -7,16 +7,16 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const gzipHttp		= require('util/gzipHttp.js');
-const post			= require('./post');
-const postOpenapi	= require('./post.openapi.js');
-const tmpl 			= require('./tmpl');
-const OALogin		= require('util/oa-login/index.js');
-const hls 			= require('./highlight-tsw.js');
-const canIuse		= /^[0-9a-zA-Z_-]{0,64}$/;
-const CD 			= require('util/CD.js');
-const MAX_ALPHA_LOG	= post.MAX_ALPHA_LOG;
+const logger = require('logger');
+const gzipHttp = require('util/gzipHttp.js');
+const post = require('./post');
+const postOpenapi = require('./post.openapi.js');
+const tmpl = require('./tmpl');
+const OALogin = require('util/oa-login/index.js');
+const hls = require('./highlight-tsw.js');
+const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
+const CD = require('util/CD.js');
+const MAX_ALPHA_LOG = post.MAX_ALPHA_LOG;
 
 tmpl.hls = hls;
 
@@ -34,22 +34,22 @@ module.exports.checkLogin = function(request, response, callback){
 
 module.exports.go = function(request, response){
 
-    var arr			= request.REQUEST.pathname.split('/');
-    var appid		= context.appid || '';
-    var group		= arr[3];
-    var key			= arr[4];
-    var groupKey	= 'v2.group.alpha';
-    var limit		= ~~context.limit || 64;
-    var currPost	= post;
+    var arr = request.REQUEST.pathname.split('/');
+    var appid = context.appid || '';
+    var group = arr[3];
+    var key = arr[4];
+    var groupKey = 'v2.group.alpha';
+    var limit = ~~context.limit || 64;
+    var currPost = post;
 
     if(appid){
-        currPost	= postOpenapi;
-        groupKey	= `${appid}/v2.group.alpha`;
+        currPost = postOpenapi;
+        groupKey = `${appid}/v2.group.alpha`;
     }
 
     if(!key){
-        key		= group;
-        group	= '';
+        key = group;
+        group = '';
     }
 
     if(!canIuse.test(appid)){
@@ -65,33 +65,33 @@ module.exports.go = function(request, response){
     }
 
     var createLogKey = function(appid,group,key){
-        var logKey		= key;
+        var logKey = key;
 
         if(group){
-            logKey	= `${group}/${logKey}`;
+            logKey = `${group}/${logKey}`;
         }
 
         return logKey;
     };
 
-    var logKey		= createLogKey(appid,group,key);
+    var logKey = createLogKey(appid,group,key);
 
     if(appid){
-        logKey	= `${appid}/${logKey}`;
+        logKey = `${appid}/${logKey}`;
     }
 
     //上下文设置
-    context.group			= group;
-    context.limit			= limit;
-    context.key				= key;
-    context.groupKey		= groupKey;
-    context.logKey			= logKey;
-    context.createLogKey	= createLogKey;
+    context.group = group;
+    context.limit = limit;
+    context.key = key;
+    context.groupKey = groupKey;
+    context.logKey = logKey;
+    context.createLogKey = createLogKey;
 
-    var logCount	= 0;
-    var logKeyCount	= 0;
-    var logNumMax	= context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
-    var currDays	= parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    var logCount = 0;
+    var logKeyCount = 0;
+    var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
 
     logger.debug('logKey :${logKey}',{
         logKey: logKey
@@ -126,15 +126,15 @@ module.exports.go = function(request, response){
                             groupArr: groupArr,
                             //也代表顺序
                             nameMap : {
-                                html	: 'html',
-                                XHR		: 'XHR',
-                                js		: 'js',
-                                image	: 'image',
-                                css		: 'css',
+                                html    : 'html',
+                                XHR        : 'XHR',
+                                js        : 'js',
+                                image    : 'image',
+                                css        : 'css',
                                 webapp  : 'webapp',
                                 websocket : 'websocket',
-                                tsw		: 'tsw',
-                                font	: '字体'
+                                tsw        : 'tsw',
+                                font    : '字体'
                             }
                         });
 
@@ -164,6 +164,4 @@ function returnError(message){
 
     gzipResponse.end(message);
 }
-
-
 

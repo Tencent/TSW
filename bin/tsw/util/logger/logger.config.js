@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const {debugOptions}    = process.binding('config');
+const {debugOptions} = process.binding('config');
 
 this.levelMap = {
     'debug':10,
@@ -27,16 +27,16 @@ this.getLogLevel = function(){
     }
 
     if(typeof this.logLevel === 'string'){
-        this.logLevel   = this.levelMap[this.logLevel] || null;
+        this.logLevel = this.levelMap[this.logLevel] || null;
     }
 
     if(this.logLevel !== null){
         return this.logLevel;
     }
 
-    this.logLevel   = this.levelMap['info'];
+    this.logLevel = this.levelMap['info'];
 
-    var config  = require('config.js');
+    var config = require('config.js');
 
     if(config.logger){
         if(typeof config.logger.logLevel === 'number'){

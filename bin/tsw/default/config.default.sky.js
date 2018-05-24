@@ -11,28 +11,28 @@
 this.modAct = this.modMap = {
 
     map: {
-        log_view	 		: 'util/auto-report/view.js',
-        log_download 		: 'util/auto-report/download.js',
-        group_page 			: 'util/h5-test/group/view.js',
-        h5test_page 		: 'util/h5-test/page/view.js',
-        h5test_managerget	: 'util/h5-test/get.js',
-        h5test_manageradd	: 'util/h5-test/add.js',
-        h5test_managerdel	: 'util/h5-test/del.js',
-        '/api/h5test/get'	: 'util/h5-test/get.js',
-        '/api/h5test/add'	: 'util/h5-test/add.js',
-        '/api/h5test/del'	: 'util/h5-test/del.js',
-        '/' 				: 'util/home/view.js',
-        '/index'	 		: 'util/home/view.js',
-        static_tsw  		: 'util/static/static.js',
-        default_page  		: 'util/static/static.js'
+        log_view             : 'util/auto-report/view.js',
+        log_download         : 'util/auto-report/download.js',
+        group_page             : 'util/h5-test/group/view.js',
+        h5test_page         : 'util/h5-test/page/view.js',
+        h5test_managerget    : 'util/h5-test/get.js',
+        h5test_manageradd    : 'util/h5-test/add.js',
+        h5test_managerdel    : 'util/h5-test/del.js',
+        '/api/h5test/get'    : 'util/h5-test/get.js',
+        '/api/h5test/add'    : 'util/h5-test/add.js',
+        '/api/h5test/del'    : 'util/h5-test/del.js',
+        '/'                 : 'util/home/view.js',
+        '/index'             : 'util/home/view.js',
+        static_tsw          : 'util/static/static.js',
+        default_page          : 'util/static/static.js'
     },
 
     getModAct: function(req){
         var pathname= req.REQUEST.pathname || '';
-        var arr		= pathname.split('/',3);
-        var mod		= arr[1] || 'default';
-        var act		= arr[2] || 'page';
-        var mod_act	= mod + '_' + act;
+        var arr = pathname.split('/',3);
+        var mod = arr[1] || 'default';
+        var act = arr[2] || 'page';
+        var mod_act = mod + '_' + act;
 
 
         if(this.map[pathname]){
@@ -64,5 +64,4 @@ this.modAct = this.modMap = {
         return null;
     }
 };
-
 

@@ -7,10 +7,10 @@
  */
 'use strict';
 
-const TEReport	= require('util/auto-report/TEReport.js');
-const gzipHttp	= require('util/gzipHttp.js');
-const tmpl		= require('./tmpl.js');
-const pagetmpl 	= require('../page/tmpl.js');
+const TEReport = require('util/auto-report/TEReport.js');
+const gzipHttp = require('util/gzipHttp.js');
+const tmpl = require('./tmpl.js');
+const pagetmpl = require('../page/tmpl.js');
 
 module.exports = function(request,response){
 
@@ -48,9 +48,9 @@ module.exports = function(request,response){
 
         var data = {};
 
-        data.head	= { title: '测试环境'};
+        data.head = { title: '测试环境'};
         data.header = pagetmpl.new_header(navMenus);
-        data.body	= tmpl.body({
+        data.body = tmpl.body({
             allGroup: allGroup
         });
 

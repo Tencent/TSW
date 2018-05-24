@@ -1,7 +1,7 @@
 'use strict';
 
-const express    = require('express');
-const app        = express();
+const express = require('express');
+const app = express();
 
 //http://127.0.0.1/express
 app.all('/express',function(req, res){

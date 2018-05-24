@@ -7,17 +7,17 @@
  */
 'use strict';
 
-const config        = require('./logger.config');
-const util          = require('util');
-const contextMod    = require('context.js');
-const callInfo      = require('./callInfo.js');
-const {isWindows}   = require('util/isWindows.js');
-const tnm2          = require('api/tnm2');
-const canIuse       = /^[0-9a-zA-Z_-]{0,64}$/;
-const cache         = global[__filename] || {
-        filterWatcher: null
-    };
-const freqCache     = {
+const config = require('./logger.config');
+const util = require('util');
+const contextMod = require('context.js');
+const callInfo = require('./callInfo.js');
+const {isWindows} = require('util/isWindows.js');
+const tnm2 = require('api/tnm2');
+const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
+const cache = global[__filename] || {
+    filterWatcher: null
+};
+const freqCache = {
     clearTime: 0,
     count: 0,
     detail: {}
@@ -125,7 +125,7 @@ Logger.prototype = {
         this.debug('setKey: ${key}',{key:key});
 
         var log = this.getLog();
-        var alpha       = require('util/alpha.js');
+        var alpha = require('util/alpha.js');
 
         if(!log){
             return;
@@ -235,7 +235,7 @@ Logger.prototype = {
     },
 
     getCpu: function(){
-        var cpu =  process.serverInfo && process.serverInfo.cpu;
+        var cpu = process.serverInfo && process.serverInfo.cpu;
 
         if(cpu === undefined){
             cpu = '';
@@ -263,13 +263,13 @@ Logger.prototype = {
 
     writeLog : function(type,str,obj){
 
-        var level   = this.type2level(type);
-        var log     = this.getLog();
-        var allow   = filter(level,str,obj);
-        var logStr  = null;
+        var level = this.type2level(type);
+        var log = this.getLog();
+        var allow = filter(level,str,obj);
+        var logStr = null;
 
         if(log || allow === true || level >= config.getLogLevel()){
-            logStr  = this._getLog(type,level,str,obj);
+            logStr = this._getLog(type,level,str,obj);
         }
 
         if(logStr === null){
@@ -318,13 +318,13 @@ Logger.prototype = {
 
     _getLog: function(type,level,str,obj){
 
-        var log         = this.getLog();
-        var that        = this;
-        var filename    = '';
-        var column      = '';
-        var line        = '';
-        var enable      = false;
-        var info        = {};
+        var log = this.getLog();
+        var that = this;
+        var filename = '';
+        var column = '';
+        var line = '';
+        var enable = false;
+        var info = {};
 
         if(level >= config.getLogLevel()){
             enable = true;
@@ -343,9 +343,9 @@ Logger.prototype = {
 
             info = callInfo.getCallInfo(3);
 
-            line        = info.line;
-            column      = info.column;
-            filename    = info.filename || '';
+            line = info.line;
+            column = info.column;
+            filename = info.filename || '';
         }
 
 
@@ -358,7 +358,7 @@ Logger.prototype = {
                 return text;
             }
 
-            filename    = filename || '';
+            filename = filename || '';
 
             if(isWindows){
                 filename = filename.replace(/\\/g,'/');
@@ -483,12 +483,12 @@ function merge(str,obj){
 
     return str && str.replace(/\$\{(.+?)\}/g,function($0,$1){
 
-            var rs = obj && obj[$1];
-            var undefined;
+        var rs = obj && obj[$1];
+        var undefined;
 
-            return rs === undefined ? '' :
-                typeof rs === 'object' ? util.inspect(rs) : String(rs);
-        });
+        return rs === undefined ? '' :
+            typeof rs === 'object' ? util.inspect(rs) : String(rs);
+    });
 }
 
 
@@ -517,7 +517,7 @@ function isExceedFreq(level,str,obj){
 
     var mod_act = contextMod.currentContext().mod_act || 'null',
         curTime = Date.now(),
-        exceed  = false,
+        exceed = false,
         cfg;
 
     if(isWindows){
@@ -534,7 +534,7 @@ function isExceedFreq(level,str,obj){
 
         tnm2.Attr_API_Set('AVG_TSW_ERROE_LOG_5S', freqCache.count);
 
-        freqCache.count  = 0;
+        freqCache.count = 0;
 
         freqCache.detail = {};
     }
@@ -581,7 +581,4 @@ function filter(level,str,obj){
 }
 
 logger = new Logger();
-
-
-
 

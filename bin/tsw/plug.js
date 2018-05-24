@@ -20,11 +20,11 @@ function plug(id){
 }
 
 if(!global.plug){
-	
-	
-    plug.__dirname  = __dirname;
-    plug.parent  	= path.join(__dirname , '..');
-    plug.paths 		= [
+    
+    
+    plug.__dirname = __dirname;
+    plug.parent = path.join(__dirname , '..');
+    plug.paths = [
         path.join(__dirname , '../deps'),
         path.join(__dirname , '../tsw'),
         path.join(__dirname , '../tencent'),
@@ -34,7 +34,7 @@ if(!global.plug){
     module.paths = plug.paths.concat(module.paths);
 
     global.plug = plug;
-	
+    
     //支持seajs模块
     require('loader/seajs');
     require('loader/extentions.js');
@@ -42,16 +42,15 @@ if(!global.plug){
     JSON.stringify = function(stringify){
         return function(){
             var str = stringify.apply(this,arguments);
-			
+            
             if(str && str.indexOf('<') > -1){
                 str = str.replace(/</g,'\\u003C');
             }
             return str;
         };
     }(JSON.stringify);
-	
+    
 }
 
 module.exports = plug;
-
 

@@ -7,15 +7,15 @@
  */
 'use strict';
 
-const path		= require('path');
-const fs		= require('fs');
-const gzipHttp 	= require('util/gzipHttp.js');
-const logger	= require('logger');
-const mime		= require('./mime.js');
+const path = require('path');
+const fs = require('fs');
+const gzipHttp = require('util/gzipHttp.js');
+const logger = require('logger');
+const mime = require('./mime.js');
 
 module.exports = function(request,response,plug){
 
-    var filename	= path.normalize(request.REQUEST.pathname).replace(/\\/g,'/');
+    var filename = path.normalize(request.REQUEST.pathname).replace(/\\/g,'/');
 
     try{
         //支持中文
@@ -24,15 +24,15 @@ module.exports = function(request,response,plug){
         logger.info(`decode file name fail ${e.message}`);
     }
     
-    var wwwroot		= plug.parent + '/wwwroot';
+    var wwwroot = plug.parent + '/wwwroot';
 
     if(filename === '' || filename === '/'){
         filename = '/index';
     }
 
     //保证请求的文件是wwwroot目录下的
-    var realPath	= path.join(wwwroot,path.join('/',filename));
-    var ext			= path.extname(realPath);
+    var realPath = path.join(wwwroot,path.join('/',filename));
+    var ext = path.extname(realPath);
 
     if(ext){
         //.js --> js
@@ -133,5 +133,4 @@ module.exports = function(request,response,plug){
     }
 
 };
-
 

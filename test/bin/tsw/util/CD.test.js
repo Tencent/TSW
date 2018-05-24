@@ -1,4 +1,4 @@
-const chai  = require('chai');
+const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const plug = require('plug');
@@ -6,12 +6,12 @@ const plug = require('plug');
 /**
 这一部分是CD.js依赖的模块，我们需要弄一些stub,以避免干扰
 */
-let CD 			= plug('util/CD.js');
-let logger		= plug('logger');
-let config		= plug('config');
-let Deferred 	= plug('util/Deferred');
-let ajax  		= plug('ajax');
-let gzipHttp 	= plug('util/gzipHttp.js');
+let CD = plug('util/CD.js');
+let logger = plug('logger');
+let config = plug('config');
+let Deferred = plug('util/Deferred');
+let ajax = plug('ajax');
+let gzipHttp = plug('util/gzipHttp.js');
 
 
 logger.setLogLevel('error');

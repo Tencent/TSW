@@ -7,14 +7,14 @@
  */
 'use strict';
 
-const fs			= require('fs');
-const path			= require('path');
-const plug			= require('plug');
-const Deferred		= plug('util/Deferred');
-const defaultValue	= plug('default/config.default.js');
+const fs = require('fs');
+const path = require('path');
+const plug = require('plug');
+const Deferred = plug('util/Deferred');
+const defaultValue = plug('default/config.default.js');
 
-var isFirstLoad	= false;
-var cache			= {
+var isFirstLoad = false;
+var cache = {
     config: null
 };
 
@@ -28,7 +28,7 @@ if(global[__filename]){
 
 if(isFirstLoad){
     process.dlopen = function(fn){
-        var parent  	= path.join(__dirname , '..');
+        var parent = path.join(__dirname , '..');
 
         return function(module,curr){
             //检查node私有文件
@@ -44,7 +44,6 @@ if(isFirstLoad){
 }
 
 
-
 if(fs.existsSync('/etc/tsw.config.js')){
     cache.config = require('/usr/local/node_modules/config.js');
 }else if(fs.existsSync('/usr/local/node_modules/config.js')){
@@ -54,7 +53,6 @@ if(fs.existsSync('/etc/tsw.config.js')){
 }else if(fs.existsSync(__dirname + '/../../conf/config.js')){
     cache.config = require('../../conf/config.js');
 }
-
 
 
 Deferred.extend(true,exports,defaultValue,cache.config);

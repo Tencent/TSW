@@ -7,20 +7,20 @@
  */
 'use strict';
 
-const serverInfo	= require('serverInfo.js');
-const config		= require('config.js');
-const isWindows		= require('util/isWindows.js');
-const httpUtil		= require('util/http');
-const logger		= require('logger');
-const Deferred		= require('util/Deferred');
-const url			= require('url');
+const serverInfo = require('serverInfo.js');
+const config = require('config.js');
+const isWindows = require('util/isWindows.js');
+const httpUtil = require('util/http');
+const logger = require('logger');
+const Deferred = require('util/Deferred');
+const url = require('url');
 
 this.SendMail = function(key,group,second,oriOpt){
 
-    var opt 	= Deferred.extend({},oriOpt);
-    var data	= {};
-    var now		= new Date();
-    var prefix	= '[runtime]';
+    var opt = Deferred.extend({},oriOpt);
+    var data = {};
+    var now = new Date();
+    var prefix = '[runtime]';
 
     if(isWindows.isWindows){
         return;
@@ -37,29 +37,29 @@ this.SendMail = function(key,group,second,oriOpt){
     }
 
     if(config.isTest){
-        prefix			+= '[测试环境]';
+        prefix += '[测试环境]';
     }else{
         if(opt.runtimeType){
             prefix += `[${opt.runtimeType}][考核]`;
         }
     }
 
-    opt.Title 			= prefix + opt.Title;
+    opt.Title = prefix + opt.Title;
 
-    data.Title			= opt.Title || '';
-    data.isTest			= ~~config.isTest;
-    data.Content		= opt.Content || '';
-    data.MsgInfo		= opt.MsgInfo || '';
-    data.intranetIp		= serverInfo.intranetIp || '';
-    data.second			= second || '';
-    data.idc			= config.idc || '';
-    data.logText		= logger.getText() || '';
-    data.headerText		= httpUtil.getRequestHeaderStr() || '';
-    data.runtimeType	= opt.runtimeType || '';
-    data.processTitle	= process.title || '';
-    data.processPid		= process.pid || '';
+    data.Title = opt.Title || '';
+    data.isTest = ~~config.isTest;
+    data.Content = opt.Content || '';
+    data.MsgInfo = opt.MsgInfo || '';
+    data.intranetIp = serverInfo.intranetIp || '';
+    data.second = second || '';
+    data.idc = config.idc || '';
+    data.logText = logger.getText() || '';
+    data.headerText = httpUtil.getRequestHeaderStr() || '';
+    data.runtimeType = opt.runtimeType || '';
+    data.processTitle = process.title || '';
+    data.processPid = process.pid || '';
 
-    opt.data			= data;
+    opt.data = data;
 
     if(isWindows.isWindows){
         key = key + Date.now();
@@ -73,12 +73,11 @@ this.SendMail = function(key,group,second,oriOpt){
 };
 
 
-
 var reportOpenapi = function(data){
-    var defer   = Deferred.create();
-    var config  = require('config');
+    var defer = Deferred.create();
+    var config = require('config');
     var openapi = require('util/openapi');
-    var logger  = require('logger');
+    var logger = require('logger');
 
     var retCall;
 
@@ -101,29 +100,29 @@ var reportOpenapi = function(data){
 
     var postData = data;
 
-    postData.appid	= config.appid;
-    postData.now	= Date.now();
+    postData.appid = config.appid;
+    postData.now = Date.now();
 
-    var sig	= openapi.signature({
-        pathname	: url.parse(config.runtimeReportUrl).pathname,
-        method		: 'POST',
-        data		: postData,
-        appkey		: config.appkey
+    var sig = openapi.signature({
+        pathname    : url.parse(config.runtimeReportUrl).pathname,
+        method        : 'POST',
+        data        : postData,
+        appkey        : config.appkey
     });
 
-    postData.sig	= sig;
+    postData.sig = sig;
 
     require('ajax').request({
-        url			: config.runtimeReportUrl,
-        type		: 'POST',
-        l5api		: config.tswL5api['openapi.tswjs.org'],
-        dcapi		: {
+        url            : config.runtimeReportUrl,
+        type        : 'POST',
+        l5api        : config.tswL5api['openapi.tswjs.org'],
+        dcapi        : {
             key: 'EVENT_TSW_OPENAPI_RUNTIME_REPORT'
         },
-        data		: postData,
-        keepAlive	: true,
-        autoToken	: false,
-        dataType	: 'json'
+        data        : postData,
+        keepAlive    : true,
+        autoToken    : false,
+        dataType    : 'json'
     }).fail(function(){
         logger.error('runtime report fail.');
         defer.reject();
@@ -153,7 +152,7 @@ this.SendTSWMail = function(opt){
 
 //发送周知邮件
 this.SendArsMail = function(opt){
-	
+    
 
 };
 
@@ -161,6 +160,4 @@ this.SendArsMail = function(opt){
 this.findMailARS = function(file){
     return '';
 };
-
-
 

@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const fs       = require('fs');
+const fs = require('fs');
 const profiler = require('v8-profiler');
 const DEFAULT_RECORD_TIME = 5 * 1000;
 const MAX_RECORD_TIME = 5 * 60 * 1000;

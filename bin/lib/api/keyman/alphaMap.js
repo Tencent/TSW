@@ -7,15 +7,15 @@
  */
 'use strict';
 
-const Deferred		= require('util/Deferred');
-const logger		= require('logger');
-const config		= require('config');
-const fs			= require('fs');
-const fileCache		= require('api/fileCache');
-const fileUrl		= config.alphaFileUrl;
+const Deferred = require('util/Deferred');
+const logger = require('logger');
+const config = require('config');
+const fs = require('fs');
+const fileCache = require('api/fileCache');
+const fileUrl = config.alphaFileUrl;
 
-var isFirstLoad	= false;
-var cache		= {
+var isFirstLoad = false;
+var cache = {
     timeUpdate: 0,
     data: {},
     dataFile: {}
@@ -51,7 +51,7 @@ if(isFirstLoad){
                 return;
             }
 
-            cache.dataFile	= getMap(text);
+            cache.dataFile = getMap(text);
             updateMap();
         })();
 
@@ -63,7 +63,7 @@ if(isFirstLoad){
 
 function getMap(text){
 
-    var map		= {};
+    var map = {};
 
     text = text || '';
 
@@ -76,7 +76,7 @@ function getMap(text){
 
 function updateMap(text){
 
-    var map		= getMap(text);
+    var map = getMap(text);
 
     //copy
     Object.assign(map,cache.dataFile);
@@ -89,48 +89,48 @@ function updateMap(text){
 
 this.getSync = function(){
     this.get();
-	
+    
     return cache.data;
 };
 
 this.get = function(){
-	
-    var defer 	= Deferred.create();
-    var delay	= (process.serverInfo && process.serverInfo.cpu * 1000) || 0;
-    var l5api	= config.tswL5api['alphaFileUrl'];
+    
+    var defer = Deferred.create();
+    var delay = (process.serverInfo && process.serverInfo.cpu * 1000) || 0;
+    var l5api = config.tswL5api['alphaFileUrl'];
 
     if(Date.now() - cache.timeUpdate < 60000 + delay){
         return defer.resolve(cache.data);
     }
-	
+    
     cache.timeUpdate = Date.now();
 
     if(!fileUrl){
         return defer.resolve(cache.data);
     }
-	
+    
     fileCache.getAsync(fileUrl).done(function(d){
-		
+        
         var lastModifyTime = 0;
         var text = '';
-		
+        
         if(d && d.stats){
             lastModifyTime = d.stats.mtime.getTime();
         }
-		
+        
         if(d && d.data){
             text = d.data.toString('utf-8');
         }
-		
+        
         if(Date.now() - lastModifyTime < 60000){
             logger.debug('使用本地文件');
-			
+            
             updateMap(text);
-			
+            
             defer.resolve(cache.data);
             return;
         }
-	
+    
         require('ajax').request({
             url: fileUrl,
             type: 'get',
@@ -146,11 +146,11 @@ this.get = function(){
         }).fail(function(d){
             defer.resolve(cache.data);
         }).done(function(d){
-			
-            var text	= '';
-				
+            
+            var text = '';
+                
             if(d && d.result && typeof d.result === 'string'){
-				
+                
                 text = d.result;
             }
 
@@ -158,17 +158,17 @@ this.get = function(){
                 logger.error('alpha file limit <=2M');
                 return defer.resolve(cache.data);
             }
-			
+            
             updateMap(text);
-			
+            
             //保存在本地
             fileCache.set(fileUrl,Buffer.from(text,'UTF-8'));
-			
+            
             defer.resolve(cache.data);
         });
     });
-	
-	
+    
+    
     return defer;
 };
 
@@ -191,5 +191,4 @@ function init(){
 
 
 init();
-
 

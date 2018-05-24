@@ -7,8 +7,8 @@
  */
 'use strict';
 
-const config  = require('./config.js');
-var base    = null;
+const config = require('./config.js');
+var base = null;
 
 if(config.skyMode){
     base = require('default/config.default.sky.js');

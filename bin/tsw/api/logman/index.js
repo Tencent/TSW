@@ -7,15 +7,15 @@
  */
 'use strict';
 
-const cp			= require('child_process');
-const fs			= require('fs');
-const path			= require('path');
-const logger		= require('logger');
-const dateApi		= require('api/date.js');
-const {isWindows}	= require('util/isWindows.js');
-const logDir		= path.resolve(__dirname, '../../../../log/').replace(/\\/g, '/');
-const backupDir		= path.resolve(logDir, './backup/').replace(/\\/g, '/');
-const runlogPath	= path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
+const cp = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const logger = require('logger');
+const dateApi = require('api/date.js');
+const {isWindows} = require('util/isWindows.js');
+const logDir = path.resolve(__dirname, '../../../../log/').replace(/\\/g, '/');
+const backupDir = path.resolve(logDir, './backup/').replace(/\\/g, '/');
+const runlogPath = path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
 
 //判断logDir目录是否存在
 fs.exists(logDir, function(exists){
@@ -32,19 +32,19 @@ fs.exists(logDir, function(exists){
 });
 
 var LogMan = {
-	
+    
     /**
-	 * 按分钟\小时\天去备份log
-	 */
+     * 按分钟\小时\天去备份log
+     */
     delayMap: {
         m: 60000,
         H: 3600000,
         D: 86400000
     },
-	
+    
     /**
-	 * 启动log管理
-	 */
+     * 启动log管理
+     */
     start: function(config){
         logger.info('start log manager');
         var self = this;
@@ -54,10 +54,10 @@ var LogMan = {
             self.backLog();
         }, this.delay);
     },
-	
+    
     /**
-	 * 备份log
-	 */
+     * 备份log
+     */
     backLog: function(){
         logger.info('start backup log');
         var self = this;
@@ -69,14 +69,14 @@ var LogMan = {
             var logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date, self.delayType + self.delayType) + '.log');
             var cmdCat = 'cat ' + runlogPath + ' >> ' + logFilePath;
             var cmdClear = 'cat /dev/null > ' + runlogPath;
-			
+            
             //兼容windows
             if(isWindows){
                 logFilePath = logFilePath.replace(/\\/g, '\\\\');
                 cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
                 cmdClear = 'type NUL > ' + runlogPath;
             }
-			
+            
             //backup
             logger.info('backup: '+ cmdCat);
             
@@ -84,7 +84,7 @@ var LogMan = {
                 if (error !== null) {
                     logger.error('cat error, ' + error);
                 }
-				
+                
                 //clear
                 logger.info('clear: ' + cmdClear);
 
@@ -96,7 +96,7 @@ var LogMan = {
             });
         });
     }
-	
+    
 };
 
 module.exports = LogMan;

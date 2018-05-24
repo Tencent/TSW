@@ -7,10 +7,10 @@
  */
 'use strict';
 
-const config		= require('config');
-const logger		= require('logger');
-const {isWindows} 	= require('util/isWindows');
-const TSW			= require('api/keyman');
+const config = require('config');
+const logger = require('logger');
+const {isWindows} = require('util/isWindows');
+const TSW = require('api/keyman');
 
 if(!global[__filename]){
     global[__filename] = {};
@@ -64,7 +64,7 @@ this.isAlpha = function(req){
 this.getUin = function(req){
 
     var uin;
-    var window   = context.window || {};
+    var window = context.window || {};
 
     req = req || window.request;
 

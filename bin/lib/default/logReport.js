@@ -7,21 +7,21 @@
  */
 'use strict';
 
-const config		= require('config');
+const config = require('config');
 
 module.exports.report = function(data){
-    var	retValue;
+    var retValue;
     var reportData = {
         table:'reportData',
         data:{
-            type	: data.type,
-            log		: data.logText,
-            uin		: data.key,
-            mod_act	: data.mod_act,
-            ua 		: data.ua,
-            userip 	: data.userip,
-            domain	: data.host,
-            path	: data.pathname,
+            type    : data.type,
+            log        : data.logText,
+            uin        : data.key,
+            mod_act    : data.mod_act,
+            ua         : data.ua,
+            userip     : data.userip,
+            domain    : data.host,
+            path    : data.pathname,
             httpCode: data.statusCode
         }
     };

@@ -12,16 +12,16 @@ if(!global[__filename]){
     global[__filename] = true;
 
     process.nextTick(function(){
-        var config  = require('config');
-        var dns     = require('dns');
-        var dcapi   = require('api/libdcapi/dcapi');
-        var logger  = require('logger');
-        var net     = require('net');
+        var config = require('config');
+        var dns = require('dns');
+        var dcapi = require('api/libdcapi/dcapi');
+        var logger = require('logger');
+        var net = require('net');
 
         dns.lookup = (function(fn) {
 
             return function(hostname, options, callback) {
-                var args  = [hostname];
+                var args = [hostname];
                 var start = Date.now();
 
                 if(net.isIP(hostname)){
@@ -39,16 +39,16 @@ if(!global[__filename]){
                 var isCalled = false;
 
                 var callbackWrap = function(err, address, family) {
-                    if (isCalled)  return;
+                    if (isCalled) return;
 
                     if(!err) {
-                        code   = 0;
+                        code = 0;
                         isFail = 0;
                     } else if(err === timeoutError) {
-                        code   = 513;
+                        code = 513;
                         isFail = 1;
                     } else {
-                        code   = 500;
+                        code = 500;
                         isFail = 1;
                     }
 

@@ -7,11 +7,11 @@
  */
 'use strict';
 
-const os            = require('os');
-const fs            = require('fs');
-const cp			= require('child_process');
+const os = require('os');
+const fs = require('fs');
+const cp = require('child_process');
 const {isWindows} = require('./isWindows.js');
-const logger		= require('logger');
+const logger = require('logger');
 var cache;
 
 if(!global[__filename]){
@@ -34,7 +34,7 @@ if(!global[__filename]){
 
 this.getCpuUsed = function(cpu){
 
-    var now     = Date.now();
+    var now = Date.now();
 
     cpu = cpu || '';
 
@@ -73,28 +73,28 @@ this.getCpuUsed = function(cpu){
         }
 
         if(str){
-            arr     = str.split(/\W+/);
+            arr = str.split(/\W+/);
         }else{
             return;
         }
 
-        var user    = parseInt(arr[1],10) || 0;
-        var nice    = parseInt(arr[2],10) || 0;
-        var system  = parseInt(arr[3],10) || 0;
-        var idle    = parseInt(arr[4],10) || 0;
-        var iowait  = parseInt(arr[5],10) || 0;
-        var irq     = parseInt(arr[6],10) || 0;
+        var user = parseInt(arr[1],10) || 0;
+        var nice = parseInt(arr[2],10) || 0;
+        var system = parseInt(arr[3],10) || 0;
+        var idle = parseInt(arr[4],10) || 0;
+        var iowait = parseInt(arr[5],10) || 0;
+        var irq = parseInt(arr[6],10) || 0;
         var softirq = parseInt(arr[7],10) || 0;
         // var  steal   = parseInt(arr[8],10) || 0;
         // var guest    = parseInt(arr[9],10) || 0;
 
-        var total   = user + nice + system + idle + iowait + irq + softirq;
-        var used    = user + nice + system + irq + softirq;
-        var curr    = Math.round((used - cache.used) / (total - cache.total) * 100);
+        var total = user + nice + system + idle + iowait + irq + softirq;
+        var used = user + nice + system + irq + softirq;
+        var curr = Math.round((used - cache.used) / (total - cache.total) * 100);
 
-        cache.curr  = curr;
+        cache.curr = curr;
         cache.total = total;
-        cache.used  = used;
+        cache.used = used;
     });
 
     return cache.curr;
@@ -135,14 +135,14 @@ this.taskset = function(oriCpu,pid){
     },function(err,data,errData){
 
         var str = data.toString('UTF-8');
-        var tmp  = str.split(':');
+        var tmp = str.split(':');
         var cpus;
 
         if(tmp.length >= 2){
             cpus = exports.parseTaskset(tmp[1]);
         }
 
-        var cpu	= oriCpu;
+        var cpu = oriCpu;
         if(cpus.length > 1){
             //cpu编号修正
             cpu = parseInt(cpus[cpu % cpus.length],10);
@@ -191,16 +191,16 @@ this.taskset = function(oriCpu,pid){
 
 this.parseTaskset = function(str){
 
-    var res	= [];
+    var res = [];
     var arr = str.split(',');
 
     arr.forEach(function(v){
 
         v = v.trim();
 
-        var tmp		= v.split('-');
-        var start	= ~~tmp[0];
-        var end		= ~~tmp[1];
+        var tmp = v.split('-');
+        var start = ~~tmp[0];
+        var end = ~~tmp[1];
         var i;
 
         if(end < start){

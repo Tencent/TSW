@@ -7,17 +7,17 @@
  */
 'use strict';
 
-const config		= require('config');
-const logger		= require('logger');
-const httpUtil		= require('util/http');
-const serverInfo	= require('serverInfo.js');
-const isTST			= require('util/isTST.js');
-const mail			= require('util/mail/mail.js');
-const tnm2	 		= require('api/tnm2');
-const CCIPSize		= 1000;						//统计周期
-const CCIPLimit		= config.CCIPLimit;			//限制
-var ipConut			= CCIPSize;
-var cache			= {
+const config = require('config');
+const logger = require('logger');
+const httpUtil = require('util/http');
+const serverInfo = require('serverInfo.js');
+const isTST = require('util/isTST.js');
+const mail = require('util/mail/mail.js');
+const tnm2 = require('api/tnm2');
+const CCIPSize = 1000;                        //统计周期
+const CCIPLimit = config.CCIPLimit;            //限制
+var ipConut = CCIPSize;
+var cache = {
     ipCache: {},
     whiteList: {},
     ipCacheLast: {}
@@ -35,8 +35,8 @@ this.addWhiteList = function(userIp){
 
 this.checkHost = function(req, res){
 
-    var hostAllow	= config.allowHost || [];
-    var host        = req.headers['host'];
+    var hostAllow = config.allowHost || [];
+    var host = req.headers['host'];
     var i,len,v;
 
     if(hostAllow.length === 0){
@@ -73,13 +73,13 @@ this.checkHost = function(req, res){
 //计算标准方差
 this.StdX10 = function(ipCache){
 
-    var res		= 0;
-    var sum		= 0;
-    var avg		= 0;
-    var arr 	= Object.keys(ipCache).filter(function(item){
+    var res = 0;
+    var sum = 0;
+    var avg = 0;
+    var arr = Object.keys(ipCache).filter(function(item){
         var tmp = ipCache[item];
         if(typeof tmp === 'object' && tmp.list){
-            sum   += tmp.list.length;
+            sum += tmp.list.length;
             return true;
         }
         return false;
@@ -92,9 +92,9 @@ this.StdX10 = function(ipCache){
     avg = sum / arr.length;
 
     var sumXsum = arr.reduce(function(pre,key){
-        var item	= ipCache[key];
-        var value	= item.list.length;
-        item.avg	= avg;
+        var item = ipCache[key];
+        var value = item.list.length;
+        item.avg = avg;
 
         return pre + (value - avg)*(value - avg);
     },0);
@@ -106,14 +106,14 @@ this.StdX10 = function(ipCache){
 
 this.check = function(req, res){
 
-    var userIp		= httpUtil.getUserIp(req);
-    var userIp24	= httpUtil.getUserIp24(req);
+    var userIp = httpUtil.getUserIp(req);
+    var userIp24 = httpUtil.getUserIp24(req);
     var key,Content,curr;
 
-    var info	= {
-        userIp		: userIp,
-        hostname	: req.headers.host,
-        pathname	: req.REQUEST.pathname
+    var info = {
+        userIp        : userIp,
+        hostname    : req.headers.host,
+        pathname    : req.REQUEST.pathname
     };
 
     if(cache.whiteList[userIp]){
@@ -132,16 +132,16 @@ this.check = function(req, res){
     if(!cache.ipCache.start){
         cache.ipCache.start = Date.now();
     }
-	
-    ipConut		= ipConut - 1;
-	
+    
+    ipConut = ipConut - 1;
+    
     if(ipConut <= 0){
-        ipConut				= CCIPSize;
-        cache.ipCache.end	= Date.now();
+        ipConut = CCIPSize;
+        cache.ipCache.end = Date.now();
         cache.ipCache.StdX10= this.StdX10(cache.ipCache);
-        cache.ipCacheLast	= cache.ipCache;
-        cache.ipCache		= {};
-        cache.whiteList     = {};
+        cache.ipCacheLast = cache.ipCache;
+        cache.ipCache = {};
+        cache.whiteList = {};
 
         //上报标准方差
         tnm2.Attr_API_Set('AVG_TSW_IP_STD_X10', cache.ipCacheLast.StdX10);
@@ -152,7 +152,7 @@ this.check = function(req, res){
         ipConut = 0;
         return true;
     }
-	
+    
     if(!cache.ipCache[userIp]){
         cache.ipCache[userIp] = {
             ip007Info: null,
@@ -160,9 +160,9 @@ this.check = function(req, res){
             list: []
         };
     }
-	
+    
     curr = cache.ipCache[userIp];
-	
+    
     curr.list.push(info);
 
     if(CCIPLimit <= -1){
@@ -173,7 +173,7 @@ this.check = function(req, res){
         //测试环境
         return true;
     }
-	
+    
     if(config.devMode){
         //开发环境
         return true;
@@ -182,7 +182,7 @@ this.check = function(req, res){
     if(!cache.ipCacheLast.StdX10){
         return true;
     }
-	
+    
     if(cache.ipCacheLast.StdX10 <= CCIPLimit){
         return true;
     }
@@ -207,26 +207,26 @@ this.check = function(req, res){
 
         if(
             cache.ipCacheLast[ip]
-			&& cache.ipCacheLast[ip].list
-			&& cache.ipCacheLast[ip].list.length > 1
+            && cache.ipCacheLast[ip].list
+            && cache.ipCacheLast[ip].list.length > 1
         ){
             num = '' + cache.ipCacheLast[ip].list.length;
             num = (num + 'XXXXXX').slice(0,8).replace(/X/g,'&nbsp;');
-            Content	+= `<div style="font-size:12px;">${num}${ip}</div>`;
+            Content += `<div style="font-size:12px;">${num}${ip}</div>`;
         }
     });
 
     mail.SendMail(key,'TSW',3600,{
-        'To'			: config.mailTo,
-        'CC'			: config.mailCC,
-        'Title'			: `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
-        'Content'		: '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
-						+ '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10  + '%</p>'
-						+ '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
-						+ '<p><strong>正常值：</strong>5-50</p>'
-						+ '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start)/1000) + 's</p>'
-						+ '<p><strong>证据列表：</strong></p>'
-						+ Content
+        'To'            : config.mailTo,
+        'CC'            : config.mailCC,
+        'Title'            : `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
+        'Content'        : '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
+                        + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
+                        + '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
+                        + '<p><strong>正常值：</strong>5-50</p>'
+                        + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start)/1000) + 's</p>'
+                        + '<p><strong>证据列表：</strong></p>'
+                        + Content
     });
 
 

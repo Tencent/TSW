@@ -7,46 +7,45 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const httpRoute		= require('../proxy/http.route.js');
-const parseGet		= require('util/http/parseGet.js');
+const logger = require('logger');
+const httpRoute = require('../proxy/http.route.js');
+const parseGet = require('util/http/parseGet.js');
 
 this.route = function(url,mod_act){
-	
+    
     var req,res;
-    var window   	= context.window || {};
-	
+    var window = context.window || {};
+    
     req = window.request;
     res = window.response;
-	
+    
     if(!req){
         return;
     }
-	
+    
     res.removeAllListeners('afterFinish');
-	
+    
     if(url){
-		
+        
         logger.debug('route to : ${url}',{
             url: url
         });
-		
+        
         req.url = url;
         //解析get参数
         parseGet(req);
     }
-	
+    
     if(mod_act){
         logger.debug('route to mod_act: ${mod_act}',{
             mod_act: mod_act
         });
-		
-        context.mod_act   = mod_act;
+        
+        context.mod_act = mod_act;
     }else{
-        context.mod_act   = null;
+        context.mod_act = null;
     }
-	
+    
     httpRoute.doRoute(req,res);
 };
-
 

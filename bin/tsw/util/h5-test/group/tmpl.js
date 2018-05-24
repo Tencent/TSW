@@ -33,10 +33,10 @@ define(function(require, exports, module){
             var __p=[],_p=function(s){__p.push(s);},out=_p;
             __p.push('    ');
 
-            data	= data || {};
+            data = data || {};
 
-            var body	= data.body || '',
-                head	= data.head || {};
+            var body = data.body || '',
+                head = data.head || {};
             __p.push('    <!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset="UTF-8">\n        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n        <meta http-equiv="X-UA-Compatible" content="IE=edge" />\n        <title>');
             _p(tmpl.encodeHtml(head.title || ''));
             __p.push('</title>\n        <meta name="description" itemprop="description" content="');

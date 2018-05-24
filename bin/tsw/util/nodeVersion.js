@@ -7,13 +7,13 @@
  */
 'use strict';
 
-const arr		= process.versions.node.split('.');
+const arr = process.versions.node.split('.');
 
 if(arr[1].length === 1){
     arr[1] = '0' + arr[1];
 }
 
-this.main	= parseFloat([arr[0],arr[1]].join('.'));
+this.main = parseFloat([arr[0],arr[1]].join('.'));
 
 //console.log(this);
 //console.log(this.main === 0.11);

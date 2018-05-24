@@ -7,10 +7,10 @@
  */
 'use strict';
 
-const Deferred	= require('util/Deferred');
+const Deferred = require('util/Deferred');
 
 this.check = function(){
-    var defer		= Deferred.create();
+    var defer = Deferred.create();
 
     return defer.resolve();
 };

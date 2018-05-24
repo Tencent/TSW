@@ -7,17 +7,17 @@
  */
 'use strict';
 
-const logger			= require('logger');
-const config			= require('./config.js');
-const cluster			= require('cluster');
-const cpuUtil			= require('util/cpu.js');
-const fs				= require('fs');
-const serverOS			= require('util/isWindows.js');
-const {debugOptions} 	= process.binding('config');
-const methodMap			= {};
-const workerMap			= {};
-const cpuMap			= [];
-var isDeaded			= false;
+const logger = require('logger');
+const config = require('./config.js');
+const cluster = require('cluster');
+const cpuUtil = require('util/cpu.js');
+const fs = require('fs');
+const serverOS = require('util/isWindows.js');
+const {debugOptions} = process.binding('config');
+const methodMap = {};
+const workerMap = {};
+const cpuMap = [];
+var isDeaded = false;
 
 //阻止进程因异常而退出
 process.on('uncaughtException',function(e){
@@ -30,8 +30,8 @@ process.on('uncaughtException',function(e){
 
 
 process.on('warning',function(warning){
-    var key		= String(warning);
-    var errStr	= warning && warning.stack || String(warning);
+    var key = String(warning);
+    var errStr = warning && warning.stack || String(warning);
 
     logger.error(errStr);
 
@@ -45,9 +45,9 @@ process.on('warning',function(warning){
 
     setImmediate(function(){
         require('util/mail/mail.js').SendMail(key,'js',600,{
-            'Title'			: key,
-            'runtimeType'	: 'warning',
-            'Content'		: Content
+            'Title'            : key,
+            'runtimeType'    : 'warning',
+            'Content'        : Content
         });
     });
 
@@ -56,14 +56,14 @@ process.on('warning',function(warning){
 
 process.on('unhandledRejection', (reason = {}, p = {}) => {
     let
-        key		= String(reason.message),
-        errStr	= String(reason.stack),
+        key = String(reason.message),
+        errStr = String(reason.stack),
         mod_act, module, REQUEST;
 
     if(p && p.domain && p.domain.currentContext){
-        mod_act		= p.domain.currentContext.mod_act;
-        module		= p.domain.currentContext.module;
-        REQUEST		= p.domain.currentContext.window.request.REQUEST;
+        mod_act = p.domain.currentContext.mod_act;
+        module = p.domain.currentContext.module;
+        REQUEST = p.domain.currentContext.window.request.REQUEST;
     }
 
     if(errStr === 'undefined'){
@@ -103,14 +103,13 @@ process.on('unhandledRejection', (reason = {}, p = {}) => {
     }
 
     require('util/mail/mail.js').SendMail(key,'js',600,{
-        'Title'			: key,
-        'runtimeType'	: 'unhandledRejection',
-        'Content'		: Content
+        'Title'            : key,
+        'runtimeType'    : 'unhandledRejection',
+        'Content'        : Content
     });
 });
 
 process.noProcessWarnings = true;
-
 
 
 startServer();
@@ -248,9 +247,9 @@ function startServer(){
                     cpu = getToBindCpu(worker);
 
                     if(config.isTest || config.devMode){
-                        timeout	= (cpu % 8) * 1000;
+                        timeout = (cpu % 8) * 1000;
                     }else{
-                        timeout	= (cpu % 8) * 3000;
+                        timeout = (cpu % 8) * 3000;
                     }
 
                     setTimeout(function(worker,cpu){
@@ -280,8 +279,8 @@ function startServer(){
         process.on('sendCmd2workerOnce',function(data){
 
             var key,worker;
-            var CMD	= data.CMD;
-            var GET	= data.GET;
+            var CMD = data.CMD;
+            var GET = data.GET;
 
             if(isDeaded){
                 process.exit(0);
@@ -334,23 +333,23 @@ function startServer(){
 //处理子进程的心跳消息
 methodMap.heartBeat = function(m){
 
-    var worker	= this;
-    var now		= new Date().getTime();
+    var worker = this;
+    var now = new Date().getTime();
 
-    worker.lastMessage		= m;
-    worker.lastLiveTime		= now;
+    worker.lastMessage = m;
+    worker.lastLiveTime = now;
 };
 
 //关闭一个worker
 function closeWorker(worker){
-    var cpu				= worker.cpuid;
-    var closeTimeWait	= 10000;
+    var cpu = worker.cpuid;
+    var closeTimeWait = 10000;
 
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.socket);
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.post);
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.get);
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.keepAlive);
-    closeTimeWait		= Math.min(60000,closeTimeWait) || 10000;
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.socket);
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.post);
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.get);
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.keepAlive);
+    closeTimeWait = Math.min(60000,closeTimeWait) || 10000;
 
 
     if(worker.hasClose){
@@ -426,7 +425,7 @@ function checkWorkerAlive(){
 
         var
             nowDate = new Date(),
-            now	 = nowDate.getTime(),
+            now = nowDate.getTime(),
             key,
             worker,
             cpuid;
@@ -453,7 +452,7 @@ function checkWorkerAlive(){
 
             //内存超限进程处理
             if(worker.lastMessage){
-                let currMemory	= worker.lastMessage.memoryUsage;
+                let currMemory = worker.lastMessage.memoryUsage;
 
                 //logger.debug(currMemory);
 
@@ -475,9 +474,9 @@ function checkWorkerAlive(){
 
         if(
             true
-			&& (nowDate.getHours() % 8 === 0)
-			&& nowDate.getMinutes() === 1
-			&& nowDate.getSeconds() <= 10
+            && (nowDate.getHours() % 8 === 0)
+            && nowDate.getMinutes() === 1
+            && nowDate.getSeconds() <= 10
         ){
             //8小时一次
             require('api/keyman/runtimeAdd.js').hello();
@@ -496,8 +495,8 @@ function getToBindCpu(worker){
         return cpu;
     }else{
         for(var i=0;i<cpuMap.length;i++){
-            var c	=	cpuMap[i];
-            if(c ==	0){
+            var c = cpuMap[i];
+            if(c == 0){
                 cpu = i;
                 worker.cpuid = cpu;
                 break;

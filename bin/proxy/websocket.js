@@ -7,16 +7,16 @@
  */
 'use strict';
 
-const WebSocket		= require('ws');
-const WSServer		= WebSocket.Server;
-const logger		= require('logger');
-const ContextWrap	= require('runtime/ContextWrap');
-const logReport		= require('util/auto-report/logReport.js');
-const parseGet		= require('util/http/parseGet.js');
-const tnm2			= require('api/tnm2');
-const h5test		= require('util/h5-test/is-test');
-// const wsModAct		= require('./ws.mod.act');
-const wsRoute		= require('./ws.route');
+const WebSocket = require('ws');
+const WSServer = WebSocket.Server;
+const logger = require('logger');
+const ContextWrap = require('runtime/ContextWrap');
+const logReport = require('util/auto-report/logReport.js');
+const parseGet = require('util/http/parseGet.js');
+const tnm2 = require('api/tnm2');
+const h5test = require('util/h5-test/is-test');
+// const wsModAct        = require('./ws.mod.act');
+const wsRoute = require('./ws.route');
 
 function bind_listen(server) {
     server.on('error', function(error) {
@@ -71,7 +71,7 @@ function bind_listen(server) {
             if(wsClient){
                 //存在代理
                 if(wsClient.readyState == WebSocket.OPEN){
-                    wsClient.send(message);	
+                    wsClient.send(message);    
                 }
                 return;
             }
@@ -92,7 +92,7 @@ function bind_listen(server) {
 
             //cwrap.add(ws);
             cwrap.run(function() {
-                var window	= context.window || {};
+                var window = context.window || {};
                 window.websocket = ws;
 
                 var timeout = 3000;
@@ -105,7 +105,7 @@ function bind_listen(server) {
                     hasEnd = true;
 
                     var respond;
-                    var window	= context.window || {};
+                    var window = context.window || {};
 
                     if(requestData.seq) {
                         respond = JSON.stringify({

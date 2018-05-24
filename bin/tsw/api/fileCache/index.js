@@ -7,19 +7,19 @@
  */
 'use strict';
 
-const Deferred		= require('util/Deferred');
-const logger		= require('logger');
-const path			= require('path');
-const fs			= require('fs');
-const root			= path.join(__dirname,'../../../../log/cache');
-const tnm2 			= require('api/tnm2');
-const existsCache	= {};
+const Deferred = require('util/Deferred');
+const logger = require('logger');
+const path = require('path');
+const fs = require('fs');
+const root = path.join(__dirname,'../../../../log/cache');
+const tnm2 = require('api/tnm2');
+const existsCache = {};
 
 
 this.getDir = function(filepath){
-	
+    
     var res,tmp;
-	
+    
     filepath = filepath || '';
 
     if(!/^[a-z0-9_/\-.\\:]+$/i.test(filepath)){
@@ -29,12 +29,12 @@ this.getDir = function(filepath){
     if(filepath.indexOf('http://') > -1){
         filepath = filepath.replace('http://','');
     }
-	
+    
     tmp = path.join('/',filepath);
     res = path.join(root,tmp);
-	
+    
     res = res.replace(/\\/g,'/');
-	
+    
     return res;
 };
 
@@ -49,10 +49,10 @@ this.mkdir = function(dirname){
         return;
     }
 
-    var arr 	= dirname.split('/');
-    var i		= 0;
+    var arr = dirname.split('/');
+    var i = 0;
     var curr;
-	
+    
     for(i = 1; i < arr.length; i++){
         curr = arr.slice(0,i + 1).join('/');
         if(!fs.existsSync(curr)){
@@ -70,39 +70,39 @@ this.mkdir = function(dirname){
 };
 
 this.set = function(filepath,data){
-    var start 		= Date.now();
-    var buffer 		= null;
-    var filename	= this.getDir(filepath);
-    var dirname		= path.dirname(filename);
-    var basename	= path.basename(filename);
-    var randomname	= basename + '.tmp.' + String(Math.random()).slice(2);
-	
+    var start = Date.now();
+    var buffer = null;
+    var filename = this.getDir(filepath);
+    var dirname = path.dirname(filename);
+    var basename = path.basename(filename);
+    var randomname = basename + '.tmp.' + String(Math.random()).slice(2);
+    
     logger.debug('[set] filename : ${filename}',{
         filename: filename
     });
-	
+    
     logger.debug('[set] dirname : ${dirname}',{
         dirname: dirname
     });
-	
+    
     logger.debug('[set] basename : ${basename}',{
         basename: basename
     });
-	
+    
     logger.debug('[set] randomname : ${randomname}',{
         randomname: randomname
     });
-	
+    
     this.mkdir(dirname);
-	
+    
     if(typeof data === 'string'){
         buffer = Buffer.from(data,'UTF-8');
     }else{
         buffer = data;
     }
-	
+    
     fs.writeFile([dirname,randomname].join('/'),buffer,{mode:0o666},function(err){
-		
+        
         logger.debug('[write] done: ${randomname}, size: ${size}',{
             randomname: randomname,
             size: buffer.length
@@ -112,35 +112,35 @@ this.set = function(filepath,data){
             logger.info(err.stack);
             return;
         }
-		
+        
         fs.rename([dirname,randomname].join('/'),[dirname,basename].join('/'),function(err){
-            var end 		= Date.now();
-			
+            var end = Date.now();
+            
             if(err){
                 logger.debug(err);
             }
-			
+            
             logger.debug('[rename] done: ${basename}, cost: ${cost}ms',{
                 basename: basename,
                 cost: end - start
             });
         });
-		
+        
     });
 
     tnm2.Attr_API('SUM_TSW_FILECACHE_WRITE', 1);
 };
 
 this.getSync = function(filepath){
-	
-    var start 		= Date.now();
-    var buffer 		= null;
-    var filename	= this.getDir(filepath);
-    var res 		= {
+    
+    var start = Date.now();
+    var buffer = null;
+    var filename = this.getDir(filepath);
+    var res = {
         stats: null,
         data: null
     };
-	
+    
     try{
         buffer = fs.readFileSync(filename);
         if(buffer.length === 0){
@@ -154,74 +154,73 @@ this.getSync = function(filepath){
     }catch(err){
         buffer = null;
     }
-	
-    var end 		= Date.now();
-	
+    
+    var end = Date.now();
+    
     logger.debug('[get] done: ${filename}, size: ${size}, cost: ${cost}ms',{
         filename: filename,
         size: buffer && buffer.length,
         cost: end - start
     });
-	
+    
     tnm2.Attr_API('SUM_TSW_FILECACHE_READ', 1);
     return res;
 };
 
 this.get = this.getAsync = function(filepath){
-	
-    var defer 		= Deferred.create();
-    var filename	= this.getDir(filepath);
-	
-	
+    
+    var defer = Deferred.create();
+    var filename = this.getDir(filepath);
+    
+    
     var res = {
         stats: null,
         data: null
     };
-	
+    
     logger.debug('[getAsync] ${filename}',{
         filename: filename
     });
-	
+    
     fs.readFile(filename,function(err, buffer){
-		
+        
         if(err){
             logger.debug(err.stack);
             defer.resolve(res);
             return;
         }
-		
+        
         res.data = buffer;
-		
+        
         fs.stat(filename,function(err,stats){
-			
+            
             if(err){
                 logger.debug(err.stack);
                 defer.resolve(res);
                 return;
             }
-			
+            
             logger.debug('[getAsync] mtime: ${mtime}, size: ${size}',stats);
-			
+            
             res.stats = stats;
             defer.resolve(res);
         });
-		
+        
     });
-	
+    
     return defer;
 };
 
 
-
 this.updateMtime = function(filepath, atime, mtime){
 
-    var filename	= this.getDir(filepath);
-	
-	
+    var filename = this.getDir(filepath);
+    
+    
     logger.debug('[updateMtime] ${filename}',{
         filename: filename
     });
-	
+    
     fs.utimes(filename, atime || new Date(), mtime || new Date(), function(err){
         if(err){
             logger.debug(err.stack);

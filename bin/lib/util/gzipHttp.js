@@ -7,25 +7,25 @@
  */
 'use strict';
 
-const zlib		= require('zlib');
-const logger	= require('logger');
-const crypto	= require('crypto');
-const httpUtil	= require('util/http.js');
-const defaultChunkSize	= 8 * 1024;
+const zlib = require('zlib');
+const logger = require('logger');
+const crypto = require('crypto');
+const httpUtil = require('util/http.js');
+const defaultChunkSize = 8 * 1024;
 
-this.httpUtil	= httpUtil;
+this.httpUtil = httpUtil;
 
 this.create = this.getGzipResponse = function(opt){
-    var window   = context.window || {};
+    var window = context.window || {};
 
     opt = opt || {};
 
-    var request			= opt.request || window.request,
-        response		= opt.response ||window.response,
-        code			= opt.code || 200,
-        headers			= opt.headers || null,
-        chunkSize		= opt.chunkSize || defaultChunkSize,
-        contentType		= opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8',
+    var request = opt.request || window.request,
+        response = opt.response ||window.response,
+        code = opt.code || 200,
+        headers = opt.headers || null,
+        chunkSize = opt.chunkSize || defaultChunkSize,
+        contentType = opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8',
         gzipOutputStream;
 
     if(headers && headers['content-length'] !== undefined){
@@ -36,17 +36,17 @@ this.create = this.getGzipResponse = function(opt){
     }
 
     response.setHeader('Content-Type', contentType);
-	
+    
     if(/\bgzip\b/.test(request.headers['accept-encoding'])){
-		
+        
         response.setHeader('Content-Encoding', 'gzip');
         response.writeHead(code,headers);
-		
+        
         response.socket && response.socket.setNoDelay(true);
         gzipOutputStream = zlib.createGzip({
             chunkSize: chunkSize
         });
-		
+        
         gzipOutputStream.on('data',function(buffer){
             logger.debug('gzip chunked send ${len}',{
                 len: buffer.length
@@ -56,23 +56,23 @@ this.create = this.getGzipResponse = function(opt){
                 response.write(buffer);
             }
         });
-		
+        
         gzipOutputStream.once('end',function(){
             response.end();
         });
-		
+        
         return gzipOutputStream;
-		
+        
     }else{
-		
+        
         response.writeHead(code,headers);
-		
+        
         response.on('data',function(buffer){
             logger.debug('chunked send ${len}',{
                 len: buffer.length
             });
         });
-		
+        
         if(!response.flush){
             response.flush = function(){return true;};
         }
@@ -80,10 +80,10 @@ this.create = this.getGzipResponse = function(opt){
         if(response.flush && response.flushHeaders){
             response.flush = function(){return true;};
         }
-		
+        
         return response;
     }
-	
+    
 };
 
 
@@ -91,6 +91,6 @@ this.create = this.getGzipResponse = function(opt){
 从buffer获取SHA1的方法，独立出来其实是为了方便测试
 */
 exports.getSHA1 = function(buffer){
-    return crypto.createHash('sha1').update(buffer).digest('hex');	
+    return crypto.createHash('sha1').update(buffer).digest('hex');    
 };
 

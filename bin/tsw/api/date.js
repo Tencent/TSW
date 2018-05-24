@@ -8,13 +8,13 @@
 'use strict';
 
 var Date = {
-	
+    
     /**
-	 * 格式化时间
+     * 格式化时间
      * @method formatData
-	 * @param {Date} mDate 时间对象
-	 * @param {String} fmt 格式化形式，如 MM月dd日 HH:mm
-	 */
+     * @param {Date} mDate 时间对象
+     * @param {String} fmt 格式化形式，如 MM月dd日 HH:mm
+     */
     format: function(mDate, fmt){
         var o = {
                 'M+': mDate.getMonth() + 1, //月份
@@ -34,20 +34,20 @@ var Date = {
                 '5': '\u4e94',
                 '6': '\u516d'
             };
-		
+        
         if (/(Y+)/.test(fmt)) {
             fmt = fmt.replace(RegExp.$1, (mDate.getFullYear() + '').substr(4 - RegExp.$1.length));
         }
         if (/(E+)/.test(fmt)) {
             fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? '\u661f\u671f' : '\u5468') : '') + week[mDate.getDay() + '']);
         }
-		
+        
         for (var k in o) {
             if (new RegExp('(' + k + ')').test(fmt)) {
                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
             }
         }
-		
+        
         return fmt;
     }
 };

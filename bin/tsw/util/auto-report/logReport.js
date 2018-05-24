@@ -7,47 +7,46 @@
  */
 'use strict';
 
-const fs			= require('fs');
-const url			= require('url');
-const logger		= require('logger');
-const dcapi			= require('api/libdcapi/dcapi.js');
-const serverInfo	= require('serverInfo');
-const config		= require('config');
-const alpha			= require('./alpha.js');
-const httpUtil		= require('util/http');
-const openapi		= require('util/openapi');
-const isTST			= require('util/isTST.js');
-const post			= require('util/auto-report/post.js');
-const postOpenapi	= require('util/auto-report/post.openapi.js');
-const tnm2 			= require('api/tnm2');
-const format 		= require('webapp/utils/format');
-const CD 			= require('util/CD.js');
-const canIuse		= /^[0-9a-zA-Z_-]{0,64}$/;
-const MAX_ALPHA_LOG	= post.MAX_ALPHA_LOG;
+const fs = require('fs');
+const url = require('url');
+const logger = require('logger');
+const dcapi = require('api/libdcapi/dcapi.js');
+const serverInfo = require('serverInfo');
+const config = require('config');
+const alpha = require('./alpha.js');
+const httpUtil = require('util/http');
+const openapi = require('util/openapi');
+const isTST = require('util/isTST.js');
+const post = require('util/auto-report/post.js');
+const postOpenapi = require('util/auto-report/post.openapi.js');
+const tnm2 = require('api/tnm2');
+const format = require('webapp/utils/format');
+const CD = require('util/CD.js');
+const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
+const MAX_ALPHA_LOG = post.MAX_ALPHA_LOG;
 
 var limit = {
     count: {
-        error	: 0,
-        alpha	: 0,
-        force	: 0,
-        fail	: 0,
-        tst		: 0
+        error    : 0,
+        alpha    : 0,
+        force    : 0,
+        fail    : 0,
+        tst        : 0
     },
     max: {
-        error	: 20,
-        alpha	: 20,
-        force	: 9999,
-        fail	: 9999,
-        tst		: 9999
+        error    : 20,
+        alpha    : 20,
+        force    : 9999,
+        fail    : 9999,
+        tst        : 9999
     },
     time: 0
 };
 
 
-
 module.exports = function(req, res){
 
-    var window		= context.window || {};
+    var window = context.window || {};
     var isWebSocket = !!window.websocket;
 
     if(isWebSocket){
@@ -68,12 +67,12 @@ module.exports = function(req, res){
 
     req.removeAllListeners('reportLog');
     req.once('reportLog',function(){
-		
+        
         var log = logger.getLog(),
-            type	= '',
-            typeKey	= '',
-            arrtKey	= '',
-            code	= 0,
+            type = '',
+            typeKey = '',
+            arrtKey = '',
+            code = 0,
             logJson,logText,
             key,group,mod_act;
 
@@ -81,18 +80,18 @@ module.exports = function(req, res){
         if(!isWebSocket && global.top100){
             module.exports.top100(req,res);
         }
-		
+        
         if(!log){
             logger.debug('log is null');
             return;
         }
-		
-        key		= logger.getKey();
-        group	= logger.getGroup();
-		
+        
+        key = logger.getKey();
+        group = logger.getGroup();
+        
         if(!key){
             key = alpha.getUin(req);
-			
+            
             if(key){
                 if(canIuse.test(key)){
                     logger.setKey(key);
@@ -102,30 +101,30 @@ module.exports = function(req, res){
             }
         }
 
-        mod_act	= context.mod_act || 'null';
-        log		= logger.getLog();
-		
+        mod_act = context.mod_act || 'null';
+        log = logger.getLog();
+        
         if(alpha.isAlpha(key) && !isTST.isTST(req)){
-            type		= 'alpha';
-            typeKey		= 'EVENT_TSW_LOG_ALPHA';
-            arrtKey		= 'SUM_TSW_LOG_ALPHA';
-            code		= 0;
+            type = 'alpha';
+            typeKey = 'EVENT_TSW_LOG_ALPHA';
+            arrtKey = 'SUM_TSW_LOG_ALPHA';
+            code = 0;
         }else if(log.ERRO || log.WARN){
             key && logger.error('report key: ${key}',{key: key});
-            type		= 'error';
-            typeKey		= 'EVENT_TSW_LOG_ERROR';
-            arrtKey		= 'SUM_TSW_LOG_ERROR';
-            code		= 1;
+            type = 'error';
+            typeKey = 'EVENT_TSW_LOG_ERROR';
+            arrtKey = 'SUM_TSW_LOG_ERROR';
+            code = 1;
         }else if(log.force){
-            type		= 'force';
-            typeKey		= 'EVENT_TSW_LOG_FORCE';
-            arrtKey		= 'SUM_TSW_LOG_FORCE';
-            code		= 3;
+            type = 'force';
+            typeKey = 'EVENT_TSW_LOG_FORCE';
+            arrtKey = 'SUM_TSW_LOG_FORCE';
+            code = 3;
         }else if(context.dcapiIsFail && key){
-            type		= 'fail';
-            typeKey		= 'EVENT_TSW_LOG_FAIL';
-            arrtKey		= 'SUM_TSW_LOG_FAIL';
-            code		= 2;
+            type = 'fail';
+            typeKey = 'EVENT_TSW_LOG_FAIL';
+            arrtKey = 'SUM_TSW_LOG_FAIL';
+            code = 2;
         }else{
             logger.debug('report nothing: ' + key);
             //不用上报
@@ -133,11 +132,11 @@ module.exports = function(req, res){
         }
 
         if(isTST.isTST(req)){
-            logger.debug('log type origin: '  + type);
-            type		= 'TST';
-            typeKey		= 'EVENT_TSW_LOG_TST';
-            arrtKey		= 'SUM_TSW_LOG_TST';
-            code		= -1;
+            logger.debug('log type origin: ' + type);
+            type = 'TST';
+            typeKey = 'EVENT_TSW_LOG_TST';
+            arrtKey = 'SUM_TSW_LOG_TST';
+            code = -1;
         }
 
         if(limit.max[type] > 0 === false){
@@ -150,35 +149,35 @@ module.exports = function(req, res){
         }else{
             limit.count[type] = 1;
         }
-		
+        
         if(Date.now() - limit.time < 5000){
-			
+            
             if(limit.count[type] > limit.max[type]){
-				
+                
                 dcapi.report({
-                    key			: typeKey,
-                    toIp		: '127.0.0.1',
-                    code		: -1,
-                    isFail		: 1,
-                    delay		: 100
+                    key            : typeKey,
+                    toIp        : '127.0.0.1',
+                    code        : -1,
+                    isFail        : 1,
+                    delay        : 100
                 });
-				
+                
                 return;
             }
-			
+            
         }else{
             limit.count = {};
-            limit.time	= Date.now();
+            limit.time = Date.now();
         }
 
-        logger.debug('logType: '  + type);
+        logger.debug('logType: ' + type);
 
         dcapi.report({
-            key			: typeKey,
-            toIp		: '127.0.0.1',
-            code		: code,
-            isFail		: 0,
-            delay		: 100
+            key            : typeKey,
+            toIp        : '127.0.0.1',
+            code        : code,
+            isFail        : 0,
+            delay        : 100
         });
 
         tnm2.Attr_API(arrtKey, 1);
@@ -188,14 +187,14 @@ module.exports = function(req, res){
         }
 
         logger.debug('\n${headers}${body}\r\nresponse ${statusCode} ${resHeaders}',{
-            headers		: httpUtil.getRequestHeaderStr(req),
-            body		: req.REQUEST.body || '',
-            statusCode	: res.statusCode,
-            resHeaders	: JSON.stringify(res._headers,null,2)
+            headers        : httpUtil.getRequestHeaderStr(req),
+            body        : req.REQUEST.body || '',
+            statusCode    : res.statusCode,
+            resHeaders    : JSON.stringify(res._headers,null,2)
         });
 
         logText = logText || logger.getText();
-		
+        
         if(type === 'alpha'){
             try{
 
@@ -204,25 +203,25 @@ module.exports = function(req, res){
                     res._body = Buffer.from(format.formatBuffer(res._body));
                 }
 
-                logJson			= logJson || logger.getJson();
-                logJson.curr 	= {
-                    protocol		: 'HTTP',
-                    host    		: req.headers.host,
-                    url 			: req.REQUEST.path,
-                    cache   		: '',
-                    process 		: 'TSW:' + process.pid,
-                    resultCode  	: res.statusCode,
-                    contentLength	: isWebSocket ? (res._body ? res._body.length : 0) : (res._headers['content-length'] || res._bodySize),
-                    contentType		: isWebSocket ? 'websocket' : res._headers['content-type'],
-                    clientIp     	: httpUtil.getUserIp(req),
-                    clientPort     	: req.socket && req.socket.remotePort,
-                    serverIp       	: serverInfo.intranetIp,
-                    serverPort		: config.httpPort,
-                    requestRaw   	: httpUtil.getRequestHeaderStr(req) + (req.REQUEST.body || ''),
-                    responseHeader 	: httpUtil.getResponseHeaderStr(res),
-                    responseBody  	: res._body ? res._body.toString('base64') : '',
-                    logText			: logText,
-                    timestamps   	: req.timestamps
+                logJson = logJson || logger.getJson();
+                logJson.curr = {
+                    protocol        : 'HTTP',
+                    host            : req.headers.host,
+                    url             : req.REQUEST.path,
+                    cache           : '',
+                    process         : 'TSW:' + process.pid,
+                    resultCode      : res.statusCode,
+                    contentLength    : isWebSocket ? (res._body ? res._body.length : 0) : (res._headers['content-length'] || res._bodySize),
+                    contentType        : isWebSocket ? 'websocket' : res._headers['content-type'],
+                    clientIp         : httpUtil.getUserIp(req),
+                    clientPort         : req.socket && req.socket.remotePort,
+                    serverIp           : serverInfo.intranetIp,
+                    serverPort        : config.httpPort,
+                    requestRaw       : httpUtil.getRequestHeaderStr(req) + (req.REQUEST.body || ''),
+                    responseHeader     : httpUtil.getResponseHeaderStr(res),
+                    responseBody      : res._body ? res._body.toString('base64') : '',
+                    logText            : logText,
+                    timestamps       : req.timestamps
                 };
             }catch(e){
                 logger.error(e.stack);
@@ -231,18 +230,18 @@ module.exports = function(req, res){
         }
 
         var reportData = {
-            type		: type || '',
-            logText		: logText || '',
-            logJson		: logJson,
-            key			: String(key),
-            group		: String(group || ''),
-            mod_act		: String(mod_act || ''),
-            ua 			: req.headers['user-agent'] || '',
-            userip 		: req.userIp || '',
-            host		: req.headers.host || '',
-            pathname	: req.REQUEST.pathname || '',
-            ext_info	: '',
-            statusCode	: res.statusCode
+            type        : type || '',
+            logText        : logText || '',
+            logJson        : logJson,
+            key            : String(key),
+            group        : String(group || ''),
+            mod_act        : String(mod_act || ''),
+            ua             : req.headers['user-agent'] || '',
+            userip         : req.userIp || '',
+            host        : req.headers.host || '',
+            pathname    : req.REQUEST.pathname || '',
+            ext_info    : '',
+            statusCode    : res.statusCode
         };
 
         if(type === 'alpha'){
@@ -270,7 +269,7 @@ module.exports = function(req, res){
 
         module.exports.report(reportData);
     });
-	
+    
 };
 
 module.exports.fingureCroup = function(opts){
@@ -290,7 +289,7 @@ module.exports.fingureCroup = function(opts){
         //没声明算html
         return 'html';
     }
-		
+        
     switch(true){
     case /^text\/html/.test(contentType):
         group = 'html';
@@ -340,8 +339,8 @@ module.exports.reportAlpha = function(data){
         return;
     }
 
-    var reportKey 	= [data.key].join('/');
-    var logNumMax	= context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    var reportKey = [data.key].join('/');
+    var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
     post.report(reportKey,data.logText,data.logJson).done(function(isFirst){
         if(isFirst){
@@ -412,31 +411,31 @@ module.exports.reportCloud = function(data){
     //加密
     postData.logText = post.encode(config.appid,config.appkey,data.logText);
     postData.logJson = post.encode(config.appid,config.appkey,data.logJson);
-    postData.appid	 = config.appid;
-    postData.userip	 = '';
-    postData.now	 = Date.now();
+    postData.appid = config.appid;
+    postData.userip = '';
+    postData.now = Date.now();
 
 
-    var sig	= openapi.signature({
+    var sig = openapi.signature({
         pathname: url.parse(config.logReportUrl).pathname,
         method: 'POST',
         data: postData,
         appkey: config.appkey
     });
 
-    postData.sig	= sig;
+    postData.sig = sig;
 
     require('ajax').request({
-        url			: config.logReportUrl,
-        type		: 'POST',
-        l5api		: config.tswL5api['openapi.tswjs.org'],
-        dcapi		: {
+        url            : config.logReportUrl,
+        type        : 'POST',
+        l5api        : config.tswL5api['openapi.tswjs.org'],
+        dcapi        : {
             key: 'EVENT_TSW_OPENAPI_LOG_REPORT'
         },
-        data		: postData,
-        keepAlive	: true,
-        autoToken	: false,
-        dataType	: 'json'
+        data        : postData,
+        keepAlive    : true,
+        autoToken    : false,
+        dataType    : 'json'
     }).done(function(){
         logger.debug('reportCloud success.');
     }).fail(function(){
@@ -495,13 +494,13 @@ module.exports.receiveCloud = function(req,res){
         return returnJson('get appkey error');
     }
 
-    var appid		= context.appid;
-    var appkey		= context.appkey;
-    var reportKey  	= [appid,data.key].join('/');
-    var currDays	= parseInt(Date.now() / 1000 / 60 / 60 / 24);
-    var logNumMax	= context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
+    var appid = context.appid;
+    var appkey = context.appkey;
+    var reportKey = [appid,data.key].join('/');
+    var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
 
-    logger.setKey(`report_${appid}_${data.key}`);	//上报key
+    logger.setKey(`report_${appid}_${data.key}`);    //上报key
     logger.debug('report log type: ${type}, key ${key}',data);
 
     CD.curr(`SUM_TSW_ALPHA_LOG_KEY.${currDays}`,logNumMax,24 * 60 * 60).fail(function(err){
@@ -545,8 +544,8 @@ module.exports.receiveCloud = function(req,res){
                 returnJson();
             }).done(function(){
 
-                var logText		= postOpenapi.encode(appid,appkey,data.group);
-                var logJson		= postOpenapi.encode(appid,appkey,{group: data.group});
+                var logText = postOpenapi.encode(appid,appkey,data.group);
+                var logJson = postOpenapi.encode(appid,appkey,{group: data.group});
 
                 postOpenapi.report(`${appid}/v2.group.alpha`,logText,logJson).always(function(){
                     returnJson();
@@ -558,17 +557,14 @@ module.exports.receiveCloud = function(req,res){
 };
 
 
-
-
-
 module.exports.top100 = function(req, res){
-	
+    
     var item,str,filename,result;
-	
+    
     if(!global.top100){
         return;
     }
-	
+    
     global.top100.push({
         pathname: req.REQUEST.pathname,
         hostname: req.headers.host,
@@ -579,112 +575,110 @@ module.exports.top100 = function(req, res){
         statusCode : res.statusCode,
         resHeader: JSON.stringify(res._headers,null,2)
     });
-	
+    
     if(global.top100.length % 100 === 0){
         logger.info('top: ' + global.top100.length);
     }
-	
+    
     if(global.top100.length < 1000){
         return;
     }
-	
+    
     result = global.top100;
     global.top100 = null;
-	
-	
+    
+    
     var map = {};
     var arr = [];
     var key;
     var buffer = [];
-	
+    
     //分析pathname聚集
     map = {};
     arr = [];
     result.forEach(function(v,i){
-		
+        
         var key = v.hostname + v.pathname;
-		
+        
         if(map[key]){
             map[key] ++;
         }else{
             map[key] = 1;
         }
-		
+        
     });
-	
+    
     for(key in map){
-		
+        
         item = map[key];
-		
+        
         arr.push({
             count: item,
             key: key
         });
-		
+        
     }
-	
+    
     arr.sort(function(a,b){
         return b.count - a.count;
     });
-	
+    
     arr.forEach(function(v,i){
-		
+        
         //top 100
         if(i < 100){
             buffer.push(v.count + '\t' + v.key);
             buffer.push('\r\n');
         }
-		
+        
     });
-	
+    
     buffer.push('\r\n\r\n');
-	
-	
+    
+    
     //分析ip聚集
     map = {};
     arr = [];
     result.forEach(function(v,i){
-		
+        
         if(map[v.ip]){
             map[v.ip] ++;
         }else{
             map[v.ip] = 1;
         }
-		
+        
     });
-	
+    
     for(key in map){
-		
+        
         item = map[key];
-		
+        
         arr.push({
             count: item,
             key: key
         });
-		
+        
     }
-	
+    
     arr.sort(function(a,b){
         return b.count - a.count;
     });
-	
+    
     arr.forEach(function(v,i){
-		
+        
         //top 100
         if(i < 100){
             buffer.push(v.count + '\t' + v.key);
             buffer.push('\r\n');
         }
-		
+        
     });
-	
+    
     buffer.push('\r\n\r\n');
-	
-	
-	
-	
+    
+    
     result.forEach(function(v,i){
-		
+        
         buffer.push(v.ip, ', socket ip: ' + v.socketIp);
         buffer.push('\r\n');
         buffer.push(v.header);
@@ -692,17 +686,17 @@ module.exports.top100 = function(req, res){
         buffer.push('\r\n\r\n');
         buffer.push(v.statusCode + ':' + v.resHeader);
         buffer.push('\r\n\r\n\r\n');
-		
+        
     });
-	
-	
+    
+    
     str = buffer.join('');
-		
+        
     filename = __dirname + '/../../../proxy/cpu' + process.serverInfo.cpu + '.' + Date.now() + '.top100';
-	
-	
+    
+    
     fs.writeFile(filename,Buffer.from(str,'utf-8'),function(err){
         logger.info('top100: ' + filename);
     });
-	
+    
 };

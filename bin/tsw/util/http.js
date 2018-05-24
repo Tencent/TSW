@@ -7,12 +7,12 @@
  */
 'use strict';
 
-const isWindows     = require('util/isWindows');
-const serverInfo    = require('serverInfo.js');
-const logger        = require('logger');
-const isInnerIP     = require('util/http.isInnerIP.js');
-const Deferred      = require('util/Deferred');
-const more          = require('util/http.more.js');
+const isWindows = require('util/isWindows');
+const serverInfo = require('serverInfo.js');
+const logger = require('logger');
+const isInnerIP = require('util/http.isInnerIP.js');
+const Deferred = require('util/Deferred');
+const more = require('util/http.more.js');
 
 
 this.formatHeader = function(headers){
@@ -30,7 +30,7 @@ this.formatHeader = function(headers){
         }
 
         var formatKey = key.trim().replace(/(\w)(\w+)/g , function(v,v1,v2){
-            return  v1.toUpperCase()+v2.toLowerCase();
+            return v1.toUpperCase()+v2.toLowerCase();
         });
 
         res[formatKey] = module.exports.filterInvalidHeaderChar(headers[key]);
@@ -202,12 +202,12 @@ this.isSent = function(res){
 
 this.getClientResponseHeaderStr = function(response,bodySize){
     
-    var headData    = [],
+    var headData = [],
         key;
 
     bodySize = ~~bodySize;
 
-    headData.push('HTTP/' + response.httpVersion +  ' ' + response.statusCode + ' ' + response.statusMessage);
+    headData.push('HTTP/' + response.httpVersion + ' ' + response.statusCode + ' ' + response.statusMessage);
     
     var headers = Deferred.extend({},response.headers);
     
@@ -234,12 +234,12 @@ this.getClientRequestHeaderStr = function(request){
 
 this.getRequestHeaderStr = function(request){
 
-    var window   = context.window || {};
-    var headData    = [],
+    var window = context.window || {};
+    var headData = [],
         key;
         
     if(!request){
-        request     = window.request;
+        request = window.request;
     }
     
     if(!request){
@@ -260,12 +260,12 @@ this.getRequestHeaderStr = function(request){
 };
 
 this.getResponseHeaderStr = function(response){
-    var window   = context.window || {};
-    var headData    = [],
+    var window = context.window || {};
+    var headData = [],
         key;
         
     if(!response){
-        response        = window.response;
+        response = window.response;
     }
     
     if(!response){
@@ -289,9 +289,9 @@ this.getResponseHeaderStr = function(response){
 };
 
 this.getUserIp24 = function(request){
-    var window   = context.window || {};
+    var window = context.window || {};
     if(!request){
-        request     = window.request;
+        request = window.request;
     }
 
     if(!request){
@@ -315,11 +315,11 @@ this.getUserIp24 = function(request){
 
 this.getUserIp = function(request){
 
-    var window   = context.window || {};
-    var userIp  = '';
+    var window = context.window || {};
+    var userIp = '';
 
     if(!request){
-        request     = window.request;
+        request = window.request;
     }
     
     if(!request){
@@ -347,17 +347,17 @@ this.getUserIp = function(request){
         return '';
     }
     
-    var xff     = request.headers['x-forwarded-for'] || '';
-    var qvia    = request.headers['qvia'] || '';
-    var realIp  = request.headers['x-real-ip'] || '';
+    var xff = request.headers['x-forwarded-for'] || '';
+    var qvia = request.headers['qvia'] || '';
+    var realIp = request.headers['x-real-ip'] || '';
 
     if(xff){
 
         //xff判断，注意只认内网ip带的xff，外网带的不算
         if(userIp && this.isInnerIP(userIp)){
 
-            xff     = xff.split(',').slice(-1)[0] || userIp;
-            userIp  = xff.trim() || userIp;
+            xff = xff.split(',').slice(-1)[0] || userIp;
+            userIp = xff.trim() || userIp;
         }
 
     }else if(realIp){
@@ -377,15 +377,14 @@ this.getUserIp = function(request){
 
     request.userIp = userIp;
     
-    return  userIp;
+    return userIp;
 };
 
 
-
 this.isHttps = function(request){
-    var window   = context.window || {};
+    var window = context.window || {};
     if(!request){
-        request     = window.request;
+        request = window.request;
     }
     
     if(!request || !request.REQUEST){
@@ -405,7 +404,7 @@ this.isInnerIP = function(ipAddress){
     return isInnerIP.isInnerIP(ipAddress);
 };
 
-this.isFromWns      = more.isFromWns;
-this.getIpCromQuia  = more.getIpCromQuia;
-this.getBase        = more.getBase;
-this.fixPicUrl      = more.fixPicUrl;
+this.isFromWns = more.isFromWns;
+this.getIpCromQuia = more.getIpCromQuia;
+this.getBase = more.getBase;
+this.fixPicUrl = more.fixPicUrl;

@@ -7,19 +7,19 @@
  */
 'use strict';
 
-const cluster		= require('cluster');
-const logger		= require('logger');
-const serverInfo	= require('serverInfo');
-const config		= require('config');
-const ajax			= require('ajax');
-const isWindows		= require('util/isWindows');
-const isTST			= require('util/isTST');
-const alpha			= require('util/auto-report/alpha');
-const cmemTSW		= require('data/cmem.tsw.js');
-const url			= require('url');
-const fileCache		= require('api/fileCache');
-const openapi		= require('util/openapi');
-var isFirstLoad	= false;
+const cluster = require('cluster');
+const logger = require('logger');
+const serverInfo = require('serverInfo');
+const config = require('config');
+const ajax = require('ajax');
+const isWindows = require('util/isWindows');
+const isTST = require('util/isTST');
+const alpha = require('util/auto-report/alpha');
+const cmemTSW = require('data/cmem.tsw.js');
+const url = require('url');
+const fileCache = require('api/fileCache');
+const openapi = require('util/openapi');
+var isFirstLoad = false;
 
 //以下是提高稳定性用的
 function getFileCacheKey(project,key){
@@ -35,7 +35,7 @@ function getFileCacheKey(project,key){
  *
  */
 function updateFileCache(project,key,text){
-    text  = text || JSON.stringify({});
+    text = text || JSON.stringify({});
     var cacheFilename = getFileCacheKey(project,key);
 
     //保存到文件
@@ -72,11 +72,11 @@ function onDisconnect (type) {
 
 //1分钟从memcache中更新一次足够了
 var getTimeout = 60000;
-var lastUpdateTime	= 0;
+var lastUpdateTime = 0;
 
 //获取测试用户
 var getTestUserMap = function(){
-	
+    
     //看下fileCache里面有没有
     if(!global[__filename]){
         //进入这个逻辑，是worker restart后的一分钟内的[第一次]，从硬盘同步数据过来；一旦取到数据之后，这里将不再执行
@@ -87,7 +87,7 @@ var getTestUserMap = function(){
         lastUpdateTime = Date.now();
         syncFromMemcachedOrCloud();
     }
-	
+    
     return global[__filename] || {};
 };
 
@@ -102,8 +102,8 @@ var syncFromMemcachedOrCloud = function(){
 var syncFromMemcached = function(){
 
     //从内存中读取testTargetMap
-    var memcached	= module.exports.cmem();
-    var keyText		= module.exports.keyBitmap();
+    var memcached = module.exports.cmem();
+    var keyText = module.exports.keyBitmap();
 
     if(!memcached){
         return;
@@ -118,7 +118,7 @@ var syncFromMemcached = function(){
             logger.error('memcache get data true');
             data = {};
         }
-		
+        
         global[__filename] = data || {};
 
         //加到白名单里
@@ -151,26 +151,26 @@ var syncFromCloud = function(merge){
         now: Date.now()
     };
 
-    var sig	= openapi.signature({
+    var sig = openapi.signature({
         pathname: url.parse(config.h5testSyncUrl).pathname,
         method: 'POST',
         data: postData,
         appkey: config.appkey
     });
 
-    postData.sig	= sig;
+    postData.sig = sig;
 
     ajax.request({
-        url			: config.h5testSyncUrl,
-        type		: 'POST',
-        l5api		: config.tswL5api['openapi.tswjs.org'],
-        dcapi		: {
+        url            : config.h5testSyncUrl,
+        type        : 'POST',
+        l5api        : config.tswL5api['openapi.tswjs.org'],
+        dcapi        : {
             key: 'EVENT_TSW_OPENAPI_H5TEST_SYNC'
         },
-        data		: postData,
-        keepAlive	: true,
-        autoToken	: false,
-        dataType	: 'json'
+        data        : postData,
+        keepAlive    : true,
+        autoToken    : false,
+        dataType    : 'json'
     }).fail(function(){
         logger.error('syncFromCloud fail.');
         if(merge === 'merge'){
@@ -222,31 +222,31 @@ module.exports.getTestSpaceInfo = function(req){
     }
 
     //测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
-    var testTargetMap	= getTestUserMap();
+    var testTargetMap = getTestUserMap();
 
     //如果已经是测试环境，就不用转发了
     if(config.isTest){
         return;
     }
 
-    var uin 		= logger.getKey() || alpha.getUin(req);
-    var testIp		= '';
-    var testPort	= 80;
+    var uin = logger.getKey() || alpha.getUin(req);
+    var testIp = '';
+    var testPort = 80;
 
     if(
         uin
-		&& testTargetMap
-		&& testTargetMap[uin]
-		&& typeof testTargetMap[uin] === 'string'
-		&& testTargetMap[uin].split('.').length == 4
+        && testTargetMap
+        && testTargetMap[uin]
+        && typeof testTargetMap[uin] === 'string'
+        && testTargetMap[uin].split('.').length == 4
     ){
         testIp = testTargetMap[uin];
 
         let arr = testIp.split(':');
 
         if(arr.length === 2){
-            testIp		= arr[0];
-            testPort	= ~~arr[1];
+            testIp = arr[0];
+            testPort = ~~arr[1];
         }
 
         if(serverInfo.intranetIp === testIp) {
@@ -272,11 +272,11 @@ module.exports.isTestUser = function(req, res){
         return false;
     }
 
-    var reqUrl      	= req.REQUEST.href;
-    var timeout			= config.timeout[req.method.toLowerCase()] || config.timeout.get;
-    var testPort		= testSpaceInfo.testPort || 80;
-    var testIp			= testSpaceInfo.testIp || '';
-    timeout 			= parseInt(timeout * 0.8);
+    var reqUrl = req.REQUEST.href;
+    var timeout = config.timeout[req.method.toLowerCase()] || config.timeout.get;
+    var testPort = testSpaceInfo.testPort || 80;
+    var testIp = testSpaceInfo.testIp || '';
+    timeout = parseInt(timeout * 0.8);
 
     logger.debug('isTestUser...');
     logger.setGroup('h5test');
@@ -284,24 +284,24 @@ module.exports.isTestUser = function(req, res){
     context.mod_act = 'h5_test';
 
     ajax.proxy(req,res).request({
-        url 		: reqUrl,
-        type		: req.method,
-        dataType	: 'proxy',
-        timeout		: timeout,
-        retry		: 0,		//不重试
-        devIp 		: testIp,
-        devPort		: testPort,
-        ip			: testIp,
-        port		: testPort,
+        url         : reqUrl,
+        type        : req.method,
+        dataType    : 'proxy',
+        timeout        : timeout,
+        retry        : 0,        //不重试
+        devIp         : testIp,
+        devPort        : testPort,
+        ip            : testIp,
+        port        : testPort,
         //关闭自动补token逻辑，安全第一
-        autoToken	: false,
-        headers		: {
+        autoToken    : false,
+        headers        : {
             'isTestUser' : 'true'
             //后台不支持https开头的origin，把origin置空
             //"origin": ""  发给node不需要这个
         },
-        dcapi		:{
-            key		: 'EVENT_TSW_HTTP_H5_TEST'
+        dcapi        :{
+            key        : 'EVENT_TSW_HTTP_H5_TEST'
         }
     }).done(function(d){
     }).fail(function(d){
@@ -352,6 +352,4 @@ module.exports.getTestUserMapFromFileCache = function () {
 
     return localJSON;
 };
-
-
 

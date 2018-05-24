@@ -11,17 +11,17 @@
  * 测试环境自动发现
  */
 
-const serverInfo	= require('serverInfo');
-const config		= require('config');
-const logReport		= require('./logReport.js');
-const post			= require('util/auto-report/post.js');
-const postOpenapi	= require('util/auto-report/post.openapi.js');
-const Deferred		= require('util/Deferred');
-const isWindows		= require('util/isWindows.js');
+const serverInfo = require('serverInfo');
+const config = require('config');
+const logReport = require('./logReport.js');
+const post = require('util/auto-report/post.js');
+const postOpenapi = require('util/auto-report/post.openapi.js');
+const Deferred = require('util/Deferred');
+const isWindows = require('util/isWindows.js');
 
 
 this.report = function(){
-	
+    
     if(isWindows.isWindows){
         return;
     }
@@ -32,8 +32,8 @@ this.report = function(){
 
     var logText = `${serverInfo.intranetIp}:${config.httpPort}`;
     var logJson = {
-        ip		: serverInfo.intranetIp,
-        port	: config.httpPort
+        ip        : serverInfo.intranetIp,
+        port    : config.httpPort
     };
 
     require('api/cmdb').GetDeviceThisServer().done(function(d){
@@ -54,19 +54,19 @@ this.report = function(){
             };
         }
 
-        logJson.moduleId	=  business.moduleId;
-        logJson.moduleName	= [business.L1Business,business.L2Business,business.L3Business,business.module].join('->');
+        logJson.moduleId = business.moduleId;
+        logJson.moduleName = [business.L1Business,business.L2Business,business.L3Business,business.module].join('->');
 
-        logJson		= Deferred.extend(true,{
-            time	: new Date().toGMTString(),
-            name	: '',
-            group	: 'unknown',
-            desc	: '',
-            order	: 0,
-            owner	: ''
+        logJson = Deferred.extend(true,{
+            time    : new Date().toGMTString(),
+            name    : '',
+            group    : 'unknown',
+            desc    : '',
+            order    : 0,
+            owner    : ''
         },config.testInfo,logJson);
 
-        var logKey		= 'h5test' + logJson.group;
+        var logKey = 'h5test' + logJson.group;
 
         //上报自己
         post.report(logKey,logText,logJson);
@@ -74,17 +74,17 @@ this.report = function(){
         //开放平台上报，不用再分组了
         if(config.appid && config.appkey){
             logReport.reportCloud({
-                type		: 'alpha',
-                logText		: logText,
-                logJson		: logJson,
-                key			: 'h5test',
-                group		: 'tsw',
-                mod_act		: 'h5test',
-                ua 			: '',
-                userip 		: '',
-                host		: '',
-                pathname	: '',
-                statusCode	: ''
+                type        : 'alpha',
+                logText        : logText,
+                logJson        : logJson,
+                key            : 'h5test',
+                group        : 'tsw',
+                mod_act        : 'h5test',
+                ua             : '',
+                userip         : '',
+                host        : '',
+                pathname    : '',
+                statusCode    : ''
             });
         }
 
@@ -94,16 +94,16 @@ this.report = function(){
         });
 
     });
-		
+        
 };
 
 
 this.list = function(group){
-	
-    var defer	= Deferred.create();
+    
+    var defer = Deferred.create();
     var getLogJsonDefer;
 
-    group		= group || '';
+    group = group || '';
 
     //开平对应的存储
     if(context.appid && context.appkey){
@@ -113,10 +113,10 @@ this.list = function(group){
     }
 
     getLogJsonDefer.done(function(arr){
-		
+        
         var res = [];
         var map = {};
-		
+        
         arr.forEach(function(v){
             if(!map[v.ip]){
                 map[v.ip] = true;
@@ -144,14 +144,14 @@ this.list = function(group){
 
         defer.resolve(res);
     });
-	
+    
     return defer;
 };
 
 
 this.getAllGroup = function(){
 
-    var defer		= Deferred.create();
+    var defer = Deferred.create();
 
     post.getLogJson('group.h5test').done(function(arr){
 

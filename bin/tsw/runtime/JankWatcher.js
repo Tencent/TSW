@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const tnm2 		= require('api/tnm2');
+const tnm2 = require('api/tnm2');
 
 if(!global[__filename]) {
 

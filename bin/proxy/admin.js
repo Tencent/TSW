@@ -8,12 +8,12 @@
 
 'use strict';
 
-const logger	= require('logger');
-const config	= require('./config.js');
-const http		= require('http');
-const codeWatch	= require('api/code/watcher.js');
-const parseGet	= require('util/http/parseGet.js');
-const cp		= require('child_process');
+const logger = require('logger');
+const config = require('./config.js');
+const http = require('http');
+const codeWatch = require('api/code/watcher.js');
+const parseGet = require('util/http/parseGet.js');
+const cp = require('child_process');
 
 const server = http.createServer(function(req, res){
 

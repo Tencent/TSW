@@ -3,7 +3,7 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const plug = require('plug');
 const cpuUtil = plug('util/cpu.js');
-const logger	= plug('logger');
+const logger = plug('logger');
 
 logger.setLogLevel('error');
 

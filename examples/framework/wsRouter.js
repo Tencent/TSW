@@ -8,7 +8,7 @@ const map = {
 //路由：起个名字
 this.name = function(ws){
     // const req = ws.upgradeReq;
-	
+    
     return 'websocket';
 };
 

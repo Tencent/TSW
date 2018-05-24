@@ -7,13 +7,13 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const Deferred		= require('util/Deferred');
-const isTest		= require('./is-test.js');
-const post			= require('util/auto-report/post.js');
-const OALogin		= require('util/oa-login/index.js');
-const gzipHttp		= require('util/gzipHttp.js');
-const canIuse		= /^[0-9a-zA-Z_-]{0,64}$/;
+const logger = require('logger');
+const Deferred = require('util/Deferred');
+const isTest = require('./is-test.js');
+const post = require('util/auto-report/post.js');
+const OALogin = require('util/oa-login/index.js');
+const gzipHttp = require('util/gzipHttp.js');
+const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 
 
 module.exports = function(request, response) {
@@ -23,9 +23,9 @@ module.exports = function(request, response) {
 };
 
 module.exports.go = async function(request, response){
-	
-    var uin		= request.param('uin');
-	
+    
+    var uin = request.param('uin');
+    
     var data = await module.exports.deleteTestUser(
         uin
     ).toES6Promise().catch(function(){
@@ -50,10 +50,10 @@ var returnJson = function(json){
 
 module.exports.deleteTestUser = function(uin){
     logger.debug('deleteTestUser:' + uin);
-    var memcached	= isTest.cmem();
-    var keyText		= isTest.keyBitmap();
-    var defer       = Deferred.create();
-    var appid		= '';
+    var memcached = isTest.cmem();
+    var keyText = isTest.keyBitmap();
+    var defer = Deferred.create();
+    var appid = '';
 
     if(!uin){
         return defer.reject();
@@ -65,7 +65,7 @@ module.exports.deleteTestUser = function(uin){
 
     if(context.appid && context.appkey){
         //开平过来的
-        appid	= context.appid;
+        appid = context.appid;
         keyText = `${keyText}.${appid}`;
     }
 

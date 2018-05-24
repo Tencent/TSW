@@ -7,8 +7,8 @@
  */
 'use strict';
 
-const path		= require('path');
-const logger	= require('logger');
+const path = require('path');
+const logger = require('logger');
 
 /**
  * 
@@ -16,15 +16,15 @@ const logger	= require('logger');
  * @param {String} dir 目录绝对路径
  */
 this.clear = function(dir,showLog){
-	
-    dir	= path.normalize(dir);
+    
+    dir = path.normalize(dir);
         
     let key;
-	
+    
     logger.info('clear dir: ${dir}',{
         dir: dir
     });
-	
+    
     for(key in require.cache){
         require.cache[key].children = [];
         require.cache[key].resolveFilenameCache = {};

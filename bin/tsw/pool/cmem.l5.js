@@ -7,12 +7,12 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const Queue			= require('util/Queue');
-const dcapi			= require('api/libdcapi/dcapi.js');
-const L5			= require('api/L5/L5.api.js');
-const {isWindows}	= require('util/isWindows.js');
-var cache			= global[__filename];
+const logger = require('logger');
+const Queue = require('util/Queue');
+const dcapi = require('api/libdcapi/dcapi.js');
+const L5 = require('api/L5/L5.api.js');
+const {isWindows} = require('util/isWindows.js');
+var cache = global[__filename];
 
 if(!cache){
     cache = {};
@@ -22,9 +22,9 @@ if(!cache){
 
 module.exports = function(opt){
     /**
-	* 这里像这样写的目的主要是为了进行测试
-	  因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
-	*/
+    * 这里像这样写的目的主要是为了进行测试
+      因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
+    */
     return module.exports.getCmem(opt);
 };
 
@@ -37,19 +37,19 @@ module.exports.getCmem = function(opt){
     }
 
     if(!isWindows && opt.modid && opt.cmd){
-		
+        
         route = L5.ApiGetRouteSync(opt);
-		
+        
         logger.debug('L5 ~${ip}:${port}',route);
-		
+        
         if(route.ip && route.port){
             opt.host = [route.ip,route.port].join(':');
         }
-		
-        route.ret		= route.ret;
-        route.usetime	= 100;
+        
+        route.ret = route.ret;
+        route.usetime = 100;
         L5.ApiRouteResultUpdate(route);
-		
+        
     }
 
     if(!opt.host){
@@ -57,39 +57,39 @@ module.exports.getCmem = function(opt){
     }
 
     key = [opt.modid,opt.cmd,opt.host].join(':');
-	
+    
     if(!cache[key]){
         let Memcached = require('memcached');
         cache[key] = queueWrap(new Memcached(opt.host, opt)); 
     }
-	
+    
     return cache[key];
 };
 
 
 function queueWrap(memcached){
-	
+    
     if(memcached.__queue){
         return memcached;
     }
-	
+    
     memcached.__queue = Queue.create();
-	
+    
     memcached.command = function(command){
-		
+        
         return function(queryCompiler, server){
-            var memcached	= this;
-            var queue		= memcached.__queue;
-            var servers		= memcached.servers && memcached.servers[0];
-            var start		= Date.now();
-		
+            var memcached = this;
+            var queue = memcached.__queue;
+            var servers = memcached.servers && memcached.servers[0];
+            var start = Date.now();
+        
             queue.queue(function(){
-				
+                
                 var fn = (function(queryCompiler){
                     return function(){
-                        var query	= queryCompiler();
+                        var query = queryCompiler();
                         var command = query.command || '';
-                        var index	= command.indexOf('\r\n');	//不要数据部分
+                        var index = command.indexOf('\r\n');    //不要数据部分
                         if(index > 0){
                             command = command.slice(0,Math.min(128,index));
                         }
@@ -101,11 +101,11 @@ function queueWrap(memcached){
 
                         query.callback = function(callback){
                             return function(...args){
-                                var err		= args[0];
-                                var code	= 0;
-                                var isFail	= 0;
-                                var delay	= Date.now() - start;
-                                var toIp	= servers.split(':')[0];
+                                var err = args[0];
+                                var code = 0;
+                                var isFail = 0;
+                                var delay = Date.now() - start;
+                                var toIp = servers.split(':')[0];
 
                                 if(err && err.message !== 'Item is not stored'){
                                     if(err.stack){
@@ -120,11 +120,11 @@ function queueWrap(memcached){
                                 }
 
                                 dcapi.report({
-                                    key			: 'EVENT_TSW_MEMCACHED',
-                                    toIp		: toIp,
-                                    code		: code,
-                                    isFail		: isFail,
-                                    delay		: delay
+                                    key            : 'EVENT_TSW_MEMCACHED',
+                                    toIp        : toIp,
+                                    code        : code,
+                                    isFail        : isFail,
+                                    delay        : delay
                                 });
 
                                 queue.dequeue();
@@ -134,12 +134,12 @@ function queueWrap(memcached){
                         return query;
                     };
                 })(queryCompiler);
-				
+                
                 command.call(memcached,fn, server);
             });
         };
     }(memcached.command);
-	
-	
+    
+    
     return memcached;
 }

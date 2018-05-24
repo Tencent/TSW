@@ -24,6 +24,23 @@
             "error",
             "unix"
         ],
+        "eol-last": [
+            "error",
+            "always"
+        ],
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 2,
+                "maxEOF": 1
+            }
+        ],
+        "no-multi-spaces": [
+            "error",
+            {
+                "ignoreEOLComments": true
+            }
+        ],
         "quotes": [
             "error",
             "single"
@@ -33,7 +50,7 @@
             "always"
         ],
         "no-unused-vars": [
-            "error", 
+            "error",
             {
                 "args": "none"
             }

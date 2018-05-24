@@ -12,8 +12,8 @@ if(!global[__filename]){
     global[__filename] = true;
 
     process.nextTick(function(){
-        var util	= require('util');
-        var logger	= require('logger');
+        var util = require('util');
+        var logger = require('logger');
 
         /* eslint-disable no-console */
 
