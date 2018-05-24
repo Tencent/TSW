@@ -117,21 +117,16 @@ process.noProcessWarnings = true;
 startServer();
 
 
-/**
- * 通过cluster启动master && worker
- */
+// 通过cluster启动master && worker
 function startServer(){
 
     var useWorker = true;
-
-    if(!serverOS.isLinux){
-        useWorker = false;
-    }
 
     if(debugOptions && debugOptions.inspectorEnabled){
         useWorker = false;
     }
 
+    //windows下需要使用RR
     cluster.schedulingPolicy = cluster.SCHED_RR;
 
     if(cluster.isMaster && useWorker){
@@ -143,23 +138,13 @@ function startServer(){
 
         //启动管理进程
         require('./admin.js');
-		
+
         logger.info('start master....');
         logger.info('version node: ${node}, modules: ${modules}',process.versions);
 
         if(serverOS.isLinux){
             //当前目录777，为heapsnapshot文件创建提供权限
             fs.chmodSync(__dirname, 0x1ff);  //0777
-
-            //清除heapsnapshot文件
-            cp.exec('rm -rf ./*.heapsnapshot',{
-                timeout: 5000,
-                cwd: __dirname
-            },function(err){
-                if(err){
-                    logger.error(err.stack);
-                }
-            });
         }
 
         //根据cpu数来初始化并启动子进程
@@ -177,21 +162,24 @@ function startServer(){
 
         //监听子进程是否fork成功
         cluster.on('fork',function(currWorker){
-			
+
             var cpu = getToBindCpu(currWorker);
-			
+
             logger.info('worker fork success! pid:${pid} cpu: ${cpu}',{
                 pid: currWorker.process.pid,
                 cpu: cpu
             });
-			
+
+            //绑定cpu
+            cpuUtil.taskset(cpu,currWorker.process.pid);
+
             if(workerMap[cpu]){
                 closeWorker(workerMap[cpu]);
             }
-			
+
             workerMap[cpu] = currWorker;
             cpuMap[cpu] = 1;
-			
+
             //监听子进程发来的消息并处理
             currWorker.on('message',function(...args){
                 var m = args[0];
@@ -199,65 +187,65 @@ function startServer(){
                     methodMap[m.cmd].apply(this,args);
                 }
             });
-			
+
             //给子进程发送消息，启动http服务
             currWorker.send({
                 from:'master',
                 cmd:'listen',
                 cpu: cpu
             });
-			
+
         });
-		
-        //退出时
+
+        //子进程退出时做下处理
         cluster.on('disconnect', function(worker) {
             var cpu = getToBindCpu(worker);
-			
+
             if(worker.hasRestart){
                 return;
             }
-			
+
             logger.info('worker${cpu} pid=${pid} has disconnected. restart new worker again.',{
                 pid: worker.process.pid,
                 cpu: cpu
             });
-			
+
             restartWorker(worker);
         });
-		
+
         //子进程被杀死的时候做下处理，原地复活
         cluster.on('exit',function(worker){
-			
+
             var cpu = getToBindCpu(worker);
-			
+
             if(worker.hasRestart){
                 return;
             }
-			
+
             logger.info('worker${cpu} pid=${pid} has been killed. restart new worker again.',{
                 pid: worker.process.pid,
                 cpu: cpu
             });
-			
+
             restartWorker(worker);
         });
-		
+
         process.on('reload',function(GET){
-			
+
             var timeout = 1000,
                 cpu = 0,
                 key,worker;
-			
+
             if(isDeaded){
                 process.exit(0);
             }
-			
+
             logger.info('reload');
-			
+
             for(key in workerMap){
                 worker = workerMap[key];
                 try{
-					
+
                     cpu = getToBindCpu(worker);
 
                     if(config.isTest || config.devMode){
@@ -323,12 +311,12 @@ function startServer(){
 
         checkWorkerAlive();
         startLogMan();
-		
+
         //process.title = 'TSW/master/node';
         //保留node命令，不然运维监控不到
-		
+
     }else{
-		
+
         //子进程直接引入proxy文件,当然也可以直接在这里写逻辑运行，注意此处else作用域属于子进程作用域，非本程序作用域
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
@@ -346,10 +334,10 @@ function startServer(){
 
 //处理子进程的心跳消息
 methodMap.heartBeat = function(m){
-		
-    var worker	= this;	
+
+    var worker	= this;
     var now		= new Date().getTime();
-	
+
     worker.lastMessage		= m;
     worker.lastLiveTime		= now;
 };
@@ -369,15 +357,15 @@ function closeWorker(worker){
     if(worker.hasClose){
         return;
     }
-	
+
     if(workerMap[cpu] === worker){
         delete workerMap[cpu];
     }
-	
+
     var closeFn = function(worker){
         var closed = false;
         var pid = worker.process.pid;
-		
+
         return function(){
             if(closed){
                 return;
@@ -389,11 +377,11 @@ function closeWorker(worker){
             }
 
             worker.destroy();
-			
+
             closed = true;
         };
     }(worker);
-	
+
     setTimeout(closeFn,closeTimeWait);
 
     if(worker.exitedAfterDisconnect){
@@ -406,15 +394,13 @@ function closeWorker(worker){
     }catch(e){
         logger.info(e.stack);
     }
-	
+
 }
 
-/**
- * 重启worker
- */
+//重启worker
 function restartWorker(worker){
     var cpu = getToBindCpu(worker);
-	
+
     if(worker.hasRestart){
         return;
     }
@@ -429,40 +415,40 @@ function restartWorker(worker){
     },10000);
 
     cpuMap[cpu] = 0;
-	
+
     worker.hasRestart = true;
     cluster.fork(process.env).cpuid = cpu;
 }
 
-//定时检测子进程死活，发现15秒没响应的就干掉
+//定时检测子进程存活，发现15秒没响应的就干掉
 function checkWorkerAlive(){
-	
+
     setInterval(function(){
-	
-        var 
+
+        var
             nowDate = new Date(),
             now	 = nowDate.getTime(),
             key,
             worker,
             cpuid;
-		
+
         for(key in workerMap){
             worker = workerMap[key];
             cpuid = worker.cpuid;
-			
+
             worker.lastLiveTime = worker.lastLiveTime || now;
             if(!worker.startTime){
                 worker.startTime = now;
             }
-			
+
             //无响应进程处理
             if(now - worker.lastLiveTime > 15000 && cpuMap[cpuid] === 1){
-				
+
                 logger.error('worker${cpu} pid=${pid} miss heartBeat, kill it',{
                     pid : worker.process.pid,
                     cpu: cpuid
                 });
-				
+
                 restartWorker(worker);
             }
 
@@ -501,13 +487,11 @@ function checkWorkerAlive(){
     },5000);
 }
 
-/**
- * 获取需要绑定的CPU编号
- */
+//获取需要绑定的CPU编号
 function getToBindCpu(worker){
-	
+
     var cpu = 0;//如果只有一个cpu或者都占用了
-	
+
     if(worker.cpuid !== undefined){
         cpu = worker.cpuid;
         return cpu;
@@ -521,18 +505,15 @@ function getToBindCpu(worker){
             }
         }
     }
-	
+
     cpuMap[i] = 1;
-	
+
     return cpu;
 }
 
-/**
- * log管理
- */
+//log管理
 function startLogMan(){
     require('api/logman').start({
-        //按小时归类log
-        delay: 'H'
+        delay: 'H' //按小时归类log
     });
 }
