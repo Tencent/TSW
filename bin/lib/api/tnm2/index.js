@@ -101,19 +101,23 @@ var reportOpenapi = function(last) {
 
     //阻止默认上报
     if(retCall === false) {
-        return;
+        return defer.resolve();
     }
 
     if(config.isTest) {
-        return;
+        return defer.resolve();
+    }
+
+    if(config.devMode) {
+        return defer.resolve();
     }
 
     if(!config.appid || !config.appkey) {
-        return;
+        return defer.resolve();
     }
 
     if(!config.appReportUrl) {
-        return;
+        return defer.resolve();
     }
 
     var arr = [];

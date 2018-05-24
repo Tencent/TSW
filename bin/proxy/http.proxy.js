@@ -22,7 +22,6 @@ const cp = require('child_process');
 const parseGet = require('util/http/parseGet.js');
 const tnm2 = require('api/tnm2');
 const cpuUtil = require('util/cpu.js');
-const httpUtil = require('util/http.js');
 const TEReport = require('util/auto-report/TEReport.js');
 const mail = require('util/mail/mail.js');
 const websocket = require('./websocket.js');
@@ -35,14 +34,14 @@ const serverInfo = {
     intranetIp: require('serverInfo.js').intranetIp,
     cpu: 'X'
 };
-var server;
-var serverThis;
-var serverHttps;
-var config = require('./config.js');
-var routeCache = null;
-var cleanCacheTid = null;
-var isStartHeartBeat = false;
-var heartBeatCount = 0;
+let server;
+let serverThis;
+let serverHttps;
+let config = require('./config.js');
+let routeCache = null;
+let cleanCacheTid = null;
+let isStartHeartBeat = false;
+let heartBeatCount = 0;
 
 
 function doRoute(req, res) {
@@ -52,57 +51,12 @@ function doRoute(req, res) {
         config = require('./config.js');
     }
 
-    if(req.headers['user-agent'] === 'nws' && req.headers.host === serverInfo.intranetIp) {
-        //nws探测请求
-        res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
-        res.end('hello nws');
-
-        return;
-    }
-
-    if(req.headers['user-agent'] === 'TgwProbe') {
-        //stgw探测请求
-        res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
-        res.end('hello TgwProbe');
-
-        return;
-    }
-
-    if(req.headers['user-agent'] === 'StgwProbe') {
-        //stgw探测请求
-        res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
-        res.end('hello StgwProbe');
-
-        return;
-    }
-
-    if(req.headers['user-agent'] === 'TgwProbe') {
-        //stgw探测请求
-        res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
-        res.end('hello TgwProbe');
-
-        return;
-    }
-
-    if(req.REQUEST.pathname === '/' && !req.headers['user-agent']) {
-
-        if(httpUtil.isInnerIP(httpUtil.getUserIp(req))) {
-            //l7探测请求
-            res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
-            res.end('hello l7');
-            return;
-        }
-
-    }
-
     routeCache(req, res);
 }
 
 process.serverInfo = serverInfo;
 
-/**
- * 清除缓存
- */
+//清除缓存
 function cleanCache() {
 
     clearTimeout(cleanCacheTid);
@@ -203,7 +157,7 @@ function requestHandler(req, res) {
     }
 
     res.flush = res.flush || function() {
-        return true;
+        return true; 
     };
 
     //解析get参数
@@ -542,10 +496,7 @@ methodMap.listen = function(message) {
 };
 
 if(cluster.isMaster) {
-    if(isWindows) {
-        logger.info('isWindows, start listening');
-        methodMap.listen({cpu : 0});
-    }else if(debugOptions && debugOptions.inspectorEnabled) {
+    if(debugOptions && debugOptions.inspectorEnabled) {
         logger.setLogLevel('debug');
         logger.info('inspectorEnabled, start listening');
         methodMap.listen({cpu : 0});
