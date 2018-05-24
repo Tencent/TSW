@@ -108,6 +108,10 @@ var reportOpenapi = function(last){
         return;
     }
 
+    if(config.devMode){
+        return;
+    }
+
     if(!config.appid || !config.appkey){
         return;
     }
