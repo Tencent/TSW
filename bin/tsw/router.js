@@ -11,23 +11,23 @@ const logger = require('logger');
 const httpRoute = require('../proxy/http.route.js');
 const parseGet = require('util/http/parseGet.js');
 
-this.route = function(url,mod_act){
+this.route = function(url, mod_act) {
     
-    var req,res;
+    var req, res;
     var window = context.window || {};
     
     req = window.request;
     res = window.response;
     
-    if(!req){
+    if(!req) {
         return;
     }
     
     res.removeAllListeners('afterFinish');
     
-    if(url){
+    if(url) {
         
-        logger.debug('route to : ${url}',{
+        logger.debug('route to : ${url}', {
             url: url
         });
         
@@ -36,8 +36,8 @@ this.route = function(url,mod_act){
         parseGet(req);
     }
     
-    if(mod_act){
-        logger.debug('route to mod_act: ${mod_act}',{
+    if(mod_act) {
+        logger.debug('route to mod_act: ${mod_act}', {
             mod_act: mod_act
         });
         
@@ -46,6 +46,6 @@ this.route = function(url,mod_act){
         context.mod_act = null;
     }
     
-    httpRoute.doRoute(req,res);
+    httpRoute.doRoute(req, res);
 };
 

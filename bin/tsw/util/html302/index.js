@@ -13,7 +13,7 @@ const tmpl = require('./tmpl.js');
 const httpUtil = require('util/http.js');
 
 //用html代替302跳转
-this.go = function(url){
+this.go = function(url) {
     
     var data = {};
     var window = context.window || {};
@@ -25,7 +25,7 @@ this.go = function(url){
     logger.debug('jump to : ' + url);
     
     
-    if(request && request.headers['x-wns-uin']){
+    if(request && request.headers['x-wns-uin']) {
         
         
         var html = tmpl.jump(data);
@@ -41,7 +41,7 @@ this.go = function(url){
         return;
     }
     
-    if(httpUtil.checkInvalidHeaderChar(url)){
+    if(httpUtil.checkInvalidHeaderChar(url)) {
         url = encodeURI(url);
     }
 

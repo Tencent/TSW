@@ -54,6 +54,36 @@
             {
                 "args": "none"
             }
+        ],
+        "no-mixed-requires": [
+            "error",
+            true
+        ],
+        "block-spacing": [
+            "error",
+            "always"
+        ],
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
+        "comma-spacing": [
+            "error"
+        ],
+        "space-before-blocks": [
+            "error",
+            "always"
         ]
-    }
+    },
+    "overrides": [
+        {
+            "files": ["bin/tsw/wwwroot/*.js"],
+            "env": {
+                "browser": true
+            },
+            "globals": {
+                "define": true
+            }
+        }
+    ]
 }

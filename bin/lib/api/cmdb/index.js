@@ -10,7 +10,7 @@
 const Deferred = require('util/Deferred');
 
 
-this.GetDeviceThisServer = function(){
+this.GetDeviceThisServer = function() {
     var defer = Deferred.create();
 
     return defer.resolve(null);
@@ -19,13 +19,13 @@ this.GetDeviceThisServer = function(){
 /**
  * 查询父业务树信息
  */
-this.GetAllParentBusiness = function(opt){
+this.GetAllParentBusiness = function(opt) {
     var defer = Deferred.create();
 
     return defer.resolve(null);
 };
 
-this.GetDeviceByIp = function(opt){
+this.GetDeviceByIp = function(opt) {
     var defer = Deferred.create();
 
     return defer.resolve(null);

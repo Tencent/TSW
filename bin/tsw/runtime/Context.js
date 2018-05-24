@@ -10,18 +10,18 @@
 module.exports = Context;
 
 
-function Context(){
+function Context() {
 
 }
 
-Context.prototype.setModAct = function(mod_act){
+Context.prototype.setModAct = function(mod_act) {
     
     context.mod_act = mod_act;
     
     return true;
 };
 
-Context.prototype.getModAct = function(){
+Context.prototype.getModAct = function() {
     
     return context.mod_act;
 };

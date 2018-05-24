@@ -55,7 +55,7 @@ function fileField(boundary, key, value = {}) {
 
     let buffer = Buffer.from(tmp.join('\r\n'));
 
-    if(Buffer.isBuffer(value.content)){
+    if(Buffer.isBuffer(value.content)) {
         buffer = Buffer.concat([buffer, value.content, Buffer.from('\r\n')]);
     }else{
         buffer = Buffer.concat([buffer, Buffer.from(value.content || ''), Buffer.from('\r\n')]);
@@ -76,13 +76,13 @@ function getFormBuffer(opt = {}) {
 
     let v;
 
-    for(let key in opt.data){
+    for(let key in opt.data) {
         
         v = opt.data[key];
         
-        if(v !== undefined && v !== null){
+        if(v !== undefined && v !== null) {
             
-            if(v.fileType){
+            if(v.fileType) {
                 buffer = Buffer.concat([buffer, fileField(opt.boundary, key, v)]);
             }else{
                 buffer = Buffer.concat([buffer, textField(opt.boundary, key, v)]);

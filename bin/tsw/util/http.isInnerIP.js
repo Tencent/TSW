@@ -9,7 +9,7 @@
 
 const net = require('net');
 
-this.isInnerIP = (function(){
+this.isInnerIP = (function() {
     
     /**  
     私有IP：A类  10.0.0.0-10.255.255.255
@@ -33,39 +33,39 @@ this.isInnerIP = (function(){
     var xBegin = getIpNum('127.0.0.0');
     var xEnd = getIpNum('127.255.255.255');
     
-    return function(ipAddress){
+    return function(ipAddress) {
         
-        if(typeof ipAddress !== 'string'){
+        if(typeof ipAddress !== 'string') {
             return false;
         }
 
-        if(!net.isIPv4(ipAddress)){
+        if(!net.isIPv4(ipAddress)) {
             return false;
         }
         
         var ipNum = getIpNum(ipAddress);   
         
-        if(isInner(ipNum,xBegin,xEnd)){
+        if(isInner(ipNum, xBegin, xEnd)) {
             return '127.0.0.1';
         }
 
-        if(isInner(ipNum,ABegin,AEnd)){
+        if(isInner(ipNum, ABegin, AEnd)) {
             return 'A';
         }
         
-        if(isInner(ipNum,aBegin,aEnd)){
+        if(isInner(ipNum, aBegin, aEnd)) {
             return 'a';
         }
 
-        if(isInner(ipNum,a2Begin,a2End)){
+        if(isInner(ipNum, a2Begin, a2End)) {
             return 'a2';
         }
         
-        if(isInner(ipNum,bBegin,bEnd)){
+        if(isInner(ipNum, bBegin, bEnd)) {
             return 'b';
         }
         
-        if(isInner(ipNum,cBegin,cEnd)){
+        if(isInner(ipNum, cBegin, cEnd)) {
             return 'c';
         }
            
@@ -76,16 +76,16 @@ this.isInnerIP = (function(){
 
 function getIpNum(ipAddress) {   
     var ip = ipAddress.split('.');   
-    var a = parseInt(ip[0],10);   
-    var b = parseInt(ip[1],10);   
-    var c = parseInt(ip[2],10);   
-    var d = parseInt(ip[3],10);   
+    var a = parseInt(ip[0], 10);   
+    var b = parseInt(ip[1], 10);   
+    var c = parseInt(ip[2], 10);   
+    var d = parseInt(ip[3], 10);   
   
     var res = a * 256 * 256 * 256 + b * 256 * 256 + c * 256 + d;   
     return res;   
 }  
 
 
-function isInner(userIp,begin,end){   
+function isInner(userIp, begin, end) {   
     return (userIp >= begin) && (userIp <= end);   
 }

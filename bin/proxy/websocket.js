@@ -30,47 +30,47 @@ function bind_listen(server) {
 
         parseGet(req);
 
-        if(req.headers['x-client-proto'] === 'https'){
+        if(req.headers['x-client-proto'] === 'https') {
             req.REQUEST.protocol = 'wss';
         } else {
             req.REQUEST.protocol = 'ws';
         }
 
         var testSpaceInfo = h5test.getTestSpaceInfo(req);
-        if(testSpaceInfo){
+        if(testSpaceInfo) {
             var clientReqHeaders = Object.assign({}, req.headers);
             delete clientReqHeaders['sec-websocket-key'];
             wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, {
                 headers : clientReqHeaders
             });
         }
-        if(wsClient){
+        if(wsClient) {
             //存在代理,new websocket时相当于触发了connection了
-            wsClient.on('message', function(data){
+            wsClient.on('message', function(data) {
                 //代理收到目标服务器的回报，再发送给客户端
-                if(ws.readyState == WebSocket.OPEN){
+                if(ws.readyState == WebSocket.OPEN) {
                     ws.send(data);
                 }
             });
-            wsClient.on('close', function(data, msg){
+            wsClient.on('close', function(data, msg) {
                 //目标服务器关闭
                 ws.close();
             });
-            wsClient.on('error', function(error){
-                if(ws.readyState == WebSocket.OPEN){
+            wsClient.on('error', function(error) {
+                if(ws.readyState == WebSocket.OPEN) {
                     ws.send('TSW_Websocket_proxy_client_error');
                 }
             });
         }else{
-            wsRoute.doRoute(ws,'connection');
+            wsRoute.doRoute(ws, 'connection');
         }
 
         ws.on('message', function(message) {
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_MESSAGE', 1);
 
-            if(wsClient){
+            if(wsClient) {
                 //存在代理
-                if(wsClient.readyState == WebSocket.OPEN){
+                if(wsClient.readyState == WebSocket.OPEN) {
                     wsClient.send(message);    
                 }
                 return;
@@ -194,7 +194,7 @@ function bind_listen(server) {
         });
         ws.on('close', function(code, reason) {
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_CLOSE', 1);
-            if(wsClient){
+            if(wsClient) {
                 wsClient.close();
                 return;
             }
@@ -202,8 +202,8 @@ function bind_listen(server) {
         });
         ws.on('error', function(error) {
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_ERROR', 1);
-            if(wsClient){
-                if(wsClient.readyState == WebSocket.OPEN){
+            if(wsClient) {
+                if(wsClient.readyState == WebSocket.OPEN) {
                     wsClient.send('TSW_Websocket_proxy_server_error');
                 }
                 return;

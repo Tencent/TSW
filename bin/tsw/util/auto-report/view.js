@@ -20,19 +20,19 @@ const MAX_ALPHA_LOG = post.MAX_ALPHA_LOG;
 
 tmpl.hls = hls;
 
-module.exports = function(request, response){
-    OALogin.checkLoginForTSW(request,response,function(){
-        module.exports.go(request,response);
+module.exports = function(request, response) {
+    OALogin.checkLoginForTSW(request, response, function() {
+        module.exports.go(request, response);
     });
 };
 
-module.exports.checkLogin = function(request, response, callback){
-    OALogin.checkLoginForTSW(request,response,function(){
+module.exports.checkLogin = function(request, response, callback) {
+    OALogin.checkLoginForTSW(request, response, function() {
         callback();
     });
 };
 
-module.exports.go = function(request, response){
+module.exports.go = function(request, response) {
 
     var arr = request.REQUEST.pathname.split('/');
     var appid = context.appid || '';
@@ -42,41 +42,41 @@ module.exports.go = function(request, response){
     var limit = ~~context.limit || 64;
     var currPost = post;
 
-    if(appid){
+    if(appid) {
         currPost = postOpenapi;
         groupKey = `${appid}/v2.group.alpha`;
     }
 
-    if(!key){
+    if(!key) {
         key = group;
         group = '';
     }
 
-    if(!canIuse.test(appid)){
+    if(!canIuse.test(appid)) {
         return returnError('appid格式非法');
     }
 
-    if(!canIuse.test(group)){
+    if(!canIuse.test(group)) {
         return returnError('group格式非法');
     }
 
-    if(!canIuse.test(key)){
+    if(!canIuse.test(key)) {
         return returnError('key格式非法');
     }
 
-    var createLogKey = function(appid,group,key){
+    var createLogKey = function(appid, group, key) {
         var logKey = key;
 
-        if(group){
+        if(group) {
             logKey = `${group}/${logKey}`;
         }
 
         return logKey;
     };
 
-    var logKey = createLogKey(appid,group,key);
+    var logKey = createLogKey(appid, group, key);
 
-    if(appid){
+    if(appid) {
         logKey = `${appid}/${logKey}`;
     }
 
@@ -93,12 +93,12 @@ module.exports.go = function(request, response){
     var logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
     var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
 
-    logger.debug('logKey :${logKey}',{
+    logger.debug('logKey :${logKey}', {
         logKey: logKey
     });
 
-    if(request.GET.type === 'json'){
-        currPost.getLogJson(logKey,limit).done(function(logArr){
+    if(request.GET.type === 'json') {
+        currPost.getLogJson(logKey, limit).done(function(logArr) {
             var gzipResponse = gzipHttp.getGzipResponse({
                 request: request,
                 response: response,
@@ -106,17 +106,17 @@ module.exports.go = function(request, response){
                 contentType: 'text/html; charset=UTF-8'
             });
 
-            gzipResponse.end(JSON.stringify(logArr,null,2));
+            gzipResponse.end(JSON.stringify(logArr, null, 2));
         });
     }else{
-        CD.curr(`SUM_TSW_ALPHA_LOG_KEY.${currDays}`,logNumMax,24 * 60 * 60).done(function(count){
+        CD.curr(`SUM_TSW_ALPHA_LOG_KEY.${currDays}`, logNumMax, 24 * 60 * 60).done(function(count) {
             logKeyCount = ~~ count;
-        }).always(function(){
-            CD.curr(`SUM_TSW_ALPHA_LOG.${currDays}`,logNumMax * logNumMax * logNumMax,24 * 60 * 60).done(function(count){
+        }).always(function() {
+            CD.curr(`SUM_TSW_ALPHA_LOG.${currDays}`, logNumMax * logNumMax * logNumMax, 24 * 60 * 60).done(function(count) {
                 logCount = ~~ count;
-            }).always(function(){
-                currPost.getLog(logKey,limit).done(function(logArr){
-                    currPost.getLog(groupKey,limit).done(function(groupArr){
+            }).always(function() {
+                currPost.getLog(logKey, limit).done(function(logArr) {
+                    currPost.getLog(groupKey, limit).done(function(groupArr) {
 
                         var html = tmpl.log_view({
                             logKeyCount: logKeyCount,
@@ -153,7 +153,7 @@ module.exports.go = function(request, response){
     }
 };
 
-function returnError(message){
+function returnError(message) {
     var window = context.window;
     var gzipResponse = gzipHttp.getGzipResponse({
         request: window.request,

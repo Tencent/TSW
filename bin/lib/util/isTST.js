@@ -10,9 +10,9 @@
 const config = require('config');
 
 //是否安全扫描器请求
-this.isTST = function(request){
+this.isTST = function(request) {
 
-    if(config.extendMod && typeof config.extendMod.isTST === 'function'){
+    if(config.extendMod && typeof config.extendMod.isTST === 'function') {
         return config.extendMod.isTST(request);
     }
 

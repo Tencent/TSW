@@ -10,18 +10,18 @@
 const config = require('./config.js');
 var base = null;
 
-if(config.skyMode){
+if(config.skyMode) {
     base = require('default/config.default.sky.js');
-}else if(config.isTest){
+}else if(config.isTest) {
     base = require('default/config.default.h5test.js');
 }
 
-if(base){
-    module.exports.getModAct = function(req){
+if(base) {
+    module.exports.getModAct = function(req) {
 
         var mod = base.modAct.getModAct(req);
 
-        if(mod){
+        if(mod) {
             return mod;
         }
 

@@ -7,21 +7,23 @@
  */
 'no use strict';
 
-this.getCallInfo = function(level){
+this.getCallInfo = function(level) {
     
-    var orig,err,stack;
+    var orig, err, stack;
     var res = {};
     
     level = level || 0;
     
     orig = Error.prepareStackTrace;
-    Error.prepareStackTrace = function(_, stack){ return stack; };
+    Error.prepareStackTrace = function(_, stack) {
+        return stack; 
+    };
     err = new Error();
     Error.captureStackTrace(err, arguments.callee);
     stack = err.stack;
     Error.prepareStackTrace = orig;
     
-    if(stack && stack[level] && typeof stack[level].getLineNumber === 'function'){
+    if(stack && stack[level] && typeof stack[level].getLineNumber === 'function') {
         res.line = stack[level].getLineNumber();
         res.column = stack[level].getColumnNumber();
         res.filename = stack[level].getFileName();

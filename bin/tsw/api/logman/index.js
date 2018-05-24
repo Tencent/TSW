@@ -18,15 +18,15 @@ const backupDir = path.resolve(logDir, './backup/').replace(/\\/g, '/');
 const runlogPath = path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
 
 //判断logDir目录是否存在
-fs.exists(logDir, function(exists){
+fs.exists(logDir, function(exists) {
     if (!exists) {
-        fs.mkdirSync(logDir,0o777);
+        fs.mkdirSync(logDir, 0o777);
     }
 
     //判断backup目录是否存在
-    fs.exists(backupDir, function(exists){
+    fs.exists(backupDir, function(exists) {
         if (!exists) {
-            fs.mkdirSync(backupDir,0o777);
+            fs.mkdirSync(backupDir, 0o777);
         }
     });
 });
@@ -45,12 +45,12 @@ var LogMan = {
     /**
      * 启动log管理
      */
-    start: function(config){
+    start: function(config) {
         logger.info('start log manager');
         var self = this;
         this.delayType = config.delay || 'D';
         this.delay = this.delayMap[this.delayType];
-        this.timer = setInterval(function(){
+        this.timer = setInterval(function() {
             self.backLog();
         }, this.delay);
     },
@@ -58,12 +58,12 @@ var LogMan = {
     /**
      * 备份log
      */
-    backLog: function(){
+    backLog: function() {
         logger.info('start backup log');
         var self = this;
         var curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date, 'YYYY-MM-DD'));
-        fs.exists(curBackupDir, function(exists){
-            if(!exists){
+        fs.exists(curBackupDir, function(exists) {
+            if(!exists) {
                 fs.mkdirSync(curBackupDir);
             }
             var logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date, self.delayType + self.delayType) + '.log');
@@ -71,7 +71,7 @@ var LogMan = {
             var cmdClear = 'cat /dev/null > ' + runlogPath;
             
             //兼容windows
-            if(isWindows){
+            if(isWindows) {
                 logFilePath = logFilePath.replace(/\\/g, '\\\\');
                 cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
                 cmdClear = 'type NUL > ' + runlogPath;
@@ -80,7 +80,7 @@ var LogMan = {
             //backup
             logger.info('backup: '+ cmdCat);
             
-            cp.exec(cmdCat, function(error, stdout, stderr){
+            cp.exec(cmdCat, function(error, stdout, stderr) {
                 if (error !== null) {
                     logger.error('cat error, ' + error);
                 }
@@ -88,7 +88,7 @@ var LogMan = {
                 //clear
                 logger.info('clear: ' + cmdClear);
 
-                cp.exec(cmdClear, function(error, stdout, stderr){
+                cp.exec(cmdClear, function(error, stdout, stderr) {
                     if (error !== null) {
                         logger.error('clear error, ' + error);
                     }

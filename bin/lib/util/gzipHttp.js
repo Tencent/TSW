@@ -15,7 +15,7 @@ const defaultChunkSize = 8 * 1024;
 
 this.httpUtil = httpUtil;
 
-this.create = this.getGzipResponse = function(opt){
+this.create = this.getGzipResponse = function(opt) {
     var window = context.window || {};
 
     opt = opt || {};
@@ -28,7 +28,7 @@ this.create = this.getGzipResponse = function(opt){
         contentType = opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8',
         gzipOutputStream;
 
-    if(headers && headers['content-length'] !== undefined){
+    if(headers && headers['content-length'] !== undefined) {
         response.useChunkedEncodingByDefault = false;
         delete headers['transfer-encoding'];
         delete headers['content-length'];
@@ -37,27 +37,27 @@ this.create = this.getGzipResponse = function(opt){
 
     response.setHeader('Content-Type', contentType);
     
-    if(/\bgzip\b/.test(request.headers['accept-encoding'])){
+    if(/\bgzip\b/.test(request.headers['accept-encoding'])) {
         
         response.setHeader('Content-Encoding', 'gzip');
-        response.writeHead(code,headers);
+        response.writeHead(code, headers);
         
         response.socket && response.socket.setNoDelay(true);
         gzipOutputStream = zlib.createGzip({
             chunkSize: chunkSize
         });
         
-        gzipOutputStream.on('data',function(buffer){
-            logger.debug('gzip chunked send ${len}',{
+        gzipOutputStream.on('data', function(buffer) {
+            logger.debug('gzip chunked send ${len}', {
                 len: buffer.length
             });
 
-            if(!response.finished){
+            if(!response.finished) {
                 response.write(buffer);
             }
         });
         
-        gzipOutputStream.once('end',function(){
+        gzipOutputStream.once('end', function() {
             response.end();
         });
         
@@ -65,20 +65,24 @@ this.create = this.getGzipResponse = function(opt){
         
     }else{
         
-        response.writeHead(code,headers);
+        response.writeHead(code, headers);
         
-        response.on('data',function(buffer){
-            logger.debug('chunked send ${len}',{
+        response.on('data', function(buffer) {
+            logger.debug('chunked send ${len}', {
                 len: buffer.length
             });
         });
         
-        if(!response.flush){
-            response.flush = function(){return true;};
+        if(!response.flush) {
+            response.flush = function() {
+                return true; 
+            };
         }
 
-        if(response.flush && response.flushHeaders){
-            response.flush = function(){return true;};
+        if(response.flush && response.flushHeaders) {
+            response.flush = function() {
+                return true; 
+            };
         }
         
         return response;
@@ -90,7 +94,7 @@ this.create = this.getGzipResponse = function(opt){
 /**
 从buffer获取SHA1的方法，独立出来其实是为了方便测试
 */
-exports.getSHA1 = function(buffer){
+exports.getSHA1 = function(buffer) {
     return crypto.createHash('sha1').update(buffer).digest('hex');    
 };
 

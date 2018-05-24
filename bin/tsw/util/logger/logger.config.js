@@ -20,17 +20,17 @@ this.levelMap = {
 this.logLevel = null;
 
 
-this.getLogLevel = function(){
+this.getLogLevel = function() {
 
-    if(debugOptions && debugOptions.inspectorEnabled){
+    if(debugOptions && debugOptions.inspectorEnabled) {
         return this.levelMap['debug'];
     }
 
-    if(typeof this.logLevel === 'string'){
+    if(typeof this.logLevel === 'string') {
         this.logLevel = this.levelMap[this.logLevel] || null;
     }
 
-    if(this.logLevel !== null){
+    if(this.logLevel !== null) {
         return this.logLevel;
     }
 
@@ -38,8 +38,8 @@ this.getLogLevel = function(){
 
     var config = require('config.js');
 
-    if(config.logger){
-        if(typeof config.logger.logLevel === 'number'){
+    if(config.logger) {
+        if(typeof config.logger.logLevel === 'number') {
             this.logLevel = config.logger.logLevel;
         }else{
             this.logLevel = this.levelMap[config.logger.logLevel] || this.logLevel;

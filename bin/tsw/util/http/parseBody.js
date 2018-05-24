@@ -12,30 +12,30 @@ const xssFilter = require('api/xssFilter');
 const httpUtil = require('util/http.js');
 const qs = require('qs');
 
-module.exports = function(req,res,next){
+module.exports = function(req, res, next) {
     
     var arr = [];
     
-    if(!httpUtil.isPostLike(req)){
+    if(!httpUtil.isPostLike(req)) {
         next();
         
         return;
     }
     
-    if(req.REQUEST.body !== undefined){
+    if(req.REQUEST.body !== undefined) {
         next();
         
         return;
     }
     
-    req.on('data',function(txt){
+    req.on('data', function(txt) {
         
         arr.push(txt);
         
         logger.debug('receive ' + txt.length);
     });
 
-    req.once('end',function(){
+    req.once('end', function() {
         
         logger.debug('receive end');
 
@@ -47,28 +47,28 @@ module.exports = function(req,res,next){
 
         var contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
-        if(contentType.indexOf('application/x-www-form-urlencoded') > -1){
+        if(contentType.indexOf('application/x-www-form-urlencoded') > -1) {
 
-            if(req.REQUEST.body.indexOf('+') > -1){
-                willParseBody = req.REQUEST.body.replace(/\+/g,' ');
+            if(req.REQUEST.body.indexOf('+') > -1) {
+                willParseBody = req.REQUEST.body.replace(/\+/g, ' ');
             }else{
                 willParseBody = req.REQUEST.body;
             }
 
             try{
-                req.POST = qs.parse(willParseBody,{ parameterLimit: 4096 });
-            }catch(e){
+                req.POST = qs.parse(willParseBody, { parameterLimit: 4096 });
+            }catch(e) {
                 req.POST = {};
                 logger.debug(e.stack);
                 logger.report();
             }
 
             req.body = req.POST;
-        }else if(contentType.indexOf('application/json') > -1){
+        }else if(contentType.indexOf('application/json') > -1) {
 
             try{
                 req.POST = JSON.parse(req.REQUEST.body);
-            }catch(e){
+            }catch(e) {
                 req.POST = {};
                 logger.debug(e.stack);
                 logger.report();
@@ -76,10 +76,10 @@ module.exports = function(req,res,next){
             req.body = req.POST;
         }
 
-        xssFilter.check().fail(function(){
+        xssFilter.check().fail(function() {
             res.writeHead(501, {'Content-Type': 'text/plain; charset=UTF-8'});
             res.end('501 by TSW');
-        }).done(function(){
+        }).done(function() {
             next();
         });
         

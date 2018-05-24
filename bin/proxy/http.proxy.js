@@ -7,7 +7,7 @@
  */
 'use strict';
 
-process.on('uncaughtException',function(e){
+process.on('uncaughtException', function(e) {
     logger.error(e && e.stack);
 });
 
@@ -45,14 +45,14 @@ var isStartHeartBeat = false;
 var heartBeatCount = 0;
 
 
-function doRoute(req,res){
+function doRoute(req, res) {
 
-    if(routeCache === null){
+    if(routeCache === null) {
         routeCache = require('./http.route.js');
         config = require('./config.js');
     }
 
-    if(req.headers['user-agent'] === 'nws' && req.headers.host === serverInfo.intranetIp){
+    if(req.headers['user-agent'] === 'nws' && req.headers.host === serverInfo.intranetIp) {
         //nws探测请求
         res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
         res.end('hello nws');
@@ -60,7 +60,7 @@ function doRoute(req,res){
         return;
     }
 
-    if(req.headers['user-agent'] === 'TgwProbe'){
+    if(req.headers['user-agent'] === 'TgwProbe') {
         //stgw探测请求
         res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
         res.end('hello TgwProbe');
@@ -68,7 +68,7 @@ function doRoute(req,res){
         return;
     }
 
-    if(req.headers['user-agent'] === 'StgwProbe'){
+    if(req.headers['user-agent'] === 'StgwProbe') {
         //stgw探测请求
         res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
         res.end('hello StgwProbe');
@@ -76,7 +76,7 @@ function doRoute(req,res){
         return;
     }
 
-    if(req.headers['user-agent'] === 'TgwProbe'){
+    if(req.headers['user-agent'] === 'TgwProbe') {
         //stgw探测请求
         res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
         res.end('hello TgwProbe');
@@ -84,9 +84,9 @@ function doRoute(req,res){
         return;
     }
 
-    if(req.REQUEST.pathname === '/' && !req.headers['user-agent']){
+    if(req.REQUEST.pathname === '/' && !req.headers['user-agent']) {
 
-        if(httpUtil.isInnerIP(httpUtil.getUserIp(req))){
+        if(httpUtil.isInnerIP(httpUtil.getUserIp(req))) {
             //l7探测请求
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
             res.end('hello l7');
@@ -95,7 +95,7 @@ function doRoute(req,res){
 
     }
 
-    routeCache(req,res);
+    routeCache(req, res);
 }
 
 process.serverInfo = serverInfo;
@@ -103,29 +103,29 @@ process.serverInfo = serverInfo;
 /**
  * 清除缓存
  */
-function cleanCache(){
+function cleanCache() {
 
     clearTimeout(cleanCacheTid);
 
-    cleanCacheTid = setTimeout(function(){
+    cleanCacheTid = setTimeout(function() {
         require('util/cache.cleaner.js').clear('/');
         routeCache = null;
 
-    },5000);
+    }, 5000);
 }
 
-process.on('top100',function(e){
+process.on('top100', function(e) {
     logger.info('top100');
     global.top100 = [];
 });
 
 
-process.on('heapdump',function(e){
+process.on('heapdump', function(e) {
     logger.info('heapdump');
 
-    if(!isWindows){
+    if(!isWindows) {
 
-        require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot',function(err, filename) {
+        require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot', function(err, filename) {
             logger.info('dump written to ${filename}', {
                 filename: filename
             });
@@ -136,10 +136,10 @@ process.on('heapdump',function(e){
 });
 
 
-process.on('profiler',function(data = {}){
+process.on('profiler', function(data = {}) {
     logger.info('profiler time: ${time}', data);
 
-    if(!isWindows){
+    if(!isWindows) {
 
         require('util/v8-profiler.js').writeProfilerOpt(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.cpuprofile', {
             recordTime: data.time || 5000
@@ -154,12 +154,12 @@ process.on('profiler',function(data = {}){
 });
 
 //process.emit('globaldump',m.GET);
-process.on('globaldump',function(GET){
+process.on('globaldump', function(GET) {
 
     var cpu = GET.cpu || 0;
     var depth = GET.depth || 6;
 
-    if(cpu != serverInfo.cpu){
+    if(cpu != serverInfo.cpu) {
         return;
     }
 
@@ -170,17 +170,17 @@ process.on('globaldump',function(GET){
     logger.info(filename);
 
 
-    var str = util.inspect(global,{
+    var str = util.inspect(global, {
         depth: depth
     });
 
-    fs.writeFile(filename,str,'UTF-8',function(){
+    fs.writeFile(filename, str, 'UTF-8', function() {
         logger.info('globaldump finish');
     });
 
 });
 
-function requestHandler(req, res){
+function requestHandler(req, res) {
     if(server.keepAliveTimeout > 0) {
         res.setHeader('Connection', 'keep-alive');
         res.setHeader('Keep-Alive', `timeout=${parseInt(server.keepAliveTimeout / 1000)}`);
@@ -192,7 +192,7 @@ function requestHandler(req, res){
     res.setHeader('Server', headerServer);
     res.setHeader('Cache-Control', 'no-cache');
 
-    if(config.devMode){
+    if(config.devMode) {
         //发者模式清除缓存
         cleanCache();
     }
@@ -202,59 +202,61 @@ function requestHandler(req, res){
         return;
     }
 
-    res.flush = res.flush || function(){return true;};
+    res.flush = res.flush || function() {
+        return true;
+    };
 
     //解析get参数
     parseGet(req);
 
     //HTTP路由
-    doRoute(req,res);
+    doRoute(req, res);
 }
 
 
 server = http.createServer(requestHandler);
 serverThis = http.createServer(requestHandler);
 
-server.timeout = Math.max(config.timeout.upload || config.timeout.socket,0);
-serverThis.timeout = Math.max(config.timeout.upload || config.timeout.socket,0);
-server.keepAliveTimeout = Math.max(config.timeout.keepAlive,0);
-serverThis.keepAliveTimeout = Math.max(config.timeout.keepAlive,0);
+server.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
+serverThis.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
+server.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
+serverThis.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
 
 global.TSW_HTTP_SERVER = server;
 
-if(config.httpsOptions){
-    serverHttps = https.createServer(config.httpsOptions,function(req,res){
+if(config.httpsOptions) {
+    serverHttps = https.createServer(config.httpsOptions, function(req, res) {
         req.headers['x-client-proto'] = 'https';
 
-        requestHandler(req,res);
+        requestHandler(req, res);
     });
 
-    serverHttps.on('clientError', function(err, socket){
+    serverHttps.on('clientError', function(err, socket) {
         socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
     });
 
-    serverHttps.timeout = Math.max(config.timeout.upload || config.timeout.socket,0);
-    serverHttps.keepAliveTimeout = Math.max(config.timeout.keepAlive,0);
+    serverHttps.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
+    serverHttps.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
 
     global.TSW_HTTPS_SERVER = serverHttps;
 }
 
 
-logger.info('pid:${pid} createServer ok',{
+logger.info('pid:${pid} createServer ok', {
     pid: process.pid
 });
 
 
 //分发父进程发送来的消息
-process.on('message',function(m){
-    if(m && methodMap[m.cmd]){
-        methodMap[m.cmd].apply(this,arguments);
+process.on('message', function(m) {
+    if(m && methodMap[m.cmd]) {
+        methodMap[m.cmd].apply(this, arguments);
     }
 });
 
-function startHeartBeat(){
+function startHeartBeat() {
 
-    if(isStartHeartBeat){
+    if(isStartHeartBeat) {
         return;
     }
 
@@ -263,7 +265,7 @@ function startHeartBeat(){
     global.cpuUsed = 0;
 
     //定时给父进程发送心跳包
-    setInterval(function(){
+    setInterval(function() {
 
         heartBeatCount += 1;
 
@@ -272,9 +274,9 @@ function startHeartBeat(){
             memoryUsage: process.memoryUsage()
         });
 
-        if(serverInfo.cpu === 0){
+        if(serverInfo.cpu === 0) {
             //测试环境1分钟上报一次
-            if(heartBeatCount % 12 === 0){
+            if(heartBeatCount % 12 === 0) {
                 TEReport.report();
             }
         }
@@ -299,13 +301,13 @@ function startHeartBeat(){
         ) {
             //取进程快照
             //ps aux --sort=-pcpu
-            cp.exec('top -bcn1',{
+            cp.exec('top -bcn1', {
                 env: {
                     COLUMNS: 200
                 },
                 timeout: 5000
-            },function(err,data,errData) {
-                var key = ['cpu80.v4',serverInfo.intranetIp].join(':');
+            }, function(err, data, errData) {
+                var key = ['cpu80.v4', serverInfo.intranetIp].join(':');
                 var Content = [
                     '<strong>单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%, 最近5秒钟CPU Profiler见附件</strong>'
                 ].join('<br>');
@@ -322,17 +324,17 @@ function startHeartBeat(){
 
 
                 //获取本机信息，用来分组
-                require('api/cmdb').GetDeviceThisServer().done(function(data){
+                require('api/cmdb').GetDeviceThisServer().done(function(data) {
                     data = data || {};
                     var business = data.business && data.business[0] || {};
                     var owner = '';
 
-                    if(data.ownerMain){
-                        owner = [owner,data.ownerMain].join(';');
+                    if(data.ownerMain) {
+                        owner = [owner, data.ownerMain].join(';');
                     }
 
-                    if(data.ownerBack){
-                        owner = [owner,data.ownerBack].join(';');
+                    if(data.ownerBack) {
+                        owner = [owner, data.ownerBack].join(';');
                     }
 
                     //再抓一份CPU Profiler
@@ -363,61 +365,61 @@ function startHeartBeat(){
         tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
         tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL', currMemory.external);
 
-    },5000);
+    }, 5000);
 
 }
 
 
 //restart
-methodMap.restart = function(){
+methodMap.restart = function() {
 
-    logger.info('cpu: ${cpu} restart',serverInfo);
+    logger.info('cpu: ${cpu} restart', serverInfo);
 
     process.emit('restart');
 };
 
 //reload
-methodMap.reload = function(){
+methodMap.reload = function() {
 
-    logger.info('cpu: ${cpu} reload',serverInfo);
+    logger.info('cpu: ${cpu} reload', serverInfo);
 
     process.emit('reload');
 };
 
 //heapdump
-methodMap.heapdump = function(m){
+methodMap.heapdump = function(m) {
 
-    logger.info('cpu: ${cpu} heapdump',serverInfo);
+    logger.info('cpu: ${cpu} heapdump', serverInfo);
 
-    process.emit('heapdump',m.GET);
+    process.emit('heapdump', m.GET);
 };
 
 //profiler
-methodMap.profiler = function(m){
+methodMap.profiler = function(m) {
 
-    logger.info('cpu: ${cpu} profiler',serverInfo);
+    logger.info('cpu: ${cpu} profiler', serverInfo);
 
-    process.emit('profiler',m.GET);
+    process.emit('profiler', m.GET);
 };
 
 //globaldump
-methodMap.globaldump = function(m){
+methodMap.globaldump = function(m) {
 
-    logger.info('cpu: ${cpu} globaldump',serverInfo);
+    logger.info('cpu: ${cpu} globaldump', serverInfo);
 
-    process.emit('globaldump',m.GET);
+    process.emit('globaldump', m.GET);
 };
 
 //top100
-methodMap.top100 = function(m){
+methodMap.top100 = function(m) {
 
-    logger.info('cpu: ${cpu} top100',serverInfo);
+    logger.info('cpu: ${cpu} top100', serverInfo);
 
-    process.emit('top100',m.GET);
+    process.emit('top100', m.GET);
 };
 
 //监听端口
-methodMap.listen = function(message){
+methodMap.listen = function(message) {
 
     var user_00 = config.workerUid || 'user_00';
     serverInfo.cpu = message.cpu || 0;
@@ -426,22 +428,22 @@ methodMap.listen = function(message){
     process.title = 'TSW/worker/' + serverInfo.cpu;
     global.TSW_HTTP_WORKER_PORT = config.workerPortBase + serverInfo.cpu;
 
-    logger.info('cpu: ${cpu}, beforeStartup...',serverInfo);
+    logger.info('cpu: ${cpu}, beforeStartup...', serverInfo);
 
-    if(typeof config.beforeStartup === 'function'){
+    if(typeof config.beforeStartup === 'function') {
         config.beforeStartup(serverInfo.cpu);
     }
 
-    logger.info('cpu: ${cpu}, listen...',serverInfo);
+    logger.info('cpu: ${cpu}, listen...', serverInfo);
 
     //直接根据配置启动，无需拿到_handle
     server.listen({
         host: config.httpAddress,
         port: config.httpPort,
         exclusive: false
-    },function(err){
-        if(err){
-            logger.info('cpu: ${cpu}, listen http error ${address}:${port}',{
+    }, function(err) {
+        if(err) {
+            logger.info('cpu: ${cpu}, listen http error ${address}:${port}', {
                 cpu:serverInfo.cpu,
                 address: config.httpAddress,
                 port: config.httpPort
@@ -450,36 +452,36 @@ methodMap.listen = function(message){
             return;
         }
 
-        logger.info('cpu: ${cpu}, listen http ok ${address}:${port}',{
+        logger.info('cpu: ${cpu}, listen http ok ${address}:${port}', {
             cpu:serverInfo.cpu,
             address: config.httpAddress,
             port: config.httpPort
         });
 
-        var finish = function(){
+        var finish = function() {
 
             //开始发送心跳
             logger.info('start heart beat');
 
             startHeartBeat();
 
-            if(!isWindows){
+            if(!isWindows) {
                 try{
                     process.setuid(user_00);
-                }catch(err){
+                }catch(err) {
                     logger.error(`switch to uid: ${user_00} fail!`);
                     logger.error(err.stack);
                 }
 
-                logger.info('switch to uid: ${uid}',{
+                logger.info('switch to uid: ${uid}', {
                     uid:user_00
                 });
             }
             websocket.start_listen();
 
-            logger.info('cpu: ${cpu}, afterStartup...',serverInfo);
+            logger.info('cpu: ${cpu}, afterStartup...', serverInfo);
 
-            if(typeof config.afterStartup === 'function'){
+            if(typeof config.afterStartup === 'function') {
                 config.afterStartup(serverInfo.cpu);
             }
         };
@@ -489,7 +491,7 @@ methodMap.listen = function(message){
             host: config.httpAddress,
             port: global.TSW_HTTP_WORKER_PORT,
             exclusive: false
-        },function(err) {
+        }, function(err) {
             if (err) {
                 logger.info('cpu: ${cpu}, listen http error ${address}:${port}', {
                     cpu: serverInfo.cpu,
@@ -507,12 +509,12 @@ methodMap.listen = function(message){
             });
 
 
-            if(serverHttps){
+            if(serverHttps) {
 
                 //启动https
-                serverHttps.listen(config.httpsPort,config.httpsAddress,function(err){
-                    if(err){
-                        logger.info('cpu: ${cpu}, listen https error ${address}:${port}',{
+                serverHttps.listen(config.httpsPort, config.httpsAddress, function(err) {
+                    if(err) {
+                        logger.info('cpu: ${cpu}, listen https error ${address}:${port}', {
                             cpu:serverInfo.cpu,
                             address: config.httpsPort,
                             port: config.httpsAddress
@@ -521,7 +523,7 @@ methodMap.listen = function(message){
                         return;
                     }
 
-                    logger.info('cpu: ${cpu}, listen https ok ${address}:${port}',{
+                    logger.info('cpu: ${cpu}, listen https ok ${address}:${port}', {
                         cpu:serverInfo.cpu,
                         address: config.httpsAddress,
                         port: config.httpsPort
@@ -539,11 +541,11 @@ methodMap.listen = function(message){
 
 };
 
-if(cluster.isMaster){
-    if(isWindows){
+if(cluster.isMaster) {
+    if(isWindows) {
         logger.info('isWindows, start listening');
         methodMap.listen({cpu : 0});
-    }else if(debugOptions && debugOptions.inspectorEnabled){
+    }else if(debugOptions && debugOptions.inspectorEnabled) {
         logger.setLogLevel('debug');
         logger.info('inspectorEnabled, start listening');
         methodMap.listen({cpu : 0});

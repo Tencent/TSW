@@ -12,7 +12,7 @@ const gzipHttp = require('util/gzipHttp.js');
 const tmpl = require('./tmpl.js');
 const pagetmpl = require('../page/tmpl.js');
 
-module.exports = function(request,response){
+module.exports = function(request, response) {
 
     var gzipResponse = gzipHttp.getGzipResponse({
         request: request,
@@ -23,7 +23,7 @@ module.exports = function(request,response){
 
     var navMenus = context.navMenus;
 
-    if(!navMenus){
+    if(!navMenus) {
         navMenus = [
             {
                 href: '/group/page',
@@ -44,7 +44,7 @@ module.exports = function(request,response){
         ];
     }
 
-    TEReport.getAllGroup().done(function(allGroup){
+    TEReport.getAllGroup().done(function(allGroup) {
 
         var data = {};
 

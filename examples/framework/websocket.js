@@ -1,6 +1,6 @@
 
 
-this.onConnection = function(ws){
+this.onConnection = function(ws) {
     //WebSocket连接建立的回调函数
     ws.send('hello~');
 };

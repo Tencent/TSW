@@ -14,7 +14,7 @@ const {isWindows} = require('./isWindows.js');
 const logger = require('logger');
 var cache;
 
-if(!global[__filename]){
+if(!global[__filename]) {
     cache = {
         time: 0,
         total: 0,
@@ -32,29 +32,29 @@ if(!global[__filename]){
     global[__filename] = cache;
 }
 
-this.getCpuUsed = function(cpu){
+this.getCpuUsed = function(cpu) {
 
     var now = Date.now();
 
     cpu = cpu || '';
 
-    if(isWindows){
+    if(isWindows) {
         return cache.curr;
     }
 
-    if(now - cache.time < 3000){
+    if(now - cache.time < 3000) {
         return cache.curr;
     }
 
     cache.time = now;
 
-    if(typeof cpu !== 'number'){
+    if(typeof cpu !== 'number') {
         cpu = '';
     }
 
-    fs.readFile('/proc/stat',function(err,buffer){
+    fs.readFile('/proc/stat', function(err, buffer) {
 
-        if(err){
+        if(err) {
             /* eslint-disable no-console */
             console.error(err.stack);
             /* eslint-enable no-console */
@@ -65,26 +65,26 @@ this.getCpuUsed = function(cpu){
         var str = '';
         var arr = [];
 
-        for(var i = 0; i < lines.length; i++){
-            if(lines[i].startsWith(`cpu${cpu} `)){
+        for(var i = 0; i < lines.length; i++) {
+            if(lines[i].startsWith(`cpu${cpu} `)) {
                 str = lines[i];
                 break;
             }
         }
 
-        if(str){
+        if(str) {
             arr = str.split(/\W+/);
         }else{
             return;
         }
 
-        var user = parseInt(arr[1],10) || 0;
-        var nice = parseInt(arr[2],10) || 0;
-        var system = parseInt(arr[3],10) || 0;
-        var idle = parseInt(arr[4],10) || 0;
-        var iowait = parseInt(arr[5],10) || 0;
-        var irq = parseInt(arr[6],10) || 0;
-        var softirq = parseInt(arr[7],10) || 0;
+        var user = parseInt(arr[1], 10) || 0;
+        var nice = parseInt(arr[2], 10) || 0;
+        var system = parseInt(arr[3], 10) || 0;
+        var idle = parseInt(arr[4], 10) || 0;
+        var iowait = parseInt(arr[5], 10) || 0;
+        var irq = parseInt(arr[6], 10) || 0;
+        var softirq = parseInt(arr[7], 10) || 0;
         // var  steal   = parseInt(arr[8],10) || 0;
         // var guest    = parseInt(arr[9],10) || 0;
 
@@ -101,14 +101,14 @@ this.getCpuUsed = function(cpu){
 };
 
 
-this.cpus = function(){
+this.cpus = function() {
 
     var res = [];
 
 
-    os.cpus().forEach(function(v){
+    os.cpus().forEach(function(v) {
 
-        if(v.times && v.times.idle !== 0){
+        if(v.times && v.times.idle !== 0) {
             res.push(v);
         }
 
@@ -119,67 +119,67 @@ this.cpus = function(){
 };
 
 
-this.taskset = function(oriCpu,pid){
-    if(isWindows){
+this.taskset = function(oriCpu, pid) {
+    if(isWindows) {
         return;
     }
 
     //绑定CPU
-    logger.info('taskset -cp ${pid}',{
+    logger.info('taskset -cp ${pid}', {
         pid: pid
     });
 
     //打印shell执行信息
-    cp.exec(`taskset -cp ${pid}`,{
+    cp.exec(`taskset -cp ${pid}`, {
         timeout: 5000
-    },function(err,data,errData){
+    }, function(err, data, errData) {
 
         var str = data.toString('UTF-8');
         var tmp = str.split(':');
         var cpus;
 
-        if(tmp.length >= 2){
+        if(tmp.length >= 2) {
             cpus = exports.parseTaskset(tmp[1]);
         }
 
         var cpu = oriCpu;
-        if(cpus.length > 1){
+        if(cpus.length > 1) {
             //cpu编号修正
-            cpu = parseInt(cpus[cpu % cpus.length],10);
+            cpu = parseInt(cpus[cpu % cpus.length], 10);
         }else{
             //超过cpu编号时，修正
             cpu = cpu % exports.cpus().length;
         }
 
-        if(err){
+        if(err) {
             logger.error(err.stack);
         }
 
-        if(data.length){
+        if(data.length) {
             logger.info('\n' + data.toString('UTF-8'));
         }
 
-        if(errData.length){
+        if(errData.length) {
             logger.error('\n' + errData.toString('UTF-8'));
         }
 
-        logger.info('taskset -cp ${cpu} ${pid}',{
+        logger.info('taskset -cp ${cpu} ${pid}', {
             cpu: cpu,
             pid: pid
         });
 
-        cp.exec(`taskset -cp ${cpu} ${pid}`,{
+        cp.exec(`taskset -cp ${cpu} ${pid}`, {
             timeout: 5000
-        },function(err,data,errData){
-            if(err){
+        }, function(err, data, errData) {
+            if(err) {
                 logger.error(err.stack);
             }
 
-            if(data.length){
+            if(data.length) {
                 logger.info('\n' + data.toString('UTF-8'));
             }
 
-            if(errData.length){
+            if(errData.length) {
                 logger.error('\n' + errData.toString('UTF-8'));
             }
         });
@@ -189,12 +189,12 @@ this.taskset = function(oriCpu,pid){
 };
 
 
-this.parseTaskset = function(str){
+this.parseTaskset = function(str) {
 
     var res = [];
     var arr = str.split(',');
 
-    arr.forEach(function(v){
+    arr.forEach(function(v) {
 
         v = v.trim();
 
@@ -203,11 +203,11 @@ this.parseTaskset = function(str){
         var end = ~~tmp[1];
         var i;
 
-        if(end < start){
+        if(end < start) {
             end = start;
         }
 
-        for(i = start; i<=end ;i++){
+        for(i = start; i<=end ;i++) {
             res.push(i);
         }
     });
@@ -215,10 +215,10 @@ this.parseTaskset = function(str){
     return res;
 };
 
-if(process.mainModule === module){
-    setInterval(function(){
+if(process.mainModule === module) {
+    setInterval(function() {
         /* eslint-disable no-console */
         console.log('cpu: ' + module.exports.getCpuUsed());
         /* eslint-enable no-console */
-    },1000);
+    }, 1000);
 }

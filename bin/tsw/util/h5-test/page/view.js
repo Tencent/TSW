@@ -46,7 +46,7 @@ module.exports.go = async function(request, response, plug) {
 
     var navMenus = context.navMenus;
 
-    if(!navMenus){
+    if(!navMenus) {
         navMenus = [
             {
                 href: '/group/page',

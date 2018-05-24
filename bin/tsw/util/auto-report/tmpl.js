@@ -4,28 +4,36 @@
 //auto-report/src/mail.tmpl.html
 //auto-report/src/view.tmpl.html
 //auto-report/src/zenburn.tmpl.html
-define(function(require, exports, module){
+define(function(require, exports, module) {
     var tmpl = { 
-        'encodeHtml': function(s){return (s+'').replace(/[\x26\x3c\x3e\x27\x22\x60]/g,function($0){return '&#'+$0.charCodeAt(0)+';';});},
+        'encodeHtml': function(s) {
+            return (s+'').replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
+                return '&#'+$0.charCodeAt(0)+';';
+            });
+        },
 
-        'download_content_types': function(data){
+        'download_content_types': function(data) {
 
-            var __p=[],_p=function(s){__p.push(s);},out=_p;
+            var __p=[], _p=function(s) {
+                    __p.push(s);
+                }, out=_p;
             __p.push('<?xml version="1.0" encoding="utf-8" ?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n<Default Extension="htm" ContentType="text/html" />\n<Default Extension="xml" ContentType="application/xml" />\n<Default Extension="txt" ContentType="text/plain" />\n</Types>');
 
             return __p.join('');
         },
 
-        'download_index': function(data){
+        'download_index': function(data) {
 
-            var __p=[],_p=function(s){__p.push(s);},out=_p;
+            var __p=[], _p=function(s) {
+                    __p.push(s); 
+                }, out=_p;
 
             data = data || [];
 
             var i, len, entry;
             __p.push('<html>\n    <head>\n        <style>\n            body,thead,td,a,p{font-family:verdana,sans-serif;font-size: 10px;}\n        </style>\n    </head>\n    <body>\n        <table cols=13>\n            <thead>\n                <tr>\n                    <th>&nbsp;</th>\n                    <th>#</th>\n                    <th>Result</th>\n                    <th>Protocol</th>\n                    <th>Host</th>\n                    <th>URL</th>\n                    <th>Body</th>\n                    <th>Caching</th>\n                    <th>Content-Type</th>\n                    <th>Process</th>\n                    <th>Comments</th>\n                    <th>Custom</th>\n                    <th>ServerIP</th>\n                </tr>\n            </thead>\n            <tbody>');
 
-            for(i = 0, len = data.length; i < len; i++){
+            for(i = 0, len = data.length; i < len; i++) {
                 entry = (data[i] || {}).curr || {};
 
                 __p.push('                            <tr>\n                                <td>\n                                    <a href=\'raw\\');
@@ -62,24 +70,28 @@ define(function(require, exports, module){
             return __p.join('');
         },
 
-        'download_timestamp': function(data){
+        'download_timestamp': function(data) {
 
-            var __p=[],_p=function(s){__p.push(s);},out=_p;
+            var __p=[], _p=function(s) {
+                    __p.push(s);
+                }, out=_p;
 
             data = data || {};
 
-            var localISOString = function(d){
-                if(!(d && d.getTimezoneOffset)){
+            var localISOString = function(d) {
+                if(!(d && d.getTimezoneOffset)) {
                     return d;
                 }
 
-                var pad = function(n){return n < 10 ? '0' + n : n;}, 
+                var pad = function(n) {
+                        return n < 10 ? '0' + n : n;
+                    }, 
                     tz = d.getTimezoneOffset(),
                     tzs = (tz > 0 ? '-' : '+') + pad(parseInt(Math.abs(tz / 60)));
 
-                if (tz === 0){
+                if (tz === 0) {
                     tzs = 'Z';
-                }else if (tz % 60 != 0){
+                }else if (tz % 60 != 0) {
                     tzs += pad(Math.abs(tz % 60));
                 }else{
                     tzs += ':00';
@@ -148,12 +160,16 @@ define(function(require, exports, module){
             return __p.join('');
         },
 
-        'errorSummary': function(data){
+        'errorSummary': function(data) {
 
-            var __p=[],_p=function(s){__p.push(s);},out=_p;
+            var __p=[], _p=function(s) {
+                    __p.push(s); 
+                }, out=_p;
             __p.push('<html>\n<head>\n    <meta charset="utf-8" />\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <meta name="robots" content="none" />\n    <meta name="format-detection" content="telephone=no" />\n    <meta name="HandheldFriendly" content="True" />\n    <meta name="MobileOptimized" content="320" />\n    <meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n    <meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n    <meta name="x5-fast-scroller" content="disable" />\n\n    <style>\n        p{\n            line-height: 1.5;\n        }\n        code{\n            font-size: 12px;\n        }\n\n        table {\n            border-collapse: collapse;\n            text-align: center;\n            position: relative;\n            white-space: nowrap;\n            background: #FFFFFF;\n            border: 1px solid #BFBFBF;\n            /*table-layout:fixed;*/\n        }\n        thead {\n            white-space: nowrap;\n            background: #EEEFF2;\n\n            border-bottom: 1px solid #BFBFBF;\n            border-top: 1px solid #BFBFBF;\n            border-collapse: separate;\n        }\n        table thead th,\n        table tbody td,\n        table tfoot td{\n            padding-left: 10px;\n            padding-right: 10px;\n            white-space: nowrap;\n            border-collapse: collapse;\n            border: 1px solid #BFBFBF;\n        }\n\n        table thead tr th{\n            border-right: 1px solid #BFBFBF;\n            border-left: 1px solid #BFBFBF;\n            background: #EAEAEA;\n\n        }\n\n        table thead th{\n            height: 30px;\n            background: #EAEAEA;\n        }\n        table tbody td,\n        table tfoot td{\n            height: 25px;\n        }\n\n        table tbody tr,\n        table tfoot tr{\n            border-bottom: 1px solid #BFBFBF;\n        }\n\n        .dimension {\n            text-align: left;\n            white-space: nowrap;\n        }\n        .indicator{\n            text-align: right;\n            white-space: nowrap;\n        }\n        .alt {\n            background:#EFEFEF ;\n        }\n\n    </style>\n\n</head>\n<body>');
-            if(data.total_arr.length){__p.push('<table>\n    <thead>\n    <tr>\n        <th>项目名称</th>\n        <th>mod_act</th>\n        <th>报错次数</th>\n        <th>负责人</th>\n    </tr>\n    </thead>\n    <tbody>');
-                for(var i = 0,item; i < data.total_arr.length; i++){__p.push('    item = data.total_arr[i++];\n    <tr class="');
+            if(data.total_arr.length) {
+                __p.push('<table>\n    <thead>\n    <tr>\n        <th>项目名称</th>\n        <th>mod_act</th>\n        <th>报错次数</th>\n        <th>负责人</th>\n    </tr>\n    </thead>\n    <tbody>');
+                for(var i = 0, item; i < data.total_arr.length; i++) {
+                    __p.push('    item = data.total_arr[i++];\n    <tr class="');
                     _p((i % 2 == 0 ? 'alt' : ''));
                     __p.push('">\n        <td class="dimension">');
                     _p(item.config.title);
@@ -165,15 +181,18 @@ define(function(require, exports, module){
                     _p(item.config.charge);
                     __p.push('</td>\n    </tr>');
                 }__p.push('    </tbody>\n</table>');
-            }else{__p.push('    <p>没有报错项目~</p>');
+            }else{
+                __p.push('    <p>没有报错项目~</p>');
             }__p.push('</body>\n</html>');
 
             return __p.join('');
         },
 
-        'error': function(data){
+        'error': function(data) {
 
-            var __p=[],_p=function(s){__p.push(s);},out=_p;
+            var __p=[], _p=function(s) {
+                    __p.push(s);
+                }, out=_p;
             __p.push('<html>\n<head>\n    <meta charset="utf-8" />\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <meta name="robots" content="none" />\n    <meta name="format-detection" content="telephone=no" />\n    <meta name="HandheldFriendly" content="True" />\n    <meta name="MobileOptimized" content="320" />\n    <meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n    <meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n    <meta name="x5-fast-scroller" content="disable" />\n\n    <style>\n        p{\n            line-height: 1.5;\n        }\n        code{\n            font-size: 12px;\n        }\n    </style>\n\n</head>\n<body>\n<p><strong>');
             _p(data.mod_act);
             __p.push(' </strong> ');
@@ -185,18 +204,20 @@ define(function(require, exports, module){
             return __p.join('');
         },
 
-        'log_view': function(data){
+        'log_view': function(data) {
 
-            var __p=[],_p=function(s){__p.push(s);},out=_p;
+            var __p=[], _p=function(s) {
+                    __p.push(s); 
+                }, out=_p;
 
             var logArr = data.logArr || [];
             var groupArr= data.groupArr || [];
             var window = context.window || {};
             var hls = require('./highlight-tsw.js');
             var getResultCodeStyle = function (code) {
-                code = parseInt(code,10);
+                code = parseInt(code, 10);
                 var style = '';
-                if(code > 0){
+                if(code > 0) {
                     code = Math.floor(code / 100);
                     switch (code) {
                     case 2 :
@@ -221,25 +242,25 @@ define(function(require, exports, module){
             var group = context.group;
             var key = context.key;
             var createLogKey = context.createLogKey;
-            var currPath = '/log/view/' + createLogKey(appid,group,key);
+            var currPath = '/log/view/' + createLogKey(appid, group, key);
 
             //去重
-            var tmp = [{name: '全部',href: '/log/view/' + createLogKey(appid,'',key)}];
+            var tmp = [{name: '全部', href: '/log/view/' + createLogKey(appid, '', key)}];
             var groupMap= {};
             var nameMap = data.nameMap;
 
-            for(var i in nameMap){
+            for(var i in nameMap) {
                 tmp.push({
                     name : nameMap[i],
-                    href : '/log/view/' + createLogKey(appid,i,key)
+                    href : '/log/view/' + createLogKey(appid, i, key)
                 });
             }
 
-            groupArr.sort().forEach(function(v){
-                if(!v){
+            groupArr.sort().forEach(function(v) {
+                if(!v) {
                     return;
                 }
-                if(groupMap[v]){
+                if(groupMap[v]) {
                     return;
                 }
                 //默认展示的就去掉
@@ -247,17 +268,19 @@ define(function(require, exports, module){
                     return;
 
                 groupMap[v] = 1;
-                var href = '/log/view/' + createLogKey(appid,v,key);
+                var href = '/log/view/' + createLogKey(appid, v, key);
                 tmp.push({name: v, href: href});
             });
             groupArr = tmp;
 
             var XSS = plug('util/xss.js');
             __p.push('<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n    <title>TSW云抓包&#8482;</title>\n    <link rel="Shortcut Icon" href="/favicon.ico" type="image/x-icon" />\n    <link href="/static/tsw/styles/logview/style.css" rel="stylesheet">\n</head>\n<body>\n    <div class="view-title">\n        <a class="button" href="');
-            _p(window && window.request && window.request.REQUEST && window.request.REQUEST.pathname && window.request.REQUEST.pathname.replace('/log/view/','/log/download/'));
+            _p(window && window.request && window.request.REQUEST && window.request.REQUEST.pathname && window.request.REQUEST.pathname.replace('/log/view/', '/log/download/'));
             __p.push('" target="_blank">下载全部抓包</a>\n        <a class="button r" href="https://www.telerik.com/fiddler" target="_blank">Fiddler下载</a>\n        <a class="button r" href="https://github.com/avwo/whistle" target="_blank">Whistle下载(mac推荐)</a>\n        <label class="button label" style="cursor:pointer;" id="showErrorLogItem"><input type="checkbox" id="showErrorLogItemChk" value="showErrorLogItem">仅显示有错误的</label>\n        <label class="button label" style="cursor:pointer;" id="showRequestListItem"><input type="checkbox" id="showRequestListChk" value="showRequestList">快速显示请求列表</label>');
-            if(appid){__p.push('            <a class="button" href="/app/status" target="_blank">实时监控</a>\n            <a class="button" href="/h5test/page" target="_blank">测试环境</a>');
-            }else{__p.push('            <a class="button" href="/h5test/page/alpha" target="_blank">临时染色</a>');
+            if(appid) {
+                __p.push('            <a class="button" href="/app/status" target="_blank">实时监控</a>\n            <a class="button" href="/h5test/page" target="_blank">测试环境</a>');
+            }else{
+                __p.push('            <a class="button" href="/h5test/page/alpha" target="_blank">临时染色</a>');
             }__p.push('        <label class="button" target="_blank" title="item/user/userLimit">');
             _p(data.logCount);
             __p.push('/');
@@ -265,8 +288,10 @@ define(function(require, exports, module){
             __p.push('/');
             _p(data.logNumMax);
             __p.push('</label>\n    </div>');
-            if(groupArr.length){__p.push('    <div class="view-title">');
-                groupArr.forEach(function(v,i){__p.push('        <a class="button ');
+            if(groupArr.length) {
+                __p.push('    <div class="view-title">');
+                groupArr.forEach(function(v, i) {
+                    __p.push('        <a class="button ');
                     _p(currPath === v.href ? 'curr-group' : '');
                     __p.push('" href="');
                     _p(v.href);
@@ -274,10 +299,11 @@ define(function(require, exports, module){
                     _p(XSS.htmlEncode(v.name));
                     __p.push('</a>');
                 });__p.push('    </div>');
-            }if(logArr.length === 0){__p.push('    <div class="view-title">\n        <p style="height: 50px;line-height: 50px;">还没有实时log</p>\n    </div>');
+            }if(logArr.length === 0) {
+                __p.push('    <div class="view-title">\n        <p style="height: 50px;line-height: 50px;">还没有实时log</p>\n    </div>');
             }
 
-            logArr.forEach(function(logText,i){
+            logArr.forEach(function(logText, i) {
                 logText = logText || '';
                 var logLineArr = logText.split('\n');
                 var reqUrl = logLineArr && logLineArr[0];
@@ -285,7 +311,7 @@ define(function(require, exports, module){
                     resultCode = logArr.extInfos[i].resultCode;
 
                 var hasError = false;
-                for(var j = 0; j < logLineArr.length; j++){
+                for(var j = 0; j < logLineArr.length; j++) {
                     var logTextLine = logLineArr[j];
                     if (!logTextLine) {
                         continue;
@@ -302,14 +328,14 @@ define(function(require, exports, module){
                     }
 
                     //匹配ERRO log
-                    if(!hasError && logTextLine.indexOf(' [ERRO] ') > 0){
+                    if(!hasError && logTextLine.indexOf(' [ERRO] ') > 0) {
                         hasError = true;
                         break;
                     }
                 }
 
-                if(i < 2){
-                    logText = hls.highlight('tswlog',(logText),true).value;
+                if(i < 2) {
+                    logText = hls.highlight('tswlog', (logText), true).value;
                 }else{
                     logText = XSS.htmlEncode(logText);
                 }
@@ -325,13 +351,13 @@ define(function(require, exports, module){
                 __p.push('">');
                 _p(resultCode);
                 __p.push('</span></span>\n\n                <a class="btn" href="');
-                _p(window.request.REQUEST.pathname.replace('/log/view/','/log/download/'));
+                _p(window.request.REQUEST.pathname.replace('/log/view/', '/log/download/'));
                 __p.push('?index=');
                 _p(parseInt(logArr.keys[i]));
                 __p.push('&SNKey=');
                 _p(logArr.SNKeys[i]);
                 __p.push('&fileFormat=saz"\n                   target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.saz</a>\n\n                <a class="btn" href="');
-                _p(window.request.REQUEST.pathname.replace('/log/view/','/log/download/'));
+                _p(window.request.REQUEST.pathname.replace('/log/view/', '/log/download/'));
                 __p.push('?index=');
                 _p(parseInt(logArr.keys[i]));
                 __p.push('&SNKey=');

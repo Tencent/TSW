@@ -9,16 +9,16 @@ const map = {
 };
 
 //路由：起个名字
-this.name = function(req){
+this.name = function(req) {
     const pathname = req.REQUEST.pathname;
-    const arr = pathname.split('/',2);
+    const arr = pathname.split('/', 2);
 
     return arr[1];
 
 };
 
 //路由：返回一个模块
-this.find = function(name, req, res){
+this.find = function(name, req, res) {
     const moduleId = map[name] || map['default'];
     return require(moduleId);
 };

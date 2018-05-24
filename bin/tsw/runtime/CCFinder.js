@@ -23,39 +23,39 @@ var cache = {
     ipCacheLast: {}
 };
 
-if(global[__filename]){
+if(global[__filename]) {
     cache = global[__filename];
 }else{
     global[__filename] = cache;
 }
 
-this.addWhiteList = function(userIp){
+this.addWhiteList = function(userIp) {
     cache.whiteList[userIp] = true;
 };
 
-this.checkHost = function(req, res){
+this.checkHost = function(req, res) {
 
     var hostAllow = config.allowHost || [];
     var host = req.headers['host'];
-    var i,len,v;
+    var i, len, v;
 
-    if(hostAllow.length === 0){
+    if(hostAllow.length === 0) {
         return true;
     }
 
-    if(host === serverInfo.intranetIp){
+    if(host === serverInfo.intranetIp) {
         return true;
     }
 
-    for( i = 0, len = hostAllow.length; i < len; i++){
+    for( i = 0, len = hostAllow.length; i < len; i++) {
         v = hostAllow[i];
 
-        if(typeof v === 'string'){
-            if(v === host){
+        if(typeof v === 'string') {
+            if(v === host) {
                 return true;
             }
-        }else if(typeof v === 'object'){
-            if(v.test && v.test(host)){
+        }else if(typeof v === 'object') {
+            if(v.test && v.test(host)) {
                 return true;
             }
         }
@@ -71,44 +71,44 @@ this.checkHost = function(req, res){
 };
 
 //计算标准方差
-this.StdX10 = function(ipCache){
+this.StdX10 = function(ipCache) {
 
     var res = 0;
     var sum = 0;
     var avg = 0;
-    var arr = Object.keys(ipCache).filter(function(item){
+    var arr = Object.keys(ipCache).filter(function(item) {
         var tmp = ipCache[item];
-        if(typeof tmp === 'object' && tmp.list){
+        if(typeof tmp === 'object' && tmp.list) {
             sum += tmp.list.length;
             return true;
         }
         return false;
     });
 
-    if(arr.length <= 1){
+    if(arr.length <= 1) {
         return 0;
     }
 
     avg = sum / arr.length;
 
-    var sumXsum = arr.reduce(function(pre,key){
+    var sumXsum = arr.reduce(function(pre, key) {
         var item = ipCache[key];
         var value = item.list.length;
         item.avg = avg;
 
         return pre + (value - avg)*(value - avg);
-    },0);
+    }, 0);
 
     res = parseInt(Math.sqrt(sumXsum / (arr.length - 1)) * 10);
 
     return res;
 };
 
-this.check = function(req, res){
+this.check = function(req, res) {
 
     var userIp = httpUtil.getUserIp(req);
     var userIp24 = httpUtil.getUserIp24(req);
-    var key,Content,curr;
+    var key, Content, curr;
 
     var info = {
         userIp        : userIp,
@@ -116,26 +116,26 @@ this.check = function(req, res){
         pathname    : req.REQUEST.pathname
     };
 
-    if(cache.whiteList[userIp]){
+    if(cache.whiteList[userIp]) {
         return true;
     }
 
-    if(cache.whiteList[userIp24]){
+    if(cache.whiteList[userIp24]) {
         return true;
     }
 
     //忽略TST请求
-    if(isTST.isTST(req)){
+    if(isTST.isTST(req)) {
         return true;
     }
 
-    if(!cache.ipCache.start){
+    if(!cache.ipCache.start) {
         cache.ipCache.start = Date.now();
     }
     
     ipConut = ipConut - 1;
     
-    if(ipConut <= 0){
+    if(ipConut <= 0) {
         ipConut = CCIPSize;
         cache.ipCache.end = Date.now();
         cache.ipCache.StdX10= this.StdX10(cache.ipCache);
@@ -147,13 +147,13 @@ this.check = function(req, res){
         tnm2.Attr_API_Set('AVG_TSW_IP_STD_X10', cache.ipCacheLast.StdX10);
     }
 
-    if(Date.now() - cache.ipCache.start > 60000){
+    if(Date.now() - cache.ipCache.start > 60000) {
         //时间太长
         ipConut = 0;
         return true;
     }
     
-    if(!cache.ipCache[userIp]){
+    if(!cache.ipCache[userIp]) {
         cache.ipCache[userIp] = {
             ip007Info: null,
             isSendMail: false,
@@ -165,29 +165,29 @@ this.check = function(req, res){
     
     curr.list.push(info);
 
-    if(CCIPLimit <= -1){
+    if(CCIPLimit <= -1) {
         return true;
     }
 
-    if(config.isTest){
+    if(config.isTest) {
         //测试环境
         return true;
     }
     
-    if(config.devMode){
+    if(config.devMode) {
         //开发环境
         return true;
     }
 
-    if(!cache.ipCacheLast.StdX10){
+    if(!cache.ipCacheLast.StdX10) {
         return true;
     }
     
-    if(cache.ipCacheLast.StdX10 <= CCIPLimit){
+    if(cache.ipCacheLast.StdX10 <= CCIPLimit) {
         return true;
     }
 
-    if(cache.ipCacheLast.hasSendMail){
+    if(cache.ipCacheLast.hasSendMail) {
         return true;
     }
 
@@ -201,7 +201,7 @@ this.check = function(req, res){
 
     Content = '';
 
-    Object.keys(cache.ipCacheLast).forEach(function(ip,i){
+    Object.keys(cache.ipCacheLast).forEach(function(ip, i) {
 
         var num = '';
 
@@ -209,14 +209,14 @@ this.check = function(req, res){
             cache.ipCacheLast[ip]
             && cache.ipCacheLast[ip].list
             && cache.ipCacheLast[ip].list.length > 1
-        ){
+        ) {
             num = '' + cache.ipCacheLast[ip].list.length;
-            num = (num + 'XXXXXX').slice(0,8).replace(/X/g,'&nbsp;');
+            num = (num + 'XXXXXX').slice(0, 8).replace(/X/g, '&nbsp;');
             Content += `<div style="font-size:12px;">${num}${ip}</div>`;
         }
     });
 
-    mail.SendMail(key,'TSW',3600,{
+    mail.SendMail(key, 'TSW', 3600, {
         'To'            : config.mailTo,
         'CC'            : config.mailCC,
         'Title'            : `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
@@ -234,12 +234,12 @@ this.check = function(req, res){
 };
 
 
-this.getIpCache = function(){
+this.getIpCache = function() {
     return cache.ipCacheLast;
 };
 
 
-this.getIpSize = function(){
+this.getIpSize = function() {
     return CCIPSize;
 };
 

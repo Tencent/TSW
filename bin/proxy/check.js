@@ -19,17 +19,17 @@ try{
     process.stdout.write('check config ok');
     process.stdout.write('\r\n');
 
-    setTimeout(function(){
+    setTimeout(function() {
         process.exit(0);
-    },500);
-}catch(err){
+    }, 500);
+}catch(err) {
 
-    if(err){
+    if(err) {
         process.stderr.write(err.stack);
         process.stderr.write('\r\n');
-        setTimeout(function(){
+        setTimeout(function() {
             process.exit(0);
-        },500);
+        }, 500);
     }
 
 }

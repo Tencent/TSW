@@ -15,7 +15,7 @@ const http = require('http');
 const https = require('https');
 var isFirstLoad = true;
 
-if(global[__filename]){
+if(global[__filename]) {
     isFirstLoad = false;
 }else{
     global[__filename] = {};
@@ -28,10 +28,10 @@ process.nextTick(function() {
     const alpha = require('util/auto-report/alpha.js');
     const serverInfo = require('serverInfo.js');
 
-    const create = function(oriRequest,protocol){
-        return function(...args){
+    const create = function(oriRequest, protocol) {
+        return function(...args) {
             var opt = args[0];
-            var request = oriRequest.apply(this,args);
+            var request = oriRequest.apply(this, args);
             var captureBody = false;
             var result = [];
             var buffer = Buffer.alloc(0);
@@ -47,7 +47,7 @@ process.nextTick(function() {
             var localPort = '';
             var host = (opt.headers && opt.headers.host) || opt.host;
 
-            if(context.requestCaptureSN){
+            if(context.requestCaptureSN) {
                 context.requestCaptureSN++;
             }else{
                 context.requestCaptureSN = 1;
@@ -56,7 +56,7 @@ process.nextTick(function() {
             var SN = context.requestCaptureSN || 0;
             var logPre = `[${SN}] `;
 
-            logger.debug(logPre + '${method} ${ip}:${port} ~ ${protocol}//${host}${path}',{
+            logger.debug(logPre + '${method} ${ip}:${port} ~ ${protocol}//${host}${path}', {
                 protocol    : protocol,
                 method        : opt.method,
                 host        : host,
@@ -66,20 +66,20 @@ process.nextTick(function() {
             });
 
             //抓包
-            if(alpha.isAlpha()){
+            if(alpha.isAlpha()) {
                 logger.debug(logPre + 'capture body on');
                 captureBody = true;
             }
 
-            if(captureBody){
+            if(captureBody) {
                 httpUtil.captureBody(request);
 
-                request.once('finish',function(){
+                request.once('finish', function() {
                     logger.debug(logPre + 'send finish, total size ' + this._body.length);
                 });
             }
 
-            var report = function(oriResponse){
+            var report = function(oriResponse) {
                 var logJson = logger.getJson();
                 var response = oriResponse || {
                     headers : {
@@ -91,7 +91,7 @@ process.nextTick(function() {
                     statusMessage    : 'server buisy'
                 };
 
-                if(!logJson){
+                if(!logJson) {
                     logger.debug('logger.getJson() is empty!');
                     return;
                 }
@@ -112,7 +112,7 @@ process.nextTick(function() {
                     serverIp           : remoteAddress || opt.host,
                     serverPort        : remotePort || opt.port,
                     requestRaw       : httpUtil.getClientRequestHeaderStr(request) + (request._body.toString('UTF-8') || ''),
-                    responseHeader     : httpUtil.getClientResponseHeaderStr(response,bodySize),
+                    responseHeader     : httpUtil.getClientResponseHeaderStr(response, bodySize),
                     responseBody      : (buffer.toString('base64')) || '',
                     timestamps       : {
                         ClientConnected    : new Date(timeStart),
@@ -137,7 +137,7 @@ process.nextTick(function() {
                 logJson.ajax.push(curr);
             };
 
-            request.once('response',(response)=>{
+            request.once('response', (response)=>{
                 timeResponse = Date.now();
 
                 var socket = response.socket;
@@ -149,7 +149,7 @@ process.nextTick(function() {
                 localAddress = socket.localAddress;
                 localPort = socket.localPort;
 
-                logger.debug(logPre + '${localAddress}:${localPort} > ${remoteAddress}:${remotePort} response ${statusCode} cost:${cost}ms ${encoding}',{
+                logger.debug(logPre + '${localAddress}:${localPort} > ${remoteAddress}:${remotePort} response ${statusCode} cost:${cost}ms ${encoding}', {
                     remoteAddress    : remoteAddress,
                     remotePort        : remotePort,
                     localAddress    : localAddress,
@@ -159,27 +159,27 @@ process.nextTick(function() {
                     cost: timeResponse - timeStart
                 });
 
-                var done = function(){
-                    this.removeListener('data',data);
+                var done = function() {
+                    this.removeListener('data', data);
 
-                    if(timeEnd){
+                    if(timeEnd) {
                         return;
                     }
 
                     timeEnd = new Date().getTime();
 
-                    if(captureBody){
+                    if(captureBody) {
                         buffer = Buffer.concat(result);
                         result = [];
                     }
 
                     //上报
-                    if(captureBody){
+                    if(captureBody) {
                         report(response);
                     }
                 };
 
-                var data = function(chunk){
+                var data = function(chunk) {
                     // var cost = Date.now() - timeCurr;
 
                     // timeCurr = Date.now();
@@ -192,23 +192,23 @@ process.nextTick(function() {
 
                     bodySize += chunk.length;
 
-                    if(captureBody && bodySize <= maxBodySize){
+                    if(captureBody && bodySize <= maxBodySize) {
                         result.push(chunk);
                     }
                 };
 
-                response.on('data',data);
+                response.on('data', data);
 
-                response.once('close',function(){
+                response.once('close', function() {
                     logger.debug(logPre + 'close');
 
                     done.call(this);
                 });
 
-                response.once('end',function(){
+                response.once('end', function() {
                     var cost = Date.now() - timeStart;
 
-                    logger.debug('${logPre}end size：${size}, receive data cost: ${cost}ms',{
+                    logger.debug('${logPre}end size：${size}, receive data cost: ${cost}ms', {
                         logPre: logPre,
                         cost: cost,
                         size: bodySize
@@ -223,7 +223,7 @@ process.nextTick(function() {
         };
     };
 
-    http.request = create(http.request,'http:');
-    https.request = create(https.request,'https:');
+    http.request = create(http.request, 'http:');
+    https.request = create(https.request, 'https:');
 });
 

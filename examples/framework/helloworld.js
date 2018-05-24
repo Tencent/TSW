@@ -1,6 +1,6 @@
 const logger = plug('logger');
 
-module.exports = function(){
+module.exports = function() {
     var res = window.response;
 
     logger.setKey('xxx');

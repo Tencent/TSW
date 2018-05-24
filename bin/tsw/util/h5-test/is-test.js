@@ -22,8 +22,8 @@ const openapi = require('util/openapi');
 var isFirstLoad = false;
 
 //以下是提高稳定性用的
-function getFileCacheKey(project,key){
-    var cacheFilename = [project,key.replace(/\?.+$/,'')].join('/');
+function getFileCacheKey(project, key) {
+    var cacheFilename = [project, key.replace(/\?.+$/, '')].join('/');
 
     cacheFilename += '.cache';
     return cacheFilename;
@@ -34,22 +34,22 @@ function getFileCacheKey(project,key){
  * 更新缓存
  *
  */
-function updateFileCache(project,key,text){
+function updateFileCache(project, key, text) {
     text = text || JSON.stringify({});
-    var cacheFilename = getFileCacheKey(project,key);
+    var cacheFilename = getFileCacheKey(project, key);
 
     //保存到文件
-    fileCache.set(cacheFilename,Buffer.from(text,'UTF-8'));
+    fileCache.set(cacheFilename, Buffer.from(text, 'UTF-8'));
 }
 
 //监听restart事件
-if(!global[ __filename + '.restart']){
+if(!global[ __filename + '.restart']) {
     global[ __filename + '.restart'] = true;
     isFirstLoad = true;
 }
 
-if(isFirstLoad){
-    cluster.worker && cluster.worker.once('disconnect', function(worker){
+if(isFirstLoad) {
+    cluster.worker && cluster.worker.once('disconnect', function(worker) {
         logger.info('save h5test on disconnect event...');
         onDisconnect('restart');
     });
@@ -57,11 +57,11 @@ if(isFirstLoad){
 
 function onDisconnect (type) {
     type = type || 'restart';
-    if(global[__filename]){
+    if(global[__filename]) {
         //有数据才fileCache
         try{
-            updateFileCache('h5test','test.user.list',JSON.stringify(global[__filename]));
-        }catch(e){
+            updateFileCache('h5test', 'test.user.list', JSON.stringify(global[__filename]));
+        }catch(e) {
             //依然谨慎
         }
     }
@@ -75,15 +75,15 @@ var getTimeout = 60000;
 var lastUpdateTime = 0;
 
 //获取测试用户
-var getTestUserMap = function(){
+var getTestUserMap = function() {
     
     //看下fileCache里面有没有
-    if(!global[__filename]){
+    if(!global[__filename]) {
         //进入这个逻辑，是worker restart后的一分钟内的[第一次]，从硬盘同步数据过来；一旦取到数据之后，这里将不再执行
         global[__filename] = module.exports.getTestUserMapFromFileCache() || {};
     }
 
-    if(Date.now() - lastUpdateTime > getTimeout || isWindows.isWindows){
+    if(Date.now() - lastUpdateTime > getTimeout || isWindows.isWindows) {
         lastUpdateTime = Date.now();
         syncFromMemcachedOrCloud();
     }
@@ -91,30 +91,30 @@ var getTestUserMap = function(){
     return global[__filename] || {};
 };
 
-var syncFromMemcachedOrCloud = function(){
-    if(config.appid && config.appkey){
+var syncFromMemcachedOrCloud = function() {
+    if(config.appid && config.appkey) {
         return syncFromCloud();
     }
 
     return syncFromMemcached();
 };
 
-var syncFromMemcached = function(){
+var syncFromMemcached = function() {
 
     //从内存中读取testTargetMap
     var memcached = module.exports.cmem();
     var keyText = module.exports.keyBitmap();
 
-    if(!memcached){
+    if(!memcached) {
         return;
     }
 
-    memcached.get(keyText,function(err,data){
-        if(err){
+    memcached.get(keyText, function(err, data) {
+        if(err) {
             logger.error('memcache get error:' + err);
             data = {};
         }
-        if(data === true){
+        if(data === true) {
             logger.error('memcache get data true');
             data = {};
         }
@@ -125,24 +125,24 @@ var syncFromMemcached = function(){
         alpha.update(global[__filename]);
 
         //服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
-        if(isWindows.isWindows){
+        if(isWindows.isWindows) {
             onDisconnect('test.in.windows');
         }
     });
 };
 
 //从云端同步
-var syncFromCloud = function(merge){
+var syncFromCloud = function(merge) {
 
-    if(!config.appid){
+    if(!config.appid) {
         return;
     }
 
-    if(!config.appkey){
+    if(!config.appkey) {
         return;
     }
 
-    if(!config.h5testSyncUrl){
+    if(!config.h5testSyncUrl) {
         return;
     }
 
@@ -171,22 +171,22 @@ var syncFromCloud = function(merge){
         keepAlive    : true,
         autoToken    : false,
         dataType    : 'json'
-    }).fail(function(){
+    }).fail(function() {
         logger.error('syncFromCloud fail.');
-        if(merge === 'merge'){
+        if(merge === 'merge') {
             return;
         }
         global[__filename] = {};
-    }).done(function(d){
+    }).done(function(d) {
         var data = null;
-        if(d.result && d.result.code === 0){
+        if(d.result && d.result.code === 0) {
             data = d.result.data || {};
         }
 
-        if(merge === 'merge'){
+        if(merge === 'merge') {
             //追加
             global[__filename] = global[__filename] || {};
-            Object.assign(global[__filename],data);
+            Object.assign(global[__filename], data);
         }else{
             //覆盖
             global[__filename] = data || {};
@@ -196,7 +196,7 @@ var syncFromCloud = function(merge){
         alpha.update(global[__filename]);
 
         //服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
-        if(isWindows.isWindows){
+        if(isWindows.isWindows) {
             onDisconnect('test.in.windows');
         }
 
@@ -205,14 +205,14 @@ var syncFromCloud = function(merge){
 };
 
 //是否命中测试环境
-module.exports.getTestSpaceInfo = function(req){
+module.exports.getTestSpaceInfo = function(req) {
     //windows版本，更不用转
-    if(isWindows.isWindows){
+    if(isWindows.isWindows) {
         return;
     }
 
     //安全中心请求，也不用转了~
-    if(isTST.isTST(req)){
+    if(isTST.isTST(req)) {
         return;
     }
 
@@ -225,7 +225,7 @@ module.exports.getTestSpaceInfo = function(req){
     var testTargetMap = getTestUserMap();
 
     //如果已经是测试环境，就不用转发了
-    if(config.isTest){
+    if(config.isTest) {
         return;
     }
 
@@ -239,12 +239,12 @@ module.exports.getTestSpaceInfo = function(req){
         && testTargetMap[uin]
         && typeof testTargetMap[uin] === 'string'
         && testTargetMap[uin].split('.').length == 4
-    ){
+    ) {
         testIp = testTargetMap[uin];
 
         let arr = testIp.split(':');
 
-        if(arr.length === 2){
+        if(arr.length === 2) {
             testIp = arr[0];
             testPort = ~~arr[1];
         }
@@ -265,10 +265,10 @@ module.exports.getTestSpaceInfo = function(req){
 
 //是否命中测试环境
 //命中则直接转发请求，return true;不命中则return false
-module.exports.isTestUser = function(req, res){
+module.exports.isTestUser = function(req, res) {
     var testSpaceInfo = module.exports.getTestSpaceInfo(req);
 
-    if(!testSpaceInfo){
+    if(!testSpaceInfo) {
         return false;
     }
 
@@ -283,7 +283,7 @@ module.exports.isTestUser = function(req, res){
 
     context.mod_act = 'h5_test';
 
-    ajax.proxy(req,res).request({
+    ajax.proxy(req, res).request({
         url         : reqUrl,
         type        : req.method,
         dataType    : 'proxy',
@@ -303,8 +303,8 @@ module.exports.isTestUser = function(req, res){
         dcapi        :{
             key        : 'EVENT_TSW_HTTP_H5_TEST'
         }
-    }).done(function(d){
-    }).fail(function(d){
+    }).done(function(d) {
+    }).fail(function(d) {
         logger.error('h5test proxy fail...');
         res.setHeader('Content-Type', 'text/html; charset=UTF-8');
         res.writeHead(500);
@@ -315,12 +315,12 @@ module.exports.isTestUser = function(req, res){
 };
 
 //cmem对象
-module.exports.cmem = function(){
+module.exports.cmem = function() {
     return cmemTSW.h5test();
 };
 
 //uin对应的存储key，每天一变
-module.exports.keyBitmap = function(uin){
+module.exports.keyBitmap = function(uin) {
     var currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
     return 'bitmap.h5.test.' + currDays;
 };
@@ -329,24 +329,24 @@ module.exports.keyBitmap = function(uin){
 module.exports.getTestUserMap = getTestUserMap;
 
 module.exports.getTestUserMapFromFileCache = function () {
-    var fileCacheKey = getFileCacheKey('h5test','test.user.list');
+    var fileCacheKey = getFileCacheKey('h5test', 'test.user.list');
     var localData = fileCache.getSync(fileCacheKey).data;
     var localJSON = {};
 
-    if(localData){
+    if(localData) {
         //发现有数据
         try{
             localJSON = JSON.parse(localData.toString('utf-8'));
-        }catch(e){
+        }catch(e) {
             //加个try catch是谨慎一点，防止出现一些奇奇怪怪的问题
         }
     }
 
-    if(typeof localJSON !== 'object'){
+    if(typeof localJSON !== 'object') {
         localJSON = {};
     }
 
-    if(!localJSON){
+    if(!localJSON) {
         localJSON = {};
     }
 

@@ -19,15 +19,15 @@ var cache = {
 };
 var isFirstLoad = false;
 
-if(global[__filename]){
+if(global[__filename]) {
     cache = global[__filename];
 }else{
     global[__filename] = cache;
     isFirstLoad = true;
 }
 
-if(isFirstLoad){
-    cluster.worker && cluster.worker.once('disconnect', function(worker){
+if(isFirstLoad) {
+    cluster.worker && cluster.worker.once('disconnect', function(worker) {
         var logger = require('logger');
         var last = cache.curr;
 
@@ -54,14 +54,14 @@ this.Attr_API = function (attr, iValue) {
     cacheOrRepoet(attr, iValue);
 };
 
-var cacheOrRepoet = function(attr, iValue){
+var cacheOrRepoet = function(attr, iValue) {
     var curr;
 
-    if(!mapping[attr]){
+    if(!mapping[attr]) {
         return;
     }
 
-    if(!cache.curr[attr]){
+    if(!cache.curr[attr]) {
         cache.curr[attr] = {
             count: 0,
             sum: 0
@@ -74,7 +74,7 @@ var cacheOrRepoet = function(attr, iValue){
 
     var now = Date.now();
 
-    if(now - cache.time < 60000){
+    if(now - cache.time < 60000) {
         return;
     }
 
@@ -87,7 +87,7 @@ var cacheOrRepoet = function(attr, iValue){
 };
 
 
-var reportOpenapi = function(last){
+var reportOpenapi = function(last) {
     var defer = Deferred.create();
 
     var openapi = require('util/openapi');
@@ -95,31 +95,31 @@ var reportOpenapi = function(last){
     var config = require('config');
     var retCall;
 
-    if(typeof config.beforeReportApp === 'function'){
+    if(typeof config.beforeReportApp === 'function') {
         retCall = config.beforeReportApp(last);
     }
 
     //阻止默认上报
-    if(retCall === false){
+    if(retCall === false) {
         return;
     }
 
-    if(config.isTest){
+    if(config.isTest) {
         return;
     }
 
-    if(!config.appid || !config.appkey){
+    if(!config.appid || !config.appkey) {
         return;
     }
 
-    if(!config.appReportUrl){
+    if(!config.appReportUrl) {
         return;
     }
 
     var arr = [];
 
-    Object.keys(last).forEach(function(v,i){
-        arr.push([v,last[v].sum,last[v].count].join('.'));
+    Object.keys(last).forEach(function(v, i) {
+        arr.push([v, last[v].sum, last[v].count].join('.'));
     });
 
     var postData = {
@@ -149,12 +149,12 @@ var reportOpenapi = function(last){
         keepAlive    : true,
         autoToken    : false,
         dataType    : 'json'
-    }).fail(function(){
+    }).fail(function() {
         logger.error('app report fail.');
         defer.reject();
-    }).done(function(d){
-        if(d.result){
-            if(d.result.code === 0){
+    }).done(function(d) {
+        if(d.result) {
+            if(d.result.code === 0) {
                 logger.debug('app report success.');
                 return defer.resolve();
             }else{

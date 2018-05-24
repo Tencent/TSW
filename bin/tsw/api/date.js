@@ -15,7 +15,7 @@ var Date = {
      * @param {Date} mDate 时间对象
      * @param {String} fmt 格式化形式，如 MM月dd日 HH:mm
      */
-    format: function(mDate, fmt){
+    format: function(mDate, fmt) {
         var o = {
                 'M+': mDate.getMonth() + 1, //月份
                 'D+': mDate.getDate(), //日

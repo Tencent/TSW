@@ -20,13 +20,13 @@ const Deferred = require('util/Deferred');
 const isWindows = require('util/isWindows.js');
 
 
-this.report = function(){
+this.report = function() {
     
-    if(isWindows.isWindows){
+    if(isWindows.isWindows) {
         return;
     }
 
-    if(!config.isTest){
+    if(!config.isTest) {
         return;
     }
 
@@ -36,15 +36,15 @@ this.report = function(){
         port    : config.httpPort
     };
 
-    require('api/cmdb').GetDeviceThisServer().done(function(d){
+    require('api/cmdb').GetDeviceThisServer().done(function(d) {
 
         var business;
 
-        if(d && d.business){
+        if(d && d.business) {
             business = d.business[0];
         }
 
-        if(!business){
+        if(!business) {
             business = {
                 moduleId: 0,
                 L1Business: '未知',
@@ -55,24 +55,24 @@ this.report = function(){
         }
 
         logJson.moduleId = business.moduleId;
-        logJson.moduleName = [business.L1Business,business.L2Business,business.L3Business,business.module].join('->');
+        logJson.moduleName = [business.L1Business, business.L2Business, business.L3Business, business.module].join('->');
 
-        logJson = Deferred.extend(true,{
+        logJson = Deferred.extend(true, {
             time    : new Date().toGMTString(),
             name    : '',
             group    : 'unknown',
             desc    : '',
             order    : 0,
             owner    : ''
-        },config.testInfo,logJson);
+        }, config.testInfo, logJson);
 
         var logKey = 'h5test' + logJson.group;
 
         //上报自己
-        post.report(logKey,logText,logJson);
+        post.report(logKey, logText, logJson);
 
         //开放平台上报，不用再分组了
-        if(config.appid && config.appkey){
+        if(config.appid && config.appkey) {
             logReport.reportCloud({
                 type        : 'alpha',
                 logText        : logText,
@@ -89,8 +89,8 @@ this.report = function(){
         }
 
         //上报分组
-        require('util/CD.js').check('h5test' + logJson.group,1,60).done(function(){
-            post.report('group.h5test',logText,logJson);
+        require('util/CD.js').check('h5test' + logJson.group, 1, 60).done(function() {
+            post.report('group.h5test', logText, logJson);
         });
 
     });
@@ -98,7 +98,7 @@ this.report = function(){
 };
 
 
-this.list = function(group){
+this.list = function(group) {
     
     var defer = Deferred.create();
     var getLogJsonDefer;
@@ -106,19 +106,19 @@ this.list = function(group){
     group = group || '';
 
     //开平对应的存储
-    if(context.appid && context.appkey){
+    if(context.appid && context.appkey) {
         getLogJsonDefer = postOpenapi.getLogJson(`${context.appid}/tsw/h5test`);
     }else{
         getLogJsonDefer = post.getLogJson(`h5test${group}`);
     }
 
-    getLogJsonDefer.done(function(arr){
+    getLogJsonDefer.done(function(arr) {
         
         var res = [];
         var map = {};
         
-        arr.forEach(function(v){
-            if(!map[v.ip]){
+        arr.forEach(function(v) {
+            if(!map[v.ip]) {
                 map[v.ip] = true;
                 res.push(v);
             }
@@ -138,7 +138,7 @@ this.list = function(group){
             moduleName: 'null'
         });
 
-        res.sort(function(a,b){
+        res.sort(function(a, b) {
             return a.order - b.order;
         });
 
@@ -149,23 +149,23 @@ this.list = function(group){
 };
 
 
-this.getAllGroup = function(){
+this.getAllGroup = function() {
 
     var defer = Deferred.create();
 
-    post.getLogJson('group.h5test').done(function(arr){
+    post.getLogJson('group.h5test').done(function(arr) {
 
         var res = [];
         var map = {};
 
-        arr.forEach(function(v){
-            if(!map[v.group]){
+        arr.forEach(function(v) {
+            if(!map[v.group]) {
                 map[v.group] = true;
                 res.push(v);
             }
         });
 
-        res.sort(function(a,b){
+        res.sort(function(a, b) {
             return a.order - b.order;
         });
 

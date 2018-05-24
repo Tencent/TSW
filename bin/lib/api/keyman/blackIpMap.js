@@ -21,31 +21,31 @@ var cache = {
     dataFile: {}
 };
 
-if(global[__filename]){
+if(global[__filename]) {
     cache = global[__filename];
 }else{
     global[__filename] = cache;
     isFirstLoad = true;
 }
 
-if(isFirstLoad){
-    if(config.blackIpFile){
+if(isFirstLoad) {
+    if(config.blackIpFile) {
 
-        (function(){
+        (function() {
             //导入blackIpFile
             var text = '';
 
             try{
-                text = fs.readFileSync(config.blackIpFile,'UTF-8');
-            }catch(e){
+                text = fs.readFileSync(config.blackIpFile, 'UTF-8');
+            }catch(e) {
                 logger.warn(e.stack);
             }
 
-            if(!text){
+            if(!text) {
                 return;
             }
 
-            if(text.length >= 2 * 1024 * 1024){
+            if(text.length >= 2 * 1024 * 1024) {
                 logger.error('blackIp file limit <=2M');
                 return;
             }
@@ -61,87 +61,87 @@ if(isFirstLoad){
 
 init();
 
-function init(){
+function init() {
 
     var buffer = null;
     var text = '';
 
-    if(fileUrl){
+    if(fileUrl) {
         buffer = fileCache.getSync(fileUrl).data;
     }
 
-    if(buffer){
+    if(buffer) {
         text = buffer.toString('utf-8');
         updateMap(text);
     }
 
 }
 
-this.getFileMapSync = function(){
+this.getFileMapSync = function() {
     return cache.dataFile;
 };
 
-this.getSync = function(){
+this.getSync = function() {
     this.get();
 
     return cache.data;
 };
 
-function getMap(text){
+function getMap(text) {
 
     var map = {};
 
     text = text || '';
 
-    text.replace(/^([0-9][0-9.*]+).*$/gm,function($0,key){
+    text.replace(/^([0-9][0-9.*]+).*$/gm, function($0, key) {
         map[key] = 1;
     });
 
     return map;
 }
 
-function updateMap(text){
+function updateMap(text) {
 
     var map = getMap(text);
 
     //copy
-    Object.assign(map,cache.dataFile);
+    Object.assign(map, cache.dataFile);
 
     cache.data = map;
 
     logger.debug('update ok');
 }
 
-this.get = function(){
+this.get = function() {
     
     var defer = Deferred.create();
     var delay = ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
     var l5api = config.tswL5api['blackIpFileUrl'];
     
-    if(Date.now() - cache.timeUpdate < 300000 + delay){
+    if(Date.now() - cache.timeUpdate < 300000 + delay) {
         return defer.resolve(cache.data);
     }
     
     cache.timeUpdate = Date.now();
 
-    if(!fileUrl){
+    if(!fileUrl) {
         return defer.resolve(cache.data);
     }
     
-    fileCache.getAsync(fileUrl).done(function(d){
+    fileCache.getAsync(fileUrl).done(function(d) {
         
         var lastModifyTime = 0;
         var text = '';
         
-        if(d && d.stats){
+        if(d && d.stats) {
             lastModifyTime = d.stats.mtime.getTime();
         }
         
-        if(d && d.data){
+        if(d && d.data) {
             text = d.data.toString('utf-8');
         }
         
-        if(Date.now() - lastModifyTime < 300000){
+        if(Date.now() - lastModifyTime < 300000) {
             logger.debug('使用本地文件');
             
             updateMap(text);
@@ -162,18 +162,18 @@ this.get = function(){
                 key: 'EVENT_TSW_BLACKIP_FILE_URL'
             },
             dataType: 'text'
-        }).fail(function(d){
+        }).fail(function(d) {
             defer.resolve(cache.data);
-        }).done(function(d){
+        }).done(function(d) {
             
             var text = '';
                 
-            if(d && d.result && typeof d.result === 'string'){
+            if(d && d.result && typeof d.result === 'string') {
                 
                 text = d.result;
             }
 
-            if(text.length >= 2 * 1024 * 1024){
+            if(text.length >= 2 * 1024 * 1024) {
                 logger.error('blackIp file limit <=2M');
                 return defer.resolve(cache.data);
             }
@@ -181,7 +181,7 @@ this.get = function(){
             updateMap(text);
             
             //保存在本地
-            fileCache.set(fileUrl,Buffer.from(text,'UTF-8'));
+            fileCache.set(fileUrl, Buffer.from(text, 'UTF-8'));
             
             defer.resolve(cache.data);
         });

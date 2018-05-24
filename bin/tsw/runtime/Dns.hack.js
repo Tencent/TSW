@@ -7,11 +7,11 @@
  */
 'use strict';
 
-if(!global[__filename]){
+if(!global[__filename]) {
     
     global[__filename] = true;
 
-    process.nextTick(function(){
+    process.nextTick(function() {
         var config = require('config');
         var dns = require('dns');
         var dcapi = require('api/libdcapi/dcapi');
@@ -24,7 +24,7 @@ if(!global[__filename]){
                 var args = [hostname];
                 var start = Date.now();
 
-                if(net.isIP(hostname)){
+                if(net.isIP(hostname)) {
                     return fn.apply(this, arguments);
                 }
 
@@ -52,7 +52,7 @@ if(!global[__filename]){
                         isFail = 1;
                     }
 
-                    if(err){
+                    if(err) {
                         logger.error('dns lookup error: ' + err.stack);
                     }else{
                         logger.debug(`dns lookup: ${hostname} --> ${address}`);

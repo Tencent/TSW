@@ -11,40 +11,40 @@ const Deferred = require('util/Deferred');
 const logger = require('logger');
 const path = require('path');
 const fs = require('fs');
-const root = path.join(__dirname,'../../../../log/cache');
+const root = path.join(__dirname, '../../../../log/cache');
 const tnm2 = require('api/tnm2');
 const existsCache = {};
 
 
-this.getDir = function(filepath){
+this.getDir = function(filepath) {
     
-    var res,tmp;
+    var res, tmp;
     
     filepath = filepath || '';
 
-    if(!/^[a-z0-9_/\-.\\:]+$/i.test(filepath)){
+    if(!/^[a-z0-9_/\-.\\:]+$/i.test(filepath)) {
         throw new Error('filepath not safe: ' + filepath);
     }
 
-    if(filepath.indexOf('http://') > -1){
-        filepath = filepath.replace('http://','');
+    if(filepath.indexOf('http://') > -1) {
+        filepath = filepath.replace('http://', '');
     }
     
-    tmp = path.join('/',filepath);
-    res = path.join(root,tmp);
+    tmp = path.join('/', filepath);
+    res = path.join(root, tmp);
     
-    res = res.replace(/\\/g,'/');
+    res = res.replace(/\\/g, '/');
     
     return res;
 };
 
-this.mkdir = function(dirname){
+this.mkdir = function(dirname) {
 
-    if(existsCache[dirname]){
+    if(existsCache[dirname]) {
         return;
     }
 
-    if(fs.existsSync(dirname)){
+    if(fs.existsSync(dirname)) {
         existsCache[dirname] = true;
         return;
     }
@@ -53,15 +53,15 @@ this.mkdir = function(dirname){
     var i = 0;
     var curr;
     
-    for(i = 1; i < arr.length; i++){
-        curr = arr.slice(0,i + 1).join('/');
-        if(!fs.existsSync(curr)){
-            logger.debug('mkdir : ${dir}',{
+    for(i = 1; i < arr.length; i++) {
+        curr = arr.slice(0, i + 1).join('/');
+        if(!fs.existsSync(curr)) {
+            logger.debug('mkdir : ${dir}', {
                 dir: curr
             });
             try{
-                fs.mkdirSync(curr,0o777);
-            }catch(e){
+                fs.mkdirSync(curr, 0o777);
+            }catch(e) {
                 logger.info(e.stack);
             }
 
@@ -69,7 +69,7 @@ this.mkdir = function(dirname){
     }
 };
 
-this.set = function(filepath,data){
+this.set = function(filepath, data) {
     var start = Date.now();
     var buffer = null;
     var filename = this.getDir(filepath);
@@ -77,50 +77,50 @@ this.set = function(filepath,data){
     var basename = path.basename(filename);
     var randomname = basename + '.tmp.' + String(Math.random()).slice(2);
     
-    logger.debug('[set] filename : ${filename}',{
+    logger.debug('[set] filename : ${filename}', {
         filename: filename
     });
     
-    logger.debug('[set] dirname : ${dirname}',{
+    logger.debug('[set] dirname : ${dirname}', {
         dirname: dirname
     });
     
-    logger.debug('[set] basename : ${basename}',{
+    logger.debug('[set] basename : ${basename}', {
         basename: basename
     });
     
-    logger.debug('[set] randomname : ${randomname}',{
+    logger.debug('[set] randomname : ${randomname}', {
         randomname: randomname
     });
     
     this.mkdir(dirname);
     
-    if(typeof data === 'string'){
-        buffer = Buffer.from(data,'UTF-8');
+    if(typeof data === 'string') {
+        buffer = Buffer.from(data, 'UTF-8');
     }else{
         buffer = data;
     }
     
-    fs.writeFile([dirname,randomname].join('/'),buffer,{mode:0o666},function(err){
+    fs.writeFile([dirname, randomname].join('/'), buffer, {mode:0o666}, function(err) {
         
-        logger.debug('[write] done: ${randomname}, size: ${size}',{
+        logger.debug('[write] done: ${randomname}, size: ${size}', {
             randomname: randomname,
             size: buffer.length
         });
 
-        if(err){
+        if(err) {
             logger.info(err.stack);
             return;
         }
         
-        fs.rename([dirname,randomname].join('/'),[dirname,basename].join('/'),function(err){
+        fs.rename([dirname, randomname].join('/'), [dirname, basename].join('/'), function(err) {
             var end = Date.now();
             
-            if(err){
+            if(err) {
                 logger.debug(err);
             }
             
-            logger.debug('[rename] done: ${basename}, cost: ${cost}ms',{
+            logger.debug('[rename] done: ${basename}, cost: ${cost}ms', {
                 basename: basename,
                 cost: end - start
             });
@@ -131,7 +131,7 @@ this.set = function(filepath,data){
     tnm2.Attr_API('SUM_TSW_FILECACHE_WRITE', 1);
 };
 
-this.getSync = function(filepath){
+this.getSync = function(filepath) {
     
     var start = Date.now();
     var buffer = null;
@@ -143,7 +143,7 @@ this.getSync = function(filepath){
     
     try{
         buffer = fs.readFileSync(filename);
-        if(buffer.length === 0){
+        if(buffer.length === 0) {
             //长度为0返回空，因为垃圾清理逻辑会清空文件
             buffer = null;
         }
@@ -151,13 +151,13 @@ this.getSync = function(filepath){
         res.stats = fs.statSync(filename);
         res.data = buffer;
 
-    }catch(err){
+    }catch(err) {
         buffer = null;
     }
     
     var end = Date.now();
     
-    logger.debug('[get] done: ${filename}, size: ${size}, cost: ${cost}ms',{
+    logger.debug('[get] done: ${filename}, size: ${size}, cost: ${cost}ms', {
         filename: filename,
         size: buffer && buffer.length,
         cost: end - start
@@ -167,7 +167,7 @@ this.getSync = function(filepath){
     return res;
 };
 
-this.get = this.getAsync = function(filepath){
+this.get = this.getAsync = function(filepath) {
     
     var defer = Deferred.create();
     var filename = this.getDir(filepath);
@@ -178,13 +178,13 @@ this.get = this.getAsync = function(filepath){
         data: null
     };
     
-    logger.debug('[getAsync] ${filename}',{
+    logger.debug('[getAsync] ${filename}', {
         filename: filename
     });
     
-    fs.readFile(filename,function(err, buffer){
+    fs.readFile(filename, function(err, buffer) {
         
-        if(err){
+        if(err) {
             logger.debug(err.stack);
             defer.resolve(res);
             return;
@@ -192,15 +192,15 @@ this.get = this.getAsync = function(filepath){
         
         res.data = buffer;
         
-        fs.stat(filename,function(err,stats){
+        fs.stat(filename, function(err, stats) {
             
-            if(err){
+            if(err) {
                 logger.debug(err.stack);
                 defer.resolve(res);
                 return;
             }
             
-            logger.debug('[getAsync] mtime: ${mtime}, size: ${size}',stats);
+            logger.debug('[getAsync] mtime: ${mtime}, size: ${size}', stats);
             
             res.stats = stats;
             defer.resolve(res);
@@ -212,17 +212,17 @@ this.get = this.getAsync = function(filepath){
 };
 
 
-this.updateMtime = function(filepath, atime, mtime){
+this.updateMtime = function(filepath, atime, mtime) {
 
     var filename = this.getDir(filepath);
     
     
-    logger.debug('[updateMtime] ${filename}',{
+    logger.debug('[updateMtime] ${filename}', {
         filename: filename
     });
     
-    fs.utimes(filename, atime || new Date(), mtime || new Date(), function(err){
-        if(err){
+    fs.utimes(filename, atime || new Date(), mtime || new Date(), function(err) {
+        if(err) {
             logger.debug(err.stack);
             return;
         }

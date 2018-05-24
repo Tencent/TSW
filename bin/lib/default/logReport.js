@@ -9,7 +9,7 @@
 
 const config = require('config');
 
-module.exports.report = function(data){
+module.exports.report = function(data) {
     var retValue;
     var reportData = {
         table:'reportData',
@@ -26,11 +26,11 @@ module.exports.report = function(data){
         }
     };
 
-    if(config.beforeReportLog && typeof config.beforeReportLog === 'function'){
+    if(config.beforeReportLog && typeof config.beforeReportLog === 'function') {
         retValue = config.beforeReportLog(reportData);
     }
 
-    if(retValue === false){
+    if(retValue === false) {
         return;
     }
 };

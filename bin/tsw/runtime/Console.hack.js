@@ -7,11 +7,11 @@
  */
 'use strict';
 
-if(!global[__filename]){
+if(!global[__filename]) {
 
     global[__filename] = true;
 
-    process.nextTick(function(){
+    process.nextTick(function() {
         var util = require('util');
         var logger = require('logger');
 

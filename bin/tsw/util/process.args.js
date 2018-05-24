@@ -11,8 +11,8 @@ const args = {};
 let i;
 
 //解析进程参数
-for(i = 2; i< process.argv.length; i++){
-    process.argv[i].replace(/(.+)=(.+)/,function($0,$1,$2){
+for(i = 2; i< process.argv.length; i++) {
+    process.argv[i].replace(/(.+)=(.+)/, function($0, $1, $2) {
         args[$1] = $2;
     });
 

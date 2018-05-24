@@ -9,7 +9,7 @@
 
 const Deferred = require('util/Deferred');
 
-this.info = function(opt){
+this.info = function(opt) {
     var defer = Deferred.create();
 
     return defer.reject();

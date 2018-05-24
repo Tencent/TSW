@@ -277,7 +277,7 @@ jQuery.Callbacks = function( flags ) {
         // Fire callbacks
         fire = function( context, args ) {
             
-            var fn,domain,ret;
+            var fn, domain, ret;
             
             args = args || [];
             memory = !flags.memory || [context, args];
@@ -293,7 +293,7 @@ jQuery.Callbacks = function( flags ) {
                 
                 // restore domain if needed
                 if (domain && domain !== process.domain) {
-                    domain.run(function(){
+                    domain.run(function() {
                         ret = fn.apply(context, args);
                     });
                 }else {
@@ -312,12 +312,10 @@ jQuery.Callbacks = function( flags ) {
                         memory = stack.shift();
                         self.fireWith(memory[0], memory[1]);
                     }
-                }
-                else 
+                } else 
                 if (memory === true) {
                     self.disable();
-                }
-                else {
+                } else {
                     list = [];
                 }
             }
@@ -478,16 +476,16 @@ jQuery.extend({
                     return this;
                 },
 
-                toES6Promise: function(){
+                toES6Promise: function() {
                     var self = this;
 
-                    return new Promise(function (resolve, reject){
+                    return new Promise(function (resolve, reject) {
 
-                        self.done(function(d){
+                        self.done(function(d) {
                             resolve(d);
                         });
 
-                        self.fail(function(d){
+                        self.fail(function(d) {
                             reject(d);
                         });
                     });
@@ -599,7 +597,7 @@ jQuery.extend({
 
 
 module.exports = {
-    create: function(){
+    create: function() {
         return jQuery.Deferred();
     },
     when: jQuery.when,
