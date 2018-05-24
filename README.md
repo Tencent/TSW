@@ -48,14 +48,6 @@ TSW 提供用户维度的全息日志帮助开发者快速定位问题
 1. 安装 -- `git clone https://github.com/Tencent/TSW.git`
 1. 切换工作目录 -- `cd TSW`
 1. 补全依赖 -- `npm install --no-optional`
-1. 配置 -- 修改 `TSW/conf/config.js`，更多配置项参考 [手册](https://tswjs.org/doc/api/config) 
-
-    ```js
-    this.httpAddress = '0.0.0.0';
-
-    this.httpPort = 80;
-    ```
-
 1. 启动 --  `node index.js`
 1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
 

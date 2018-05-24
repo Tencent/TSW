@@ -41,13 +41,6 @@ TSW provides powerful logging abilities for developers to locate problems quickl
 
 - NPM : `npm install --no-optional`
 
-- Config ``TSW/conf/config.js``
-    ```js
-    this.httpAddress = '0.0.0.0'
-
-    this.httpPort = 80;
-    ```
-
 - Run `node index.js` to start Node.js server
 
 - Open `http://127.0.0.1/` in your browser.
