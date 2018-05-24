@@ -7,28 +7,28 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const domain		= require('domain');
-const serverInfo 	= require('serverInfo.js');
-const config		= require('./config.js');
-const dcapi			= require('api/libdcapi/dcapi.js');
-const {isWindows}	= require('util/isWindows.js');
-const contextMod	= require('context.js');
-const Context 		= require('runtime/Context');
-const Window		= require('runtime/Window');
-const xssFilter		= require('api/xssFilter');
-const alpha			= require('util/auto-report/alpha.js');
-const httpUtil		= require('util/http.js');
-const isTST			= require('util/isTST.js');
-const h5test 		= require('util/h5-test/is-test');
-const logReport		= require('util/auto-report/logReport.js');
-const httpModAct	= require('./http.mod.act.js');
-const httpModMap	= require('./http.mod.map.js');
-const mail			= require('util/mail/mail.js');
-const CCFinder		= require('runtime/CCFinder.js');
-const parseBody		= require('util/http/parseBody.js');
-const TSW			= require('api/keyman');
-const tnm2 			= require('api/tnm2');
+const logger = require('logger');
+const domain = require('domain');
+const serverInfo = require('serverInfo.js');
+const config = require('./config.js');
+const dcapi = require('api/libdcapi/dcapi.js');
+const {isWindows} = require('util/isWindows.js');
+const contextMod = require('context.js');
+const Context = require('runtime/Context');
+const Window = require('runtime/Window');
+const xssFilter = require('api/xssFilter');
+const alpha = require('util/auto-report/alpha.js');
+const httpUtil = require('util/http.js');
+const isTST = require('util/isTST.js');
+const h5test = require('util/h5-test/is-test');
+const logReport = require('util/auto-report/logReport.js');
+const httpModAct = require('./http.mod.act.js');
+const httpModMap = require('./http.mod.map.js');
+const mail = require('util/mail/mail.js');
+const CCFinder = require('runtime/CCFinder.js');
+const parseBody = require('util/http/parseBody.js');
+const TSW = require('api/keyman');
+const tnm2 = require('api/tnm2');
 
 
 module.exports = function(req,res){
@@ -36,10 +36,10 @@ module.exports = function(req,res){
     process.SN = process.SN || 0;
 
     var timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
-    var start	= new Date();
-    var d		= domain.create();
-    var tid		= null;
-    var clear	= function(){
+    var start = new Date();
+    var d = domain.create();
+    var tid = null;
+    var clear = function(){
 
         if(tid === null){
             return;
@@ -109,12 +109,12 @@ module.exports = function(req,res){
     d.add(req);
     d.add(res);
 
-    d.currentContext					= new Context();
-    d.currentContext.log				= {};
-    d.currentContext.SN					= ++process.SN;
-    d.currentContext.window				= new Window();
-    d.currentContext.window.request		= req;
-    d.currentContext.window.response	= res;
+    d.currentContext = new Context();
+    d.currentContext.log = {};
+    d.currentContext.SN = ++process.SN;
+    d.currentContext.window = new Window();
+    d.currentContext.window.request = req;
+    d.currentContext.window.response = res;
 
     if(config.enableWindow){
         d.currentContext.window.enable();
@@ -205,11 +205,11 @@ module.exports = function(req,res){
             });
 
             dcapi.report({
-                key			: 'EVENT_TSW_HTTP_PAGE',
-                toIp		: '127.0.0.1',
-                code		: -100503,
-                isFail		: 1,
-                delay		: Date.now() - start.getTime()
+                key            : 'EVENT_TSW_HTTP_PAGE',
+                toIp        : '127.0.0.1',
+                code        : -100503,
+                isFail        : 1,
+                delay        : Date.now() - start.getTime()
             });
 
         }else{
@@ -220,11 +220,11 @@ module.exports = function(req,res){
             });
 
             dcapi.report({
-                key			: 'EVENT_TSW_HTTP_PAGE',
-                toIp		: '127.0.0.1',
-                code		: 100503,
-                isFail		: 1,
-                delay		: Date.now() - start.getTime()
+                key            : 'EVENT_TSW_HTTP_PAGE',
+                toIp        : '127.0.0.1',
+                code        : 100503,
+                isFail        : 1,
+                delay        : Date.now() - start.getTime()
             });
 
             try{
@@ -275,10 +275,10 @@ module.exports = function(req,res){
             ].join('');
 
             mail.SendMail(key,'js',600,{
-                'Title'			: key,
-                'runtimeType'	: 'Error',
-                'MsgInfo'		: err.stack || err.message,
-                'Content'		: Content
+                'Title'            : key,
+                'runtimeType'    : 'Error',
+                'MsgInfo'        : err.stack || err.message,
+                'Content'        : Content
             });
         }
 
@@ -360,11 +360,11 @@ module.exports = function(req,res){
             tnm2.Attr_API('SUM_TSW_HTTP_OTHER', 1);
         }
 
-        req.timestamps.ServerBeginResponse	= req.timestamps.ServerBeginResponse || now;
-        req.timestamps.GotResponseHeaders	= req.timestamps.ServerBeginResponse;
-        req.timestamps.ServerDoneResponse	= res.ServerDoneResponse || now;
-        req.timestamps.ClientBeginResponse	= req.timestamps.ServerBeginResponse;
-        req.timestamps.ClientDoneResponse	= req.timestamps.ServerDoneResponse;
+        req.timestamps.ServerBeginResponse = req.timestamps.ServerBeginResponse || now;
+        req.timestamps.GotResponseHeaders = req.timestamps.ServerBeginResponse;
+        req.timestamps.ServerDoneResponse = res.ServerDoneResponse || now;
+        req.timestamps.ClientBeginResponse = req.timestamps.ServerBeginResponse;
+        req.timestamps.ClientDoneResponse = req.timestamps.ServerDoneResponse;
 
 
         if(isFail === 1){
@@ -404,38 +404,38 @@ module.exports = function(req,res){
         if(res.__hasTimeout && isFail !== 1){
 
             dcapi.report({
-                key			: 'EVENT_TSW_HTTP_TIMEOUT',
-                toIp		: '127.0.0.1',
-                code		: res.statusCode || 0,
-                isFail		: isFail,
-                delay		: Date.now() - start.getTime()
+                key            : 'EVENT_TSW_HTTP_TIMEOUT',
+                toIp        : '127.0.0.1',
+                code        : res.statusCode || 0,
+                isFail        : isFail,
+                delay        : Date.now() - start.getTime()
             });
 
         }else if(res.__hasClosed){
 
             dcapi.report({
-                key			: 'EVENT_TSW_HTTP_CLOSE',
-                toIp		: '127.0.0.1',
-                code		: res.statusCode || 0,
-                isFail		: isFail,
-                delay		: Date.now() - start.getTime()
+                key            : 'EVENT_TSW_HTTP_CLOSE',
+                toIp        : '127.0.0.1',
+                code        : res.statusCode || 0,
+                isFail        : isFail,
+                delay        : Date.now() - start.getTime()
             });
         }else{
 
             dcapi.report({
-                key			: 'EVENT_TSW_HTTP_PAGE',
-                toIp		: '127.0.0.1',
-                code		: res.statusCode || 0,
-                isFail		: isFail,
-                delay		: Date.now() - start.getTime()
+                key            : 'EVENT_TSW_HTTP_PAGE',
+                toIp        : '127.0.0.1',
+                code        : res.statusCode || 0,
+                isFail        : isFail,
+                delay        : Date.now() - start.getTime()
             });
 
             dcapi.report({
-                key			: 'EVENT_TSW_HTTP_CODE',
-                toIp		: '127.0.0.1',
-                code		: res.statusCode || 0,
-                isFail		: isFail,
-                delay		: Date.now() - start.getTime()
+                key            : 'EVENT_TSW_HTTP_CODE',
+                toIp        : '127.0.0.1',
+                code        : res.statusCode || 0,
+                isFail        : isFail,
+                delay        : Date.now() - start.getTime()
             });
 
         }
@@ -455,7 +455,7 @@ module.exports = function(req,res){
 
             if(res.__hasClosed){
 
-                try{res.writeHead(202);	}catch(e){logger.info(`response 202 fail ${e.message}`);}
+                try{res.writeHead(202); }catch(e){logger.info(`response 202 fail ${e.message}`);}
                 try{res.end();}catch(e){logger.info(`response end fail ${e.message}`);}
                 try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
             }else if(res.finished){
@@ -471,7 +471,7 @@ module.exports = function(req,res){
                     host: req.headers.host
                 });
 
-                try{res.writeHead(513);	}catch(e){logger.info(`response 513 fail ${e.message}`);}
+                try{res.writeHead(513); }catch(e){logger.info(`response 513 fail ${e.message}`);}
                 try{res.end();}catch(e){logger.info(`response end fail ${e.message}`);}
 
                 try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
@@ -494,12 +494,12 @@ module.exports.doRoute = doRoute;
 
 function doRoute(req,res){
 
-    var clientIp	= httpUtil.getUserIp(req);
-    var userIp24	= httpUtil.getUserIp24(req);
+    var clientIp = httpUtil.getUserIp(req);
+    var userIp24 = httpUtil.getUserIp24(req);
 
     //增加测试环境header
     if(config.isTest) {
-        res.setHeader('Test-Head',	serverInfo.intranetIp || '');
+        res.setHeader('Test-Head', serverInfo.intranetIp || '');
     }
 
     logger.debug('${method} ${protocol}://${host}${path}',{
@@ -572,8 +572,8 @@ function doRoute(req,res){
         };
     }(res.writeHead));
 
-    var mod_act	= contextMod.currentContext().mod_act || httpModAct.getModAct(req);
-    contextMod.currentContext().mod_act	= mod_act;
+    var mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    contextMod.currentContext().mod_act = mod_act;
 
     if(alpha.isAlpha(req)){
         if(logger.getLog()){
@@ -613,7 +613,7 @@ function doRoute(req,res){
 
     req.headers['tsw-trace-steps'] = steps + 1;
 
-    var	modulePath						= httpModMap.find(mod_act,req,res);
+    var modulePath = httpModMap.find(mod_act,req,res);
 
     if(res.headersSent || res._headerSent || res.finished){
         return;
@@ -661,8 +661,8 @@ function doRoute(req,res){
         var maybePromise = modulePath(req, res, plug);
         if(
             typeof maybePromise === 'object'
-			&&
-			typeof maybePromise.catch === 'function'
+            &&
+            typeof maybePromise.catch === 'function'
         ){
             maybePromise.catch(function(err){
                 logger.error(err);
@@ -686,11 +686,11 @@ function doRoute(req,res){
         logger.debug('命中黑名单IP');
 
         dcapi.report({
-            key			: 'EVENT_TSW_HTTP_IP_BLOCK',
-            toIp		: clientIp || '127.0.0.1',
-            code		: 0,
-            isFail		: 0,
-            delay		: 100
+            key            : 'EVENT_TSW_HTTP_IP_BLOCK',
+            toIp        : clientIp || '127.0.0.1',
+            code        : 0,
+            isFail        : 0,
+            delay        : 100
         });
         tnm2.Attr_API('SUM_TSW_IP_BLOCK', 1);
         res.writeHead(403, {'Content-Type': 'text/plain; charset=UTF-8'});
@@ -712,7 +712,7 @@ function doRoute(req,res){
         if(httpUtil.isFromWns(req) && req.headers['if-none-match']){
 
             logger.debug('webso limit 304, cpuUsed: ${cpuUsed}',{
-                cpuUsed		: global.cpuUsed
+                cpuUsed        : global.cpuUsed
             });
 
             tnm2.Attr_API('SUM_TSW_WEBSO_LIMIT', 1);
@@ -750,8 +750,8 @@ function doRoute(req,res){
         return modulePathHandler();
     }else if(
         contentType.indexOf('application/x-www-form-urlencoded') > -1
-		|| contentType.indexOf('text/plain') > -1
-		|| contentType.indexOf('application/json') > -1
+        || contentType.indexOf('text/plain') > -1
+        || contentType.indexOf('application/json') > -1
     ){
         parseBody(req,res,function(){
             return modulePathHandler();
@@ -765,7 +765,7 @@ function doRoute(req,res){
 
 function onerror(req,res,err){
     var listener = req.listeners('fail');
-    var window	 = context.window || {};
+    var window = context.window || {};
 
     if(res.headersSent || res._headerSent || res.finished){
         return;

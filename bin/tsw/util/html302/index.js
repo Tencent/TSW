@@ -7,40 +7,40 @@
  */
 'use strict';
 
-const gzipHttp		= require('util/gzipHttp');
-const logger		= require('logger');
-const tmpl			= require('./tmpl.js');
-const httpUtil		= require('util/http.js');
+const gzipHttp = require('util/gzipHttp');
+const logger = require('logger');
+const tmpl = require('./tmpl.js');
+const httpUtil = require('util/http.js');
 
 //用html代替302跳转
 this.go = function(url){
-	
-    var data	= {};
+    
+    var data = {};
     var window = context.window || {};
-    var request		= window.request;
-    var response	= window.response;
-	
+    var request = window.request;
+    var response = window.response;
+    
     data.url = url;
-	
+    
     logger.debug('jump to : ' + url);
-	
-	
+    
+    
     if(request && request.headers['x-wns-uin']){
-		
-		
+        
+        
         var html = tmpl.jump(data);
-		
+        
         var gzip = gzipHttp.create({
             code: 200,
             offline: 'false'
         });
-		
+        
         gzip.write(html);
         gzip.end();
-		
+        
         return;
     }
-	
+    
     if(httpUtil.checkInvalidHeaderChar(url)){
         url = encodeURI(url);
     }
@@ -48,5 +48,5 @@ this.go = function(url){
     response.setHeader('location', url);
     response.writeHead(302, {'Content-Type': 'text/html; charset=UTF-8'});
     response.end();
-	
+    
 };

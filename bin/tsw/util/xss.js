@@ -46,13 +46,13 @@ this.filterXSS = function (str) {
 };
 
 
-var encodeMap	= {
-        reg	: /([&"'<>])/g,
+var encodeMap = {
+        reg    : /([&"'<>])/g,
         '&' : '&amp;',
-        '"'	: '&quot;',
-        '\''	: '&#039;',
-        '<'	: '&lt;',
-        '>'	: '&gt;'
+        '"'    : '&quot;',
+        '\''    : '&#039;',
+        '<'    : '&lt;',
+        '>'    : '&gt;'
     },
     decodeMap = {
         reg : /(&lt;)|(&quot;)|(&#0039;)|(&#039;)|(&#39;)|(&amp;)|(&gt;)/g,
@@ -64,7 +64,7 @@ var encodeMap	= {
         '&#39;' : '\'',
         '&amp;' : '&'
     },
-    encode	= function($0,c){return encodeMap[c];},
+    encode = function($0,c){return encodeMap[c];},
     decode = function(c){return decodeMap[c];};
 
 //encode

@@ -7,10 +7,10 @@
  */
 'use strict';
 
-const TEReport	= require('util/auto-report/TEReport.js');
-const gzipHttp	= require('util/gzipHttp.js');
-const tmpl		= require('./tmpl.js');
-const navMenus 	= require('./navMenus.js');
+const TEReport = require('util/auto-report/TEReport.js');
+const gzipHttp = require('util/gzipHttp.js');
+const tmpl = require('./tmpl.js');
+const navMenus = require('./navMenus.js');
 
 module.exports = function(request,response){
 
@@ -25,9 +25,9 @@ module.exports = function(request,response){
 
         var data = {};
 
-        data.head	= { title: 'TSW'};
+        data.head = { title: 'TSW'};
         data.header = tmpl.new_header(navMenus());
-        data.body	= tmpl.body();
+        data.body = tmpl.body();
 
         gzipResponse.end(tmpl.html(data));
     });

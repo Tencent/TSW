@@ -7,62 +7,62 @@
  */
 "use strict";
 
-const logger	= require('logger');
-const Deferred	= require('util/Deferred');
-const config	= require('config');
+const logger    = require('logger');
+const Deferred    = require('util/Deferred');
+const config    = require('config');
 
 //获取路由
 this.ApiGetRoute = function(options,callback){
-	
-	var defer	= Deferred.create();
-	var res		= this.ApiGetRouteSync(options) || {};
+    
+    var defer    = Deferred.create();
+    var res        = this.ApiGetRouteSync(options) || {};
 
-	if (typeof callback === 'function') {
-		callback(res);
-	}
+    if (typeof callback === 'function') {
+        callback(res);
+    }
 
-	if (res.ret >= 0) {
-		defer.resolve(res);
-	} else {
-		defer.reject(res);
-	}
+    if (res.ret >= 0) {
+        defer.resolve(res);
+    } else {
+        defer.reject(res);
+    }
 
-	return defer;
+    return defer;
 }
 
 //上报结果
 this.ApiRouteResultUpdate = function(options){
-	
-	var defer	= Deferred.create();
-	var res		= this.ApiRouteResultUpdateSync(options);
-	
-	if(res.ret >= 0){
-		defer.resolve(res);
-	}else{
-		defer.reject(res);
-	}
-	
-	return defer;
+    
+    var defer    = Deferred.create();
+    var res        = this.ApiRouteResultUpdateSync(options);
+    
+    if(res.ret >= 0){
+        defer.resolve(res);
+    }else{
+        defer.reject(res);
+    }
+    
+    return defer;
 }
 
 //获取路由
 this.ApiGetRouteSync = function(options){
-	
-	var res = {
-		ret: -1
-	};
+    
+    var res = {
+        ret: -1
+    };
 
-	return res;
+    return res;
 };
 
 //上报结果
 this.ApiRouteResultUpdateSync = function(options){
 
-	var res = {
-		ret: -1
-	};
+    var res = {
+        ret: -1
+    };
 
-	return res;
+    return res;
 }
 
 //多一组方法

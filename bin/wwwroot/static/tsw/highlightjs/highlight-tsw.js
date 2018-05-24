@@ -784,9 +784,9 @@ https://highlightjs.org/
                 },
                 // Other numbers
                 //{
-                //	className: 'number',
-                //	begin: '\\s\\d{1,20}$',
-                //	relevance: 0
+                //    className: 'number',
+                //    begin: '\\s\\d{1,20}$',
+                //    relevance: 0
                 //},
                 //{
                 //  className: 'number',
@@ -844,9 +844,9 @@ https://highlightjs.org/
                 },
                 //Dates
                 //{
-                //	className: 'string',
-                //	begin: /\[/, end: /\]/,
-                //	illegal: '\\n'
+                //    className: 'string',
+                //    begin: /\[/, end: /\]/,
+                //    illegal: '\\n'
                 //},
                 // Strings
                 {

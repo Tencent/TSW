@@ -7,9 +7,9 @@
  */
 'use strict';
 
-const os			= require('os');
-const {isWindows} 	= require('util/isWindows');
-const isInnerIP		= require('util/http.isInnerIP.js');
+const os = require('os');
+const {isWindows} = require('util/isWindows');
+const isInnerIP = require('util/http.isInnerIP.js');
 
 this.intranetIp = '127.0.0.1';
 
@@ -24,8 +24,8 @@ function getLinuxLocalIpv4(){
     var networkInterfaces = os.networkInterfaces();
 
     Object.keys(networkInterfaces).forEach(function(key){
-        var eth		= networkInterfaces[key];
-        var address	= eth && eth[0] && eth[0].address;
+        var eth = networkInterfaces[key];
+        var address = eth && eth[0] && eth[0].address;
 
         if(!address){
             return;

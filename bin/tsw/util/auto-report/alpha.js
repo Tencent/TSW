@@ -7,10 +7,10 @@
  */
 'use strict';
 
-const config		= require('config');
-const logger		= require('logger');
-const {isWindows} 	= require('util/isWindows');
-const TSW			= require('api/keyman');
+const config = require('config');
+const logger = require('logger');
+const {isWindows} = require('util/isWindows');
+const TSW = require('api/keyman');
 
 if(!global[__filename]){
     global[__filename] = {};

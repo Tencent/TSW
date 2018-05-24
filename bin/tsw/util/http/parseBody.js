@@ -7,43 +7,43 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const xssFilter		= require('api/xssFilter');
-const httpUtil		= require('util/http.js');
-const qs			= require('qs');
+const logger = require('logger');
+const xssFilter = require('api/xssFilter');
+const httpUtil = require('util/http.js');
+const qs = require('qs');
 
 module.exports = function(req,res,next){
-	
+    
     var arr = [];
-	
+    
     if(!httpUtil.isPostLike(req)){
         next();
-		
+        
         return;
     }
-	
+    
     if(req.REQUEST.body !== undefined){
         next();
-		
+        
         return;
     }
-	
+    
     req.on('data',function(txt){
-		
+        
         arr.push(txt);
-		
+        
         logger.debug('receive ' + txt.length);
     });
 
     req.once('end',function(){
-		
+        
         logger.debug('receive end');
 
         var buffer = Buffer.concat(arr);
-        var willParseBody	= '';
-        req.REQUEST.body	= buffer.toString('UTF-8');
-        req.POST			= {};
-        req.body			= req.POST;
+        var willParseBody = '';
+        req.REQUEST.body = buffer.toString('UTF-8');
+        req.POST = {};
+        req.body = req.POST;
 
         var contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
@@ -82,8 +82,8 @@ module.exports = function(req,res,next){
         }).done(function(){
             next();
         });
-		
+        
     });
-	
+    
 };
 

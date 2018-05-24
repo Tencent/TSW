@@ -15,14 +15,14 @@ function Context(){
 }
 
 Context.prototype.setModAct = function(mod_act){
-	
+    
     context.mod_act = mod_act;
-	
+    
     return true;
 };
 
 Context.prototype.getModAct = function(){
-	
+    
     return context.mod_act;
 };
 

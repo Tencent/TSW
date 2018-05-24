@@ -23,7 +23,7 @@ this.getHttpsAgent = function(host){
             maxSockets          : 65535,
             maxFreeSockets      : 32,
             maxCachedSessions   : 65535,
-            keepAlive	        : true,
+            keepAlive            : true,
             keepAliveMsecs      : 5000
         });
     }

@@ -7,13 +7,13 @@
  */
 'use strict';
 
-const gzipHttp 		= require('util/gzipHttp.js');
-const pagetmpl 		= require('./tmpl');
-const TEReport 		= require('util/auto-report/TEReport.js');
-const OALogin 		= require('util/oa-login/index.js');
+const gzipHttp = require('util/gzipHttp.js');
+const pagetmpl = require('./tmpl');
+const TEReport = require('util/auto-report/TEReport.js');
+const OALogin = require('util/oa-login/index.js');
 
 module.exports = function(request, response) {
-	
+    
     OALogin.checkLoginForTSW(request, response, function() {
         module.exports.go(request, response);
     });

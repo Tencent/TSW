@@ -68,7 +68,7 @@ function fileField(boundary, key, value = {}) {
 /**
  * 构建Form表单发送时的buffer
  * @param  {[type]} opt = {} [description]
- * @return {[type]}      	 [description]
+ * @return {[type]}           [description]
  */
 function getFormBuffer(opt = {}) {
 
@@ -77,11 +77,11 @@ function getFormBuffer(opt = {}) {
     let v;
 
     for(let key in opt.data){
-		
+        
         v = opt.data[key];
-		
+        
         if(v !== undefined && v !== null){
-			
+            
             if(v.fileType){
                 buffer = Buffer.concat([buffer, fileField(opt.boundary, key, v)]);
             }else{
@@ -89,7 +89,7 @@ function getFormBuffer(opt = {}) {
             }
         }
     }
-	
+    
     buffer = Buffer.concat([buffer, Buffer.from('--' + opt.boundary + '--')]);
 
     return buffer;

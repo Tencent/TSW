@@ -7,18 +7,18 @@
  */
 'use strict';
 
-const logger			= require('logger');
-const cp				= require('child_process');
-const config			= require('./config.js');
-const cluster			= require('cluster');
-const cpuUtil			= require('util/cpu.js');
-const fs				= require('fs');
-const serverOS			= require('util/isWindows.js');
-const {debugOptions} 	= process.binding('config');
-const methodMap			= {};
-const workerMap			= {};
-const cpuMap			= [];
-var isDeaded			= false;
+const logger = require('logger');
+const cp = require('child_process');
+const config = require('./config.js');
+const cluster = require('cluster');
+const cpuUtil = require('util/cpu.js');
+const fs = require('fs');
+const serverOS = require('util/isWindows.js');
+const {debugOptions} = process.binding('config');
+const methodMap = {};
+const workerMap = {};
+const cpuMap = [];
+var isDeaded = false;
 
 //阻止进程因异常而退出
 process.on('uncaughtException',function(e){
@@ -31,8 +31,8 @@ process.on('uncaughtException',function(e){
 
 
 process.on('warning',function(warning){
-    var key		= String(warning);
-    var errStr	= warning && warning.stack || String(warning);
+    var key = String(warning);
+    var errStr = warning && warning.stack || String(warning);
 
     logger.error(errStr);
 
@@ -46,9 +46,9 @@ process.on('warning',function(warning){
 
     setImmediate(function(){
         require('util/mail/mail.js').SendMail(key,'js',600,{
-            'Title'			: key,
-            'runtimeType'	: 'warning',
-            'Content'		: Content
+            'Title'            : key,
+            'runtimeType'    : 'warning',
+            'Content'        : Content
         });
     });
 
@@ -57,14 +57,14 @@ process.on('warning',function(warning){
 
 process.on('unhandledRejection', (reason = {}, p = {}) => {
     let
-        key		= String(reason.message),
-        errStr	= String(reason.stack),
+        key = String(reason.message),
+        errStr = String(reason.stack),
         mod_act, module, REQUEST;
 
     if(p && p.domain && p.domain.currentContext){
-        mod_act		= p.domain.currentContext.mod_act;
-        module		= p.domain.currentContext.module;
-        REQUEST		= p.domain.currentContext.window.request.REQUEST;
+        mod_act = p.domain.currentContext.mod_act;
+        module = p.domain.currentContext.module;
+        REQUEST = p.domain.currentContext.window.request.REQUEST;
     }
 
     if(errStr === 'undefined'){
@@ -104,9 +104,9 @@ process.on('unhandledRejection', (reason = {}, p = {}) => {
     }
 
     require('util/mail/mail.js').SendMail(key,'js',600,{
-        'Title'			: key,
-        'runtimeType'	: 'unhandledRejection',
-        'Content'		: Content
+        'Title'            : key,
+        'runtimeType'    : 'unhandledRejection',
+        'Content'        : Content
     });
 });
 
@@ -142,7 +142,7 @@ function startServer(){
 
         //启动管理进程
         require('./admin.js');
-		
+        
         logger.info('start master....');
         logger.info('version node: ${node}, modules: ${modules}',process.versions);
 
@@ -176,21 +176,21 @@ function startServer(){
 
         //监听子进程是否fork成功
         cluster.on('fork',function(currWorker){
-			
+            
             var cpu = getToBindCpu(currWorker);
-			
+            
             logger.info('worker fork success! pid:${pid} cpu: ${cpu}',{
                 pid: currWorker.process.pid,
                 cpu: cpu
             });
-			
+            
             if(workerMap[cpu]){
                 closeWorker(workerMap[cpu]);
             }
-			
+            
             workerMap[cpu] = currWorker;
             cpuMap[cpu] = 1;
-			
+            
             //监听子进程发来的消息并处理
             currWorker.on('message',function(...args){
                 var m = args[0];
@@ -198,71 +198,71 @@ function startServer(){
                     methodMap[m.cmd].apply(this,args);
                 }
             });
-			
+            
             //给子进程发送消息，启动http服务
             currWorker.send({
                 from:'master',
                 cmd:'listen',
                 cpu: cpu
             });
-			
+            
         });
-		
+        
         //退出时
         cluster.on('disconnect', function(worker) {
             var cpu = getToBindCpu(worker);
-			
+            
             if(worker.hasRestart){
                 return;
             }
-			
+            
             logger.info('worker${cpu} pid=${pid} has disconnected. restart new worker again.',{
                 pid: worker.process.pid,
                 cpu: cpu
             });
-			
+            
             restartWorker(worker);
         });
-		
+        
         //子进程被杀死的时候做下处理，原地复活
         cluster.on('exit',function(worker){
-			
+            
             var cpu = getToBindCpu(worker);
-			
+            
             if(worker.hasRestart){
                 return;
             }
-			
+            
             logger.info('worker${cpu} pid=${pid} has been killed. restart new worker again.',{
                 pid: worker.process.pid,
                 cpu: cpu
             });
-			
+            
             restartWorker(worker);
         });
-		
+        
         process.on('reload',function(GET){
-			
+            
             var timeout = 1000,
                 cpu = 0,
                 key,worker;
-			
+            
             if(isDeaded){
                 process.exit(0);
             }
-			
+            
             logger.info('reload');
-			
+            
             for(key in workerMap){
                 worker = workerMap[key];
                 try{
-					
+                    
                     cpu = getToBindCpu(worker);
 
                     if(config.isTest || config.devMode){
-                        timeout	= (cpu % 8) * 1000;
+                        timeout = (cpu % 8) * 1000;
                     }else{
-                        timeout	= (cpu % 8) * 3000;
+                        timeout = (cpu % 8) * 3000;
                     }
 
                     setTimeout(function(worker,cpu){
@@ -292,8 +292,8 @@ function startServer(){
         process.on('sendCmd2workerOnce',function(data){
 
             var key,worker;
-            var CMD	= data.CMD;
-            var GET	= data.GET;
+            var CMD = data.CMD;
+            var GET = data.GET;
 
             if(isDeaded){
                 process.exit(0);
@@ -322,12 +322,12 @@ function startServer(){
 
         checkWorkerAlive();
         startLogMan();
-		
+        
         //process.title = 'TSW/master/node';
         //保留node命令，不然运维监控不到
-		
+        
     }else{
-		
+        
         //子进程直接引入proxy文件,当然也可以直接在这里写逻辑运行，注意此处else作用域属于子进程作用域，非本程序作用域
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
@@ -345,38 +345,38 @@ function startServer(){
 
 //处理子进程的心跳消息
 methodMap.heartBeat = function(m){
-		
-    var worker	= this;	
-    var now		= new Date().getTime();
-	
-    worker.lastMessage		= m;
-    worker.lastLiveTime		= now;
+        
+    var worker = this;    
+    var now = new Date().getTime();
+    
+    worker.lastMessage = m;
+    worker.lastLiveTime = now;
 };
 
 //关闭一个worker
 function closeWorker(worker){
-    var cpu				= worker.cpuid;
-    var closeTimeWait	= 10000;
+    var cpu = worker.cpuid;
+    var closeTimeWait = 10000;
 
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.socket);
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.post);
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.get);
-    closeTimeWait		= Math.max(closeTimeWait,config.timeout.keepAlive);
-    closeTimeWait		= Math.min(60000,closeTimeWait) || 10000;
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.socket);
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.post);
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.get);
+    closeTimeWait = Math.max(closeTimeWait,config.timeout.keepAlive);
+    closeTimeWait = Math.min(60000,closeTimeWait) || 10000;
 
 
     if(worker.hasClose){
         return;
     }
-	
+    
     if(workerMap[cpu] === worker){
         delete workerMap[cpu];
     }
-	
+    
     var closeFn = function(worker){
         var closed = false;
         var pid = worker.process.pid;
-		
+        
         return function(){
             if(closed){
                 return;
@@ -388,11 +388,11 @@ function closeWorker(worker){
             }
 
             worker.destroy();
-			
+            
             closed = true;
         };
     }(worker);
-	
+    
     setTimeout(closeFn,closeTimeWait);
 
     if(worker.exitedAfterDisconnect){
@@ -405,7 +405,7 @@ function closeWorker(worker){
     }catch(e){
         logger.info(e.stack);
     }
-	
+    
 }
 
 /**
@@ -413,7 +413,7 @@ function closeWorker(worker){
  */
 function restartWorker(worker){
     var cpu = getToBindCpu(worker);
-	
+    
     if(worker.hasRestart){
         return;
     }
@@ -428,46 +428,46 @@ function restartWorker(worker){
     },10000);
 
     cpuMap[cpu] = 0;
-	
+    
     worker.hasRestart = true;
     cluster.fork(process.env).cpuid = cpu;
 }
 
 //定时检测子进程死活，发现15秒没响应的就干掉
 function checkWorkerAlive(){
-	
+    
     setInterval(function(){
-	
+    
         var 
             nowDate = new Date(),
-            now	 = nowDate.getTime(),
+            now = nowDate.getTime(),
             key,
             worker,
             cpuid;
-		
+        
         for(key in workerMap){
             worker = workerMap[key];
             cpuid = worker.cpuid;
-			
+            
             worker.lastLiveTime = worker.lastLiveTime || now;
             if(!worker.startTime){
                 worker.startTime = now;
             }
-			
+            
             //无响应进程处理
             if(now - worker.lastLiveTime > 15000 && cpuMap[cpuid] === 1){
-				
+                
                 logger.error('worker${cpu} pid=${pid} miss heartBeat, kill it',{
                     pid : worker.process.pid,
                     cpu: cpuid
                 });
-				
+                
                 restartWorker(worker);
             }
 
             //内存超限进程处理
             if(worker.lastMessage){
-                let currMemory	= worker.lastMessage.memoryUsage;
+                let currMemory = worker.lastMessage.memoryUsage;
 
                 //logger.debug(currMemory);
 
@@ -489,9 +489,9 @@ function checkWorkerAlive(){
 
         if(
             true
-			&& (nowDate.getHours() % 8 === 0)
-			&& nowDate.getMinutes() === 1
-			&& nowDate.getSeconds() <= 10
+            && (nowDate.getHours() % 8 === 0)
+            && nowDate.getMinutes() === 1
+            && nowDate.getSeconds() <= 10
         ){
             //8小时一次
             require('api/keyman/runtimeAdd.js').hello();
@@ -504,25 +504,25 @@ function checkWorkerAlive(){
  * 获取需要绑定的CPU编号
  */
 function getToBindCpu(worker){
-	
+    
     var cpu = 0;//如果只有一个cpu或者都占用了
-	
+    
     if(worker.cpuid !== undefined){
         cpu = worker.cpuid;
         return cpu;
     }else{
         for(var i=0;i<cpuMap.length;i++){
-            var c	=	cpuMap[i];
-            if(c ==	0){
+            var c = cpuMap[i];
+            if(c == 0){
                 cpu = i;
                 worker.cpuid = cpu;
                 break;
             }
         }
     }
-	
+    
     cpuMap[i] = 1;
-	
+    
     return cpu;
 }
 

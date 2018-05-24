@@ -7,8 +7,8 @@
  */
 'use strict';
 
-const cmemTSW	= require('data/cmem.tsw.js');
-const post		= require('./post.js');
+const cmemTSW = require('data/cmem.tsw.js');
+const post = require('./post.js');
 
 
 module.exports = Object.assign({},post);

@@ -8,20 +8,20 @@
 'use strict';
 
 this.token = function(skey){
-	
-	
-    var str			= skey || '';
-    var	hash		= 5381;
+    
+    
+    var str = skey || '';
+    var hash = 5381;
 
     if(typeof context !== 'undefined'){
         let window = context.window || {};
         if(window.request){
             str = str
-				|| window.request.cookies.p_skey
-				|| window.request.cookies.skey
-				|| window.request.cookies.rv2
-				|| window.request.cookies.access_token
-				|| '';
+                || window.request.cookies.p_skey
+                || window.request.cookies.skey
+                || window.request.cookies.rv2
+                || window.request.cookies.access_token
+                || '';
         }
     }
 

@@ -7,19 +7,19 @@
  */
 'use strict';
 
-const url			= require('url');
-const Deferred		= require('util/Deferred');
-const config		= require('config');
-const logger		= require('logger');
-const cmemTSW		= require('data/cmem.tsw.js');
-const tnm2 			= require('api/tnm2');
-const gzipHttp		= require('util/gzipHttp.js');
-const openapi		= require('util/openapi');
-const crypto		= require('crypto');
-const cacheTime		= 10 * 60 * 1000;	//最大cache时间
+const url = require('url');
+const Deferred = require('util/Deferred');
+const config = require('config');
+const logger = require('logger');
+const cmemTSW = require('data/cmem.tsw.js');
+const tnm2 = require('api/tnm2');
+const gzipHttp = require('util/gzipHttp.js');
+const openapi = require('util/openapi');
+const crypto = require('crypto');
+const cacheTime = 10 * 60 * 1000;    //最大cache时间
 
-var cacheStart	= Date.now();
-var cache		= {};
+var cacheStart = Date.now();
+var cache = {};
 
 if(global[__filename]){
     cache = global[__filename];
@@ -39,10 +39,10 @@ this.check = function(key,count,second){
 
 
 var checkByOpenapi = function(keyOri,count,second){
-    var defer 	= Deferred.create();
-    var appid	= context.appid || null;
+    var defer = Deferred.create();
+    var appid = context.appid || null;
 
-    var key	= 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    var key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
     var start = Date.now();
 
     if(cache[key]){
@@ -57,8 +57,8 @@ var checkByOpenapi = function(keyOri,count,second){
 
     //清缓存逻辑
     if(start - cacheStart > cacheTime){
-        cache		= {};
-        cacheStart	= Date.now();
+        cache = {};
+        cacheStart = Date.now();
     }
 
 
@@ -79,26 +79,26 @@ var checkByOpenapi = function(keyOri,count,second){
         return defer.reject();
     }
 
-    var sig	= openapi.signature({
+    var sig = openapi.signature({
         pathname: url.parse(config.utilCDUrl).pathname,
         method: 'POST',
         data: postData,
         appkey: config.appkey
     });
 
-    postData.sig	= sig;
+    postData.sig = sig;
 
     require('ajax').request({
-        url			: config.utilCDUrl,
-        type		: 'POST',
-        l5api		: config.tswL5api['openapi.tswjs.org'],
-        dcapi		: {
+        url            : config.utilCDUrl,
+        type        : 'POST',
+        l5api        : config.tswL5api['openapi.tswjs.org'],
+        dcapi        : {
             key: 'EVENT_TSW_OPENAPI_UTIL_CD'
         },
-        data		: postData,
-        keepAlive	: true,
-        autoToken	: false,
-        dataType	: 'json'
+        data        : postData,
+        keepAlive    : true,
+        autoToken    : false,
+        dataType    : 'json'
     }).fail(function(){
         logger.error('checkByOpenapi fail.');
         defer.reject();
@@ -122,10 +122,10 @@ var checkByOpenapi = function(keyOri,count,second){
 
 this.curr = function(keyOri,count,second){
 
-    var defer 	= Deferred.create();
-    var appid	= context.appid || null;
+    var defer = Deferred.create();
+    var appid = context.appid || null;
 
-    var key	= 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    var key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
 
     var memcached = module.exports.cmem();
 
@@ -147,10 +147,10 @@ this.curr = function(keyOri,count,second){
 
 var checkByCmem = function(keyOri,count,second){
 
-    var defer 	= Deferred.create();
-    var appid	= context.appid || null;
+    var defer = Deferred.create();
+    var appid = context.appid || null;
 
-    var key	= 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
+    var key = 'CD3.' + crypto.createHash('sha1').update(`CD3.${appid}.${keyOri}.${count}.${second}`).digest('hex');
     var start = Date.now();
 
     if(cache[key]){
@@ -165,8 +165,8 @@ var checkByCmem = function(keyOri,count,second){
 
     //清缓存逻辑
     if(start - cacheStart > cacheTime){
-        cache		= {};
-        cacheStart	= Date.now();
+        cache = {};
+        cacheStart = Date.now();
     }
 
     var memcached = module.exports.cmem();
@@ -233,8 +233,8 @@ this.cmem = function(){
 //开放接口
 this.openapi = async function(req,res){
 
-    var appid	= context.appid;
-    var appkey	= context.appkey;
+    var appid = context.appid;
+    var appkey = context.appkey;
 
     if(req.param('appid') !== appid){
         returnJson({ code: -2 , message: 'appid错误'});
@@ -256,11 +256,11 @@ this.openapi = async function(req,res){
         return;
     }
 
-    logger.setKey(`CD_${appid}`);	//上报key
+    logger.setKey(`CD_${appid}`);    //上报key
 
-    var key		= req.param('key');
-    var second	= ~~req.param('second');	//单位秒
-    var count	= ~~req.param('count');		//默认是1
+    var key = req.param('key');
+    var second = ~~req.param('second');    //单位秒
+    var count = ~~req.param('count');        //默认是1
 
     if(!key){
         returnJson({ code: -2 , message: 'key is required'});

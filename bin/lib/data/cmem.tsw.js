@@ -7,8 +7,8 @@
  */
 'use strict';
 
-const config	= require('config');
-const cmem		= require('pool/cmem.l5.js');
+const config = require('config');
+const cmem = require('pool/cmem.l5.js');
 
 this.cmem = function(){
 

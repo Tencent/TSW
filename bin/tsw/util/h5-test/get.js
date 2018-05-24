@@ -7,12 +7,12 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const Deferred		= require('util/Deferred');
-const isTest 		= require('./is-test.js');
-const post			= require('util/auto-report/post.js');
-const gzipHttp		= require('util/gzipHttp.js');
-const OALogin		= require('util/oa-login/index.js');
+const logger = require('logger');
+const Deferred = require('util/Deferred');
+const isTest = require('./is-test.js');
+const post = require('util/auto-report/post.js');
+const gzipHttp = require('util/gzipHttp.js');
+const OALogin = require('util/oa-login/index.js');
 
 module.exports = function(request, response) {
     OALogin.checkLoginForTSW(request, response, function() {
@@ -21,7 +21,7 @@ module.exports = function(request, response) {
 };
 
 module.exports.go = async function(request, response){
-		
+        
     var data = await module.exports.getTestUser().toES6Promise().catch(function(){
         return null;
     });
@@ -35,14 +35,14 @@ module.exports.getTestUser = function(){
     logger.debug('getTestUser');
 
     //从内存中读取testTargetMap
-    var memcached	= isTest.cmem();
-    var keyText		= isTest.keyBitmap();
-    var defer		= Deferred.create();
-    var appid		= '';
+    var memcached = isTest.cmem();
+    var keyText = isTest.keyBitmap();
+    var defer = Deferred.create();
+    var appid = '';
 
     if(context.appid && context.appkey){
         //开平过来的
-        appid	= context.appid;
+        appid = context.appid;
         keyText = `${keyText}.${appid}`;
     }
 
@@ -68,15 +68,15 @@ module.exports.getTestUser = function(){
             defer.resolve({});
         }
     });
-	
+    
     return defer;
 };
 
 
 module.exports.openapi = async function(req,res){
 
-    var appid	= context.appid;
-    var appkey	= context.appkey;
+    var appid = context.appid;
+    var appkey = context.appkey;
 
     if(req.param('appid') !== appid){
         returnJson({ code: -2 , message: 'appid错误'});
@@ -98,7 +98,7 @@ module.exports.openapi = async function(req,res){
         return;
     }
 
-    logger.setKey(`h5testSync_${appid}`);	//上报key
+    logger.setKey(`h5testSync_${appid}`);    //上报key
 
     var data = await module.exports.getTestUser().toES6Promise().catch(function(){
         return null;

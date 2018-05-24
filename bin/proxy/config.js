@@ -7,14 +7,14 @@
  */
 'use strict';
 
-const fs			= require('fs');
-const path			= require('path');
-const plug			= require('plug');
-const Deferred		= plug('util/Deferred');
-const defaultValue	= plug('default/config.default.js');
+const fs = require('fs');
+const path = require('path');
+const plug = require('plug');
+const Deferred = plug('util/Deferred');
+const defaultValue = plug('default/config.default.js');
 
-var isFirstLoad	= false;
-var cache			= {
+var isFirstLoad = false;
+var cache = {
     config: null
 };
 

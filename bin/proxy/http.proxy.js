@@ -12,37 +12,37 @@ process.on('uncaughtException',function(e){
 });
 
 
-const logger	= require('logger');
-const http		= require('http');
-const https		= require('https');
-const cluster	= require('cluster');
-const util		= require('util');
-const fs		= require('fs');
-const cp		= require('child_process');
-const parseGet	= require('util/http/parseGet.js');
-const tnm2	 	= require('api/tnm2');
-const cpuUtil	= require('util/cpu.js');
-const httpUtil	= require('util/http.js');
-const TEReport	= require('util/auto-report/TEReport.js');
-const mail		= require('util/mail/mail.js');
-const websocket 		= require('./websocket.js');
-const packageJSON		= require('../../package.json');
-const headerServer		= `TSW/${packageJSON.version}`;
-const methodMap			= {};
-const {isWindows}		= require('util/isWindows.js');
-const {debugOptions}	= process.binding('config');
-const serverInfo		= {
+const logger = require('logger');
+const http = require('http');
+const https = require('https');
+const cluster = require('cluster');
+const util = require('util');
+const fs = require('fs');
+const cp = require('child_process');
+const parseGet = require('util/http/parseGet.js');
+const tnm2 = require('api/tnm2');
+const cpuUtil = require('util/cpu.js');
+const httpUtil = require('util/http.js');
+const TEReport = require('util/auto-report/TEReport.js');
+const mail = require('util/mail/mail.js');
+const websocket = require('./websocket.js');
+const packageJSON = require('../../package.json');
+const headerServer = `TSW/${packageJSON.version}`;
+const methodMap = {};
+const {isWindows} = require('util/isWindows.js');
+const {debugOptions} = process.binding('config');
+const serverInfo = {
     intranetIp: require('serverInfo.js').intranetIp,
     cpu: 'X'
 };
 var server;
 var serverThis;
 var serverHttps;
-var config				= require('./config.js');
-var routeCache			= null;
-var cleanCacheTid		= null;
-var isStartHeartBeat	= false;
-var heartBeatCount		= 0;
+var config = require('./config.js');
+var routeCache = null;
+var cleanCacheTid = null;
+var isStartHeartBeat = false;
+var heartBeatCount = 0;
 
 
 function doRoute(req,res){
@@ -98,7 +98,7 @@ function doRoute(req,res){
     routeCache(req,res);
 }
 
-process.serverInfo	= serverInfo;
+process.serverInfo = serverInfo;
 
 /**
  * 清除缓存
@@ -156,8 +156,8 @@ process.on('profiler',function(data = {}){
 //process.emit('globaldump',m.GET);
 process.on('globaldump',function(GET){
 
-    var cpu		= GET.cpu || 0;
-    var depth	= GET.depth || 6;
+    var cpu = GET.cpu || 0;
+    var depth = GET.depth || 6;
 
     if(cpu != serverInfo.cpu){
         return;
@@ -212,12 +212,12 @@ function requestHandler(req, res){
 }
 
 
-server		= http.createServer(requestHandler);
-serverThis	= http.createServer(requestHandler);
+server = http.createServer(requestHandler);
+serverThis = http.createServer(requestHandler);
 
-server.timeout 				= Math.max(config.timeout.upload || config.timeout.socket,0);
-serverThis.timeout 			= Math.max(config.timeout.upload || config.timeout.socket,0);
-server.keepAliveTimeout		= Math.max(config.timeout.keepAlive,0);
+server.timeout = Math.max(config.timeout.upload || config.timeout.socket,0);
+serverThis.timeout = Math.max(config.timeout.upload || config.timeout.socket,0);
+server.keepAliveTimeout = Math.max(config.timeout.keepAlive,0);
 serverThis.keepAliveTimeout = Math.max(config.timeout.keepAlive,0);
 
 global.TSW_HTTP_SERVER = server;
@@ -233,8 +233,8 @@ if(config.httpsOptions){
         socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
     });
 
-    serverHttps.timeout 			= Math.max(config.timeout.upload || config.timeout.socket,0);
-    serverHttps.keepAliveTimeout	= Math.max(config.timeout.keepAlive,0);
+    serverHttps.timeout = Math.max(config.timeout.upload || config.timeout.socket,0);
+    serverHttps.keepAliveTimeout = Math.max(config.timeout.keepAlive,0);
 
     global.TSW_HTTPS_SERVER = serverHttps;
 }
@@ -260,7 +260,7 @@ function startHeartBeat(){
 
     isStartHeartBeat = true;
 
-    global.cpuUsed			= 0;
+    global.cpuUsed = 0;
 
     //定时给父进程发送心跳包
     setInterval(function(){
@@ -294,8 +294,8 @@ function startHeartBeat(){
         //高负载告警
         if (
             global.cpuUsed80 === 4 &&
-			!config.isTest &&
-			!isWindows
+            !config.isTest &&
+            !isWindows
         ) {
             //取进程快照
             //ps aux --sort=-pcpu
@@ -305,7 +305,7 @@ function startHeartBeat(){
                 },
                 timeout: 5000
             },function(err,data,errData) {
-                var key		= ['cpu80.v4',serverInfo.intranetIp].join(':');
+                var key = ['cpu80.v4',serverInfo.intranetIp].join(':');
                 var Content = [
                     '<strong>单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%, 最近5秒钟CPU Profiler见附件</strong>'
                 ].join('<br>');
@@ -340,11 +340,11 @@ function startHeartBeat(){
                         recordTime: 5000
                     }, result => {
                         mail.SendMail(key, 'js', 600, {
-                            'To'		: config.mailTo,
-                            'CC'		: owner,
-                            'MsgInfo'	: business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                            'Title'		: business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                            'Content'	: Content,
+                            'To'        : config.mailTo,
+                            'CC'        : owner,
+                            'MsgInfo'    : business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
+                            'Title'        : business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
+                            'Content'    : Content,
                             'attachment': result ? {
                                 fileType       : true,
                                 dispositionType: 'attachment',
@@ -357,11 +357,11 @@ function startHeartBeat(){
             });
         }
 
-        let currMemory		= process.memoryUsage();
+        let currMemory = process.memoryUsage();
 
-        tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS',			currMemory.rss);
-        tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP',		currMemory.heapTotal);
-        tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL',	currMemory.external);
+        tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS', currMemory.rss);
+        tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
+        tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL', currMemory.external);
 
     },5000);
 
@@ -419,9 +419,9 @@ methodMap.top100 = function(m){
 //监听端口
 methodMap.listen = function(message){
 
-    var user_00				= config.workerUid || 'user_00';
-    serverInfo.cpu			= message.cpu || 0;
-    global.cpuUsed			= cpuUtil.getCpuUsed(serverInfo.cpu);
+    var user_00 = config.workerUid || 'user_00';
+    serverInfo.cpu = message.cpu || 0;
+    global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
     process.title = 'TSW/worker/' + serverInfo.cpu;
     global.TSW_HTTP_WORKER_PORT = config.workerPortBase + serverInfo.cpu;

@@ -11,4 +11,4 @@ this.logger = {
     logLevel: 'debug'
 };
 
-this.memcached = {host:'127.0.0.1:11211', timeout: 500,	poolSize: 20,	retries: 1, maxQueueSize: 1000};
+this.memcached = {host:'127.0.0.1:11211', timeout: 500, poolSize: 20, retries: 1, maxQueueSize: 1000};

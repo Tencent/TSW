@@ -31,10 +31,10 @@ this.getAllGroup = function(){
     return require('util/auto-report/TEReport.js').getAllGroup();
 };
 
-this.ipCheck	= function(opt){
+this.ipCheck = function(opt){
     return require('./ipCheck.js').info(opt);
 };
 
-this.runtimeAdd	= function(opt){
+this.runtimeAdd = function(opt){
     return require('./runtimeAdd.js').add(opt);
 };

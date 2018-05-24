@@ -7,13 +7,13 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const Deferred		= require('util/Deferred');
-const isTest		= require('./is-test.js');
-const post			= require('util/auto-report/post.js');
-const OALogin		= require('util/oa-login/index.js');
-const gzipHttp		= require('util/gzipHttp.js');
-const canIuse		= /^[0-9a-zA-Z_-]{0,64}$/;
+const logger = require('logger');
+const Deferred = require('util/Deferred');
+const isTest = require('./is-test.js');
+const post = require('util/auto-report/post.js');
+const OALogin = require('util/oa-login/index.js');
+const gzipHttp = require('util/gzipHttp.js');
+const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 
 module.exports = function(request, response) {
     OALogin.checkLoginForTSW(request, response, function() {
@@ -22,9 +22,9 @@ module.exports = function(request, response) {
 };
 
 module.exports.go = async function(request, response){
-	
-    var uin		= request.param('uin');
-    var val		= request.param('val');
+    
+    var uin = request.param('uin');
+    var val = request.param('val');
 
     var data = await module.exports.addTestUser(uin,val).toES6Promise().catch(function(){
         return null;
@@ -48,14 +48,14 @@ var returnJson = function(json){
 module.exports.addTestUser = function(uin, val){
     logger.debug('addTestUser:' + uin);
     val = val || true;
-    var memcached	= isTest.cmem();
-    var keyText		= isTest.keyBitmap();
+    var memcached = isTest.cmem();
+    var keyText = isTest.keyBitmap();
     var defer = Deferred.create();
-    var appid		= '';
+    var appid = '';
 
     if(context.appid && context.appkey){
         //开平过来的
-        appid	= context.appid;
+        appid = context.appid;
         keyText = `${keyText}.${appid}`;
     }
 

@@ -7,15 +7,15 @@
  */
 'use strict';
 
-const Deferred		= require('util/Deferred');
-const logger		= require('logger');
-const config		= require('config');
-const fs			= require('fs');
-const fileCache		= require('api/fileCache');
-const fileUrl		= config.blackIpFileUrl;
+const Deferred = require('util/Deferred');
+const logger = require('logger');
+const config = require('config');
+const fs = require('fs');
+const fileCache = require('api/fileCache');
+const fileUrl = config.blackIpFileUrl;
 
 var isFirstLoad = false;
-var cache		= {
+var cache = {
     timeUpdate: 0,
     data: {},
     dataFile: {}
@@ -89,7 +89,7 @@ this.getSync = function(){
 
 function getMap(text){
 
-    var map		= {};
+    var map = {};
 
     text = text || '';
 
@@ -102,7 +102,7 @@ function getMap(text){
 
 function updateMap(text){
 
-    var map		= getMap(text);
+    var map = getMap(text);
 
     //copy
     Object.assign(map,cache.dataFile);
@@ -113,43 +113,43 @@ function updateMap(text){
 }
 
 this.get = function(){
-	
-    var defer 	= Deferred.create();
-    var delay	= ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
-    var l5api	= config.tswL5api['blackIpFileUrl'];
-	
+    
+    var defer = Deferred.create();
+    var delay = ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
+    var l5api = config.tswL5api['blackIpFileUrl'];
+    
     if(Date.now() - cache.timeUpdate < 300000 + delay){
         return defer.resolve(cache.data);
     }
-	
+    
     cache.timeUpdate = Date.now();
 
     if(!fileUrl){
         return defer.resolve(cache.data);
     }
-	
+    
     fileCache.getAsync(fileUrl).done(function(d){
-		
+        
         var lastModifyTime = 0;
         var text = '';
-		
+        
         if(d && d.stats){
             lastModifyTime = d.stats.mtime.getTime();
         }
-		
+        
         if(d && d.data){
             text = d.data.toString('utf-8');
         }
-		
+        
         if(Date.now() - lastModifyTime < 300000){
             logger.debug('使用本地文件');
-			
+            
             updateMap(text);
-			
+            
             defer.resolve(cache.data);
             return;
         }
-		
+        
         require('ajax').request({
             url: fileUrl,
             type: 'get',
@@ -165,11 +165,11 @@ this.get = function(){
         }).fail(function(d){
             defer.resolve(cache.data);
         }).done(function(d){
-			
-            var text	= '';
-				
+            
+            var text = '';
+                
             if(d && d.result && typeof d.result === 'string'){
-				
+                
                 text = d.result;
             }
 
@@ -177,17 +177,17 @@ this.get = function(){
                 logger.error('blackIp file limit <=2M');
                 return defer.resolve(cache.data);
             }
-			
+            
             updateMap(text);
-			
+            
             //保存在本地
             fileCache.set(fileUrl,Buffer.from(text,'UTF-8'));
-			
+            
             defer.resolve(cache.data);
         });
     });
-	
-	
+    
+    
     return defer;
 };
 

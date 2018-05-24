@@ -7,13 +7,13 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const Deferred		= require('util/Deferred');
-const cmemTSW		= require('data/cmem.tsw.js');
-const crypto		= require('crypto');
-const zlib			= require('zlib');
-const MAX_NUM		= 64;
-const MAX_ALPHA_LOG	= 1000;
+const logger = require('logger');
+const Deferred = require('util/Deferred');
+const cmemTSW = require('data/cmem.tsw.js');
+const crypto = require('crypto');
+const zlib = require('zlib');
+const MAX_NUM = 64;
+const MAX_ALPHA_LOG = 1000;
 
 module.exports.MAX_ALPHA_LOG = MAX_ALPHA_LOG;
 
@@ -44,19 +44,19 @@ module.exports.getLogJsonByKey = function (uin,key) {
 };
 
 module.exports.getLogArr = function(uin,type,key,limit){
-	
-    var defer		= Deferred.create();
-    var memcached	= this.cmem();
-    var keyBitmap	= this.keyBitmap(uin);
+    
+    var defer = Deferred.create();
+    var memcached = this.cmem();
+    var keyBitmap = this.keyBitmap(uin);
 
     if(!memcached){
         return defer.resolve([]);
     }
 
     memcached.get(keyBitmap,function(err,data){
-        var start	= data || 0;
+        var start = data || 0;
 
-        var keyTextArr	= type === 'text' ? module.exports.keyTextArr(uin,start) : module.exports.keyJsonArr(uin,start);
+        var keyTextArr = type === 'text' ? module.exports.keyTextArr(uin,start) : module.exports.keyJsonArr(uin,start);
         var keyJsonArr = module.exports.keyJsonArr(uin,start);
 
         //如果传递进来key，则只需要关注传进来的key
@@ -118,7 +118,7 @@ module.exports.getLogArr = function(uin,type,key,limit){
         });
     });
 
-	
+    
     return defer;
 };
 
@@ -147,22 +147,22 @@ module.exports.getLogResultCode = function (logText) {
 };
 
 module.exports.report = function(key,logText,logJson){
-    var defer		= Deferred.create();
+    var defer = Deferred.create();
 
     if(!key){
         return defer.reject();
     }
-	
+    
     if(!logText){
         return defer.reject();
     }
-	
+    
     logJson = logJson || {};
 
-    var memcached	= this.cmem();  //要用this
-    var keyText		= module.exports.keyText(key);
-    var keyJson		= module.exports.keyJson(key);
-    var keyBitmap	= module.exports.keyBitmap(key);
+    var memcached = this.cmem();  //要用this
+    var keyText = module.exports.keyText(key);
+    var keyJson = module.exports.keyJson(key);
+    var keyBitmap = module.exports.keyBitmap(key);
 
     if(!memcached){
         return defer.resolve();
@@ -223,7 +223,7 @@ module.exports.keyText = function(key){
 };
 
 module.exports.keyJsonArr = function(key,index){
-	
+    
     var i = 0;
     var arr = [];
     var keyJson = this.keyJson(key);
@@ -232,12 +232,12 @@ module.exports.keyJsonArr = function(key,index){
     for(i = MAX_NUM; i > 0; i--){
         arr.push([keyJson,(i + index)%MAX_NUM].join('.'));
     }
-	
+    
     return arr;
 };
 
 module.exports.keyTextArr = function(key,index){
-	
+    
     var i = 0;
     var arr = [];
     var keyText = this.keyText(key);
@@ -246,40 +246,40 @@ module.exports.keyTextArr = function(key,index){
     for(i = MAX_NUM; i > 0; i--){
         arr.push([keyText,(i + index)%MAX_NUM].join('.'));
     }
-	
+    
     return arr;
 };
 
 
 //加密
 module.exports.encode = function(appid,appkey,data){
-    var input	= Buffer.from(JSON.stringify(data),'UTF-8');
-    var buff	= zlib.deflateSync(input);
-    var des		= crypto.createCipher('des',(appid + appkey));
-    var buf1	= des.update(buff, null , 'hex');
-    var buf2	= des.final('hex');
-    var body	= Buffer.from(buf1 + buf2,'hex').toString('base64');
+    var input = Buffer.from(JSON.stringify(data),'UTF-8');
+    var buff = zlib.deflateSync(input);
+    var des = crypto.createCipher('des',(appid + appkey));
+    var buf1 = des.update(buff, null , 'hex');
+    var buf2 = des.final('hex');
+    var body = Buffer.from(buf1 + buf2,'hex').toString('base64');
     return body;
 };
 
 //解密
 module.exports.decode = function(appid,appkey,body){
-    var des		= crypto.createDecipher('des',(appid + appkey));
-    var buf1	= '';
-    var buf2	= '';
+    var des = crypto.createDecipher('des',(appid + appkey));
+    var buf1 = '';
+    var buf2 = '';
 
     try{
-        buf1	= des.update(body,'base64', 'hex');
-        buf2	= des.final('hex');
+        buf1 = des.update(body,'base64', 'hex');
+        buf2 = des.final('hex');
     }catch(e){
         logger.error(e.stack);
         return null;
     }
 
-    var buff	= Buffer.from(buf1 + buf2 ,'hex');
-    var input	= zlib.inflateSync(buff);
+    var buff = Buffer.from(buf1 + buf2 ,'hex');
+    var input = zlib.inflateSync(buff);
 
-    var data	= null;
+    var data = null;
 
     try{
         data = JSON.parse(input.toString('UTF-8'));

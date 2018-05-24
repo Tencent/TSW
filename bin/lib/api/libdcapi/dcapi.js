@@ -9,8 +9,8 @@
 
 this.baselog = function(table, param) {
     return this.reportLog({
-        table	: table,
-        data	: param
+        table    : table,
+        data    : param
     });
 };
 
@@ -19,6 +19,6 @@ this.reportLog = function(opt){
 };
 
 this.report = function(opt) {
-	
+    
 
 };

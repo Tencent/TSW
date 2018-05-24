@@ -134,26 +134,26 @@ var reportOpenapi = function(last){
         now     : Date.now()
     };
 
-    var sig	= openapi.signature({
+    var sig = openapi.signature({
         pathname: url.parse(config.appReportUrl).pathname,
         method: 'POST',
         data: postData,
         appkey: config.appkey
     });
 
-    postData.sig	= sig;
+    postData.sig = sig;
 
     require('ajax').request({
-        url			: config.appReportUrl,
-        type		: 'POST',
-        l5api		: config.tswL5api['openapi.tswjs.org'],
-        dcapi		: {
+        url            : config.appReportUrl,
+        type        : 'POST',
+        l5api        : config.tswL5api['openapi.tswjs.org'],
+        dcapi        : {
             key: 'EVENT_TSW_OPENAPI_APP_REPORT'
         },
-        data		: postData,
-        keepAlive	: true,
-        autoToken	: false,
-        dataType	: 'json'
+        data        : postData,
+        keepAlive    : true,
+        autoToken    : false,
+        dataType    : 'json'
     }).fail(function(){
         logger.error('app report fail.');
         defer.reject();

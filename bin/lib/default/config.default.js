@@ -46,16 +46,16 @@ this.websoDstPort = this.httpPort;
 this.websoDstIp = '127.0.0.1';
 
 //alpha号码文件
-this.alphaFile	= null;
+this.alphaFile = null;
 
 //alpha号码文件
-this.alphaFileUrl	= null;
+this.alphaFileUrl = null;
 
 //ip黑名单文件
-this.blackIpFile	= null;
+this.blackIpFile = null;
 
 //ip黑名单文件
-this.blackIpFileUrl	= null;
+this.blackIpFileUrl = null;
 
 //邮件接收者
 this.mailTo = '';
@@ -112,11 +112,11 @@ this.idc = 'sz';
 this.l5api = {};
 
 this.timeout = {
-    socket		: 120000,
-    post		: 30000,
-    get			: 10000,
-    keepAlive	: 10000,
-    dns			: 3000
+    socket        : 120000,
+    post        : 30000,
+    get            : 10000,
+    keepAlive    : 10000,
+    dns            : 3000
 };
 
 
@@ -125,11 +125,11 @@ this.extendMod = {
 };
 
 //openapi
-this.logReportUrl		= 'https://openapi.tswjs.org/v1/log/report';
-this.h5testSyncUrl		= 'https://openapi.tswjs.org/v1/h5test/sync';
-this.utilCDUrl			= 'https://openapi.tswjs.org/v1/util/cd';
-this.appReportUrl		= 'https://openapi.tswjs.org/v1/app/report';
-this.runtimeReportUrl	= 'https://openapi.tswjs.org/v1/runtime/report';
+this.logReportUrl = 'https://openapi.tswjs.org/v1/log/report';
+this.h5testSyncUrl = 'https://openapi.tswjs.org/v1/h5test/sync';
+this.utilCDUrl = 'https://openapi.tswjs.org/v1/util/cd';
+this.appReportUrl = 'https://openapi.tswjs.org/v1/app/report';
+this.runtimeReportUrl = 'https://openapi.tswjs.org/v1/runtime/report';
 
 this.ignoreTST = false;
 
@@ -137,9 +137,9 @@ this.ajaxDefaultOptions = {
     useJsonParseOnly : true
 };
 
-this.tswL5api	= {};
-this.tswL5api['cmem.tsw.sz']		= null;
-this.tswL5api['cmem.tsw.sh']		= this.tswL5api['cmem.tsw.sz'];
-this.tswL5api['cmem.tsw.tj']		= this.tswL5api['cmem.tsw.sh'];
-this.tswL5api['cmem.tsw.h5test']	= this.tswL5api['cmem.tsw.sz'];
+this.tswL5api = {};
+this.tswL5api['cmem.tsw.sz'] = null;
+this.tswL5api['cmem.tsw.sh'] = this.tswL5api['cmem.tsw.sz'];
+this.tswL5api['cmem.tsw.tj'] = this.tswL5api['cmem.tsw.sh'];
+this.tswL5api['cmem.tsw.h5test'] = this.tswL5api['cmem.tsw.sz'];
 

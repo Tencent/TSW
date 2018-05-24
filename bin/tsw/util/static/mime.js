@@ -10,7 +10,7 @@
 this.types = {
 
     'zip': 'application/octet-stream',
-	
+    
     'css': 'text/css',
 
     'gif': 'image/gif',
@@ -44,9 +44,9 @@ this.types = {
     'wma': 'audio/x-ms-wma',
 
     'mov': 'video/mov',
-	
+    
     'mp4': 'video/mp4',
-	
+    
     'wmv': 'video/x-ms-wmv',
 
     'xml': 'text/xml',

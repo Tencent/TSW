@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const config		= require('config');
+const config = require('config');
 
 //是否安全扫描器请求
 this.isTST = function(request){
