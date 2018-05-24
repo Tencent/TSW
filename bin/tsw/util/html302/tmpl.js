@@ -2,7 +2,7 @@
 //tmpl file list:
 //html302/src/jump.tmpl.html
 define(function(require, exports, module) {
-    let tmpl = { 
+    const tmpl = { 
         'jump': function(data) {
 
             let __p=[], _p=function(s) {

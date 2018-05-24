@@ -17,7 +17,7 @@ const {debugOptions} = process.binding('config');
 const methodMap = {};
 const workerMap = {};
 const cpuMap = [];
-let isDeaded = false;
+const isDeaded = false;
 
 //阻止进程因异常而退出
 process.on('uncaughtException', function(e) {
@@ -30,12 +30,12 @@ process.on('uncaughtException', function(e) {
 
 
 process.on('warning', function(warning) {
-    let key = String(warning);
-    let errStr = warning && warning.stack || String(warning);
+    const key = String(warning);
+    const errStr = warning && warning.stack || String(warning);
 
     logger.error(errStr);
 
-    let Content = [
+    const Content = [
         '<p><strong>错误堆栈</strong></p>',
         '<p><pre><code>',
         errStr,
@@ -68,7 +68,7 @@ process.on('unhandledRejection', (reason = {}, p = {}) => {
 
     if(errStr === 'undefined') {
 
-        let reasonStr = JSON.stringify(reason);
+        const reasonStr = JSON.stringify(reason);
 
         logger.error('unhandledRejection reason: ' + reasonStr);
 
@@ -161,7 +161,7 @@ function startServer() {
         //监听子进程是否fork成功
         cluster.on('fork', function(currWorker) {
 
-            let cpu = getToBindCpu(currWorker);
+            const cpu = getToBindCpu(currWorker);
 
             logger.info('worker fork success! pid:${pid} cpu: ${cpu}', {
                 pid: currWorker.process.pid,
@@ -180,7 +180,7 @@ function startServer() {
 
             //监听子进程发来的消息并处理
             currWorker.on('message', function(...args) {
-                let m = args[0];
+                const m = args[0];
                 if(m && methodMap[m.cmd]) {
                     methodMap[m.cmd].apply(this, args);
                 }
@@ -197,7 +197,7 @@ function startServer() {
 
         //子进程退出时做下处理
         cluster.on('disconnect', function(worker) {
-            let cpu = getToBindCpu(worker);
+            const cpu = getToBindCpu(worker);
 
             if(worker.hasRestart) {
                 return;
@@ -214,7 +214,7 @@ function startServer() {
         //子进程被杀死的时候做下处理，原地复活
         cluster.on('exit', function(worker) {
 
-            let cpu = getToBindCpu(worker);
+            const cpu = getToBindCpu(worker);
 
             if(worker.hasRestart) {
                 return;
@@ -279,8 +279,8 @@ function startServer() {
         process.on('sendCmd2workerOnce', function(data) {
 
             let key, worker;
-            let CMD = data.CMD;
-            let GET = data.GET;
+            const CMD = data.CMD;
+            const GET = data.GET;
 
             if(isDeaded) {
                 process.exit(0);
@@ -290,7 +290,7 @@ function startServer() {
                 CMD
             });
 
-            let targetCpu = GET.cpu || 0;
+            const targetCpu = GET.cpu || 0;
 
             for(key in workerMap) {
                 worker = workerMap[key];
@@ -333,8 +333,8 @@ function startServer() {
 //处理子进程的心跳消息
 methodMap.heartBeat = function(m) {
 
-    let worker = this;
-    let now = new Date().getTime();
+    const worker = this;
+    const now = new Date().getTime();
 
     worker.lastMessage = m;
     worker.lastLiveTime = now;
@@ -342,7 +342,7 @@ methodMap.heartBeat = function(m) {
 
 //关闭一个worker
 function closeWorker(worker) {
-    let cpu = worker.cpuid;
+    const cpu = worker.cpuid;
     let closeTimeWait = 10000;
 
     closeTimeWait = Math.max(closeTimeWait, config.timeout.socket);
@@ -360,9 +360,9 @@ function closeWorker(worker) {
         delete workerMap[cpu];
     }
 
-    let closeFn = function(worker) {
+    const closeFn = function(worker) {
         let closed = false;
-        let pid = worker.process.pid;
+        const pid = worker.process.pid;
 
         return function() {
             if(closed) {
@@ -397,7 +397,7 @@ function closeWorker(worker) {
 
 //重启worker
 function restartWorker(worker) {
-    let cpu = getToBindCpu(worker);
+    const cpu = getToBindCpu(worker);
 
     if(worker.hasRestart) {
         return;
@@ -452,7 +452,7 @@ function checkWorkerAlive() {
 
             //内存超限进程处理
             if(worker.lastMessage) {
-                let currMemory = worker.lastMessage.memoryUsage;
+                const currMemory = worker.lastMessage.memoryUsage;
 
                 //logger.debug(currMemory);
 
@@ -497,7 +497,7 @@ function getToBindCpu(worker) {
     }else{
 
         for(i = 0; i < cpuMap.length; i++) {
-            let c = cpuMap[i];
+            const c = cpuMap[i];
             if(c == 0) {
                 cpu = i;
                 worker.cpuid = cpu;

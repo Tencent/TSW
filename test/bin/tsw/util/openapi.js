@@ -9,12 +9,12 @@ logger.setLogLevel('error');
 describe('test openapi', () => {
     describe('test signature', () => {
         it('#test empty opt', () => {
-            let opt = {};
+            const opt = {};
             expect(openapi.signature(opt)).to.equal('KN+ey6lAXAAjHfJXOHiEXkBIge4=');
         });
 
         it('#test GET :/api', () => {
-            let opt = {
+            const opt = {
                 method: 'get',
                 pathname: '/api'
             };
@@ -22,7 +22,7 @@ describe('test openapi', () => {
         });
 
         it('#test data :/api?a=1', () => {
-            let opt = {
+            const opt = {
                 method: 'get',
                 pathname: '/api',
                 data: {a:1}
@@ -31,7 +31,7 @@ describe('test openapi', () => {
         });
 
         it('#test appkey :/api?a=1 (appkey 1234)', () => {
-            let opt = {
+            const opt = {
                 method: 'get',
                 pathname: '/api',
                 data: {a:1},
@@ -41,7 +41,7 @@ describe('test openapi', () => {
         });
 
         it('#test encode :/api?aa=~; (appkey 1234)', () => {
-            let opt = {
+            const opt = {
                 method: 'get',
                 pathname: '/api',
                 data: {aa:'~'},

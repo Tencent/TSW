@@ -3,8 +3,8 @@
  * @author lifesinger@gmail.com
  */
 
-let aliasCache = {};
-let url = require('url');
+const aliasCache = {};
+const url = require('url');
 
 
 exports.parseAlias = function (id) {
@@ -13,12 +13,12 @@ exports.parseAlias = function (id) {
         return id.substring(1);
     }
 
-    let alias = aliasCache;
+    const alias = aliasCache;
 
     // Only top-level id needs to parse alias.
     if (alias && isTopLevel(id)) {
-        let parts = id.split('/');
-        let first = parts[0];
+        const parts = id.split('/');
+        const first = parts[0];
 
         if (alias.hasOwnProperty(first)) {
             parts[0] = alias[first];
@@ -32,9 +32,9 @@ exports.parseAlias = function (id) {
 
 exports.configFn = function(o) {
     if (o && o.alias) {
-        let alias = o.alias;
+        const alias = o.alias;
 
-        for (let p in alias) {
+        for (const p in alias) {
             if (alias.hasOwnProperty(p)) {
                 aliasCache[p] = alias[p];
             }
@@ -46,8 +46,8 @@ exports.configFn = function(o) {
 
 // Reads content from http(s)/local filesystem
 exports.readFile = function(uri, callback) {
-    let options = url.parse(uri);
-    let connect = require(options.protocol.slice(0, -1));
+    const options = url.parse(uri);
+    const connect = require(options.protocol.slice(0, -1));
 
     connect.get(options, function(res) {
         if (res.statusCode !== 200) {
@@ -69,7 +69,7 @@ exports.readFile = function(uri, callback) {
                 index += chunk.length;
             });
 
-            let data = buf.toString();
+            const data = buf.toString();
             callback(data);
         });
 
@@ -81,6 +81,6 @@ exports.readFile = function(uri, callback) {
 // -------
 
 function isTopLevel(id) {
-    let c = id.charAt(0);
+    const c = id.charAt(0);
     return id.indexOf('://') === -1 && c !== '.' && c !== '/';
 }

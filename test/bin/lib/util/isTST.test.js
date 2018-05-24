@@ -2,15 +2,15 @@ const chai = require('chai');
 const expect = chai.expect;
 const plug = require('plug');
 
-let isTST = plug('util/isTST.js');
-let logger = plug('logger');
-let config = plug('config');
+const isTST = plug('util/isTST.js');
+const logger = plug('logger');
+const config = plug('config');
 
 logger.setLogLevel('error');
 
 describe('test isTST', () => {
 
-    let req = {};
+    const req = {};
 
     it('no extendMod', async () => {
 

@@ -67,14 +67,14 @@ module.exports = function(req) {
     }else{
         //fast parse
         req.REQUEST.query.split('&').forEach(function(v) {
-            let index = v.indexOf('=');
+            const index = v.indexOf('=');
 
             if(index < 0) {
                 return;
             }
 
-            let $1 = v.substr(0, index);
-            let $2 = v.substr(index + 1);
+            const $1 = v.substr(0, index);
+            const $2 = v.substr(index + 1);
 
             try{
                 req.GET[$1] = decodeURIComponent($2);
@@ -193,9 +193,9 @@ module.exports = function(req) {
 };
 
 function paramFn(name, defaultValue) {
-    let params = this.params || {};
-    let body = this.body || {};
-    let query = this.query || {};
+    const params = this.params || {};
+    const body = this.body || {};
+    const query = this.query || {};
     if (null != params[name] && params.hasOwnProperty(name)) return params[name];
     if (null != body[name]) return body[name];
     if (null != query[name]) return query[name];

@@ -36,7 +36,7 @@ this.getLogLevel = function() {
 
     this.logLevel = this.levelMap['info'];
 
-    let config = require('config.js');
+    const config = require('config.js');
 
     if(config.logger) {
         if(typeof config.logger.logLevel === 'number') {

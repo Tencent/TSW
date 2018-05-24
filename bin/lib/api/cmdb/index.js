@@ -11,7 +11,7 @@ const Deferred = require('util/Deferred');
 
 
 this.GetDeviceThisServer = function() {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve(null);
 };
@@ -20,13 +20,13 @@ this.GetDeviceThisServer = function() {
  * 查询父业务树信息
  */
 this.GetAllParentBusiness = function(opt) {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve(null);
 };
 
 this.GetDeviceByIp = function(opt) {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve(null);
 };

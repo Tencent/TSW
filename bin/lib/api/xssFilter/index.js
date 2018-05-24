@@ -10,7 +10,7 @@
 const Deferred = require('util/Deferred');
 
 this.check = function() {
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };

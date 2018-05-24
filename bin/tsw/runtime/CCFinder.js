@@ -35,8 +35,8 @@ this.addWhiteList = function(userIp) {
 
 this.checkHost = function(req, res) {
 
-    let hostAllow = config.allowHost || [];
-    let host = req.headers['host'];
+    const hostAllow = config.allowHost || [];
+    const host = req.headers['host'];
     let i, len, v;
 
     if(hostAllow.length === 0) {
@@ -76,8 +76,8 @@ this.StdX10 = function(ipCache) {
     let res = 0;
     let sum = 0;
     let avg = 0;
-    let arr = Object.keys(ipCache).filter(function(item) {
-        let tmp = ipCache[item];
+    const arr = Object.keys(ipCache).filter(function(item) {
+        const tmp = ipCache[item];
         if(typeof tmp === 'object' && tmp.list) {
             sum += tmp.list.length;
             return true;
@@ -91,9 +91,9 @@ this.StdX10 = function(ipCache) {
 
     avg = sum / arr.length;
 
-    let sumXsum = arr.reduce(function(pre, key) {
-        let item = ipCache[key];
-        let value = item.list.length;
+    const sumXsum = arr.reduce(function(pre, key) {
+        const item = ipCache[key];
+        const value = item.list.length;
         item.avg = avg;
 
         return pre + (value - avg)*(value - avg);
@@ -106,11 +106,11 @@ this.StdX10 = function(ipCache) {
 
 this.check = function(req, res) {
 
-    let userIp = httpUtil.getUserIp(req);
-    let userIp24 = httpUtil.getUserIp24(req);
+    const userIp = httpUtil.getUserIp(req);
+    const userIp24 = httpUtil.getUserIp24(req);
     let key, Content, curr;
 
-    let info = {
+    const info = {
         userIp        : userIp,
         hostname    : req.headers.host,
         pathname    : req.REQUEST.pathname

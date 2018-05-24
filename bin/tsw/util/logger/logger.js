@@ -51,7 +51,7 @@ Logger.prototype = {
 
     occurError: function() {
 
-        let curr = contextMod.currentContext();
+        const curr = contextMod.currentContext();
 
         if(curr.window && curr.window.request) {
             curr.log = curr.log || {};
@@ -64,13 +64,13 @@ Logger.prototype = {
     },
 
     getLog: function() {
-        let log = contextMod.currentContext().log || null;
+        const log = contextMod.currentContext().log || null;
 
         return log;
     },
 
     drop: function(dropAlpha) {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log && log.showLineNumber && !dropAlpha) {
             return;
@@ -80,7 +80,7 @@ Logger.prototype = {
     },
 
     getJson: function() {
-        let log = this.getLog();
+        const log = this.getLog();
         let json = {
             curr: {},
             ajax: []
@@ -100,8 +100,8 @@ Logger.prototype = {
     },
 
     getText: function() {
-        let log = this.getLog();
-        let arr = [];
+        const log = this.getLog();
+        const arr = [];
 
         if(log && log.arr) {
 
@@ -124,8 +124,8 @@ Logger.prototype = {
 
         this.debug('setKey: ${key}', {key:key});
 
-        let log = this.getLog();
-        let alpha = require('util/alpha.js');
+        const log = this.getLog();
+        const alpha = require('util/alpha.js');
 
         if(!log) {
             return;
@@ -139,7 +139,7 @@ Logger.prototype = {
     },
 
     getKey: function() {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             return log.key;
@@ -157,7 +157,7 @@ Logger.prototype = {
 
         this.debug('setGroup: ${group}', {group:group});
 
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             log.group = group;
@@ -165,7 +165,7 @@ Logger.prototype = {
     },
 
     getGroup: function() {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             return log.group;
@@ -175,7 +175,7 @@ Logger.prototype = {
     },
 
     isReport: function() {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(!log) {
             return false;
@@ -196,7 +196,7 @@ Logger.prototype = {
 
         this.debug('report ${key}', {key:key});
 
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
             log.force = 1;
@@ -208,7 +208,7 @@ Logger.prototype = {
     },
 
     fillBuffer: function(type, fn) {
-        let log = this.getLog();
+        const log = this.getLog();
 
         if(log) {
 
@@ -263,9 +263,9 @@ Logger.prototype = {
 
     writeLog : function(type, str, obj) {
 
-        let level = this.type2level(type);
-        let log = this.getLog();
-        let allow = filter(level, str, obj);
+        const level = this.type2level(type);
+        const log = this.getLog();
+        const allow = filter(level, str, obj);
         let logStr = null;
 
         if(log || allow === true || level >= config.getLogLevel()) {
@@ -318,8 +318,8 @@ Logger.prototype = {
 
     _getLog: function(type, level, str, obj) {
 
-        let log = this.getLog();
-        let that = this;
+        const log = this.getLog();
+        const that = this;
         let filename = '';
         let column = '';
         let line = '';
@@ -349,10 +349,10 @@ Logger.prototype = {
         }
 
 
-        let now = new Date();
+        const now = new Date();
         let text = null;
 
-        let fn = function() {
+        const fn = function() {
 
             if(text!== null) {
                 return text;
@@ -437,7 +437,7 @@ Logger.prototype = {
 
     format: function(data) {
 
-        let str = data.yyyy
+        const str = data.yyyy
             + '-'
             + data.MM
             + '-'
@@ -482,7 +482,7 @@ function merge(str, obj) {
 
     return str && str.replace(/\$\{(.+?)\}/g, function($0, $1) {
 
-        let rs = obj && obj[$1];
+        const rs = obj && obj[$1];
         let undefined;
 
         return rs === undefined ? '' :

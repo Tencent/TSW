@@ -30,14 +30,14 @@ process.nextTick(function() {
 
     const create = function(oriRequest, protocol) {
         return function(...args) {
-            let opt = args[0];
-            let request = oriRequest.apply(this, args);
+            const opt = args[0];
+            const request = oriRequest.apply(this, args);
             let captureBody = false;
             let result = [];
             let buffer = Buffer.alloc(0);
             let bodySize = 0;
-            let maxBodySize = 1024 * 1024;
-            let timeStart = Date.now();
+            const maxBodySize = 1024 * 1024;
+            const timeStart = Date.now();
             let timeEnd = 0;
             let timeResponse = 0;
             // var timeCurr        = timeStart;
@@ -45,7 +45,7 @@ process.nextTick(function() {
             let remotePort = '';
             let localAddress = '';
             let localPort = '';
-            let host = (opt.headers && opt.headers.host) || opt.host;
+            const host = (opt.headers && opt.headers.host) || opt.host;
 
             if(context.requestCaptureSN) {
                 context.requestCaptureSN++;
@@ -53,8 +53,8 @@ process.nextTick(function() {
                 context.requestCaptureSN = 1;
             }
 
-            let SN = context.requestCaptureSN || 0;
-            let logPre = `[${SN}] `;
+            const SN = context.requestCaptureSN || 0;
+            const logPre = `[${SN}] `;
 
             logger.debug(logPre + '${method} ${ip}:${port} ~ ${protocol}//${host}${path}', {
                 protocol    : protocol,
@@ -79,9 +79,9 @@ process.nextTick(function() {
                 });
             }
 
-            let report = function(oriResponse) {
-                let logJson = logger.getJson();
-                let response = oriResponse || {
+            const report = function(oriResponse) {
+                const logJson = logger.getJson();
+                const response = oriResponse || {
                     headers : {
                         'content-length'    : 0,
                         'content-type'        : 'text/html'
@@ -96,7 +96,7 @@ process.nextTick(function() {
                     return;
                 }
 
-                let curr = {
+                const curr = {
                     SN                : SN,
 
                     protocol        : protocol === 'https:' ? 'HTTPS' : 'HTTP',
@@ -140,7 +140,7 @@ process.nextTick(function() {
             request.once('response', (response)=>{
                 timeResponse = Date.now();
 
-                let socket = response.socket;
+                const socket = response.socket;
 
                 process.domain && process.domain.add(response);
 
@@ -159,7 +159,7 @@ process.nextTick(function() {
                     cost: timeResponse - timeStart
                 });
 
-                let done = function() {
+                const done = function() {
                     this.removeListener('data', data);
 
                     if(timeEnd) {
@@ -206,7 +206,7 @@ process.nextTick(function() {
                 });
 
                 response.once('end', function() {
-                    let cost = Date.now() - timeStart;
+                    const cost = Date.now() - timeStart;
 
                     logger.debug('${logPre}end size：${size}, receive data cost: ${cost}ms', {
                         logPre: logPre,

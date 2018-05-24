@@ -21,17 +21,17 @@ if(isWindows) {
 
 function getLinuxLocalIpv4() {
     let intranetIp = '';
-    let networkInterfaces = os.networkInterfaces();
+    const networkInterfaces = os.networkInterfaces();
 
     Object.keys(networkInterfaces).forEach(function(key) {
-        let eth = networkInterfaces[key];
-        let address = eth && eth[0] && eth[0].address;
+        const eth = networkInterfaces[key];
+        const address = eth && eth[0] && eth[0].address;
 
         if(!address) {
             return;
         }
 
-        let tmp = isInnerIP.isInnerIP(address);
+        const tmp = isInnerIP.isInnerIP(address);
         if(!tmp) {
             return;
         }
@@ -48,7 +48,7 @@ function getLinuxLocalIpv4() {
 
 function getWinLocalIpv4() {
 
-    let localNet = os.networkInterfaces();
+    const localNet = os.networkInterfaces();
     let key, item;
     let v, i;
     let userIp = null;

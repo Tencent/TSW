@@ -3,14 +3,14 @@
  * @author lifesinger@gmail.com
  */
 
-let Module = module.constructor;
-let helper = require('./helper');
-let vm = require('vm');
+const Module = module.constructor;
+const helper = require('./helper');
+const vm = require('vm');
 
 
-let _compile = Module.prototype._compile;
-let _resolveFilename = Module._resolveFilename;
-let moduleStack = [];
+const _compile = Module.prototype._compile;
+const _resolveFilename = Module._resolveFilename;
+const moduleStack = [];
 
 Module._resolveFilename = function(request, parent) {
     let res;
@@ -61,15 +61,15 @@ global.seajs = {
 /* eslint-enable no-console */
 
 global.define = function() {
-    let factory = arguments[arguments.length - 1];
+    const factory = arguments[arguments.length - 1];
     let ret = factory;
-    let module = moduleStack[moduleStack.length - 1] || require.main;
+    const module = moduleStack[moduleStack.length - 1] || require.main;
 
     // define(function(require, exports, module) { ... })
     if (typeof factory === 'function') {
         module.uri = module.id;
 
-        let req = function(id) {
+        const req = function(id) {
             return module.require(id);
         };
         req.async = createAsync(module);
@@ -93,7 +93,7 @@ function createAsync(module) {
     return function(ids, callback) {
         if (typeof ids === 'string') ids = [ids];
 
-        let args = [];
+        const args = [];
         let remain = ids.length;
 
         ids.forEach(function(id, index) {
@@ -101,7 +101,7 @@ function createAsync(module) {
             // http or https file
             if (/^https?:\/\//.test(id)) {
                 helper.readFile(id, function(data) {
-                    let m = {
+                    const m = {
                         id: id,
                         exports: {}
                     };

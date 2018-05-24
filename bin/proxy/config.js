@@ -28,7 +28,7 @@ if(global[__filename]) {
 
 if(isFirstLoad) {
     process.dlopen = function(fn) {
-        let parent = path.join(__dirname, '..');
+        const parent = path.join(__dirname, '..');
 
         return function(module, curr) {
             //检查node私有文件

@@ -24,14 +24,14 @@ module.exports = function(request, response, plug) {
         logger.info(`decode file name fail ${e.message}`);
     }
     
-    let wwwroot = plug.parent + '/wwwroot';
+    const wwwroot = plug.parent + '/wwwroot';
 
     if(filename === '' || filename === '/') {
         filename = '/index';
     }
 
     //保证请求的文件是wwwroot目录下的
-    let realPath = path.join(wwwroot, path.join('/', filename));
+    const realPath = path.join(wwwroot, path.join('/', filename));
     let ext = path.extname(realPath);
 
     if(ext) {
@@ -77,10 +77,10 @@ module.exports = function(request, response, plug) {
                     contentType: mime.types[ext]
                 });
             }else{
-                let range = request.headers.range || '';
-                let positions = range.replace(/bytes=/, '').split('-');
-                let start = parseInt(positions[0], 10) || 0;
-                let end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
+                const range = request.headers.range || '';
+                const positions = range.replace(/bytes=/, '').split('-');
+                const start = parseInt(positions[0], 10) || 0;
+                const end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
 
                 if(end < start || end >= stats.size) {
                     response.writeHead(416, {
@@ -112,7 +112,7 @@ module.exports = function(request, response, plug) {
                 gzipResponse = response;
             }
 
-            let rs = fs.createReadStream(realPath, opt);
+            const rs = fs.createReadStream(realPath, opt);
 
             rs.on('error', function(e) {
                 logger.error(e.stack);
