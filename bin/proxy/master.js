@@ -315,7 +315,7 @@ function startServer(){
 
     }else{
 
-        //子进程直接引入proxy文件,当然也可以直接在这里写逻辑运行，注意此处else作用域属于子进程作用域，非本程序作用域
+        //子进程直接引入proxy文件,注意此处else作用域属于子进程作用域，非本程序作用域
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
         require('./http.proxy.js');
