@@ -48,7 +48,7 @@ TSW 提供用户维度的全息日志帮助开发者快速定位问题
 1. 安装 -- `git clone https://github.com/Tencent/TSW.git`
 1. 切换工作目录 -- `cd TSW`
 1. 补全依赖 -- `npm install --no-optional`
-1. 启动 --  `node index.js`
+1. 启动 --  `node --inspect index.js`
 1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
 
 ## 官方网站

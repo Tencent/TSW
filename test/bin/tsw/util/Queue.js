@@ -9,15 +9,15 @@ logger.setLogLevel('error');
 describe('test Queue', () => {
 
     it('#queue obj(not function)', () => {
-        let queue = Queue.create();
-        let val = 1;
+        const queue = Queue.create();
+        const val = 1;
         expect(queue.queue(val)).to.equal(queue);
     });
 
     it('#queue function', () => {
-        let queue = Queue.create();
+        const queue = Queue.create();
         let num = 0;
-        let addOne = () => num++;
+        const addOne = () => num++;
 
         queue.queue(addOne);
         queue.queue(() => {
@@ -27,10 +27,10 @@ describe('test Queue', () => {
     });
 
     it('#queue sort', () => {
-        let queue = Queue.create();
+        const queue = Queue.create();
         let num = 10,
             list = [];
-        let addOne = () => list.push(num--);
+        const addOne = () => list.push(num--);
 
         queue.queue(addOne);
         queue.queue(() => {
@@ -54,15 +54,15 @@ describe('test Queue', () => {
     });
 
     it('#dequeue empty', () => {
-        let queue = Queue.create();
+        const queue = Queue.create();
         expect(queue.dequeue()).to.equal(queue);
     });
 
     it('#dequeue', () => {
-        let queue = Queue.create();
+        const queue = Queue.create();
         let num = 10,
             list = [];
-        let addOne = () =>
+        const addOne = () =>
             list.push(num--);
 
         queue.queue(addOne);

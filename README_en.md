@@ -41,7 +41,7 @@ TSW provides powerful logging abilities for developers to locate problems quickl
 
 - NPM : `npm install --no-optional`
 
-- Run `node index.js` to start Node.js server
+- Run `node --inspect index.js` to start Node.js server
 
 - Open `http://127.0.0.1/` in your browser.
 
