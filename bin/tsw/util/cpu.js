@@ -10,7 +10,7 @@
 const os            = require('os');
 const fs            = require('fs');
 const cp			= require('child_process');
-const {isWindows}	= require('./isWindows.js');
+const {isWindows} = require('./isWindows.js');
 const logger		= require('logger');
 var cache;
 
@@ -186,7 +186,7 @@ this.taskset = function(oriCpu,pid){
 
     });
 
-}
+};
 
 
 this.parseTaskset = function(str){
@@ -201,7 +201,7 @@ this.parseTaskset = function(str){
         var tmp		= v.split('-');
         var start	= ~~tmp[0];
         var end		= ~~tmp[1];
-        var i,len;
+        var i;
 
         if(end < start){
             end = start;
@@ -213,7 +213,7 @@ this.parseTaskset = function(str){
     });
 
     return res;
-}
+};
 
 if(process.mainModule === module){
     setInterval(function(){

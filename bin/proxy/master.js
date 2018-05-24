@@ -8,7 +8,6 @@
 'use strict';
 
 const logger			= require('logger');
-const cp				= require('child_process');
 const config			= require('./config.js');
 const cluster			= require('cluster');
 const cpuUtil			= require('util/cpu.js');
