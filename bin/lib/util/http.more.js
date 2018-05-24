@@ -7,17 +7,17 @@
  */
 'use strict';
 
-this.isFromWns = function(request){
+this.isFromWns = function(request) {
     return false;
 };
 
-this.getIpCromQuia = function(qvia){
+this.getIpCromQuia = function(qvia) {
     return null;
 };
 
-this.getBase = function(request){
+this.getBase = function(request) {
     return '';
 };
-this.fixPicUrl = function(url){
+this.fixPicUrl = function(url) {
     return '';
 };

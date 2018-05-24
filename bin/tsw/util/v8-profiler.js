@@ -21,7 +21,7 @@ let _isRecording = false;
  * @return {[type]}            [description]
  */
 function getProfiler(opt, callback) {
-    if(_isRecording){
+    if(_isRecording) {
         callback && callback(null);
 
         return;
@@ -56,7 +56,7 @@ function getProfiler(opt, callback) {
  */
 function writeProfilerOpt(path, opt = {}, callback) {
     getProfiler(opt, result => {
-        if(path && result){
+        if(path && result) {
             fs.writeFile(path, result, err => {
                 callback && callback(path);
             });

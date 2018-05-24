@@ -54,6 +54,53 @@
             {
                 "args": "none"
             }
+        ],
+        "no-mixed-requires": [
+            "error",
+            true
+        ],
+        "block-spacing": [
+            "error",
+            "always"
+        ],
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
+        "comma-spacing": [
+            "error"
+        ],
+        "space-before-blocks": [
+            "error",
+            "always"
+        ],
+        "no-var": [
+            "error"
         ]
-    }
+    },
+    "overrides": [
+        {
+            "files": ["bin/tsw/wwwroot/*.js"],
+            "env": {
+                "browser": true
+            },
+            "globals": {
+                "define": true
+            }
+        }, {
+            "files": ["bin/lib/util/mail/tmpl.js", "bin/tsw/util/**/tmpl.js"],
+            "rules": {
+                "no-unused-vars": [
+                    "error",
+                    {
+                        "varsIgnorePattern": "out",
+                        "args": "none"
+                    }
+                ],
+                "no-var": [
+                    "off"
+                ]
+            }
+        }
+    ]
 }

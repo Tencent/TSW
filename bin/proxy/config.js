@@ -13,30 +13,30 @@ const plug = require('plug');
 const Deferred = plug('util/Deferred');
 const defaultValue = plug('default/config.default.js');
 
-var isFirstLoad = false;
-var cache = {
+let isFirstLoad = false;
+let cache = {
     config: null
 };
 
 
-if(global[__filename]){
+if(global[__filename]) {
     cache = global[__filename];
 }else{
     global[__filename] = cache;
     isFirstLoad = true;
 }
 
-if(isFirstLoad){
-    process.dlopen = function(fn){
-        var parent = path.join(__dirname , '..');
+if(isFirstLoad) {
+    process.dlopen = function(fn) {
+        let parent = path.join(__dirname, '..');
 
-        return function(module,curr){
+        return function(module, curr) {
             //检查node私有文件
-            if(/\.node$/i.test(curr) && curr.indexOf(parent) !== 0){
+            if(/\.node$/i.test(curr) && curr.indexOf(parent) !== 0) {
                 //发现私有node扩展
-                setTimeout(function(){
+                setTimeout(function() {
                     require('runtime/md5.check.js').findNodeCpp(curr);
-                },3000);
+                }, 3000);
             }
             return fn.apply(this, arguments);
         };
@@ -44,42 +44,42 @@ if(isFirstLoad){
 }
 
 
-if(fs.existsSync('/etc/tsw.config.js')){
+if(fs.existsSync('/etc/tsw.config.js')) {
     cache.config = require('/usr/local/node_modules/config.js');
-}else if(fs.existsSync('/usr/local/node_modules/config.js')){
+}else if(fs.existsSync('/usr/local/node_modules/config.js')) {
     cache.config = require('/usr/local/node_modules/config.js');
-}else if(fs.existsSync('/data/release/node_modules/config.js')){
+}else if(fs.existsSync('/data/release/node_modules/config.js')) {
     cache.config = require('/data/release/node_modules/config.js');
-}else if(fs.existsSync(__dirname + '/../../conf/config.js')){
+}else if(fs.existsSync(__dirname + '/../../conf/config.js')) {
     cache.config = require('../../conf/config.js');
 }
 
 
-Deferred.extend(true,exports,defaultValue,cache.config);
+Deferred.extend(true, exports, defaultValue, cache.config);
 
 
-if(exports.router){
+if(exports.router) {
     exports.modAct = {
-        getModAct : function(req){
+        getModAct : function(req) {
             return exports.router.name(req);
         }
     };
     exports.modMap = {
-        find : function(name,req,res){
-            return exports.router.find(name,req,res);
+        find : function(name, req, res) {
+            return exports.router.find(name, req, res);
         }
     };
 }
 
-if(exports.wsRouter){
+if(exports.wsRouter) {
     exports.wsModAct = {
-        getModAct : function(ws){
+        getModAct : function(ws) {
             return exports.wsRouter.name(ws);
         }
     };
     exports.wsModMap = {
-        find : function(name,ws){
-            return exports.wsRouter.find(name,ws);
+        find : function(name, ws) {
+            return exports.wsRouter.find(name, ws);
         }
     };
 }
@@ -87,7 +87,7 @@ if(exports.wsRouter){
 
 module.exports = exports;
 
-if(process.mainModule === module){
+if(process.mainModule === module) {
     /* eslint-disable no-console */
     console.log(exports);
     /* eslint-enable no-console */

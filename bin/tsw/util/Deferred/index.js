@@ -1,15 +1,15 @@
 'use strict';
 
 /**
- * 
+ *
  * jQuery Deferred 1.7
  * Some code (c) 2005, 2013 jQuery Foundation, Inc. and other contributors
- * 
+ *
  */
 
 
 // String to Object flags format cache
-var flagsCache = {},
+let flagsCache = {},
     class2type = {},
     // Save a reference to some core methods
     toString = Object.prototype.toString,
@@ -17,7 +17,7 @@ var flagsCache = {},
 
 // Convert String-formatted flags into Object-formatted ones and store in cache
 function createFlags( flags ) {
-    var object = flagsCache[ flags ] = {},
+    let object = flagsCache[ flags ] = {},
         i, length;
     flags = flags.split( /\s+/ );
     for ( i = 0, length = flags.length; i < length; i++ ) {
@@ -26,8 +26,8 @@ function createFlags( flags ) {
     return object;
 }
 
-var jQuery = {
-    
+const jQuery = {
+
     // See test/unit/core.js for details concerning isFunction.
     // Since version 1.3, DOM methods and functions like alert
     // aren't supported. They return false on IE (#2968).
@@ -77,7 +77,7 @@ var jQuery = {
         // Own properties are enumerated firstly, so to speed up,
         // if last one is own, then all properties are own.
 
-        var key, a;
+        let key, a;
 
         for (a in obj ) {
             key = a;
@@ -87,7 +87,7 @@ var jQuery = {
     },
 
     isEmptyObject: function( obj ) {
-        for ( var name in obj ) {
+        for ( let name in obj ) {
             return false;
         }
         return true;
@@ -99,7 +99,7 @@ var jQuery = {
 
     // args is for internal usage only
     each: function( object, callback, args ) {
-        var name, i = 0,
+        let name, i = 0,
             length = object.length,
             isObj = length === undefined || jQuery.isFunction( object );
 
@@ -137,7 +137,7 @@ var jQuery = {
 
         return object;
     }
-    
+
 };
 
 // Populate the class2type map
@@ -147,7 +147,7 @@ jQuery.each('Boolean Number String Function Array Date RegExp Object'.split(' ')
 
 
 jQuery.extend = function() {
-    var options, name, src, copy, copyIsArray, clone,
+    let options, name, src, copy, copyIsArray, clone,
         target = arguments[0] || {},
         i = 1,
         length = arguments.length,
@@ -238,7 +238,7 @@ jQuery.Callbacks = function( flags ) {
     // (we check in cache first)
     flags = flags ? ( flagsCache[ flags ] || createFlags( flags ) ) : {};
 
-    var // Actual callback list
+    let // Actual callback list
         list = [],
         // Stack of fire calls for repeatable lists
         stack = [],
@@ -254,11 +254,11 @@ jQuery.Callbacks = function( flags ) {
         firingIndex,
         // Add one or several callbacks to the list
         add = function( args ) {
-            var i,
+            let i,
                 length,
                 elem,
                 type;
-                
+
             for ( i = 0, length = args.length; i < length; i++ ) {
                 elem = args[ i ];
                 type = jQuery.type( elem );
@@ -276,9 +276,9 @@ jQuery.Callbacks = function( flags ) {
         },
         // Fire callbacks
         fire = function( context, args ) {
-            
-            var fn,domain,ret;
-            
+
+            let fn, domain, ret;
+
             args = args || [];
             memory = !flags.memory || [context, args];
             firing = true;
@@ -286,20 +286,20 @@ jQuery.Callbacks = function( flags ) {
             firingStart = 0;
             firingLength = list.length;
             for (; list && firingIndex < firingLength; firingIndex++) {
-                
+
                 fn = list[firingIndex];
                 domain = fn.__domain;
                 fn.__domain = undefined;
-                
+
                 // restore domain if needed
                 if (domain && domain !== process.domain) {
-                    domain.run(function(){
+                    domain.run(function() {
                         ret = fn.apply(context, args);
                     });
                 }else {
                     ret = fn.apply(context, args);
                 }
-                
+
                 if (ret === false && flags.stopOnFalse) {
                     memory = true; // Mark as halted
                     break;
@@ -312,12 +312,10 @@ jQuery.Callbacks = function( flags ) {
                         memory = stack.shift();
                         self.fireWith(memory[0], memory[1]);
                     }
-                }
-                else 
+                } else
                 if (memory === true) {
                     self.disable();
-                }
-                else {
+                } else {
                     list = [];
                 }
             }
@@ -327,7 +325,7 @@ jQuery.Callbacks = function( flags ) {
             // Add a callback or a collection of callbacks to the list
             add: function() {
                 if ( list ) {
-                    var length = list.length;
+                    let length = list.length;
                     add( arguments );
                     // Do we need to add the callbacks to the
                     // current firing batch?
@@ -346,11 +344,11 @@ jQuery.Callbacks = function( flags ) {
             // Remove a callback from the list
             remove: function() {
                 if ( list ) {
-                    var args = arguments,
+                    let args = arguments,
                         argIndex = 0,
                         argLength = args.length;
                     for ( ; argIndex < argLength ; argIndex++ ) {
-                        for ( var i = 0; i < list.length; i++ ) {
+                        for ( let i = 0; i < list.length; i++ ) {
                             if ( args[ argIndex ] === list[ i ] ) {
                                 // Handle firingIndex and firingLength
                                 if ( firing ) {
@@ -377,7 +375,7 @@ jQuery.Callbacks = function( flags ) {
             // Control if a given callback is in the list
             has: function( fn ) {
                 if ( list ) {
-                    var i = 0,
+                    let i = 0,
                         length = list.length;
                     for ( ; i < length; i++ ) {
                         if ( fn === list[ i ] ) {
@@ -441,13 +439,13 @@ jQuery.Callbacks = function( flags ) {
 };
 
 
-var // Static reference to slice
+let // Static reference to slice
     sliceDeferred = [].slice;
 
 jQuery.extend({
 
     Deferred: function( func ) {
-        var doneList = jQuery.Callbacks( 'once memory' ),
+        let doneList = jQuery.Callbacks( 'once memory' ),
             failList = jQuery.Callbacks( 'once memory' ),
             progressList = jQuery.Callbacks( 'memory' ),
             state = 'pending',
@@ -478,16 +476,16 @@ jQuery.extend({
                     return this;
                 },
 
-                toES6Promise: function(){
-                    var self = this;
+                toES6Promise: function() {
+                    let self = this;
 
-                    return new Promise(function (resolve, reject){
+                    return new Promise(function (resolve, reject) {
 
-                        self.done(function(d){
+                        self.done(function(d) {
                             resolve(d);
                         });
 
-                        self.fail(function(d){
+                        self.fail(function(d) {
                             reject(d);
                         });
                     });
@@ -499,7 +497,7 @@ jQuery.extend({
                             fail: [ fnFail, 'reject' ],
                             progress: [ fnProgress, 'notify' ]
                         }, function( handler, data ) {
-                            var fn = data[ 0 ],
+                            let fn = data[ 0 ],
                                 action = data[ 1 ],
                                 returned;
                             if ( jQuery.isFunction( fn ) ) {
@@ -523,7 +521,7 @@ jQuery.extend({
                     if ( obj == null ) {
                         obj = promise;
                     } else {
-                        for ( var key in promise ) {
+                        for ( let key in promise ) {
                             obj[ key ] = promise[ key ];
                         }
                     }
@@ -556,7 +554,7 @@ jQuery.extend({
 
     // Deferred helper
     when: function( firstParam ) {
-        var args = sliceDeferred.call( arguments, 0 ),
+        let args = sliceDeferred.call( arguments, 0 ),
             i = 0,
             length = args.length,
             pValues = new Array( length ),
@@ -599,7 +597,7 @@ jQuery.extend({
 
 
 module.exports = {
-    create: function(){
+    create: function() {
         return jQuery.Deferred();
     },
     when: jQuery.when,

@@ -15,11 +15,11 @@ const codeWatch = require('api/code/watcher.js');
 const parseGet = require('util/http/parseGet.js');
 const cp = require('child_process');
 
-const server = http.createServer(function(req, res){
+const server = http.createServer(function(req, res) {
 
-    var action;
+    let action;
 
-    logger.info('admin request by： ${url}',{
+    logger.info('admin request by： ${url}', {
         url: req.url
     });
 
@@ -28,20 +28,20 @@ const server = http.createServer(function(req, res){
 
     action = methodMap[req.REQUEST.pathname] || methodMap['default'];
 
-    action.apply(methodMap,arguments);
+    action.apply(methodMap, arguments);
 
 });
 
 logger.info('start admin');
 
-server.listen(config.httpAdminPort,'127.0.0.1',function(err){
-    if(err){
-        logger.info('admin listen error ${address}:${port}',{
+server.listen(config.httpAdminPort, '127.0.0.1', function(err) {
+    if(err) {
+        logger.info('admin listen error ${address}:${port}', {
             address: '127.0.0.1',
             port: config.httpAdminPort
         });
     }else{
-        logger.info('admin listen ok ${address}:${port}',{
+        logger.info('admin listen ok ${address}:${port}', {
             address: '127.0.0.1',
             port: config.httpAdminPort
         });
@@ -51,13 +51,13 @@ server.listen(config.httpAdminPort,'127.0.0.1',function(err){
 
 const methodMap = {
 
-    'default' : function(req, res){
+    'default' : function(req, res) {
         res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'});
         res.end('no such command!');
     },
 
-    '/globaldump' : function(req, res){
-        process.emit('sendCmd2workerOnce',{
+    '/globaldump' : function(req, res) {
+        process.emit('sendCmd2workerOnce', {
             CMD: 'globaldump',
             GET: req.GET
         });
@@ -65,8 +65,8 @@ const methodMap = {
         res.end('done!\r\n');
     },
 
-    '/heapdump' : function(req, res){
-        process.emit('sendCmd2workerOnce',{
+    '/heapdump' : function(req, res) {
+        process.emit('sendCmd2workerOnce', {
             CMD: 'heapdump',
             GET: req.GET
         });
@@ -74,8 +74,8 @@ const methodMap = {
         res.end('done!\r\n');
     },
 
-    '/profiler' : function(req, res){
-        process.emit('sendCmd2workerOnce',{
+    '/profiler' : function(req, res) {
+        process.emit('sendCmd2workerOnce', {
             CMD: 'profiler',
             GET: req.GET
         });
@@ -83,8 +83,8 @@ const methodMap = {
         res.end('done!\r\n');
     },
 
-    '/top100' : function(req, res){
-        process.emit('sendCmd2workerOnce',{
+    '/top100' : function(req, res) {
+        process.emit('sendCmd2workerOnce', {
             CMD: 'top100',
             GET: req.GET
         });
@@ -92,13 +92,13 @@ const methodMap = {
         res.end('done!\r\n');
     },
 
-    '/reload' : function(req, res){
+    '/reload' : function(req, res) {
 
-        cp.exec('./check.js',{
+        cp.exec('./check.js', {
             timeout: 5000,
             cwd: __dirname
-        },function(err, stdout, stderr){
-            if(err){
+        }, function(err, stdout, stderr) {
+            if(err) {
                 logger.error(err.stack);
                 res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'});
                 res.write(err.stack);
@@ -107,7 +107,7 @@ const methodMap = {
                 return;
             }
 
-            if(stderr && stderr.length > 0){
+            if(stderr && stderr.length > 0) {
 
                 logger.error(stderr.toString('UTF-8'));
                 res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'});
@@ -117,10 +117,10 @@ const methodMap = {
                 return;
             }
 
-            if(stdout && stdout.length > 0){
+            if(stdout && stdout.length > 0) {
                 logger.info(stdout.toString('UTF-8'));
 
-                process.emit('reload',req.GET);
+                process.emit('reload', req.GET);
 
                 res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'});
                 res.write(stderr.toString('UTF-8'));

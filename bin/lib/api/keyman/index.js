@@ -7,34 +7,34 @@
  */
 'use strict';
 
-this.getBlockIpMapSync = function(){
+this.getBlockIpMapSync = function() {
     return require('./blackIpMap.js').getSync();
 };
 
-this.getBlockIpMap = function(){
+this.getBlockIpMap = function() {
     return require('./blackIpMap.js').get();
 };
 
-this.getAlphaUinMapSync = function(){
+this.getAlphaUinMapSync = function() {
     return require('./alphaMap.js').getSync();
 };
 
-this.getAlphaUinMap = function(){
+this.getAlphaUinMap = function() {
     return require('./alphaMap.js').get();
 };
 
-this.getTestIp = function(group){
+this.getTestIp = function(group) {
     return require('util/auto-report/TEReport.js').list(group);
 };
 
-this.getAllGroup = function(){
+this.getAllGroup = function() {
     return require('util/auto-report/TEReport.js').getAllGroup();
 };
 
-this.ipCheck = function(opt){
+this.ipCheck = function(opt) {
     return require('./ipCheck.js').info(opt);
 };
 
-this.runtimeAdd = function(opt){
+this.runtimeAdd = function(opt) {
     return require('./runtimeAdd.js').add(opt);
 };

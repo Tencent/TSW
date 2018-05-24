@@ -7,10 +7,10 @@
  */
 'use strict';
 
-module.exports = function(request, response, callback, tofCfg){
+module.exports = function(request, response, callback, tofCfg) {
     callback();
 };
 
-module.exports.checkLoginForTSW = function(request, response, callback){
+module.exports.checkLoginForTSW = function(request, response, callback) {
     callback();
 };

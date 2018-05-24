@@ -27,36 +27,36 @@ this.modAct = this.modMap = {
         default_page          : 'util/static/static.js'
     },
 
-    getModAct: function(req){
-        var pathname= req.REQUEST.pathname || '';
-        var arr = pathname.split('/',3);
-        var mod = arr[1] || 'default';
-        var act = arr[2] || 'page';
-        var mod_act = mod + '_' + act;
+    getModAct: function(req) {
+        let pathname= req.REQUEST.pathname || '';
+        let arr = pathname.split('/', 3);
+        let mod = arr[1] || 'default';
+        let act = arr[2] || 'page';
+        let mod_act = mod + '_' + act;
 
 
-        if(this.map[pathname]){
+        if(this.map[pathname]) {
             req.__mod_act = pathname;
             return pathname;
         }
 
-        if(this.map[mod_act]){
+        if(this.map[mod_act]) {
             req.__mod_act = mod_act;
             return mod_act;
         }
 
         return null;
     },
-    find: function(mod_act,req,res){
+    find: function(mod_act, req, res) {
         mod_act = req.__mod_act;
 
-        var mod = this.map[mod_act];
+        let mod = this.map[mod_act];
 
-        if(mod_act === 'default_page'){
+        if(mod_act === 'default_page') {
             req.REQUEST.pathname = '/static/tsw/index.html';
         }
 
-        if(mod){
+        if(mod) {
             res.setHeader('Mod-Map', mod_act + ':' + mod);
             return plug(mod);
         }

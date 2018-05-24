@@ -14,7 +14,7 @@ this.baselog = function(table, param) {
     });
 };
 
-this.reportLog = function(opt){
+this.reportLog = function(opt) {
 
 };
 

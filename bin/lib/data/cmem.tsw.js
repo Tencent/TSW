@@ -10,35 +10,35 @@
 const config = require('config');
 const cmem = require('pool/cmem.l5.js');
 
-this.cmem = function(){
+this.cmem = function() {
 
-    if(config.idc === 'sh'){
+    if(config.idc === 'sh') {
         return this.sh();
     }
 
-    if(config.idc === 'tj'){
+    if(config.idc === 'tj') {
         return this.tj();
     }
 
     return this.sz();
 };
 
-this.openapi = function(){
+this.openapi = function() {
     return cmem(config.memcached);
 };
 
-this.h5test = function(){
+this.h5test = function() {
     return cmem(config.memcached);
 };
 
-this.sz = function(){
+this.sz = function() {
     return cmem(config.memcached);
 };
 
-this.sh = function(){
+this.sh = function() {
     return cmem(config.memcached);
 };
 
-this.tj = function(){
+this.tj = function() {
     return cmem(config.memcached);
 };

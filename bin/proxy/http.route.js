@@ -31,17 +31,18 @@ const TSW = require('api/keyman');
 const tnm2 = require('api/tnm2');
 
 
-module.exports = function(req,res){
+module.exports = function(req, res) {
 
     process.SN = process.SN || 0;
 
-    var timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
-    var start = new Date();
-    var d = domain.create();
-    var tid = null;
-    var clear = function(){
+    let timeLimit = httpUtil.isPostLike(req) ? config.timeout.post : config.timeout.get;
+    let start = new Date();
+    let d = domain.create();
+    let tid = null;
 
-        if(tid === null){
+    let clear = function() {
+
+        if(tid === null) {
             return;
         }
 
@@ -50,19 +51,19 @@ module.exports = function(req,res){
 
         logger.debug('clear called');
 
-        process.nextTick(function(){
+        process.nextTick(function() {
 
-            var timeout = timeLimit - (Date.now() - start.getTime());
+            let timeout = timeLimit - (Date.now() - start.getTime());
 
-            if(timeout > 2000){
+            if(timeout > 2000) {
                 timeout = 2000;
             }
 
-            if(!timeout){
+            if(!timeout) {
                 timeout = 0;
             }
 
-            if(timeout < 0){
+            if(timeout < 0) {
                 timeout = 0;
             }
 
@@ -74,20 +75,20 @@ module.exports = function(req,res){
             res.removeAllListeners('afterFinish');
             res.removeAllListeners('done');
 
-            setTimeout(function(){
+            setTimeout(function() {
                 logger.debug('clearing');
 
                 d.remove(req);
                 d.remove(res);
 
-                if(d.currentContext){
+                if(d.currentContext) {
                     d.currentContext.window.request = null;
                     d.currentContext.window.response = null;
                     d.currentContext.window.onerror = null;
                     d.currentContext.window = null;
                 }
 
-                if(d.currentContext){
+                if(d.currentContext) {
                     d.currentContext.log = null;
                     d.currentContext = null;
                 }
@@ -101,7 +102,7 @@ module.exports = function(req,res){
                 logger.debug('cleared');
 
 
-            },timeout);
+            }, timeout);
         });
 
     };
@@ -116,7 +117,7 @@ module.exports = function(req,res){
     d.currentContext.window.request = req;
     d.currentContext.window.response = res;
 
-    if(config.enableWindow){
+    if(config.enableWindow) {
         d.currentContext.window.enable();
     }
 
@@ -139,66 +140,66 @@ module.exports = function(req,res){
         ClientDoneResponse : 0
     };
 
-    if(isWindows || config.devMode){
+    if(isWindows || config.devMode) {
         d.currentContext.log.showLineNumber = true;
     }
 
-    if(global.cpuUsed > config.cpuLimit){
+    if(global.cpuUsed > config.cpuLimit) {
         d.currentContext.log = null;
     }
 
-    d.on('error',function(err){
+    d.on('error', function(err) {
 
-        if(err && err.message === 'socket hang up'){
+        if(err && err.message === 'socket hang up') {
             logger.warn(err && err.stack);
 
             //忽略ajax错误
             return;
         }
 
-        if(err && err.message === 'Cannot read property \'asyncReset\' of null'){
+        if(err && err.message === 'Cannot read property \'asyncReset\' of null') {
             logger.warn(err && err.stack);
 
             //忽略asyncReset错误
             return;
         }
 
-        if(err && err.message === 'Cannot read property \'resume\' of null'){
+        if(err && err.message === 'Cannot read property \'resume\' of null') {
             logger.warn(err && err.stack);
 
             //忽略io错误
             return;
         }
 
-        if(err && err.message === 'write ECONNRESET'){
+        if(err && err.message === 'write ECONNRESET') {
             logger.warn(err && err.stack);
 
             //忽略io错误
             return;
         }
 
-        if(err && err.message === 'This socket is closed'){
+        if(err && err.message === 'This socket is closed') {
             logger.warn(err && err.stack);
 
             //忽略io错误
             return;
         }
 
-        if(err && err.stack && err.stack.indexOf('/') === -1 && err.stack.indexOf('\\') === -1){
+        if(err && err.stack && err.stack.indexOf('/') === -1 && err.stack.indexOf('\\') === -1) {
             logger.warn(err && err.stack);
             //忽略原生错误
             return;
         }
 
-        if(clear === null){
+        if(clear === null) {
             logger.warn(err && err.stack);
             return;
         }
 
-        onerror(req,res,err);
+        onerror(req, res, err);
 
-        if(httpUtil.isSent(res)){
-            logger.warn('${err}\nhttp://${host}${url}',{
+        if(httpUtil.isSent(res)) {
+            logger.warn('${err}\nhttp://${host}${url}', {
                 err: err && err.stack,
                 url: req.url,
                 host: req.headers.host
@@ -213,7 +214,7 @@ module.exports = function(req,res){
             });
 
         }else{
-            logger.error('${err}\nhttp://${host}${url}',{
+            logger.error('${err}\nhttp://${host}${url}', {
                 err: err && err.stack,
                 url: req.url,
                 host: req.headers.host
@@ -230,38 +231,42 @@ module.exports = function(req,res){
             try{
                 res.writeHead(503, {'Content-Type': 'text/html; charset=UTF-8'});
                 res.end();
-            }catch(e){
+            }catch(e) {
                 logger.info(`response 503 fail ${e.message}`);
             }
         }
 
-        try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
+        try{
+            res.emit('done');
+        }catch(e) {
+            logger.info(`emit done event fail ${e.message}`);
+        }
 
-        var key,Content;
+        let key, Content;
 
-        if(err && err.stack && err.message){
+        if(err && err.stack && err.message) {
 
-            if(err.message === 'Cannot read property \'asyncReset\' of null'){
+            if(err.message === 'Cannot read property \'asyncReset\' of null') {
                 return;
             }
 
-            if(err.message.indexOf('ETIMEDOUT') > 0){
+            if(err.message.indexOf('ETIMEDOUT') > 0) {
                 return;
             }
 
-            if(err.message.indexOf('timeout') > 0){
+            if(err.message.indexOf('timeout') > 0) {
                 return;
             }
 
-            if(err.message.indexOf('hang up') > 0){
+            if(err.message.indexOf('hang up') > 0) {
                 return;
             }
 
-            if(err.message.indexOf('error:140943FC') > 0){
+            if(err.message.indexOf('error:140943FC') > 0) {
                 return;
             }
 
-            if(isWindows){
+            if(isWindows) {
                 //return;
             }
 
@@ -274,7 +279,7 @@ module.exports = function(req,res){
                 '</code></pre></p>',
             ].join('');
 
-            mail.SendMail(key,'js',600,{
+            mail.SendMail(key, 'js', 600, {
                 'Title'            : key,
                 'runtimeType'    : 'Error',
                 'MsgInfo'        : err.stack || err.message,
@@ -284,75 +289,75 @@ module.exports = function(req,res){
 
     });
 
-    res.once('finish',function(){
+    res.once('finish', function() {
         this.emit('done');
     });
 
-    res.once('close',function(){
+    res.once('close', function() {
         res.__hasClosed = true;
         logger.debug('response has close');
 
         this.emit('done');//  let it going
     });
 
-    res.once('done',function(){
+    res.once('done', function() {
 
-        var isFail = 0,now;
+        let isFail = 0, now;
 
-        if(clear === null){
+        if(clear === null) {
             return;
         }
         clear();
 
         now = new Date();
 
-        if(!res.statusCode){
+        if(!res.statusCode) {
             isFail = 1;
         }
 
-        if(res.statusCode === 200){
+        if(res.statusCode === 200) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_20X', 1);
-        }else if(res.statusCode === 206 || res.statusCode === 204){
+        }else if(res.statusCode === 206 || res.statusCode === 204) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_20X', 1);
-        }else if(res.statusCode === 301){
+        }else if(res.statusCode === 301) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_302', 1);
-        }else if(res.statusCode === 302){
+        }else if(res.statusCode === 302) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_302', 1);
-        }else if(res.statusCode === 303){
+        }else if(res.statusCode === 303) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_302', 1);
-        }else if(res.statusCode === 307){
+        }else if(res.statusCode === 307) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_302', 1);
-        }else if(res.statusCode === 304){
+        }else if(res.statusCode === 304) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_304', 1);
-        }else if(res.statusCode === 403){
+        }else if(res.statusCode === 403) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_403', 1);
-        }else if(res.statusCode === 404){
+        }else if(res.statusCode === 404) {
             isFail = 2;
             tnm2.Attr_API('SUM_TSW_HTTP_404', 1);
-        }else if(res.statusCode === 418){
+        }else if(res.statusCode === 418) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_418', 1);
-        }else if(res.statusCode === 419){
+        }else if(res.statusCode === 419) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_419', 1);
-        }else if(res.statusCode === 666){
+        }else if(res.statusCode === 666) {
             isFail = 0;
             tnm2.Attr_API('SUM_TSW_HTTP_666', 1);
-        }else if(res.statusCode === 501){
+        }else if(res.statusCode === 501) {
             isFail = 2;
             tnm2.Attr_API('SUM_TSW_HTTP_501', 1);
-        }else if(res.statusCode === 508){
+        }else if(res.statusCode === 508) {
             isFail = 2;
             tnm2.Attr_API('SUM_TSW_HTTP_508', 1);
-        }else if(res.statusCode >= 500 && res.statusCode <= 599){
+        }else if(res.statusCode >= 500 && res.statusCode <= 599) {
             isFail = 1;
             tnm2.Attr_API('SUM_TSW_HTTP_500', 1);
         }else{
@@ -367,41 +372,41 @@ module.exports = function(req,res){
         req.timestamps.ClientDoneResponse = req.timestamps.ServerDoneResponse;
 
 
-        if(isFail === 1){
-            logger.debug('finish, statusCode: ${statusCode},cost: ${cost}ms',{
+        if(isFail === 1) {
+            logger.debug('finish, statusCode: ${statusCode},cost: ${cost}ms', {
                 statusCode: res.statusCode,
                 cost: Date.now() - start.getTime()
             });
 
-            if(typeof req.REQUEST.body === 'string'){
+            if(typeof req.REQUEST.body === 'string') {
 
-                if(req.REQUEST.body.length < 32 * 1024){
-                    logger.debug('\n${head}${body}',{
+                if(req.REQUEST.body.length < 32 * 1024) {
+                    logger.debug('\n${head}${body}', {
                         head: httpUtil.getRequestHeaderStr(req),
                         body: req.REQUEST.body || ''
                     });
                 }else{
-                    logger.debug('\n${head}${body}',{
+                    logger.debug('\n${head}${body}', {
                         head: httpUtil.getRequestHeaderStr(req),
                         body: 'body size >= 32KB'
                     });
                 }
             }else{
 
-                logger.debug('\n${head}${body}',{
+                logger.debug('\n${head}${body}', {
                     head: httpUtil.getRequestHeaderStr(req),
                     body: req.REQUEST.body || ''
                 });
             }
 
         }else{
-            logger.debug('finish, statusCode: ${statusCode}, cost: ${cost}ms',{
+            logger.debug('finish, statusCode: ${statusCode}, cost: ${cost}ms', {
                 statusCode: res.statusCode,
                 cost: Date.now() - start.getTime()
             });
         }
 
-        if(res.__hasTimeout && isFail !== 1){
+        if(res.__hasTimeout && isFail !== 1) {
 
             dcapi.report({
                 key            : 'EVENT_TSW_HTTP_TIMEOUT',
@@ -411,7 +416,7 @@ module.exports = function(req,res){
                 delay        : Date.now() - start.getTime()
             });
 
-        }else if(res.__hasClosed){
+        }else if(res.__hasClosed) {
 
             dcapi.report({
                 key            : 'EVENT_TSW_HTTP_CLOSE',
@@ -444,72 +449,112 @@ module.exports = function(req,res){
         res.emit('afterFinish');
     });
 
-    d.run(function(){
-        tid = setTimeout(function(){
+    d.run(function() {
+        tid = setTimeout(function() {
 
             res.__hasTimeout = true;
 
             logger.debug('timeout: ' + timeLimit);
 
-            onerror(req,res,new Error('timeout'));
+            onerror(req, res, new Error('timeout'));
 
-            if(res.__hasClosed){
+            if(res.__hasClosed) {
 
-                try{res.writeHead(202); }catch(e){logger.info(`response 202 fail ${e.message}`);}
-                try{res.end();}catch(e){logger.info(`response end fail ${e.message}`);}
-                try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
-            }else if(res.finished){
+                try{
+                    res.writeHead(202);
+                }catch(e) {
+                    logger.info(`response 202 fail ${e.message}`);
+                }
+                try{
+                    res.end();
+                }catch(e) {
+                    logger.info(`response end fail ${e.message}`);
+                }
+                try{
+                    res.emit('done');
+                }catch(e) {
+                    logger.info(`emit done event fail ${e.message}`);
+                }
+            }else if(res.finished) {
 
-                try{res.end();}catch(e){logger.info(`response end fail ${e.message}`);}
-                try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
-            }else if(!res._headerSent && !res.headersSent && !res.finished && res.statusCode === 200){
-                logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}',res);
+                try{
+                    res.end();
+                }catch(e) {
+                    logger.info(`response end fail ${e.message}`);
+                }
+                try{
+                    res.emit('done');
+                }catch(e) {
+                    logger.info(`emit done event fail ${e.message}`);
+                }
+            }else if(!res._headerSent && !res.headersSent && !res.finished && res.statusCode === 200) {
+                logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}', res);
 
                 //输出一条错误log方便定位问题
-                logger.error('response timeout http://${host}${url}',{
+                logger.error('response timeout http://${host}${url}', {
                     url: req.url,
                     host: req.headers.host
                 });
 
-                try{res.writeHead(513); }catch(e){logger.info(`response 513 fail ${e.message}`);}
-                try{res.end();}catch(e){logger.info(`response end fail ${e.message}`);}
+                try{
+                    res.writeHead(513);
+                }catch(e) {
+                    logger.info(`response 513 fail ${e.message}`);
+                }
+                try{
+                    res.end();
+                }catch(e) {
+                    logger.info(`response end fail ${e.message}`);
+                }
 
-                try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
+                try{
+                    res.emit('done');
+                }catch(e) {
+                    logger.info(`emit done event fail ${e.message}`);
+                }
             }else{
-                logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}',res);
+                logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}', res);
 
-                try{res.end();}catch(e){logger.info(`response end fail ${e.message}`);}
-                try{res.emit('done');}catch(e){logger.info(`emit done event fail ${e.message}`);}
+                try{
+                    res.end();
+                }catch(e) {
+                    logger.info(`response end fail ${e.message}`);
+                }
+                try{
+                    res.emit('done');
+                }catch(e) {
+                    logger.info(`emit done event fail ${e.message}`);
+                }
             }
 
             req.emit('close');
-        },timeLimit);
+        }, timeLimit);
 
-        doRoute(req,res);
+        doRoute(req, res);
     });
 
 };
 
 module.exports.doRoute = doRoute;
 
-function doRoute(req,res){
+function doRoute(req, res) {
 
-    var clientIp = httpUtil.getUserIp(req);
-    var userIp24 = httpUtil.getUserIp24(req);
+    let clientIp = httpUtil.getUserIp(req);
+    let userIp24 = httpUtil.getUserIp24(req);
 
     //增加测试环境header
     if(config.isTest) {
         res.setHeader('Test-Head', serverInfo.intranetIp || '');
     }
 
-    logger.debug('${method} ${protocol}://${host}${path}',{
+    logger.debug('${method} ${protocol}://${host}${path}', {
         protocol: req.REQUEST.protocol,
         path: req.REQUEST.path,
         host: req.headers.host,
         method: req.method
     });
 
-    logger.debug('idc: ${idc}, server ip: ${intranetIp}, tcp: ${remoteAddress}:${remotePort} > ${localAddress}:${localPort}, client ip: ${clientIp}, cpuUsed: ${cpuUsed}',{
+    logger.debug('idc: ${idc}, server ip: ${intranetIp}, tcp: ${remoteAddress}:${remotePort} > ${localAddress}:${localPort}, client ip: ${clientIp}, cpuUsed: ${cpuUsed}', {
         cpuUsed: global.cpuUsed,
         idc: config.idc,
         intranetIp: serverInfo.intranetIp,
@@ -520,9 +565,9 @@ function doRoute(req,res){
         localPort: (req.socket && req.socket.localPort)
     });
 
-    if(config.isTest){
+    if(config.isTest) {
         logger.debug('config.isTest is true');
-        if(isTST.isTST(req)){
+        if(isTST.isTST(req)) {
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
             res.end();
             return;
@@ -532,10 +577,10 @@ function doRoute(req,res){
 
     //安全中心扫描报个指标
     //支持从配置中直接屏蔽安全中心扫描请求
-    if(isTST.isTST(req)){
+    if(isTST.isTST(req)) {
         tnm2.Attr_API('SUM_TSW_HTTP_TST', 1);
 
-        if(config.ignoreTST){
+        if(config.ignoreTST) {
             logger.debug('ignore TST request');
 
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
@@ -545,17 +590,17 @@ function doRoute(req,res){
         }
     }
 
-    if(config.devMode){
+    if(config.devMode) {
         logger.debug('config.devMode is true');
     }
 
     //log自动上报
-    logReport(req,res);
+    logReport(req, res);
 
-    res.writeHead = (function(fn){
-        return function(...args){
-            if(alpha.isAlpha(req)){
-                if(logger.getLog()){
+    res.writeHead = (function(fn) {
+        return function(...args) {
+            if(alpha.isAlpha(req)) {
+                if(logger.getLog()) {
                     logger.getLog().showLineNumber = true;
                     logger.debug('showLineNumber on');
                 }
@@ -564,47 +609,47 @@ function doRoute(req,res){
                 httpUtil.captureBody(this);
             }
 
-            logger.debug('response ${statusCode}',{
+            logger.debug('response ${statusCode}', {
                 statusCode: args[0]
             });
 
-            return fn.apply(this,args);
+            return fn.apply(this, args);
         };
     }(res.writeHead));
 
-    var mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    let mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
     contextMod.currentContext().mod_act = mod_act;
 
-    if(alpha.isAlpha(req)){
-        if(logger.getLog()){
+    if(alpha.isAlpha(req)) {
+        if(logger.getLog()) {
             logger.getLog().showLineNumber = true;
             logger.debug('showLineNumber on');
         }
     }
 
-    logger.debug('node-${version}, name: ${name}, appid: ${appid}',{
+    logger.debug('node-${version}, name: ${name}, appid: ${appid}', {
         version: process.version,
         name: mod_act || null,
         appid: config.appid || null
     });
 
     //测试环境
-    if(h5test.isTestUser(req, res)){
+    if(h5test.isTestUser(req, res)) {
         return;
     }
 
     //跟踪url调用深度
-    var steps = parseInt(req.headers['tsw-trace-steps'] || '0') || 0;
+    let steps = parseInt(req.headers['tsw-trace-steps'] || '0') || 0;
 
     //深度超过5层，直接拒绝
-    if(steps >= 5){
+    if(steps >= 5) {
 
         tnm2.Attr_API('SUM_TSW_ROUTE_EXCEED', 1);
 
         try{
             res.writeHead(503, {'Content-Type': 'text/html; charset=UTF-8'});
             res.end('503');
-        }catch(e){
+        }catch(e) {
             logger.info(`response 503 fail ${e.message}`);
         }
 
@@ -613,67 +658,67 @@ function doRoute(req,res){
 
     req.headers['tsw-trace-steps'] = steps + 1;
 
-    var modulePath = httpModMap.find(mod_act,req,res);
+    let modulePath = httpModMap.find(mod_act, req, res);
 
-    if(res.headersSent || res._headerSent || res.finished){
+    if(res.headersSent || res._headerSent || res.finished) {
         return;
     }
 
-    if(modulePath && typeof modulePath.handle === 'function'){
+    if(modulePath && typeof modulePath.handle === 'function') {
         let app = modulePath;
 
-        modulePath = function(req,res,plug){
-            return app.handle(req,res);
+        modulePath = function(req, res, plug) {
+            return app.handle(req, res);
         };
     }
 
-    if(modulePath && typeof modulePath.callback === 'function'){
+    if(modulePath && typeof modulePath.callback === 'function') {
         let app = modulePath;
 
-        modulePath = function(req,res,plug){
-            return app.callback()(req,res);
+        modulePath = function(req, res, plug) {
+            return app.callback()(req, res);
         };
     }
 
-    if(typeof modulePath !== 'function'){
+    if(typeof modulePath !== 'function') {
         if(req.REQUEST.pathname === '/419') {
-            if(typeof config.page419 === 'string'){
+            if(typeof config.page419 === 'string') {
                 modulePath = require(config.page419);
             }
         } else {
-            if(typeof config.page404 === 'string'){
+            if(typeof config.page404 === 'string') {
                 modulePath = require(config.page404);
             }
         }
     }
 
-    if(typeof modulePath !== 'function'){
+    if(typeof modulePath !== 'function') {
         try{
             res.writeHead(404, {'Content-Type': 'text/html; charset=UTF-8'});
             res.end('404');
-        }catch(e){
+        }catch(e) {
             logger.info(`response 404 fail ${e.message}`);
         }
         return;
     }
 
-    var modulePathHandler = function(){
-        var maybePromise = modulePath(req, res, plug);
+    let modulePathHandler = function() {
+        let maybePromise = modulePath(req, res, plug);
         if(
             typeof maybePromise === 'object'
             &&
             typeof maybePromise.catch === 'function'
-        ){
-            maybePromise.catch(function(err){
+        ) {
+            maybePromise.catch(function(err) {
                 logger.error(err);
-                process.domain && process.domain.emit('error',err);
+                process.domain && process.domain.emit('error', err);
             });
         }
     };
 
-    var blackIpMap = TSW.getBlockIpMapSync() || {};
+    let blackIpMap = TSW.getBlockIpMapSync() || {};
 
-    if(blackIpMap[clientIp] || blackIpMap[userIp24] || !clientIp){
+    if(blackIpMap[clientIp] || blackIpMap[userIp24] || !clientIp) {
         logger.debug('连接已断开');
 
         tnm2.Attr_API('SUM_TSW_IP_EMPTY', 1);
@@ -682,7 +727,7 @@ function doRoute(req,res){
         return;
     }
 
-    if(blackIpMap[clientIp] || blackIpMap[userIp24]){
+    if(blackIpMap[clientIp] || blackIpMap[userIp24]) {
         logger.debug('命中黑名单IP');
 
         dcapi.report({
@@ -698,20 +743,20 @@ function doRoute(req,res){
         return;
     }
 
-    if(CCFinder.checkHost(req,res) === false){
+    if(CCFinder.checkHost(req, res) === false) {
         return;
     }
 
-    if(CCFinder.check(req,res) === false){
+    if(CCFinder.check(req, res) === false) {
         return;
     }
 
     //webso柔性
-    if(global.cpuUsed > 80){
+    if(global.cpuUsed > 80) {
 
-        if(httpUtil.isFromWns(req) && req.headers['if-none-match']){
+        if(httpUtil.isFromWns(req) && req.headers['if-none-match']) {
 
-            logger.debug('webso limit 304, cpuUsed: ${cpuUsed}',{
+            logger.debug('webso limit 304, cpuUsed: ${cpuUsed}', {
                 cpuUsed        : global.cpuUsed
             });
 
@@ -722,7 +767,7 @@ function doRoute(req,res){
                     'Etag': req.headers['if-none-match']
                 });
                 res.end();
-            }catch(e){
+            }catch(e) {
                 logger.info(`response 304 fail ${e.message}`);
             }
 
@@ -731,29 +776,29 @@ function doRoute(req,res){
 
     }
 
-    var contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
+    let contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
-    if(req.method === 'GET' || req.method === 'HEAD'){
+    if(req.method === 'GET' || req.method === 'HEAD') {
 
-        if(httpUtil.isFromWns(req)){
+        if(httpUtil.isFromWns(req)) {
             //wns请求不过门神检查
             return modulePathHandler();
         }
 
-        xssFilter.check().done(function(){
+        xssFilter.check().done(function() {
             return modulePathHandler();
-        }).fail(function(){
+        }).fail(function() {
             res.writeHead(501, {'Content-Type': 'text/plain; charset=UTF-8'});
             res.end('501 by TSW');
         });
-    }else if(context.autoParseBody === false){
+    }else if(context.autoParseBody === false) {
         return modulePathHandler();
     }else if(
         contentType.indexOf('application/x-www-form-urlencoded') > -1
         || contentType.indexOf('text/plain') > -1
         || contentType.indexOf('application/json') > -1
-    ){
-        parseBody(req,res,function(){
+    ) {
+        parseBody(req, res, function() {
             return modulePathHandler();
         });
     }else{
@@ -763,27 +808,27 @@ function doRoute(req,res){
 }
 
 
-function onerror(req,res,err){
-    var listener = req.listeners('fail');
-    var window = context.window || {};
+function onerror(req, res, err) {
+    let listener = req.listeners('fail');
+    let window = context.window || {};
 
-    if(res.headersSent || res._headerSent || res.finished){
+    if(res.headersSent || res._headerSent || res.finished) {
         return;
     }
 
-    if(listener && listener.length > 0){
+    if(listener && listener.length > 0) {
         try{
-            req.emit('fail',err);
-        }catch(e){
+            req.emit('fail', err);
+        }catch(e) {
             logger.error(e && e.stack);
         }
 
         req.removeAllListeners('fail');
 
-    }else if(window.onerror){
+    }else if(window.onerror) {
         try{
             window.onerror(err);
-        }catch(e){
+        }catch(e) {
             logger.error(e && e.stack);
         }
 

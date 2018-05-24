@@ -71,14 +71,14 @@ this.workerUid = 'nobody';
 
 //mod_act映射
 this.modAct = {
-    getModAct: function(req){
+    getModAct: function(req) {
         return null;
     }
 };
 
 //路由
 this.modMap = {
-    find: function(mod_act,req,res){
+    find: function(mod_act, req, res) {
         return null;
     }
 };

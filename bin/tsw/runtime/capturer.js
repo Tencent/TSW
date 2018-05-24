@@ -13,9 +13,9 @@
  */
 const http = require('http');
 const https = require('https');
-var isFirstLoad = true;
+let isFirstLoad = true;
 
-if(global[__filename]){
+if(global[__filename]) {
     isFirstLoad = false;
 }else{
     global[__filename] = {};
@@ -28,35 +28,35 @@ process.nextTick(function() {
     const alpha = require('util/auto-report/alpha.js');
     const serverInfo = require('serverInfo.js');
 
-    const create = function(oriRequest,protocol){
-        return function(...args){
-            var opt = args[0];
-            var request = oriRequest.apply(this,args);
-            var captureBody = false;
-            var result = [];
-            var buffer = Buffer.alloc(0);
-            var bodySize = 0;
-            var maxBodySize = 1024 * 1024;
-            var timeStart = Date.now();
-            var timeEnd = 0;
-            var timeResponse = 0;
+    const create = function(oriRequest, protocol) {
+        return function(...args) {
+            let opt = args[0];
+            let request = oriRequest.apply(this, args);
+            let captureBody = false;
+            let result = [];
+            let buffer = Buffer.alloc(0);
+            let bodySize = 0;
+            let maxBodySize = 1024 * 1024;
+            let timeStart = Date.now();
+            let timeEnd = 0;
+            let timeResponse = 0;
             // var timeCurr        = timeStart;
-            var remoteAddress = '';
-            var remotePort = '';
-            var localAddress = '';
-            var localPort = '';
-            var host = (opt.headers && opt.headers.host) || opt.host;
+            let remoteAddress = '';
+            let remotePort = '';
+            let localAddress = '';
+            let localPort = '';
+            let host = (opt.headers && opt.headers.host) || opt.host;
 
-            if(context.requestCaptureSN){
+            if(context.requestCaptureSN) {
                 context.requestCaptureSN++;
             }else{
                 context.requestCaptureSN = 1;
             }
 
-            var SN = context.requestCaptureSN || 0;
-            var logPre = `[${SN}] `;
+            let SN = context.requestCaptureSN || 0;
+            let logPre = `[${SN}] `;
 
-            logger.debug(logPre + '${method} ${ip}:${port} ~ ${protocol}//${host}${path}',{
+            logger.debug(logPre + '${method} ${ip}:${port} ~ ${protocol}//${host}${path}', {
                 protocol    : protocol,
                 method        : opt.method,
                 host        : host,
@@ -66,22 +66,22 @@ process.nextTick(function() {
             });
 
             //抓包
-            if(alpha.isAlpha()){
+            if(alpha.isAlpha()) {
                 logger.debug(logPre + 'capture body on');
                 captureBody = true;
             }
 
-            if(captureBody){
+            if(captureBody) {
                 httpUtil.captureBody(request);
 
-                request.once('finish',function(){
+                request.once('finish', function() {
                     logger.debug(logPre + 'send finish, total size ' + this._body.length);
                 });
             }
 
-            var report = function(oriResponse){
-                var logJson = logger.getJson();
-                var response = oriResponse || {
+            let report = function(oriResponse) {
+                let logJson = logger.getJson();
+                let response = oriResponse || {
                     headers : {
                         'content-length'    : 0,
                         'content-type'        : 'text/html'
@@ -91,12 +91,12 @@ process.nextTick(function() {
                     statusMessage    : 'server buisy'
                 };
 
-                if(!logJson){
+                if(!logJson) {
                     logger.debug('logger.getJson() is empty!');
                     return;
                 }
 
-                var curr = {
+                let curr = {
                     SN                : SN,
 
                     protocol        : protocol === 'https:' ? 'HTTPS' : 'HTTP',
@@ -112,7 +112,7 @@ process.nextTick(function() {
                     serverIp           : remoteAddress || opt.host,
                     serverPort        : remotePort || opt.port,
                     requestRaw       : httpUtil.getClientRequestHeaderStr(request) + (request._body.toString('UTF-8') || ''),
-                    responseHeader     : httpUtil.getClientResponseHeaderStr(response,bodySize),
+                    responseHeader     : httpUtil.getClientResponseHeaderStr(response, bodySize),
                     responseBody      : (buffer.toString('base64')) || '',
                     timestamps       : {
                         ClientConnected    : new Date(timeStart),
@@ -137,10 +137,10 @@ process.nextTick(function() {
                 logJson.ajax.push(curr);
             };
 
-            request.once('response',(response)=>{
+            request.once('response', (response)=>{
                 timeResponse = Date.now();
 
-                var socket = response.socket;
+                let socket = response.socket;
 
                 process.domain && process.domain.add(response);
 
@@ -149,7 +149,7 @@ process.nextTick(function() {
                 localAddress = socket.localAddress;
                 localPort = socket.localPort;
 
-                logger.debug(logPre + '${localAddress}:${localPort} > ${remoteAddress}:${remotePort} response ${statusCode} cost:${cost}ms ${encoding}',{
+                logger.debug(logPre + '${localAddress}:${localPort} > ${remoteAddress}:${remotePort} response ${statusCode} cost:${cost}ms ${encoding}', {
                     remoteAddress    : remoteAddress,
                     remotePort        : remotePort,
                     localAddress    : localAddress,
@@ -159,27 +159,27 @@ process.nextTick(function() {
                     cost: timeResponse - timeStart
                 });
 
-                var done = function(){
-                    this.removeListener('data',data);
+                let done = function() {
+                    this.removeListener('data', data);
 
-                    if(timeEnd){
+                    if(timeEnd) {
                         return;
                     }
 
                     timeEnd = new Date().getTime();
 
-                    if(captureBody){
+                    if(captureBody) {
                         buffer = Buffer.concat(result);
                         result = [];
                     }
 
                     //上报
-                    if(captureBody){
+                    if(captureBody) {
                         report(response);
                     }
                 };
 
-                var data = function(chunk){
+                const data = function(chunk) {
                     // var cost = Date.now() - timeCurr;
 
                     // timeCurr = Date.now();
@@ -192,23 +192,23 @@ process.nextTick(function() {
 
                     bodySize += chunk.length;
 
-                    if(captureBody && bodySize <= maxBodySize){
+                    if(captureBody && bodySize <= maxBodySize) {
                         result.push(chunk);
                     }
                 };
 
-                response.on('data',data);
+                response.on('data', data);
 
-                response.once('close',function(){
+                response.once('close', function() {
                     logger.debug(logPre + 'close');
 
                     done.call(this);
                 });
 
-                response.once('end',function(){
-                    var cost = Date.now() - timeStart;
+                response.once('end', function() {
+                    let cost = Date.now() - timeStart;
 
-                    logger.debug('${logPre}end size：${size}, receive data cost: ${cost}ms',{
+                    logger.debug('${logPre}end size：${size}, receive data cost: ${cost}ms', {
                         logPre: logPre,
                         cost: cost,
                         size: bodySize
@@ -223,7 +223,7 @@ process.nextTick(function() {
         };
     };
 
-    http.request = create(http.request,'http:');
-    https.request = create(https.request,'https:');
+    http.request = create(http.request, 'http:');
+    https.request = create(https.request, 'https:');
 });
 

@@ -12,18 +12,18 @@ const gzipHttp = require('util/gzipHttp.js');
 const tmpl = require('./tmpl.js');
 const navMenus = require('./navMenus.js');
 
-module.exports = function(request,response){
+module.exports = function(request, response) {
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
         contentType: 'text/html; charset=UTF-8'
     });
 
-    TEReport.getAllGroup().done(function(allGroup){
+    TEReport.getAllGroup().done(function(allGroup) {
 
-        var data = {};
+        let data = {};
 
         data.head = { title: 'TSW'};
         data.header = tmpl.new_header(navMenus());

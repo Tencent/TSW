@@ -15,21 +15,21 @@ const Deferred = require('util/Deferred');
 const more = require('util/http.more.js');
 
 
-this.formatHeader = function(headers){
+this.formatHeader = function(headers) {
 
-    var res = {};
+    let res = {};
 
-    if(!headers){
+    if(!headers) {
         return headers;
     }
 
-    Object.keys(headers).forEach(function(key){
+    Object.keys(headers).forEach(function(key) {
 
-        if(typeof key !== 'string'){
+        if(typeof key !== 'string') {
             return;
         }
 
-        var formatKey = key.trim().replace(/(\w)(\w+)/g , function(v,v1,v2){
+        let formatKey = key.trim().replace(/(\w)(\w+)/g, function(v, v1, v2) {
             return v1.toUpperCase()+v2.toLowerCase();
         });
 
@@ -48,13 +48,13 @@ this.formatHeader = function(headers){
  **/
 this.checkInvalidHeaderChar = function(val) {
 
-    if(typeof val !== 'string'){
+    if(typeof val !== 'string') {
         return false;
     }
 
-    var ch;
+    let ch;
 
-    for (var i = 0; i < val.length; i++) {
+    for (let i = 0; i < val.length; i++) {
         ch = val.charCodeAt(i);
         if (ch === 9) continue;
         if (ch <= 31 || ch > 255 || ch === 127) return true;
@@ -63,20 +63,20 @@ this.checkInvalidHeaderChar = function(val) {
 };
 
 //过滤非法字符
-this.filterInvalidHeaderChar = function(val){
+this.filterInvalidHeaderChar = function(val) {
 
     /* eslint-disable no-control-regex */
-    if(typeof val === 'string' && this.checkInvalidHeaderChar(val)){
-        return val.replace(/[^\u0009\u0020-\u007E\u0080-\u00FF]/g,'');
+    if(typeof val === 'string' && this.checkInvalidHeaderChar(val)) {
+        return val.replace(/[^\u0009\u0020-\u007E\u0080-\u00FF]/g, '');
     }
     /* eslint-enable no-control-regex */
 
     return val;
 };
 
-this.captureBody = function(res){
+this.captureBody = function(res) {
     
-    if(res._capturing){
+    if(res._capturing) {
         return;
     }
     
@@ -84,10 +84,10 @@ this.captureBody = function(res){
     res._body = [];
     res._bodySize = 0;
 
-    res.captrueBody = function(data, encoding){
+    res.captrueBody = function(data, encoding) {
         //大于1M的不抓包
-        var buffer;
-        var size;
+        let buffer;
+        let size;
 
         if (typeof data === 'function') {
             data = null;
@@ -95,59 +95,59 @@ this.captureBody = function(res){
             encoding = null;
         }
 
-        if(!data){
+        if(!data) {
             return;
         }
 
-        if(Buffer.isBuffer(this._body)){
+        if(Buffer.isBuffer(this._body)) {
             logger.debug('write aftre end.');
             return;
         }
 
-        if(Buffer.isBuffer(data)){
+        if(Buffer.isBuffer(data)) {
             buffer = data;
         }else{
-            buffer = Buffer.from(data,encoding);
+            buffer = Buffer.from(data, encoding);
         }
         
         size = buffer.length;
         this._bodySize += size;
 
         //chunked
-        if(this.useChunkedEncodingByDefaultNoNeed){
+        if(this.useChunkedEncodingByDefaultNoNeed) {
             this._body.push(Buffer.from('' + size.toString(16) + '\r\n'));
         }
         
-        if(this._bodySize < 1024 * 1024){
+        if(this._bodySize < 1024 * 1024) {
             this._body.push(buffer);
             //chunked
-            if(this.useChunkedEncodingByDefaultNoNeed){
+            if(this.useChunkedEncodingByDefaultNoNeed) {
                 this._body.push(Buffer.from('\r\n'));
             }
         }
     };
     
-    res._send = (function(fn){
-        return function(...args){
+    res._send = (function(fn) {
+        return function(...args) {
 
-            this.captrueBody(args[0],args[1]);
+            this.captrueBody(args[0], args[1]);
             
-            return fn.apply(this,args);
+            return fn.apply(this, args);
         };
     }(res._send));
     
-    res._finish = (function(fn){
-        return function(...args){
+    res._finish = (function(fn) {
+        return function(...args) {
 
             this.ServerDoneResponse = new Date();
             
-            var ret = fn.apply(this,args);
+            let ret = fn.apply(this, args);
 
-            if(this.useChunkedEncodingByDefaultNoNeed){
+            if(this.useChunkedEncodingByDefaultNoNeed) {
                 this._body.push(Buffer.from('0\r\n\r\n'));
             }
             
-            if(!Buffer.isBuffer(this._body)){
+            if(!Buffer.isBuffer(this._body)) {
                 this._body = Buffer.concat(this._body);
             }
 
@@ -156,67 +156,67 @@ this.captureBody = function(res){
     }(res._finish));
 };
 
-this.isPostLike = function(req){
-    var method = typeof req === 'string' ? req : req.method;
+this.isPostLike = function(req) {
+    let method = typeof req === 'string' ? req : req.method;
 
-    if(method === 'POST'){
+    if(method === 'POST') {
         return true;
     }
-    if(method === 'PUT'){
+    if(method === 'PUT') {
         return true;
     }
-    if(method === 'DELETE'){
-        return true;
-    }
-    return false;
-};
-
-this.isGetLike = function(req){
-
-    var method = typeof req === 'string' ? req : req.method;
-
-    if(method === 'GET'){
-        return true;
-    }
-    if(method === 'HEAD'){
-        return true;
-    }
-    if(method === 'OPTIONS'){
+    if(method === 'DELETE') {
         return true;
     }
     return false;
 };
 
-this.isSent = function(res){
+this.isGetLike = function(req) {
 
-    if(!res){
+    let method = typeof req === 'string' ? req : req.method;
+
+    if(method === 'GET') {
+        return true;
+    }
+    if(method === 'HEAD') {
+        return true;
+    }
+    if(method === 'OPTIONS') {
+        return true;
+    }
+    return false;
+};
+
+this.isSent = function(res) {
+
+    if(!res) {
         return true;
     }
 
-    if(res.headersSent || res._headerSent || res.finished){
+    if(res.headersSent || res._headerSent || res.finished) {
         return true;
     }
 
     return false;
 };
 
-this.getClientResponseHeaderStr = function(response,bodySize){
+this.getClientResponseHeaderStr = function(response, bodySize) {
     
-    var headData = [],
+    let headData = [],
         key;
 
     bodySize = ~~bodySize;
 
     headData.push('HTTP/' + response.httpVersion + ' ' + response.statusCode + ' ' + response.statusMessage);
     
-    var headers = Deferred.extend({},response.headers);
+    let headers = Deferred.extend({}, response.headers);
     
-    if(bodySize >= 0 && headers['content-length'] === undefined){
+    if(bodySize >= 0 && headers['content-length'] === undefined) {
         delete headers['transfer-encoding'];
         headers['content-length'] = bodySize;
     }
 
-    for(key in headers){
+    for(key in headers) {
 
         headData.push(key + ': ' + headers[key]);
     }
@@ -227,29 +227,29 @@ this.getClientResponseHeaderStr = function(response,bodySize){
     return headData.join('\r\n');    
 };
 
-this.getClientRequestHeaderStr = function(request){
+this.getClientRequestHeaderStr = function(request) {
     
     return request._header;
 };
 
-this.getRequestHeaderStr = function(request){
+this.getRequestHeaderStr = function(request) {
 
-    var window = context.window || {};
-    var headData = [],
+    let window = context.window || {};
+    let headData = [],
         key;
         
-    if(!request){
+    if(!request) {
         request = window.request;
     }
     
-    if(!request){
+    if(!request) {
         return '';
     }
     
     headData.push(request.method + ' ' + request.url +' HTTP/' + request.httpVersion);
     
     
-    for(key in request.headers){
+    for(key in request.headers) {
         headData.push(key + ': ' + request.headers[key]);
     }
     
@@ -259,26 +259,26 @@ this.getRequestHeaderStr = function(request){
     return headData.join('\r\n');    
 };
 
-this.getResponseHeaderStr = function(response){
-    var window = context.window || {};
-    var headData = [],
+this.getResponseHeaderStr = function(response) {
+    let window = context.window || {};
+    let headData = [],
         key;
         
-    if(!response){
+    if(!response) {
         response = window.response;
     }
     
-    if(!response){
+    if(!response) {
         return '';
     }
     
-    if(response._header){
+    if(response._header) {
         return response._header;
     }
     
     headData.push('HTTP/1.1 ' + response.statusCode + ' ' + response.statusMessage);
     
-    for(key in response._headers){
+    for(key in response._headers) {
         headData.push(key + ': ' + response._headers[key]);
     }
     
@@ -288,88 +288,88 @@ this.getResponseHeaderStr = function(response){
     return headData.join('\r\n');    
 };
 
-this.getUserIp24 = function(request){
-    var window = context.window || {};
-    if(!request){
+this.getUserIp24 = function(request) {
+    let window = context.window || {};
+    if(!request) {
         request = window.request;
     }
 
-    if(!request){
+    if(!request) {
         return '';
     }
 
-    var userIp = this.getUserIp(request);
+    let userIp = this.getUserIp(request);
 
-    if(!userIp){
+    if(!userIp) {
         return '';
     }
 
-    if(request.userIp24){
+    if(request.userIp24) {
         return request.userIp24;
     }
 
-    request.userIp24 = userIp.split('.').slice(0,-1).join('.') + '.*';
+    request.userIp24 = userIp.split('.').slice(0, -1).join('.') + '.*';
 
     return request.userIp24;
 };
 
-this.getUserIp = function(request){
+this.getUserIp = function(request) {
 
-    var window = context.window || {};
-    var userIp = '';
+    let window = context.window || {};
+    let userIp = '';
 
-    if(!request){
+    if(!request) {
         request = window.request;
     }
     
-    if(!request){
+    if(!request) {
         return '';
     }
     
-    if(request.userIp){
+    if(request.userIp) {
         return request.userIp;
     }
     
     //取socket ip
-    if(request.socket){
+    if(request.socket) {
         userIp = request.socket.remoteAddress || '';
     }
     
     //win7判断
-    if(isWindows.isWindows && userIp === '127.0.0.1'){
+    if(isWindows.isWindows && userIp === '127.0.0.1') {
         userIp = serverInfo.intranetIp || userIp;
         request.userIp = userIp;
 
         return userIp;
     }
 
-    if(!request.headers){
+    if(!request.headers) {
         return '';
     }
     
-    var xff = request.headers['x-forwarded-for'] || '';
-    var qvia = request.headers['qvia'] || '';
-    var realIp = request.headers['x-real-ip'] || '';
+    let xff = request.headers['x-forwarded-for'] || '';
+    let qvia = request.headers['qvia'] || '';
+    let realIp = request.headers['x-real-ip'] || '';
 
-    if(xff){
+    if(xff) {
 
         //xff判断，注意只认内网ip带的xff，外网带的不算
-        if(userIp && this.isInnerIP(userIp)){
+        if(userIp && this.isInnerIP(userIp)) {
 
             xff = xff.split(',').slice(-1)[0] || userIp;
             userIp = xff.trim() || userIp;
         }
 
-    }else if(realIp){
+    }else if(realIp) {
 
         //x-real-ip
-        if(userIp && this.isInnerIP(userIp)){
+        if(userIp && this.isInnerIP(userIp)) {
             userIp = realIp;
         }
-    }else if(qvia){
+    }else if(qvia) {
         
         //注意只认内网ip带的qvia，外网带的不算
-        if(userIp && this.isInnerIP(userIp)){
+        if(userIp && this.isInnerIP(userIp)) {
             userIp = this.getIpCromQuia(qvia) || userIp;
         }
         
@@ -381,17 +381,17 @@ this.getUserIp = function(request){
 };
 
 
-this.isHttps = function(request){
-    var window = context.window || {};
-    if(!request){
+this.isHttps = function(request) {
+    let window = context.window || {};
+    if(!request) {
         request = window.request;
     }
     
-    if(!request || !request.REQUEST){
+    if(!request || !request.REQUEST) {
         return false;
     }
 
-    if(this.isFromWns(request) || request.REQUEST.protocol == 'https' || request.REQUEST.protocol == 'https:'){
+    if(this.isFromWns(request) || request.REQUEST.protocol == 'https' || request.REQUEST.protocol == 'https:') {
         return true;
     }else{
         return false;
@@ -400,7 +400,7 @@ this.isHttps = function(request){
 };
 
 
-this.isInnerIP = function(ipAddress){
+this.isInnerIP = function(ipAddress) {
     return isInnerIP.isInnerIP(ipAddress);
 };
 

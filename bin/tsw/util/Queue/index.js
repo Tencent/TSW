@@ -7,20 +7,20 @@
  */
 'use strict';
 
-function Queue(){
+function Queue() {
     
     this._queue = [];
 }
 
 
-this.create = function(){
+this.create = function() {
     return new Queue();
 };
 
 
-Queue.prototype.queue = function(fn){
+Queue.prototype.queue = function(fn) {
     
-    if(typeof fn !== 'function'){
+    if(typeof fn !== 'function') {
         
         return this;
     }
@@ -29,22 +29,22 @@ Queue.prototype.queue = function(fn){
     
     this._queue.push(fn);
     
-    if(this._queue.length === 1){
+    if(this._queue.length === 1) {
         this.dequeue();
     }
     
     return this;
 };
 
-Queue.prototype.dequeue = function(){
+Queue.prototype.dequeue = function() {
     
-    var domain,fn;
+    let domain, fn;
     
-    if(this._queue.length === 0){
+    if(this._queue.length === 0) {
         return this;
     }
     
-    if(this._queue[0] === 'pending'){
+    if(this._queue[0] === 'pending') {
         
         this._queue.shift();
         this.dequeue();
@@ -58,7 +58,7 @@ Queue.prototype.dequeue = function(){
     domain = fn._domain;
     fn._domain = undefined;
     
-    if(domain && domain !== process.domain){
+    if(domain && domain !== process.domain) {
         domain.run(() => {
             fn.call(this);
         });
