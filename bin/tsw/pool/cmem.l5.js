@@ -12,15 +12,15 @@ const Queue = require('util/Queue');
 const dcapi = require('api/libdcapi/dcapi.js');
 const L5 = require('api/L5/L5.api.js');
 const {isWindows} = require('util/isWindows.js');
-var cache = global[__filename];
+let cache = global[__filename];
 
-if(!cache){
+if(!cache) {
     cache = {};
     global[__filename] = cache;
 }
 
 
-module.exports = function(opt){
+module.exports = function(opt) {
     /**
     * 这里像这样写的目的主要是为了进行测试
       因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
@@ -28,22 +28,22 @@ module.exports = function(opt){
     return module.exports.getCmem(opt);
 };
 
-module.exports.getCmem = function(opt){
-    var route;
-    var key;
+module.exports.getCmem = function(opt) {
+    let route;
+    let key;
 
-    if(!opt){
+    if(!opt) {
         return null;
     }
 
-    if(!isWindows && opt.modid && opt.cmd){
+    if(!isWindows && opt.modid && opt.cmd) {
         
         route = L5.ApiGetRouteSync(opt);
         
-        logger.debug('L5 ~${ip}:${port}',route);
+        logger.debug('L5 ~${ip}:${port}', route);
         
-        if(route.ip && route.port){
-            opt.host = [route.ip,route.port].join(':');
+        if(route.ip && route.port) {
+            opt.host = [route.ip, route.port].join(':');
         }
         
         route.ret = route.ret;
@@ -52,13 +52,13 @@ module.exports.getCmem = function(opt){
         
     }
 
-    if(!opt.host){
+    if(!opt.host) {
         return null;
     }
 
-    key = [opt.modid,opt.cmd,opt.host].join(':');
+    key = [opt.modid, opt.cmd, opt.host].join(':');
     
-    if(!cache[key]){
+    if(!cache[key]) {
         let Memcached = require('memcached');
         cache[key] = queueWrap(new Memcached(opt.host, opt)); 
     }
@@ -67,48 +67,48 @@ module.exports.getCmem = function(opt){
 };
 
 
-function queueWrap(memcached){
+function queueWrap(memcached) {
     
-    if(memcached.__queue){
+    if(memcached.__queue) {
         return memcached;
     }
     
     memcached.__queue = Queue.create();
     
-    memcached.command = function(command){
+    memcached.command = function(command) {
         
-        return function(queryCompiler, server){
-            var memcached = this;
-            var queue = memcached.__queue;
-            var servers = memcached.servers && memcached.servers[0];
-            var start = Date.now();
+        return function(queryCompiler, server) {
+            let memcached = this;
+            let queue = memcached.__queue;
+            let servers = memcached.servers && memcached.servers[0];
+            let start = Date.now();
         
-            queue.queue(function(){
+            queue.queue(function() {
                 
-                var fn = (function(queryCompiler){
-                    return function(){
-                        var query = queryCompiler();
-                        var command = query.command || '';
-                        var index = command.indexOf('\r\n');    //不要数据部分
-                        if(index > 0){
-                            command = command.slice(0,Math.min(128,index));
+                let fn = (function(queryCompiler) {
+                    return function() {
+                        let query = queryCompiler();
+                        let command = query.command || '';
+                        let index = command.indexOf('\r\n');    //不要数据部分
+                        if(index > 0) {
+                            command = command.slice(0, Math.min(128, index));
                         }
-                        if(command.length >= 128){
-                            command = command.slice(0,128) + '...' + command.length;
+                        if(command.length >= 128) {
+                            command = command.slice(0, 128) + '...' + command.length;
                         }
 
                         logger.debug(command);
 
-                        query.callback = function(callback){
-                            return function(...args){
-                                var err = args[0];
-                                var code = 0;
-                                var isFail = 0;
-                                var delay = Date.now() - start;
-                                var toIp = servers.split(':')[0];
+                        query.callback = function(callback) {
+                            return function(...args) {
+                                let err = args[0];
+                                let code = 0;
+                                let isFail = 0;
+                                let delay = Date.now() - start;
+                                let toIp = servers.split(':')[0];
 
-                                if(err && err.message !== 'Item is not stored'){
-                                    if(err.stack){
+                                if(err && err.message !== 'Item is not stored') {
+                                    if(err.stack) {
                                         logger.error(command);
                                         logger.error(servers);
                                         logger.error(err.stack);
@@ -128,14 +128,14 @@ function queueWrap(memcached){
                                 });
 
                                 queue.dequeue();
-                                return callback && callback.apply(this,args);
+                                return callback && callback.apply(this, args);
                             };
                         }(query.callback);
                         return query;
                     };
                 })(queryCompiler);
                 
-                command.call(memcached,fn, server);
+                command.call(memcached, fn, server);
             });
         };
     }(memcached.command);

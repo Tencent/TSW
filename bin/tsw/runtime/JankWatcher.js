@@ -14,10 +14,10 @@ if(!global[__filename]) {
     global[__filename] = true;
 
     const watch = function() {
-        var t1 = Date.now();
+        let t1 = Date.now();
 
         setTimeout(() => {
-            var t = (Date.now() - t1) * 10;
+            let t = (Date.now() - t1) * 10;
 
             tnm2.Attr_API_Set('AVG_TSW_ST0_X10', t);
 

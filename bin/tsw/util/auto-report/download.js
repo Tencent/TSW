@@ -18,60 +18,60 @@ const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 const zlib = require('zlib');
 
 
-module.exports = function(request, response){
-    OALogin.checkLoginForTSW(request,response,function(){
-        module.exports.go(request,response);
+module.exports = function(request, response) {
+    OALogin.checkLoginForTSW(request, response, function() {
+        module.exports.go(request, response);
     });
 };
 
-module.exports.go = function(request, response){
+module.exports.go = function(request, response) {
 
-    var arr = request.REQUEST.pathname.split('/');
-    var appid = context.appid || '';
-    var group = arr[3];
-    var key = arr[4];
-    var groupKey = 'v2.group.alpha';
-    var limit = ~~context.limit || 64;
-    var currPost = post;
+    let arr = request.REQUEST.pathname.split('/');
+    let appid = context.appid || '';
+    let group = arr[3];
+    let key = arr[4];
+    let groupKey = 'v2.group.alpha';
+    let limit = ~~context.limit || 64;
+    let currPost = post;
 
 
-    var flagOfDownloadFileFormat = request.query.fileFormat;
+    let flagOfDownloadFileFormat = request.query.fileFormat;
 
-    if(appid){
+    if(appid) {
         currPost = postOpenapi;
         groupKey = `${appid}/v2.group.alpha`;
     }
 
-    if(!key){
+    if(!key) {
         key = group;
         group = '';
     }
 
-    if(!canIuse.test(appid)){
+    if(!canIuse.test(appid)) {
         return returnError('appid格式非法');
     }
 
-    if(!canIuse.test(group)){
+    if(!canIuse.test(group)) {
         return returnError('group格式非法');
     }
 
-    if(!canIuse.test(key)){
+    if(!canIuse.test(key)) {
         return returnError('key格式非法');
     }
 
-    var createLogKey = function(appid,group,key){
-        var logKey = key;
+    let createLogKey = function(appid, group, key) {
+        let logKey = key;
 
-        if(group){
+        if(group) {
             logKey = `${group}/${logKey}`;
         }
 
         return logKey;
     };
 
-    var logKey = createLogKey(appid,group,key);
+    let logKey = createLogKey(appid, group, key);
 
-    if(appid){
+    if(appid) {
         logKey = `${appid}/${logKey}`;
     }
 
@@ -83,25 +83,25 @@ module.exports.go = function(request, response){
     context.logKey = logKey;
     context.createLogKey = createLogKey;
 
-    logger.debug('logKey :${logKey}',{
+    logger.debug('logKey :${logKey}', {
         logKey: logKey
     });
 
     //下标。
-    var index = parseInt(request.GET.index,10);
+    let index = parseInt(request.GET.index, 10);
 
     key = logKey + '.' + index;
 
-    if(index >= 0){
-        if(flagOfDownloadFileFormat === 'har'){
-            currPost.getLogJsonByKey(logKey,key).done(function(data){
+    if(index >= 0) {
+        if(flagOfDownloadFileFormat === 'har') {
+            currPost.getLogJsonByKey(logKey, key).done(function(data) {
                 downloadHaz(request, response, {
                     id: logKey + data['SNKeys'][0],
                     data: data
                 });
             });
         }else {
-            currPost.getLogJsonByKey(logKey,key).done(function(data){
+            currPost.getLogJsonByKey(logKey, key).done(function(data) {
                 download(request, response, {
                     id: logKey + data['SNKeys'][0],
                     data: data
@@ -111,15 +111,15 @@ module.exports.go = function(request, response){
 
     }else{
         //点击下载全部
-        if(flagOfDownloadFileFormat === 'har'){
-            currPost.getLogJson(logKey).done(function(data){
+        if(flagOfDownloadFileFormat === 'har') {
+            currPost.getLogJson(logKey).done(function(data) {
                 downloadHaz(request, response, {
                     id: logKey,
                     data: data
                 });
             });
         }else {
-            currPost.getLogJson(logKey).done(function(data){
+            currPost.getLogJson(logKey).done(function(data) {
                 download(request, response, {
                     id: logKey,
                     data: data
@@ -131,9 +131,9 @@ module.exports.go = function(request, response){
 };
 
 
-function returnError(message){
-    var window = context.window;
-    var gzipResponse = gzipHttp.getGzipResponse({
+function returnError(message) {
+    let window = context.window;
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: window.request,
         response: window.response,
         code: 200,
@@ -145,11 +145,11 @@ function returnError(message){
 
 
 //curr
-var initRequestHar = function (request) {
-    var unpackRaw = function (requestRaw) {
-        var requestArr = [];
+let initRequestHar = function (request) {
+    let unpackRaw = function (requestRaw) {
+        let requestArr = [];
         // 补全没有的数据
-        var request = {
+        let request = {
             cookie:'',
             headers:[],
             postData:{},
@@ -157,19 +157,19 @@ var initRequestHar = function (request) {
             cache:{},
             timings:{}
         };
-        if(requestRaw){
+        if(requestRaw) {
             requestArr = requestRaw.split(/\r\n/g);
-            if(requestArr.length > 0 ){
+            if(requestArr.length > 0 ) {
 
-                requestArr.forEach(function (item,index) {
+                requestArr.forEach(function (item, index) {
 
                     item = item.trim();
-                    if(item!=='' && item.length !== 0){
+                    if(item!=='' && item.length !== 0) {
                         // 第一行，请求头：GET url；回包：HTTP/1.1 200 OK
-                        if(index === 0){
-                            var firstItem = item.split(' ');
+                        if(index === 0) {
+                            let firstItem = item.split(' ');
                             // 请求头：GET url；
-                            if(firstItem.length === 3){
+                            if(firstItem.length === 3) {
                                 request.protocol = firstItem[2];
                             }else{
                                 request.protocol = firstItem[1];
@@ -178,7 +178,7 @@ var initRequestHar = function (request) {
 
                         }else{
                             item = item.split(':') || [];
-                            if(item.length === 2 ){
+                            if(item.length === 2 ) {
                                 request[item[0]] = item[1].trim();
                                 request.headers.push({
                                     name:item[0],
@@ -188,8 +188,8 @@ var initRequestHar = function (request) {
                         }
                     }
                 });
-                if(request.method && request.method === 'POST'){
-                    var postDataArr = requestArr[requestArr.length - 1];
+                if(request.method && request.method === 'POST') {
+                    let postDataArr = requestArr[requestArr.length - 1];
                     request.postData.mimeType = 'multipart/form-data';
                     request.postData.text = postDataArr;
                 }
@@ -198,9 +198,9 @@ var initRequestHar = function (request) {
             }
         }
         // 补齐cookie
-        if(request.cookie){
-            var cookieArray = request.cookie.split(';');
-            if(cookieArray.length > 0){
+        if(request.cookie) {
+            let cookieArray = request.cookie.split(';');
+            if(cookieArray.length > 0) {
                 request.cookieArray = [];
                 cookieArray.forEach(function (item) {
                     item = item.split('=') || [];
@@ -212,9 +212,9 @@ var initRequestHar = function (request) {
             }
         }
         // 补齐query
-        if(request.path && request.path.indexOf('?') !== -1){
-            var query = request.path.slice(request.path.indexOf('?') + 1);
-            if(query){
+        if(request.path && request.path.indexOf('?') !== -1) {
+            let query = request.path.slice(request.path.indexOf('?') + 1);
+            if(query) {
                 query = query.split('&');// re=va
                 query.forEach(function (item) {
                     item = item.split('=');
@@ -228,21 +228,21 @@ var initRequestHar = function (request) {
 
         return request;
     };
-    var getUrl = function (curr) {
-        var url;
-        var host;
-        if(curr){
+    let getUrl = function (curr) {
+        let url;
+        let host;
+        if(curr) {
             host = String(curr.host);
             url = String(curr.url);
             // 不包括host，特殊处理下
-            if(url && host && url.indexOf(host) === -1){
+            if(url && host && url.indexOf(host) === -1) {
                 url = 'https://'+ host + url;
             }
         }
         return url;
     };
-    
-    var
+
+    let
         requestHaz = {},
         requestHeader,
         responseHeader;
@@ -262,7 +262,7 @@ var initRequestHar = function (request) {
         'headers': requestHeader.headers,
         'queryString' : requestHeader.queryString,
         'postData' : requestHeader.postData,
-        'headersSize' : request.requestRaw.replace(/\n/g,'').length,
+        'headersSize' : request.requestRaw.replace(/\n/g, '').length,
         'bodySize' : requestHeader['Content-Length'] || 0,
     };
 
@@ -276,8 +276,8 @@ var initRequestHar = function (request) {
     //     console.log(buffer.toString())
     // });
 
-    var mimeTypeTemp = responseHeader['Content-Type'] ;
-    var mimeType= (typeof mimeTypeTemp === 'undefined')? responseHeader['content-type']: mimeTypeTemp ;
+    let mimeTypeTemp = responseHeader['Content-Type'] ;
+    let mimeType= (typeof mimeTypeTemp === 'undefined')? responseHeader['content-type']: mimeTypeTemp ;
     mimeType = (typeof mimeType=== 'undefined') ? mimeType : mimeType.trim();
 
     requestHaz.response = {
@@ -313,20 +313,20 @@ var initRequestHar = function (request) {
         'comment': ''
     };
 
-    if(typeof request.responseBody !== 'undefined' && request.responseBody.length !== 0 ){
+    if(typeof request.responseBody !== 'undefined' && request.responseBody.length !== 0 ) {
         requestHaz.response.content.size = request.responseBody.length;
-        var requestResponseBodyBaseBuffer = (Buffer.from(request.responseBody || '', 'base64'));
+        let requestResponseBodyBaseBuffer = (Buffer.from(request.responseBody || '', 'base64'));
 
         //  chunked decode
-        if(typeof responseHeader['Transfer-Encoding'] !== 'undefined' && responseHeader['Transfer-Encoding'] === 'chunked'){
+        if(typeof responseHeader['Transfer-Encoding'] !== 'undefined' && responseHeader['Transfer-Encoding'] === 'chunked') {
             requestResponseBodyBaseBuffer = decodeChunkedUint8Array(requestResponseBodyBaseBuffer);
         }
 
         // console.error(requestResponseBodyBaseBuffer.length,'requestResponseBodyBaseBuffer');
 
-        if(typeof responseHeader['Content-Encoding'] !== 'undefined' && responseHeader['Content-Encoding'] === 'gzip'){
+        if(typeof responseHeader['Content-Encoding'] !== 'undefined' && responseHeader['Content-Encoding'] === 'gzip') {
             try {
-                var ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
+                let ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
                 requestHaz.response.content.text = ungziprawText.toString('utf8');// 暂时文件
             } catch (e) {
                 requestHaz.response.content.text = requestResponseBodyBaseBuffer;// 暂时文件
@@ -347,16 +347,16 @@ var initRequestHar = function (request) {
 
 };
 
-var downloadHaz = function (request, response, opt) {
+const downloadHaz = function (request, response, opt) {
     opt = opt || {};
 
-    var data = opt.data || [],
+    let data = opt.data || [],
         viewData = [],
         filename = opt.id || 'log',
-        index = parseInt(request.GET.index,10),
+        index = parseInt(request.GET.index, 10),
         SNKey = request.GET.SNKey;
 
-    var hazJson = {
+    let hazJson = {
         'log':{
             'version': '1.2',
             'creator': {
@@ -367,26 +367,26 @@ var downloadHaz = function (request, response, opt) {
         }
     };
 
-    if(data.length <= 0){
+    if(data.length <= 0) {
         failRet(request, response, 'not find log');
 
         return;
     }
 
-    if(SNKey && data.SNKeys && data.SNKeys[0] != SNKey){
+    if(SNKey && data.SNKeys && data.SNKeys[0] != SNKey) {
         failRet(request, response, '该log已经过期,请联系用户慢点刷log~');
 
         return;
     }
 
-    if(typeof data == 'string'){
+    if(typeof data == 'string') {
         failRet(request, response, 'key类型不对');
 
         return;
     }
 
     response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.har');
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -394,57 +394,57 @@ var downloadHaz = function (request, response, opt) {
         contentType: 'application/octet-stream'
     });
 
-    if(SNKey){
+    if(SNKey) {
         //override index
         index = 0;
     }
 
-    if(index >= 0){
+    if(index >= 0) {
         data = [data[index]];
     }else{
         data = data.reverse();
     }
-    data.forEach(function (tmp,i) {
-        if(tmp.curr){
+    data.forEach(function (tmp, i) {
+        if(tmp.curr) {
             viewData.push(tmp.curr);
         }
 
         tmp.ajax &&
-        tmp.ajax.forEach(function(ajax,i){
-            if(!ajax.SN){
+        tmp.ajax.forEach(function(ajax, i) {
+            if(!ajax.SN) {
                 return;
             }
             viewData.push(ajax);
         });
     });
 
-    viewData.forEach(function(tmp,i){
+    viewData.forEach(function(tmp, i) {
 
         hazJson.log.entries.push(initRequestHar(tmp));
 
 
     });
-    var buf = Buffer.from(JSON.stringify(hazJson),'UTF-8');
+    let buf = Buffer.from(JSON.stringify(hazJson), 'UTF-8');
     gzipResponse.write(buf);
     gzipResponse.end();
 };
 
-var download = function(request, response, opt){
+const download = function(request, response, opt) {
     opt = opt || {};
 
-    var data = opt.data || [],
+    let data = opt.data || [],
         viewData = [],
         filename = opt.id || 'log',
-        index = parseInt(request.GET.index,10),
+        index = parseInt(request.GET.index, 10),
         SNKey = request.GET.SNKey;
 
-    if(data.length <= 0){
+    if(data.length <= 0) {
         failRet(request, response, 'not find log');
 
         return;
     }
 
-    if(SNKey && data.SNKeys && data.SNKeys[0] != SNKey){
+    if(SNKey && data.SNKeys && data.SNKeys[0] != SNKey) {
         failRet(request, response, '该log已经过期,请联系用户慢点刷log~');
 
         return;
@@ -452,17 +452,17 @@ var download = function(request, response, opt){
 
     //data = data[0];
 
-    if(typeof data == 'string'){
+    if(typeof data == 'string') {
         failRet(request, response, 'key类型不对');
 
         return;
     }
-    
-    filename = filename.replace(/[^a-zA-Z0-9_.-]/g,'_');
-    
+
+    filename = filename.replace(/[^a-zA-Z0-9_.-]/g, '_');
+
     response.setHeader('Content-disposition', 'attachment; filename=' + filename + '.saz');
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -470,43 +470,43 @@ var download = function(request, response, opt){
         contentType: 'application/octet-stream'
     });
 
-    if(SNKey){
+    if(SNKey) {
         //override index
         index = 0;
     }
 
-    if(index >= 0){
+    if(index >= 0) {
         data = [data[index]];
     }else{
         data = data.reverse();
     }
-    
-    var archiver = new Archiver('zip');
+
+    let archiver = new Archiver('zip');
 
     archiver.append(tmpl.download_index(data), {name: '_index.htm'});
     archiver.append(tmpl.download_content_types(), {name: '[Content_Types].xml'});
-    
-    data.forEach(function(tmp,i){
-        var sid = ('0000' + (i + 1)).slice(-3);
+
+    data.forEach(function(tmp, i) {
+        let sid = ('0000' + (i + 1)).slice(-3);
         tmp.curr = tmp.curr || {};
         tmp.curr.sid = sid + '.0000';
-        
-        
+
+
         tmp.curr.logText = tmp.curr.logText || '';
-        tmp.curr.logText = tmp.curr.logText.replace(/\r\n|\r|\n/gm,'\r\n');
-        var logSNKey = post.getLogSN(tmp.curr.logText);
-        
-        var log = {
+        tmp.curr.logText = tmp.curr.logText.replace(/\r\n|\r|\n/gm, '\r\n');
+        let logSNKey = post.getLogSN(tmp.curr.logText);
+
+        let log = {
             curr: {
                 sid             : sid,
-                
+
                 protocol        : 'HTTP',
                 host            : '',
                 url             : '',
                 cache           : '',
                 process         : tmp.curr.process,
                 resultCode      : '200',
-                contentLength   : Buffer.byteLength(tmp.curr.responseBody || '','UTF-8'),
+                contentLength   : Buffer.byteLength(tmp.curr.responseBody || '', 'UTF-8'),
                 contentType     : 'text/plain',
                 clientIp        : '',
                 clientPort      : '',
@@ -514,34 +514,34 @@ var download = function(request, response, opt){
                 serverPort      : '',
                 requestRaw      : 'GET log/'+logSNKey+' HTTP/1.1\r\n\r\n',
                 responseHeader  : 'HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n',
-                responseBody    : Buffer.from(tmp.curr.logText || '','UTF-8').toString('base64'),
+                responseBody    : Buffer.from(tmp.curr.logText || '', 'UTF-8').toString('base64'),
                 timestamps      : tmp.curr.timestamps
             }
         };
-        
+
         viewData.push(tmp);
         viewData.push(log);
-        
+
         tmp.ajax &&
-        tmp.ajax.forEach(function(curr,i){
-            
-            var ajax = {};
-            
-            if(!curr.SN){
+        tmp.ajax.forEach(function(curr, i) {
+
+            let ajax = {};
+
+            if(!curr.SN) {
                 return;
             }
-            
+
             ajax.curr = curr;
-            
+
             curr.sid = sid + '.' + (`0000${curr.SN}`.slice(-3));
-            
+
             viewData.push(ajax);
         });
     });
-    
-    viewData.forEach(function(tmp,i){
+
+    viewData.forEach(function(tmp, i) {
         archiver.append(
-            tmp.curr.requestRaw || '', 
+            tmp.curr.requestRaw || '',
             {
                 name: 'raw/' + (tmp.curr.sid) + '_c.txt'
             }
@@ -554,7 +554,7 @@ var download = function(request, response, opt){
         );
         archiver.append(
             Buffer.concat([
-                Buffer.from(tmp.curr.responseHeader || '','utf-8'),
+                Buffer.from(tmp.curr.responseHeader || '', 'utf-8'),
                 Buffer.from(tmp.curr.responseBody || '', 'base64')
             ]),
             {
@@ -562,26 +562,26 @@ var download = function(request, response, opt){
             }
         );
     });
-    
+
     // archiver.pipe(gzipResponse);
-    
-    archiver.on('error', function(e){
+
+    archiver.on('error', function(e) {
         logger.error('archive log error \n' + e.message);
     });
 
-    archiver.on('data', function(buffer){
+    archiver.on('data', function(buffer) {
         gzipResponse.write(buffer);
     });
 
-    archiver.once('end', function(){
+    archiver.once('end', function() {
         gzipResponse.end();
     });
 
     archiver.finalize();
 };
 
-var failRet = function(request, response, msg){
-    var gzipResponse = gzipHttp.getGzipResponse({
+const failRet = function(request, response, msg) {
+    let gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         plug: plug,
@@ -595,23 +595,23 @@ var failRet = function(request, response, msg){
 
 // chunked decode  buffer ， 格式 ：size +\r\n + rawText +\r\n  + 0|r\n ,  \r\n ====》 13,10, 中间的即为rawText
 
-var decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
-    var rawText = [];
-    var startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
-    while( startOfTheRawText !== -1 && startOfTheRawText !== 0 ){
-        var rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0 ,startOfTheRawText);
-        var rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer),16);
-        if(rawTextSizeUint8ArrayInt === 0 ){
+const decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
+    let rawText = [];
+    let startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
+    while( startOfTheRawText !== -1 && startOfTheRawText !== 0 ) {
+        let rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
+        let rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
+        if(rawTextSizeUint8ArrayInt === 0 ) {
             break;
         }
-        var chunkedText = Uint8ArrayBuffer.slice(startOfTheRawText+2, startOfTheRawText+2 +rawTextSizeUint8ArrayInt );
+        let chunkedText = Uint8ArrayBuffer.slice(startOfTheRawText+2, startOfTheRawText+2 +rawTextSizeUint8ArrayInt );
         rawText.push(Buffer.from(chunkedText));
         Uint8ArrayBuffer = Uint8ArrayBuffer.slice(startOfTheRawText+2 +rawTextSizeUint8ArrayInt+2);
         startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
     }
-    var bufferText = new Uint8Array( 0 );
-    for(var ji=0; ji<rawText.length;ji++){
-        bufferText = Buffer.concat([bufferText,rawText[ji]]);
+    let bufferText = new Uint8Array( 0 );
+    for(let ji=0; ji<rawText.length;ji++) {
+        bufferText = Buffer.concat([bufferText, rawText[ji]]);
     }
     return bufferText ;
 };

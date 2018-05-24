@@ -7,7 +7,7 @@
  */
 'use strict';
 
-this.watch = function(){
+this.watch = function() {
     
 
 };

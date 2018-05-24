@@ -9,7 +9,7 @@
 
 module.exports = function() {
 
-    var navMenus = context.navMenus;
+    let navMenus = context.navMenus;
 
     if (!navMenus) {
         navMenus = [{

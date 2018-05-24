@@ -15,31 +15,31 @@ const logger = require('logger');
 const Deferred = require('util/Deferred');
 const url = require('url');
 
-this.SendMail = function(key,group,second,oriOpt){
+this.SendMail = function(key, group, second, oriOpt) {
 
-    var opt = Deferred.extend({},oriOpt);
-    var data = {};
-    var now = new Date();
-    var prefix = '[runtime]';
+    let opt = Deferred.extend({}, oriOpt);
+    let data = {};
+    let now = new Date();
+    let prefix = '[runtime]';
 
-    if(isWindows.isWindows){
+    if(isWindows.isWindows) {
         return;
     }
 
     //晚上不发
     //allDaySend强制全天候24小时发送
-    if(!opt.allDaySend && now.getHours() < 8){
+    if(!opt.allDaySend && now.getHours() < 8) {
         return;
     }
 
-    if(context.title){
+    if(context.title) {
         opt.Title = `[${context.title}]${opt.Title}`;
     }
 
-    if(config.isTest){
+    if(config.isTest) {
         prefix += '[测试环境]';
     }else{
-        if(opt.runtimeType){
+        if(opt.runtimeType) {
             prefix += `[${opt.runtimeType}][考核]`;
         }
     }
@@ -61,49 +61,49 @@ this.SendMail = function(key,group,second,oriOpt){
 
     opt.data = data;
 
-    if(isWindows.isWindows){
+    if(isWindows.isWindows) {
         key = key + Date.now();
     }
 
-    process.nextTick(function(){
-        require('util/CD.js').check(key,1,second).done(function(){
+    process.nextTick(function() {
+        require('util/CD.js').check(key, 1, second).done(function() {
             reportOpenapi(data);
         });
     });
 };
 
 
-var reportOpenapi = function(data){
-    var defer = Deferred.create();
-    var config = require('config');
-    var openapi = require('util/openapi');
-    var logger = require('logger');
+const reportOpenapi = function(data) {
+    let defer = Deferred.create();
+    let config = require('config');
+    let openapi = require('util/openapi');
+    let logger = require('logger');
 
-    var retCall;
+    let retCall;
 
-    if(typeof config.beforeRuntimeReport === 'function'){
+    if(typeof config.beforeRuntimeReport === 'function') {
         retCall = config.beforeRuntimeReport(data);
     }
 
     //阻止默认上报
-    if(retCall === false){
+    if(retCall === false) {
         return defer.resolve(0);
     }
 
-    if(!config.appid || !config.appkey){
+    if(!config.appid || !config.appkey) {
         return;
     }
 
-    if(!config.runtimeReportUrl){
+    if(!config.runtimeReportUrl) {
         return;
     }
 
-    var postData = data;
+    let postData = data;
 
     postData.appid = config.appid;
     postData.now = Date.now();
 
-    var sig = openapi.signature({
+    let sig = openapi.signature({
         pathname    : url.parse(config.runtimeReportUrl).pathname,
         method        : 'POST',
         data        : postData,
@@ -123,12 +123,12 @@ var reportOpenapi = function(data){
         keepAlive    : true,
         autoToken    : false,
         dataType    : 'json'
-    }).fail(function(){
+    }).fail(function() {
         logger.error('runtime report fail.');
         defer.reject();
-    }).done(function(d){
-        if(d.result){
-            if(d.result.code === 0){
+    }).done(function(d) {
+        if(d.result) {
+            if(d.result.code === 0) {
                 logger.debug('runtime report success.');
                 return defer.resolve();
             }else{
@@ -146,18 +146,18 @@ var reportOpenapi = function(data){
 
 
 //升级周知
-this.SendTSWMail = function(opt){
+this.SendTSWMail = function(opt) {
 
 };
 
 //发送周知邮件
-this.SendArsMail = function(opt){
-    
+this.SendArsMail = function(opt) {
+
 
 };
 
 
-this.findMailARS = function(file){
+this.findMailARS = function(file) {
     return '';
 };
 

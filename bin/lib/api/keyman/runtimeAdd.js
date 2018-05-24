@@ -9,9 +9,9 @@
 
 const Deferred = require('util/Deferred');
 
-this.add = function(opt){
+this.add = function(opt) {
     
-    var defer = Deferred.create();
+    let defer = Deferred.create();
 
     return defer.resolve();
 };
@@ -21,7 +21,7 @@ this.add = function(opt){
  * 考核心跳上报，表示当前模块参与考核
  *
  */
-this.hello = function(){
+this.hello = function() {
     return;
 };
 

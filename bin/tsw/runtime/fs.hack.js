@@ -9,7 +9,7 @@
 
 const TIMES_LIMIT = 5;
 
-if(global[__filename]){
+if(global[__filename]) {
     global[__filename].map = {};
 }else{
 
@@ -18,24 +18,24 @@ if(global[__filename]){
     };
 
     //追踪重复读写
-    process.nextTick(function(){
-        var cache = global[__filename];
-        var isWindows = require('util/isWindows');
-        var fs = require('fs');
-        var logger = require('logger');
-        var config = require('config');
-        var tnm2 = require('api/tnm2');
+    process.nextTick(function() {
+        let cache = global[__filename];
+        let isWindows = require('util/isWindows');
+        let fs = require('fs');
+        let logger = require('logger');
+        let config = require('config');
+        let tnm2 = require('api/tnm2');
 
-        fs.existsSync = hack(fs.existsSync,function(file){
-            var sum = 0;
-            var name = 'fs.existsSync';
-            var key = name + file;
+        fs.existsSync = hack(fs.existsSync, function(file) {
+            let sum = 0;
+            let name = 'fs.existsSync';
+            let key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -46,16 +46,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.writeFileSync = hack(fs.writeFileSync,function(file){
-            var sum = 0;
-            var name = 'fs.writeFileSync';
-            var key = name + file;
+        fs.writeFileSync = hack(fs.writeFileSync, function(file) {
+            let sum = 0;
+            let name = 'fs.writeFileSync';
+            let key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -66,16 +66,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.statSync = hack(fs.statSync,function(file){
-            var sum = 0;
-            var name = 'fs.statSync';
-            var key = name + file;
+        fs.statSync = hack(fs.statSync, function(file) {
+            let sum = 0;
+            let name = 'fs.statSync';
+            let key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum > TIMES_LIMIT && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if(sum > TIMES_LIMIT && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -86,16 +86,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.accessSync = hack(fs.accessSync,function(file){
-            var sum = 0;
-            var name = 'fs.accessSync';
-            var key = name + file;
+        fs.accessSync = hack(fs.accessSync, function(file) {
+            let sum = 0;
+            let name = 'fs.accessSync';
+            let key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -106,16 +106,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.readFileSync = hack(fs.readFileSync,function(file){
-            var sum = 0;
-            var name = 'fs.readFileSync';
-            var key = name + file;
+        fs.readFileSync = hack(fs.readFileSync, function(file) {
+            let sum = 0;
+            let name = 'fs.readFileSync';
+            let key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum > TIMES_LIMIT && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if(sum > TIMES_LIMIT && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -126,16 +126,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.readdirSync = hack(fs.readdirSync,function(file){
-            var sum = 0;
-            var name = 'fs.readdirSync';
-            var key = name + file;
+        fs.readdirSync = hack(fs.readdirSync, function(file) {
+            let sum = 0;
+            let name = 'fs.readdirSync';
+            let key = name + file;
 
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -153,13 +153,13 @@ if(global[__filename]){
         //    });
         //});
 
-        function hack(fn,callback){
+        function hack(fn, callback) {
 
-            if(isWindows.isWindows){
+            if(isWindows.isWindows) {
                 return fn;
             }
 
-            return function(){
+            return function() {
                 callback.apply(this, arguments);
                 return fn.apply(this, arguments);
             };

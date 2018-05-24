@@ -8,22 +8,22 @@
 'use strict';
 
 const config = require('./config.js');
-var base = null;
+let base = null;
 
-if(config.skyMode){
+if(config.skyMode) {
     base = require('default/config.default.sky.js');
-}else if(config.isTest){
+}else if(config.isTest) {
     base = require('default/config.default.h5test.js');
 }
 
-if(base){
-    module.exports.find = function(mod_act,req,res){
-        var mod = base.modMap.find(mod_act,req,res);
+if(base) {
+    module.exports.find = function(mod_act, req, res) {
+        let mod = base.modMap.find(mod_act, req, res);
 
-        if(mod){
+        if(mod) {
             return mod;
         }
-        return config.modMap.find(mod_act,req,res);
+        return config.modMap.find(mod_act, req, res);
     };
 
 }else{

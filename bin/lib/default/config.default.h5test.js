@@ -9,9 +9,9 @@
 
 this.isTest = true;
 
-Object.assign(this,require('./config.default.js'));
+Object.assign(this, require('./config.default.js'));
 
-if(process.mainModule === module){
+if(process.mainModule === module) {
     /* eslint-disable no-console */
     console.log(this);
     /* eslint-enable no-console */

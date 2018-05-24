@@ -12,68 +12,68 @@ const logger = require('logger');
 const {isWindows} = require('util/isWindows');
 const TSW = require('api/keyman');
 
-if(!global[__filename]){
+if(!global[__filename]) {
     global[__filename] = {};
 }
 
-this.update = function(map){
+this.update = function(map) {
     global[__filename] = map || {};
 };
 
-this.add = function(uin){
+this.add = function(uin) {
     //
 };
 
-this.isAlpha = function(req){
+this.isAlpha = function(req) {
 
-    var uin;
+    let uin;
 
-    if(typeof req === 'object'){
+    if(typeof req === 'object') {
 
-        if(!uin){
+        if(!uin) {
             uin = logger.getKey();
         }
 
-        if(!uin){
+        if(!uin) {
             uin = this.getUin(req);
         }
     }else{
         uin = req;
 
-        if(!uin){
+        if(!uin) {
             uin = logger.getKey();
         }
 
-        if(!uin){
+        if(!uin) {
             uin = this.getUin();
         }
     }
 
-    if(uin && isWindows){
+    if(uin && isWindows) {
         //windows 抓包用
-        if(config.skyMode){
+        if(config.skyMode) {
             return true;
         }
     }
 
-    var uinMap = global[__filename] || {};
+    let uinMap = global[__filename] || {};
 
     return uinMap[uin] || TSW.getAlphaUinMapSync()[uin];
 };
 
-this.getUin = function(req){
+this.getUin = function(req) {
 
-    var uin;
-    var window = context.window || {};
+    let uin;
+    let window = context.window || {};
 
     req = req || window.request;
 
-    if(!req){
+    if(!req) {
         return uin;
     }
 
     //业务有可能不使用uin登录态，支持业务扩展getUin实现
-    if(config.extendMod && typeof config.extendMod.getUin === 'function'){
+    if(config.extendMod && typeof config.extendMod.getUin === 'function') {
         return config.extendMod.getUin(req);
     }
 
