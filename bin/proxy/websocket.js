@@ -24,7 +24,7 @@ function bind_listen(server) {
     });
 
     server.on('connection', function(ws) {
-        let req = ws.upgradeReq;
+        const req = ws.upgradeReq;
         let wsClient;
         tnm2.Attr_API('SUM_TSW_WEBSOCKET_CONNECT', 1);
 
@@ -36,9 +36,9 @@ function bind_listen(server) {
             req.REQUEST.protocol = 'ws';
         }
 
-        let testSpaceInfo = h5test.getTestSpaceInfo(req);
+        const testSpaceInfo = h5test.getTestSpaceInfo(req);
         if(testSpaceInfo) {
-            let clientReqHeaders = Object.assign({}, req.headers);
+            const clientReqHeaders = Object.assign({}, req.headers);
             delete clientReqHeaders['sec-websocket-key'];
             wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, {
                 headers : clientReqHeaders
@@ -84,7 +84,7 @@ function bind_listen(server) {
             }
 
             // var mod_act = wsModAct.getModAct(ws);
-            let cwrap = new ContextWrap({
+            const cwrap = new ContextWrap({
                 url: req.url
                 //reqSocket: ws,
                 //rspSocket: ws
@@ -92,12 +92,12 @@ function bind_listen(server) {
 
             //cwrap.add(ws);
             cwrap.run(function() {
-                let window = context.window || {};
+                const window = context.window || {};
                 window.websocket = ws;
 
-                let timeout = 3000;
+                const timeout = 3000;
                 let hasEnd = false;
-                let tid = setTimeout(function() {
+                const tid = setTimeout(function() {
                     logger.debug('[websocket server] respond timeout');
                     if(hasEnd) {
                         return;
@@ -105,7 +105,7 @@ function bind_listen(server) {
                     hasEnd = true;
 
                     let respond;
-                    let window = context.window || {};
+                    const window = context.window || {};
 
                     if(requestData.seq) {
                         respond = JSON.stringify({
@@ -214,13 +214,13 @@ function bind_listen(server) {
 }
 
 exports.start_listen = function() {
-    let ws = new WSServer({
+    const ws = new WSServer({
         server: global.TSW_HTTP_SERVER
     });
     bind_listen(ws);
 
     if(global.TSW_HTTPS_SERVER) {
-        let wss = new WSServer({
+        const wss = new WSServer({
             server: global.TSW_HTTPS_SERVER
         });
         bind_listen(wss);

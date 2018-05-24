@@ -87,7 +87,7 @@ const jQuery = {
     },
 
     isEmptyObject: function( obj ) {
-        for ( let name in obj ) {
+        for ( const name in obj ) {
             return false;
         }
         return true;
@@ -325,7 +325,7 @@ jQuery.Callbacks = function( flags ) {
             // Add a callback or a collection of callbacks to the list
             add: function() {
                 if ( list ) {
-                    let length = list.length;
+                    const length = list.length;
                     add( arguments );
                     // Do we need to add the callbacks to the
                     // current firing batch?
@@ -439,7 +439,7 @@ jQuery.Callbacks = function( flags ) {
 };
 
 
-let // Static reference to slice
+const // Static reference to slice
     sliceDeferred = [].slice;
 
 jQuery.extend({
@@ -477,7 +477,7 @@ jQuery.extend({
                 },
 
                 toES6Promise: function() {
-                    let self = this;
+                    const self = this;
 
                     return new Promise(function (resolve, reject) {
 
@@ -521,7 +521,7 @@ jQuery.extend({
                     if ( obj == null ) {
                         obj = promise;
                     } else {
-                        for ( let key in promise ) {
+                        for ( const key in promise ) {
                             obj[ key ] = promise[ key ];
                         }
                     }

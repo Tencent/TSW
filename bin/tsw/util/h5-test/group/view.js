@@ -14,7 +14,7 @@ const pagetmpl = require('../page/tmpl.js');
 
 module.exports = function(request, response) {
 
-    let gzipResponse = gzipHttp.getGzipResponse({
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
@@ -46,7 +46,7 @@ module.exports = function(request, response) {
 
     TEReport.getAllGroup().done(function(allGroup) {
 
-        let data = {};
+        const data = {};
 
         data.head = { title: '测试环境'};
         data.header = pagetmpl.new_header(navMenus);

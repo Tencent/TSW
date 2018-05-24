@@ -19,19 +19,19 @@ this.isInnerIP = (function() {
     当然，还有127.x.x.x这个网段是环回地址
     **/
 
-    let ABegin = getIpNum('100.64.0.0');
-    let AEnd = getIpNum('100.127.255.255');
-    let aBegin = getIpNum('10.0.0.0');   
-    let aEnd = getIpNum('10.255.255.255');
-    let a2Begin = getIpNum('9.0.0.0');
-    let a2End = getIpNum('9.255.255.255');
-    let bBegin = getIpNum('172.16.0.0');
-    let bEnd = getIpNum('172.31.255.255');   
-    let cBegin = getIpNum('192.168.0.0');   
-    let cEnd = getIpNum('192.168.255.255');
+    const ABegin = getIpNum('100.64.0.0');
+    const AEnd = getIpNum('100.127.255.255');
+    const aBegin = getIpNum('10.0.0.0');   
+    const aEnd = getIpNum('10.255.255.255');
+    const a2Begin = getIpNum('9.0.0.0');
+    const a2End = getIpNum('9.255.255.255');
+    const bBegin = getIpNum('172.16.0.0');
+    const bEnd = getIpNum('172.31.255.255');   
+    const cBegin = getIpNum('192.168.0.0');   
+    const cEnd = getIpNum('192.168.255.255');
 
-    let xBegin = getIpNum('127.0.0.0');
-    let xEnd = getIpNum('127.255.255.255');
+    const xBegin = getIpNum('127.0.0.0');
+    const xEnd = getIpNum('127.255.255.255');
     
     return function(ipAddress) {
         
@@ -43,7 +43,7 @@ this.isInnerIP = (function() {
             return false;
         }
         
-        let ipNum = getIpNum(ipAddress);   
+        const ipNum = getIpNum(ipAddress);   
         
         if(isInner(ipNum, xBegin, xEnd)) {
             return '127.0.0.1';
@@ -75,13 +75,13 @@ this.isInnerIP = (function() {
 
 
 function getIpNum(ipAddress) {   
-    let ip = ipAddress.split('.');   
-    let a = parseInt(ip[0], 10);   
-    let b = parseInt(ip[1], 10);   
-    let c = parseInt(ip[2], 10);   
-    let d = parseInt(ip[3], 10);   
+    const ip = ipAddress.split('.');   
+    const a = parseInt(ip[0], 10);   
+    const b = parseInt(ip[1], 10);   
+    const c = parseInt(ip[2], 10);   
+    const d = parseInt(ip[3], 10);   
   
-    let res = a * 256 * 256 * 256 + b * 256 * 256 + c * 256 + d;   
+    const res = a * 256 * 256 * 256 + b * 256 * 256 + c * 256 + d;   
     return res;   
 }  
 

@@ -30,7 +30,7 @@ this.report = function() {
         return;
     }
 
-    let logText = `${serverInfo.intranetIp}:${config.httpPort}`;
+    const logText = `${serverInfo.intranetIp}:${config.httpPort}`;
     let logJson = {
         ip        : serverInfo.intranetIp,
         port    : config.httpPort
@@ -66,7 +66,7 @@ this.report = function() {
             owner    : ''
         }, config.testInfo, logJson);
 
-        let logKey = 'h5test' + logJson.group;
+        const logKey = 'h5test' + logJson.group;
 
         //上报自己
         post.report(logKey, logText, logJson);
@@ -100,7 +100,7 @@ this.report = function() {
 
 this.list = function(group) {
     
-    let defer = Deferred.create();
+    const defer = Deferred.create();
     let getLogJsonDefer;
 
     group = group || '';
@@ -114,8 +114,8 @@ this.list = function(group) {
 
     getLogJsonDefer.done(function(arr) {
         
-        let res = [];
-        let map = {};
+        const res = [];
+        const map = {};
         
         arr.forEach(function(v) {
             if(!map[v.ip]) {
@@ -151,12 +151,12 @@ this.list = function(group) {
 
 this.getAllGroup = function() {
 
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     post.getLogJson('group.h5test').done(function(arr) {
 
-        let res = [];
-        let map = {};
+        const res = [];
+        const map = {};
 
         arr.forEach(function(v) {
             if(!map[v.group]) {

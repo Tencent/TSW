@@ -9,11 +9,11 @@ logger.setLogLevel('error');
 describe('context', () => {
     describe('#await', () => {
         it('#await in domain', async ()=> {
-            let before = process.domain;
+            const before = process.domain;
             await new Promise(resolve =>{
                 resolve(); 
             });
-            let after = process.domain;
+            const after = process.domain;
 
             expect(true).to.equal(before === after);
         });

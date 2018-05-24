@@ -11,7 +11,7 @@ const Deferred = require('util/Deferred');
 
 this.add = function(opt) {
     
-    let defer = Deferred.create();
+    const defer = Deferred.create();
 
     return defer.resolve();
 };

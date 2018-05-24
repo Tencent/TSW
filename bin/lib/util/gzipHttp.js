@@ -16,7 +16,7 @@ const defaultChunkSize = 8 * 1024;
 this.httpUtil = httpUtil;
 
 this.create = this.getGzipResponse = function(opt) {
-    let window = context.window || {};
+    const window = context.window || {};
 
     opt = opt || {};
 

@@ -76,6 +76,9 @@
         ],
         "no-var": [
             "error"
+        ],
+        "prefer-const": [
+            "warn"
         ]
     },
     "overrides": [
@@ -98,6 +101,9 @@
                     }
                 ],
                 "no-var": [
+                    "off"
+                ],
+                "prefer-const": [
                     "off"
                 ]
             }

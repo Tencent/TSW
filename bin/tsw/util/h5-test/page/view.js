@@ -21,25 +21,25 @@ module.exports = function(request, response) {
 
 module.exports.go = async function(request, response, plug) {
 
-    let gzipResponse = gzipHttp.getGzipResponse({
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
         contentType: 'text/html; charset=UTF-8'
     });
 
-    let arr = request.REQUEST.pathname.split('/');
+    const arr = request.REQUEST.pathname.split('/');
 
     let groupName = '';
     if (arr && arr.length > 3) {
         groupName = arr[3];
     }
 
-    let group = await TEReport.list(groupName).toES6Promise().catch(function() {
+    const group = await TEReport.list(groupName).toES6Promise().catch(function() {
         return null;
     });
 
-    let bodyHtml = pagetmpl.new_body_sync({
+    const bodyHtml = pagetmpl.new_body_sync({
         appid: '', //私有化部署不存在
         group: group
     });
@@ -67,7 +67,7 @@ module.exports.go = async function(request, response, plug) {
         ];
     }
 
-    let responseHtml = pagetmpl.new_main({
+    const responseHtml = pagetmpl.new_main({
         head: {
             title: 'H5测试环境配置'
         },

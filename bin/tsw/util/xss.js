@@ -9,10 +9,10 @@
 
 this.filterParams = function(params) {
 
-    let _params = params || {};
+    const _params = params || {};
 
     /* eslint-disable no-control-regex */
-    let replaceMap = {
+    const replaceMap = {
         reg  : /(['"<\r\n\t\s\u0000-\u001f])/gim,
         '\'' : '\u0027',
         '"' : '\u0022',
@@ -20,11 +20,11 @@ this.filterParams = function(params) {
     };
     /* eslint-enable no-control-regex */
 
-    let replaceFunc = function(n) {
+    const replaceFunc = function(n) {
         return replaceMap[n] || '';
     };
 
-    for(let key in _params) {
+    for(const key in _params) {
         if(Array.isArray(_params[key])) {
             for(let i=_params[key].length-1; i>=0; i--) {
                 _params[key][i] = _params[key][i] && (_params[key][i]+'').replace(replaceMap.reg, replaceFunc);
@@ -38,7 +38,7 @@ this.filterParams = function(params) {
 };
 
 this.filterXSS = function (str) {
-    let _param = {
+    const _param = {
         xss : str || ''
     };
 

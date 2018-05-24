@@ -5,7 +5,7 @@
 //auto-report/src/view.tmpl.html
 //auto-report/src/zenburn.tmpl.html
 define(function(require, exports, module) {
-    let tmpl = { 
+    const tmpl = { 
         'encodeHtml': function(s) {
             return (s+'').replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
                 return '&#'+$0.charCodeAt(0)+';';
@@ -78,7 +78,7 @@ define(function(require, exports, module) {
 
             data = data || {};
 
-            let localISOString = function(d) {
+            const localISOString = function(d) {
                 if(!(d && d.getTimezoneOffset)) {
                     return d;
                 }
@@ -210,11 +210,11 @@ define(function(require, exports, module) {
                     __p.push(s); 
                 }, out=_p;
 
-            let logArr = data.logArr || [];
+            const logArr = data.logArr || [];
             let groupArr= data.groupArr || [];
-            let window = context.window || {};
-            let hls = require('./highlight-tsw.js');
-            let getResultCodeStyle = function (code) {
+            const window = context.window || {};
+            const hls = require('./highlight-tsw.js');
+            const getResultCodeStyle = function (code) {
                 code = parseInt(code, 10);
                 let style = '';
                 if(code > 0) {
@@ -238,18 +238,18 @@ define(function(require, exports, module) {
                 return style+'font-weight:;font-size:18px';
             };
 
-            let appid = context.appid;
-            let group = context.group;
-            let key = context.key;
-            let createLogKey = context.createLogKey;
-            let currPath = '/log/view/' + createLogKey(appid, group, key);
+            const appid = context.appid;
+            const group = context.group;
+            const key = context.key;
+            const createLogKey = context.createLogKey;
+            const currPath = '/log/view/' + createLogKey(appid, group, key);
 
             //去重
-            let tmp = [{name: '全部', href: '/log/view/' + createLogKey(appid, '', key)}];
-            let groupMap= {};
-            let nameMap = data.nameMap;
+            const tmp = [{name: '全部', href: '/log/view/' + createLogKey(appid, '', key)}];
+            const groupMap= {};
+            const nameMap = data.nameMap;
 
-            for(let i in nameMap) {
+            for(const i in nameMap) {
                 tmp.push({
                     name : nameMap[i],
                     href : '/log/view/' + createLogKey(appid, i, key)
@@ -268,12 +268,12 @@ define(function(require, exports, module) {
                     return;
 
                 groupMap[v] = 1;
-                let href = '/log/view/' + createLogKey(appid, v, key);
+                const href = '/log/view/' + createLogKey(appid, v, key);
                 tmp.push({name: v, href: href});
             });
             groupArr = tmp;
 
-            let XSS = plug('util/xss.js');
+            const XSS = plug('util/xss.js');
             __p.push('<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n    <title>TSW云抓包&#8482;</title>\n    <link rel="Shortcut Icon" href="/favicon.ico" type="image/x-icon" />\n    <link href="/static/tsw/styles/logview/style.css" rel="stylesheet">\n</head>\n<body>\n    <div class="view-title">\n        <a class="button" href="');
             _p(window && window.request && window.request.REQUEST && window.request.REQUEST.pathname && window.request.REQUEST.pathname.replace('/log/view/', '/log/download/'));
             __p.push('" target="_blank">下载全部抓包</a>\n        <a class="button r" href="https://www.telerik.com/fiddler" target="_blank">Fiddler下载</a>\n        <a class="button r" href="https://github.com/avwo/whistle" target="_blank">Whistle下载(mac推荐)</a>\n        <label class="button label" style="cursor:pointer;" id="showErrorLogItem"><input type="checkbox" id="showErrorLogItemChk" value="showErrorLogItem">仅显示有错误的</label>\n        <label class="button label" style="cursor:pointer;" id="showRequestListItem"><input type="checkbox" id="showRequestListChk" value="showRequestList">快速显示请求列表</label>');
@@ -305,22 +305,22 @@ define(function(require, exports, module) {
 
             logArr.forEach(function(logText, i) {
                 logText = logText || '';
-                let logLineArr = logText.split('\n');
-                let reqUrl = logLineArr && logLineArr[0];
+                const logLineArr = logText.split('\n');
+                const reqUrl = logLineArr && logLineArr[0];
                 let reqType = '',
                     resultCode = logArr.extInfos[i].resultCode;
 
                 let hasError = false;
                 for(let j = 0; j < logLineArr.length; j++) {
-                    let logTextLine = logLineArr[j];
+                    const logTextLine = logLineArr[j];
                     if (!logTextLine) {
                         continue;
                     }
 
                     //匹配ajax失败的fail log
-                    let retCodeReg = new RegExp('isFail:(.*)');
+                    const retCodeReg = new RegExp('isFail:(.*)');
                     if (retCodeReg.exec(logTextLine)) {
-                        let retCode = parseInt(RegExp.$1);
+                        const retCode = parseInt(RegExp.$1);
                         if (retCode) {
                             hasError = true;
                             break;

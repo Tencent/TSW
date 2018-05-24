@@ -11,8 +11,8 @@
 
 try{
 
-    let plug = require('plug');
-    let config = plug('config');
+    const plug = require('plug');
+    const config = plug('config');
 
     process.stdout.write('typeof config: ' + typeof config + '\r\n');
 

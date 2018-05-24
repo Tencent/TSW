@@ -89,7 +89,7 @@ this.getSync = function() {
 
 function getMap(text) {
 
-    let map = {};
+    const map = {};
 
     text = text || '';
 
@@ -102,7 +102,7 @@ function getMap(text) {
 
 function updateMap(text) {
 
-    let map = getMap(text);
+    const map = getMap(text);
 
     //copy
     Object.assign(map, cache.dataFile);
@@ -114,9 +114,9 @@ function updateMap(text) {
 
 this.get = function() {
     
-    let defer = Deferred.create();
-    let delay = ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
-    let l5api = config.tswL5api['blackIpFileUrl'];
+    const defer = Deferred.create();
+    const delay = ((process.serverInfo && process.serverInfo.cpu) * 1000) || 0;
+    const l5api = config.tswL5api['blackIpFileUrl'];
     
     if(Date.now() - cache.timeUpdate < 300000 + delay) {
         return defer.resolve(cache.data);
