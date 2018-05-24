@@ -9,7 +9,9 @@
 
 const os            = require('os');
 const fs            = require('fs');
-const {isWindows}   = require('./isWindows.js');
+const cp			= require('child_process');
+const {isWindows}	= require('./isWindows.js');
+const logger		= require('logger');
 var cache;
 
 if(!global[__filename]){
