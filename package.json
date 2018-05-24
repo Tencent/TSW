@@ -1,6 +1,6 @@
 {
   "name": "TSW",
-  "version": "1.0.1449",
+  "version": "1.1.0",
   "scripts": {
     "lint": "eslint examples bin/wwwroot bin/proxy bin/tsw bin/lib test --fix",
     "precommit": "lint-staged",
