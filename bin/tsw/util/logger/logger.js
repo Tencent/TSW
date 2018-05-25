@@ -485,7 +485,6 @@ function merge(str, obj) {
     return str && str.replace(/\$\{(.+?)\}/g, function($0, $1) {
 
         const rs = obj && obj[$1];
-        let undefined;
 
         return rs === undefined ? '' :
             typeof rs === 'object' ? util.inspect(rs) : String(rs);

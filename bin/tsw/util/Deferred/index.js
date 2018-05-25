@@ -282,10 +282,10 @@ jQuery.Callbacks = function( flags ) {
             args = args || [];
             memory = !flags.memory || [context, args];
             firing = true;
-            firingIndex = firingStart || 0;
-            firingStart = 0;
+            // firingIndex = firingStart || 0;
+            // firingStart = 0;
             firingLength = list.length;
-            for (; list && firingIndex < firingLength; firingIndex++) {
+            for (firingIndex = firingStart || 0, firingStart = 0; list && firingIndex < firingLength; firingIndex++) {
 
                 fn = list[firingIndex];
                 domain = fn.__domain;

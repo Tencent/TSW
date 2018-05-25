@@ -16,7 +16,7 @@ const httpUtil = require('util/http.js');
 const tnm2 = require('api/tnm2');
 
 module.exports = function(req) {
-    
+
     let v, key, index1, index2;
 
     if(req.url.indexOf('+') > -1) {
@@ -30,7 +30,7 @@ module.exports = function(req) {
     req.POST = {};
     req.body = req.POST;
     req.params = {};
-    if('upgrade' === req.headers.connection && 'websocket' === req.headers.upgrade) {
+    if(req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {
         if(req.headers['x-client-proto'] === 'https') {
             req.REQUEST.protocol = 'wss';
         } else {
@@ -48,9 +48,9 @@ module.exports = function(req) {
     }
 
     req.REQUEST.port = 80;
-    
+
     req.REQUEST.query = req.REQUEST.query || '';
-    
+
     if(req.REQUEST.query.length > 16384) {
         logger.debug('query large than 16KB :' + req.REQUEST.query.length);
         req.REQUEST.query = req.REQUEST.query.slice(0, 16384);
@@ -91,7 +91,7 @@ module.exports = function(req) {
         logger.debug('cookie large than 16KB :' + req.headers.cookie.length);
         req.headers.cookie = req.headers.cookie.slice(0, 16384);
     }
-    
+
     if(req.headers.cookie) {
         index1 = req.headers.cookie.indexOf('; ');
     }
@@ -103,19 +103,19 @@ module.exports = function(req) {
         && req.headers.cookie.charAt(0) === ','
         && req.headers.cookie.charAt(1) === ' '
     ) {
-        
+
         //logger.info('fix bad cookie(-3002):\n' + httpUtil.getUserIp(req) + '\n'  + httpUtil.getRequestHeaderStr(req));
 
         logger.debug('orign cookie: ' + req.headers.cookie);
 
         //兼容wap  cookie开头错误问题
         req.headers.cookie = req.headers.cookie.replace(/, /g, '; ');
-        
+
         logger.report();
-        
+
         tnm2.Attr_API('SUM_TSW_BAD_COOKIE', 1);
     }
-    
+
     if(
         !httpUtil.isFromWns(req)
         && global.cpuUsed < config.cpuLimit
@@ -123,15 +123,15 @@ module.exports = function(req) {
     ) {
 
         index2 = req.headers.cookie.indexOf(';');
-        
+
         if(index2 > 0 && index2 !== req.headers.cookie.length - 1) {
-            
+
             //logger.info('fix bad cookie(-3000):\n' + httpUtil.getUserIp(req) + '\n'  + httpUtil.getRequestHeaderStr(req));
             logger.debug('orign cookie: ' + req.headers.cookie);
 
-            //兼容wap  cookie分号没空格的问题    
+            //兼容wap  cookie分号没空格的问题
             req.headers.cookie = req.headers.cookie.replace(/;/g, '; ');
-            
+
             if(req.headers['x-wns-uin']) {
                 //...
             }else{
@@ -140,36 +140,36 @@ module.exports = function(req) {
 
             tnm2.Attr_API('SUM_TSW_BAD_COOKIE', 1);
         }else if(req.headers.cookie.indexOf(',') > 0) {
-            
+
             //logger.info('fix bad cookie(-3001):\n' + httpUtil.getUserIp(req) + '\n' + httpUtil.getRequestHeaderStr(req));
             logger.debug('orign cookie: ' + req.headers.cookie);
 
             //兼容wap  cookie里全是逗号的问题
             req.headers.cookie = req.headers.cookie.replace(/,/g, '; ');
-            
+
             logger.report();
-            
+
             tnm2.Attr_API('SUM_TSW_BAD_COOKIE', 1);
         }
     }
-    
+
     if(
         !httpUtil.isFromWns(req)
         && global.cpuUsed < config.cpuLimit
     ) {
-        
+
         //去掉header里的\u0000
         for(key in req.headers) {
             v = req.headers[key];
-            
+
             if(key.indexOf(' ') > -1) {
                 logger.debug('delete headers : ${key} : ${v}', {
                     key    : key,
                     v    : v
                 });
-                
+
                 delete req.headers[key];
-                
+
                 continue;
             }
 
@@ -183,11 +183,11 @@ module.exports = function(req) {
                 });
             }
         }
-        
+
     }
-    
+
     req.cookies = cookie.parse(req.headers.cookie || '');
-    
+
     req.param = paramFn;
 
 };
