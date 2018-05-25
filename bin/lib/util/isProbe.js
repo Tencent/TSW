@@ -7,15 +7,8 @@
  */
 'use strict';
 
-const config = require('config');
-
-//是否安全扫描器请求
-this.isTST = (req) => {
-
-    if(config.extendMod && typeof config.extendMod.isTST === 'function') {
-        return config.extendMod.isTST(req);
-    }
-
+//是否接入层探测请求
+this.isProbe = (req) => {
     return false;
 };
 

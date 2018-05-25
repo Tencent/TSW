@@ -22,6 +22,7 @@ const cp = require('child_process');
 const parseGet = require('util/http/parseGet.js');
 const tnm2 = require('api/tnm2');
 const cpuUtil = require('util/cpu.js');
+const isProbe = require('util/isProbe.js');
 const TEReport = require('util/auto-report/TEReport.js');
 const mail = require('util/mail/mail.js');
 const websocket = require('./websocket.js');
@@ -49,6 +50,12 @@ function doRoute(req, res) {
     if(routeCache === null) {
         routeCache = require('./http.route.js');
         config = require('./config.js');
+    }
+
+    if(isProbe.isProbe(req)) {
+        res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'});
+        res.end();
+        return;
     }
 
     routeCache(req, res);
@@ -157,7 +164,7 @@ function requestHandler(req, res) {
     }
 
     res.flush = res.flush || function() {
-        return true; 
+        return true;
     };
 
     //解析get参数
