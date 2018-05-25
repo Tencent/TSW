@@ -26,8 +26,6 @@ const isTST = require('util/isTST.js');
 const optionsUtil = require('./http-https.options.js');
 const sbFunction = vm.runInNewContext('(Function)', Object.create(null));        //沙堆
 let lastRetry = 0;
-let undefined;
-
 
 module.exports = new Ajax();
 
@@ -74,7 +72,7 @@ Ajax.prototype.request = function(opt) {
     }else{
         return this.doRequest(opt);
     }
-    
+
 };
 
 
@@ -85,12 +83,12 @@ Ajax.prototype.dnsRequest = function(opt) {
 
 //L5带你去ajax
 Ajax.prototype.l5Request = function(opt) {
-    
-    let 
+
+    let
         defer = Deferred.create(),
         that = this,
         l5api;
-    
+
     l5api = Deferred.extend({
         modid: 0,
         cmd: 0
@@ -104,17 +102,17 @@ Ajax.prototype.l5Request = function(opt) {
         //windows不走L5，直接请求
         return this.doRequest(opt);
     }
-    
+
     L5.ApiGetRoute(l5api).done(function(route) {
-        
+
         const start = new Date();
-        
+
         opt.ip = route.ip;
         opt.port = route.port;
-        
+
         //开始真正的请求
         that.doRequest(opt).always(function(d) {
-            
+
             if(d.opt && d.opt.headers && isTST.isTST(opt)) {
                 //忽略安全中心请求
                 return;
@@ -138,15 +136,15 @@ Ajax.prototype.l5Request = function(opt) {
                 pre            : route.pre,
                 flow        : route.flow
             });
-            
+
         }).done(function(d) {
             defer.resolve(d);
         }).fail(function(d) {
             defer.reject(d);
         });
-        
+
     }).fail(function(d) {
-        
+
         if(opt.dcapi) {
             dcapi.report(Deferred.extend({}, opt.dcapi, {
                 toIp        : '127.0.0.1',
@@ -155,7 +153,7 @@ Ajax.prototype.l5Request = function(opt) {
                 delay        : 100
             }));
         }
-        
+
         defer.reject({
             opt: opt,
             buffer: null,
@@ -166,10 +164,10 @@ Ajax.prototype.l5Request = function(opt) {
             code: d.ret,
             response: null
         });
-        
+
         opt.error && defer.fail(opt.error);
     });
-    
+
     return defer;
 };
 
@@ -192,17 +190,17 @@ Ajax.prototype.doRequest = function(opt) {
         request,
         key, v,
         obj;
-    
+
     if(context.AJAXSN) {
         context.AJAXSN++;
     }else{
         context.AJAXSN = 1;
     }
-    
+
     AJAXSN = context.AJAXSN || 0;
-    
+
     logPre = '[' + AJAXSN + '] ';
-    
+
     opt = Deferred.extend({
         type        : 'GET',
         url            : '',
@@ -247,7 +245,7 @@ Ajax.prototype.doRequest = function(opt) {
     }
 
     currRetry = opt.retry;
-    
+
     if(opt.dataType !== 'proxy') {
         //默认开启gzip
         opt.headers = Deferred.extend(
@@ -273,12 +271,12 @@ Ajax.prototype.doRequest = function(opt) {
             opt.headers
         );
     }
-    
+
     if(opt.headers['origin'] === 'null') {
         //兼容客户端
         opt.headers['origin'] = undefined;
     }
-    
+
     opt.type = opt.type.toUpperCase();
 
     if(opt.url) {
@@ -298,7 +296,7 @@ Ajax.prototype.doRequest = function(opt) {
     if(!opt.data) {
         opt.data = {};
     }
-    
+
     if(opt.dataType === 'proxy') {
         opt.autoToken = false;
         opt.autoQzoneToken = false;
@@ -311,7 +309,7 @@ Ajax.prototype.doRequest = function(opt) {
             opt.path = opt.path + '&g_tk=' + token.token();
         }
     }
-    
+
     if(opt.autoQzoneToken) {
         opt.headers['x-qzone-token'] = opt.headers['x-qzone-token'] || String(opt.autoQzoneToken);
     }
@@ -360,10 +358,10 @@ Ajax.prototype.doRequest = function(opt) {
             }
         }
     }
-        
+
 
     if(config.isTest) {
-        
+
         if(opt.testIp) {
             logger.debug('use testIp');
 
@@ -395,7 +393,7 @@ Ajax.prototype.doRequest = function(opt) {
     }
 
     if(currRetry === opt.retry) {
-        //防止重复注册 
+        //防止重复注册
         opt.success && defer.done(opt.success);
         opt.error && defer.fail(opt.error);
     }
@@ -404,8 +402,8 @@ Ajax.prototype.doRequest = function(opt) {
     times.start = new Date().getTime();
 
     function report(opt, isFail, code) {
-        
-        
+
+
         if(isTST.isTST(opt)) {
             //忽略安全中心请求
             return;
@@ -427,7 +425,7 @@ Ajax.prototype.doRequest = function(opt) {
             }));
         }
     }
-    
+
     //解决undefined报错问题
     for(key in opt.headers) {
         v = opt.headers[key];
@@ -466,7 +464,7 @@ Ajax.prototype.doRequest = function(opt) {
             });
         }
     }
-    
+
     if((httpUtil.isPostLike(opt.type)) && opt.dataType === 'proxy' && this._proxyRequest) {
 
         if(this._proxyRequest.REQUEST.body !== undefined) {
@@ -476,7 +474,7 @@ Ajax.prototype.doRequest = function(opt) {
                 that._proxyRequest.on('data', function(buffer) {
                     request.write(buffer);
                 });
-                
+
                 that._proxyRequest.once('end', function(buffer) {
                     that._proxyRequest.removeAllListeners('data');
                     request.end();
@@ -484,11 +482,11 @@ Ajax.prototype.doRequest = function(opt) {
             };
         }
     }
-    
+
     if(httpUtil.isGetLike(opt.type) && opt.headers['content-length']) {
-        
+
         logger.debug('reset Content-Length: 0 , origin: ' + opt.headers['content-length']);
-        
+
         delete opt.headers['content-length'];
         delete opt.headers['content-type'];
         opt.body = null;
@@ -496,7 +494,7 @@ Ajax.prototype.doRequest = function(opt) {
         if(!Buffer.isBuffer(opt.body)) {
             opt.body = Buffer.from(opt.body, 'UTF-8');
         }
-        
+
         opt.headers['Content-Length'] = opt.body.length;
     }
 
@@ -555,17 +553,17 @@ Ajax.prototype.doRequest = function(opt) {
 
     request.setNoDelay(true);
     request.setSocketKeepAlive(true);
-    
+
     defer.always(function() {
         clearTimeout(tid);
         request.removeAllListeners();
-        
+
         //request.abort();  长连接不能开
         //request.destroy(); 长连接不能开
         request = null;
         tid = null;
     });
-    
+
     tid = setTimeout(function() {
         logger.debug(logPre + 'timeout: ${timeout}', {
             timeout        : opt.timeout
@@ -573,17 +571,17 @@ Ajax.prototype.doRequest = function(opt) {
         request.abort();
         request.emit('fail');
     }, opt.timeout);
-    
+
     request.once('error', function(err) {
         request.emit('fail', err);
     });
-    
+
     request.once('fail', function(err) {
-        
+
         if(defer.isRejected() || defer.isResolved()) {
             return;
         }
-        
+
         times.end = new Date().getTime();
 
         if(err) {
@@ -609,7 +607,7 @@ Ajax.prototype.doRequest = function(opt) {
 
             return;
         }
-        
+
         if(window.response && window.response.__hasClosed) {
             logger.error(logPre + '[${userIp}] ${type} error ~ ${ip}:${port} ${protocol}//${host}${path} socket closed', {
                 protocol    : opt.protocol,
@@ -632,9 +630,9 @@ Ajax.prototype.doRequest = function(opt) {
             });
             return;
         }
-        
+
         report(opt, 1, 513 + opt.retry);
-        
+
         logger.error(logPre + '[${userIp}] ${type} error ~ ${ip}:${port} ${protocol}//${host}${path}', {
             protocol    : opt.protocol,
             type        : opt.type,
@@ -645,27 +643,27 @@ Ajax.prototype.doRequest = function(opt) {
             path        : opt.path,
             userIp         : httpUtil.getUserIp()
         });
-        
+
         //限制次数，1s只放过一个
         if(opt.retry > 0 && times.end - lastRetry > 1000) {
             lastRetry = times.end;
-            
+
             opt.retry = opt.retry - 1;
-            
+
             logger.debug('retry: ' + opt.retry);
             opt.isRetriedRequest = true;
 
             that.request(opt).done(function(d) {
                 d.hasRetry = true;
-                
+
                 defer.resolve(d);
             }).fail(function(d) {
                 d.hasRetry = true;
-                
+
                 defer.reject(d);
             });
-            
-            return;    
+
+            return;
         }else{
             report(opt, 1, 513 + opt.retry);
         }
@@ -678,18 +676,18 @@ Ajax.prototype.doRequest = function(opt) {
             msg: 'request error',
             times: times
         });
-        
+
     });
 
     request.once('response', function(response) {
         let result = [];
         let pipe = response;
         let isProxy = false;
-        
+
         if(opt.dataType === 'proxy' && that._proxyResponse) {
             isProxy = true;
         }
-        
+
         if(currRetry != opt.retry) {
             //防止第一个请求又回包捣乱
             logger.debug('currRetry: ${currRetry}, opt.retry: ${retry}', {
@@ -698,21 +696,21 @@ Ajax.prototype.doRequest = function(opt) {
             });
             return;
         }
-        
+
         //不能再重试了
         opt.retry = 0;
-        
+
         //不能省掉哦
         process.domain && process.domain.add(response);
-        
+
         opt.statusCode = response.statusCode;
         opt.remoteAddress = request.socket && request.socket.remoteAddress;
         opt.remotePort = request.socket && request.socket.remotePort;
-        
+
         response._bodySize = 0;
-        
+
         times.response = new Date().getTime();
-        
+
         if(opt.dataType === 'proxy') {
             if(response.statusCode >= 500 && response.statusCode <= 599 && response.statusCode !== 501) {
                 logger.debug(logPre + '${ip}:${port} response ${statusCode} cost:${cost}ms ${encoding}\nrequest: ${headers}\nresponse: ${resHeaders}', {
@@ -760,7 +758,7 @@ Ajax.prototype.doRequest = function(opt) {
                 });
             }
         }
-        
+
         if(defer.isRejected() || defer.isResolved()) {
             logger.debug(logPre + 'isRejected: ${isRejected}, isResolved: ${isResolved}', {
                 isRejected: defer.isRejected(),
@@ -768,7 +766,7 @@ Ajax.prototype.doRequest = function(opt) {
             });
             return;
         }
-        
+
         if(typeof opt.response === 'function') {
             if(opt.response(response) === false) {
                 //中断处理流程
@@ -782,12 +780,12 @@ Ajax.prototype.doRequest = function(opt) {
                 return;
             }
         }
-        
+
         if(opt.dataType === 'buffer' || (isProxy && response.headers['content-encoding']) || response.headers['content-length'] == 0) {
             logger.debug(logPre + 'response type: buffer');
         }else{
             if(response.headers['content-encoding'] === 'gzip') {
-                
+
                 pipe = zlib.createGunzip();
                 response.on('data', function(buffer) {
                     pipe.write(buffer);
@@ -796,9 +794,9 @@ Ajax.prototype.doRequest = function(opt) {
                     pipe.end();
                 });
             }else if(response.headers['content-encoding'] === 'deflate') {
-                
+
                 pipe = zlib.createInflateRaw();
-                
+
                 response.on('data', function(buffer) {
                     pipe.write(buffer);
                 });
@@ -807,7 +805,7 @@ Ajax.prototype.doRequest = function(opt) {
                 });
             }
         }
-        
+
         if(isProxy) {
 
             if(response.headers['transfer-encoding'] !== 'chunked') {
@@ -843,7 +841,7 @@ Ajax.prototype.doRequest = function(opt) {
                 });
             }else{
                 delete response.headers['connection'];
-                
+
                 that._proxyResponse.writeHead(response.statusCode, httpUtil.formatHeader(response.headers));
             }
         }
@@ -873,7 +871,7 @@ Ajax.prototype.doRequest = function(opt) {
                 request.emit('fail');
                 return;
             }
-            
+
             if(isProxy) {
                 if(!that._proxyResponse.finished) {
                     that._proxyResponse.write(chunk);
@@ -883,12 +881,12 @@ Ajax.prototype.doRequest = function(opt) {
                 result.push(chunk);
             }
         });
-        
+
         pipe.once('close', function() {
             logger.debug(logPre + 'close');
             this.emit('done');
         });
-        
+
         pipe.once('end', function() {
             const cost = Date.now() - pipe.timeStart;
 
@@ -900,17 +898,17 @@ Ajax.prototype.doRequest = function(opt) {
 
             this.emit('done');
         });
-        
+
         pipe.once('done', function() {
-            
+
             let obj, responseText, buffer, code;
             let key, Content;
-            
+
             this.removeAllListeners('close');
             this.removeAllListeners('end');
             this.removeAllListeners('data');
             this.removeAllListeners('done');
-            
+
             if(defer.isRejected() || defer.isResolved()) {
                 return;
             }
@@ -918,20 +916,20 @@ Ajax.prototype.doRequest = function(opt) {
             times.end = new Date().getTime();
             buffer = Buffer.concat(result);
             result = [];
-            
+
             logger.debug(logPre + 'done size:${len}', {
                 len: response._bodySize
             });
-            
+
             if(isProxy) {
                 if (response.statusCode >= 500 && response.statusCode <= 599 && response.statusCode !== 501) {
                     report(opt, 1, response.statusCode);
                 }else{
                     report(opt, 0, response.statusCode);
                 }
-                
+
                 that._proxyResponse.end();
-                
+
                 defer.resolve({
                     opt: opt,
                     buffer: buffer,
@@ -942,11 +940,11 @@ Ajax.prototype.doRequest = function(opt) {
                     response: response,
                     times: times
                 });
-                
-                
+
+
                 return;
             }
-            
+
             if(opt.dataType === response.statusCode) {
                 report(opt, 0, response.statusCode);
                 defer.resolve({
@@ -962,11 +960,11 @@ Ajax.prototype.doRequest = function(opt) {
 
                 return;
             }
-            
+
             if(opt.dataType === 'json' || opt.dataType === 'jsonp' || opt.dataType === 'text' || opt.dataType === 'html') {
                 responseText = buffer.toString('UTF-8');
             }
-            
+
             if(buffer.length <= 1024) {
                 if(responseText) {
                     if(opt.dataType === 'json' || opt.dataType === 'jsonp' || opt.dataType === 'text') {
@@ -976,11 +974,11 @@ Ajax.prototype.doRequest = function(opt) {
                     logger.debug(logPre + 'responseText:\n' + buffer.toString('UTF-8'));
                 }
             }
-            
+
             if(responseText) {
                 buffer = null;
             }
-            
+
             if(response.statusCode !== 200 && response.statusCode !== 666 && response.statusCode !== 206) {
                 //dataType为proxy但是不走代理模式的时候，30x类型的返回码当作成功上报
                 if(response.statusCode >= 300 && response.statusCode < 400) {
@@ -992,7 +990,7 @@ Ajax.prototype.doRequest = function(opt) {
                 }else{
                     report(opt, 1, response.statusCode);
                 }
-                
+
                 defer.reject({
                     opt: opt,
                     buffer: buffer,
@@ -1008,7 +1006,7 @@ Ajax.prototype.doRequest = function(opt) {
             }
 
             if(opt.dataType === 'json' || opt.dataType === 'jsonp') {
-                
+
                 try{
 
                     if(opt.jsonpCallback) {
@@ -1032,7 +1030,7 @@ Ajax.prototype.doRequest = function(opt) {
                 }catch(e) {
 
                     let parseErr = e;
-                    
+
                     if(e && code) {
                         try{
                             code = code.replace(/[\u2028\u2029]/g, '');
@@ -1062,32 +1060,32 @@ Ajax.prototype.doRequest = function(opt) {
                             response: response,
                             times: times
                         });
-                        
+
                         key = [window.request.headers.host, context.mod_act, parseErr.message].join(':');
-                
+
                         Content = [
                             '<p><strong>错误堆栈</strong></p>',
                             '<p><pre><code>',
                             parseErr.stack,
                             '</code></pre></p>',
                         ].join('');
-                        
+
                         require('util/mail/mail.js').SendMail(key, 'js data', 1800, {
                             'Title'            : key,
                             'runtimeType'    : 'ParseError',
                             'Content'        : Content,
                             'MsgInfo'        : '错误堆栈:\n' + parseErr.stack
                         });
-                        
+
                         return;
                     }
-                    
+
                 }
-                
+
                 if(obj) {
                     code = obj.code || 0;
                 }
-                
+
             }else{
                 code = {
                     isFail: 0,
@@ -1096,37 +1094,37 @@ Ajax.prototype.doRequest = function(opt) {
 
                 obj = responseText;
             }
-            
+
             if(typeof opt.formatCode === 'function') {
                 code = opt.formatCode(obj, opt, response);
             }
-            
+
             //支持{isFail:0,code:1,message:''}
             if(typeof code === 'object') {
-                
+
                 if(typeof code.isFail !== 'number') {
                     code.isFail = ~~code.isFail;
                 }
-                
+
                 if(typeof code.code !== 'number') {
                     code.code = ~~code.code;
                 }
-                
+
                 report(opt, code.isFail, code.code);
             }else{
-                
+
                 if(typeof code !== 'number') {
                     code = ~~code;
                 }
-                
+
                 if(code === 0) {
                     report(opt, 0, code);
                 }else{
                     report(opt, 2, code);
                 }
             }
-            
-            
+
+
             defer.resolve({
                 opt: opt,
                 buffer: buffer,
@@ -1141,13 +1139,13 @@ Ajax.prototype.doRequest = function(opt) {
 
     });
 
-    
+
     if(opt.send) {
         opt.send(request);
     }else{
-        
+
         if(opt.body) {
-            
+
             request.useChunkedEncodingByDefault = false;
             try{
                 request.write(opt.body);
@@ -1155,10 +1153,10 @@ Ajax.prototype.doRequest = function(opt) {
                 logger.info(e.stack);
             }
         }
-        
+
         request.end();
     }
-    
+
     return defer;
 };
 

@@ -25,12 +25,12 @@ exports.doRoute = function(ws, type, d1, d2) {
     }
     if (typeof moduleObj.onConnection != 'function') {
         moduleObj.onConnection = function(ws) {
-            1 == ws.readyState && ws.send('no onConnection funtion,so go default');
+            ws.readyState === 1 && ws.send('no onConnection funtion,so go default');
         };
     }
     if (typeof moduleObj.onMessage != 'function') {
         moduleObj.onMessage = function(ws, data) {
-            1 == ws.readyState && ws.send('no onMessage function,so go default,ws server get message:' + data);
+            ws.readyState === 1 && ws.send('no onMessage function,so go default,ws server get message:' + data);
         };
     }
     if (typeof moduleObj.onClose != 'function') {
@@ -43,14 +43,14 @@ exports.doRoute = function(ws, type, d1, d2) {
             logger.debug('no onError function, so go default');
         };
     }
-    if ('connection' == type) {
+    if (type === 'connection') {
         moduleObj.onConnection(ws);
-    } else if ('message' == type) {
+    } else if (type === 'message') {
         contextMod.currentContext().mod_act = mod_act;
         moduleObj.onMessage(ws, d1);
-    } else if ('close' == type) {
+    } else if (type === 'close') {
         moduleObj.onClose(ws, d1, d2);
-    } else if ('error' == type) {
+    } else if (type === 'error') {
         moduleObj.onError(ws, d1);
     }
 };

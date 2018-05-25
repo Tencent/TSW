@@ -158,7 +158,7 @@ function requestHandler(req, res) {
         cleanCache();
     }
 
-    if('upgrade' === req.headers.connection && 'websocket' === req.headers.upgrade) {
+    if(req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {
         //websocket
         return;
     }
