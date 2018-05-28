@@ -16,7 +16,7 @@ TSW supports packet capture based on user granularity.
 
 #### Holographic logging
 
-TSW provides powerful logging abilities for developers to locate problems quickly.
+The full content of the request can be seen through the log.
 
 - Record packets within requests' lifecycles holographically in the form of log flow.
 - Aggregate log flows based on user granularity.
