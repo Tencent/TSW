@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -6,6 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+
 
 const serverInfo = require('serverInfo.js');
 const config = require('config.js');
@@ -22,24 +23,24 @@ this.SendMail = function(key, group, second, oriOpt) {
     const now = new Date();
     let prefix = '[runtime]';
 
-    if(isWindows.isWindows) {
+    if (isWindows.isWindows) {
         return;
     }
 
-    //晚上不发
-    //allDaySend强制全天候24小时发送
-    if(!opt.allDaySend && now.getHours() < 8) {
+    // 晚上不发
+    // allDaySend强制全天候24小时发送
+    if (!opt.allDaySend && now.getHours() < 8) {
         return;
     }
 
-    if(context.title) {
+    if (context.title) {
         opt.Title = `[${context.title}]${opt.Title}`;
     }
 
-    if(config.isTest) {
+    if (config.isTest) {
         prefix += '[测试环境]';
-    }else{
-        if(opt.runtimeType) {
+    } else {
+        if (opt.runtimeType) {
             prefix += `[${opt.runtimeType}][考核]`;
         }
     }
@@ -61,7 +62,7 @@ this.SendMail = function(key, group, second, oriOpt) {
 
     opt.data = data;
 
-    if(isWindows.isWindows) {
+    if (isWindows.isWindows) {
         key = key + Date.now();
     }
 
@@ -81,20 +82,20 @@ const reportOpenapi = function(data) {
 
     let retCall;
 
-    if(typeof config.beforeRuntimeReport === 'function') {
+    if (typeof config.beforeRuntimeReport === 'function') {
         retCall = config.beforeRuntimeReport(data);
     }
 
-    //阻止默认上报
-    if(retCall === false) {
+    // 阻止默认上报
+    if (retCall === false) {
         return defer.resolve(0);
     }
 
-    if(!config.appid || !config.appkey) {
+    if (!config.appid || !config.appkey) {
         return;
     }
 
-    if(!config.runtimeReportUrl) {
+    if (!config.runtimeReportUrl) {
         return;
     }
 
@@ -104,34 +105,34 @@ const reportOpenapi = function(data) {
     postData.now = Date.now();
 
     const sig = openapi.signature({
-        pathname    : url.parse(config.runtimeReportUrl).pathname,
-        method        : 'POST',
-        data        : postData,
-        appkey        : config.appkey
+        pathname: url.parse(config.runtimeReportUrl).pathname,
+        method: 'POST',
+        data: postData,
+        appkey: config.appkey
     });
 
     postData.sig = sig;
 
     require('ajax').request({
-        url            : config.runtimeReportUrl,
-        type        : 'POST',
-        l5api        : config.tswL5api['openapi.tswjs.org'],
-        dcapi        : {
+        url: config.runtimeReportUrl,
+        type: 'POST',
+        l5api: config.tswL5api['openapi.tswjs.org'],
+        dcapi: {
             key: 'EVENT_TSW_OPENAPI_RUNTIME_REPORT'
         },
-        data        : postData,
-        keepAlive    : true,
-        autoToken    : false,
-        dataType    : 'json'
+        data: postData,
+        keepAlive: true,
+        autoToken: false,
+        dataType: 'json'
     }).fail(function() {
         logger.error('runtime report fail.');
         defer.reject();
     }).done(function(d) {
-        if(d.result) {
-            if(d.result.code === 0) {
+        if (d.result) {
+            if (d.result.code === 0) {
                 logger.debug('runtime report success.');
                 return defer.resolve();
-            }else{
+            } else {
                 logger.debug('runtime report fail.');
                 return defer.reject(d.result.code);
             }
@@ -145,12 +146,12 @@ const reportOpenapi = function(data) {
 };
 
 
-//升级周知
+// 升级周知
 this.SendTSWMail = function(opt) {
 
 };
 
-//发送周知邮件
+// 发送周知邮件
 this.SendArsMail = function(opt) {
 
 

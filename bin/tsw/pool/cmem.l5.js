@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,14 +7,15 @@
  */
 'use strict';
 
+
 const logger = require('logger');
 const Queue = require('util/Queue');
 const dcapi = require('api/libdcapi/dcapi.js');
 const L5 = require('api/L5/L5.api.js');
-const {isWindows} = require('util/isWindows.js');
+const { isWindows } = require('util/isWindows.js');
 let cache = global[__filename];
 
-if(!cache) {
+if (!cache) {
     cache = {};
     global[__filename] = cache;
 }
@@ -30,76 +31,75 @@ module.exports = function(opt) {
 
 module.exports.getCmem = function(opt) {
     let route;
-    let key;
 
-    if(!opt) {
+    if (!opt) {
         return null;
     }
 
-    if(!isWindows && opt.modid && opt.cmd) {
-        
+    if (!isWindows && opt.modid && opt.cmd) {
+
         route = L5.ApiGetRouteSync(opt);
-        
+
         logger.debug('L5 ~${ip}:${port}', route);
-        
-        if(route.ip && route.port) {
+
+        if (route.ip && route.port) {
             opt.host = [route.ip, route.port].join(':');
         }
-        
+
         route.ret = route.ret;
         route.usetime = 100;
         L5.ApiRouteResultUpdate(route);
-        
+
     }
 
-    if(!opt.host) {
+    if (!opt.host) {
         return null;
     }
 
-    key = [opt.modid, opt.cmd, opt.host].join(':');
-    
-    if(!cache[key]) {
+    const key = [opt.modid, opt.cmd, opt.host].join(':');
+
+    if (!cache[key]) {
         const Memcached = require('memcached');
-        cache[key] = queueWrap(new Memcached(opt.host, opt)); 
+        cache[key] = queueWrap(new Memcached(opt.host, opt));
     }
-    
+
     return cache[key];
 };
 
 
 function queueWrap(memcached) {
-    
-    if(memcached.__queue) {
+
+    if (memcached.__queue) {
         return memcached;
     }
-    
+
     memcached.__queue = Queue.create();
-    
-    memcached.command = function(command) {
-        
+
+    memcached.command = (function(command) {
+
         return function(queryCompiler, server) {
             const memcached = this;
             const queue = memcached.__queue;
             const servers = memcached.servers && memcached.servers[0];
             const start = Date.now();
-        
+
             queue.queue(function() {
-                
+
                 const fn = (function(queryCompiler) {
                     return function() {
                         const query = queryCompiler();
                         let command = query.command || '';
-                        const index = command.indexOf('\r\n');    //不要数据部分
-                        if(index > 0) {
+                        const index = command.indexOf('\r\n');    // 不要数据部分
+                        if (index > 0) {
                             command = command.slice(0, Math.min(128, index));
                         }
-                        if(command.length >= 128) {
+                        if (command.length >= 128) {
                             command = command.slice(0, 128) + '...' + command.length;
                         }
 
                         logger.debug(command);
 
-                        query.callback = function(callback) {
+                        query.callback = (function(callback) {
                             return function(...args) {
                                 const err = args[0];
                                 let code = 0;
@@ -107,39 +107,39 @@ function queueWrap(memcached) {
                                 const delay = Date.now() - start;
                                 const toIp = servers.split(':')[0];
 
-                                if(err && err.message !== 'Item is not stored') {
-                                    if(err.stack) {
+                                if (err && err.message !== 'Item is not stored') {
+                                    if (err.stack) {
                                         logger.error(command);
                                         logger.error(servers);
                                         logger.error(err.stack);
                                         code = 2;
                                         isFail = 1;
-                                    }else{
+                                    } else {
                                         logger.debug(err);
                                     }
                                 }
 
                                 dcapi.report({
-                                    key            : 'EVENT_TSW_MEMCACHED',
-                                    toIp        : toIp,
-                                    code        : code,
-                                    isFail        : isFail,
-                                    delay        : delay
+                                    key: 'EVENT_TSW_MEMCACHED',
+                                    toIp: toIp,
+                                    code: code,
+                                    isFail: isFail,
+                                    delay: delay
                                 });
 
                                 queue.dequeue();
                                 return callback && callback.apply(this, args);
                             };
-                        }(query.callback);
+                        })(query.callback);
                         return query;
                     };
                 })(queryCompiler);
-                
+
                 command.call(memcached, fn, server);
             });
         };
-    }(memcached.command);
-    
-    
+    })(memcached.command);
+
+
     return memcached;
 }

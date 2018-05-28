@@ -1,19 +1,21 @@
 
-//tmpl file list:
-//mail/src/mail.tmpl.html
+// tmpl file list:
+// mail/src/mail.tmpl.html
 define(function(require, exports, module) {
-    var tmpl = { 
+    var tmpl = {
         'encodeHtml': function(s) {
-            return (s+'').replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
-                return '&#'+$0.charCodeAt(0)+';';
-            }); 
+            return (String(s)).replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
+                return '&#' + $0.charCodeAt(0) + ';';
+            });
         },
 
         'email': function(data) {
 
-            let __p=[], _p=function(s) {
-                    __p.push(s); 
-                }, out=_p;
+            let __p = [],
+                _p = function(s) {
+                    __p.push(s);
+                },
+                out = _p;
 
 
             const window = context.window || {};
@@ -28,7 +30,7 @@ define(function(require, exports, module) {
             __p.push('</p>\n    <p><strong>mod_act:</strong> ');
             _p(context.mod_act || 'null');
             __p.push('</p>');
-            if(window.request) {
+            if (window.request) {
                 __p.push('    <p><strong>域名:</strong> ');
                 _p(window.request && window.request.headers.host);
                 __p.push('</p>\n    <p><strong>path:</strong> ');
@@ -39,12 +41,12 @@ define(function(require, exports, module) {
             __p.push('</p>\n    <p><strong>发送间隔:</strong> ');
             _p(data.second);
             __p.push('s</p>');
-            if(data.headerText) {
+            if (data.headerText) {
                 __p.push('    <p><strong>请求头:</strong></p>\n    <div style="font-size:12px">');
                 _p(tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/g, '<br>'));
                 __p.push('</div>');
             }__p.push('    ');
-            if(data.logText) {
+            if (data.logText) {
                 __p.push('    <p><strong>全息日志:</strong></p>\n    <pre style="font-size:12px">');
                 _p(tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/g, '<br>'));
                 __p.push('</pre>');
@@ -55,9 +57,11 @@ define(function(require, exports, module) {
 
         'rtx': function(data) {
 
-            let __p=[], _p=function(s) {
-                    __p.push(s); 
-                }, out=_p;
+            let __p = [],
+                _p = function(s) {
+                    __p.push(s);
+                },
+                out = _p;
 
 
             const window = context.window || {};

@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,17 +7,18 @@
  */
 'use strict';
 
+
 const TIMES_LIMIT = 5;
 
-if(global[__filename]) {
+if (global[__filename]) {
     global[__filename].map = {};
-}else{
+} else {
 
     global[__filename] = {
         map: {}
     };
 
-    //追踪重复读写
+    // 追踪重复读写
     process.nextTick(function() {
         const cache = global[__filename];
         const isWindows = require('util/isWindows');
@@ -34,7 +35,7 @@ if(global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
                 logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
@@ -54,7 +55,7 @@ if(global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
                 logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
@@ -74,7 +75,7 @@ if(global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum > TIMES_LIMIT && !config.devMode) {
+            if (sum > TIMES_LIMIT && !config.devMode) {
                 logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
@@ -94,7 +95,7 @@ if(global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
                 logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
@@ -114,7 +115,7 @@ if(global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum > TIMES_LIMIT && !config.devMode) {
+            if (sum > TIMES_LIMIT && !config.devMode) {
                 logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
@@ -134,7 +135,7 @@ if(global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode) {
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
                 logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
@@ -146,16 +147,16 @@ if(global[__filename]) {
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        //fs.realpathSync = hack(fs.realpathSync,function(file){
+        // fs.realpathSync = hack(fs.realpathSync,function(file){
         //    logger.debug('[sync] ${name} ${file}',{
         //        name: 'fs.realpathSync',
         //        file: file
         //    });
-        //});
+        // });
 
         function hack(fn, callback) {
 
-            if(isWindows.isWindows) {
+            if (isWindows.isWindows) {
                 return fn;
             }
 
