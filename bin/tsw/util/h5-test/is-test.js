@@ -206,6 +206,9 @@ const syncFromCloud = function(merge) {
 
 //是否命中测试环境
 module.exports.getTestSpaceInfo = function(req) {
+    //测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
+    const testTargetMap = getTestUserMap();
+
     //windows版本，更不用转
     if(isWindows.isWindows) {
         return;
@@ -220,9 +223,6 @@ module.exports.getTestSpaceInfo = function(req) {
     if(config.isForwardH5test && config.isForwardH5test(req) === false) {
         return;
     }
-
-    //测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
-    const testTargetMap = getTestUserMap();
 
     //如果已经是测试环境，就不用转发了
     if(config.isTest) {
