@@ -111,8 +111,7 @@
             "off"
         ],
         "strict": [
-            "error",
-            "safe"
+            "off"
         ]
     },
     "overrides": [

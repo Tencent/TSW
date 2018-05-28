@@ -23,7 +23,8 @@ define(function(require, exports, module) {
 
         'html': function(data) {
 
-            let __p = [],
+
+            'use strict'; let __p = [],
                 _p = function(s) {
                     __p.push(s);
                 },
