@@ -1,2 +1,1 @@
-bin/wwwroot/**/highlight-tsw.js
-bin/wwwroot/**/zepto.min.js
+bin/wwwroot/**/*.js
