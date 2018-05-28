@@ -9,16 +9,16 @@ logger.setLogLevel('error');
 
 
 describe('xss.js', () => {
-    it('#htmlEncode', ()=> {
+    it('#htmlEncode', () => {
         // console.log(xss.filterXSS('<'));
         expect('&lt;&gt;&amp;&#039;&quot;').to.equal(xss.htmlEncode('<>&\'"'));
     });
 
-    it('#htmlDecode', ()=> {
+    it('#htmlDecode', () => {
         expect('<>&\'"').to.equal(xss.htmlDecode('&lt;&gt;&amp;&#039;&quot;'));
     });
 
     it('#filterParams', () => {
-        //这个函数没法测，就这样吧
+        // 这个函数没法测，就这样吧
     });
 });

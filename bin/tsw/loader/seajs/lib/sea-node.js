@@ -13,19 +13,18 @@ const _resolveFilename = Module._resolveFilename;
 const moduleStack = [];
 
 Module._resolveFilename = function(request, parent) {
-    let res;
-    //request = request.replace(/\?.*$/, '') // remove timestamp etc.
+    // request = request.replace(/\?.*$/, '') // remove timestamp etc.
 
-    //性能优化
-    if(parent.resolveFilenameCache) {
-        if(parent.resolveFilenameCache[request]) {
+    // 性能优化
+    if (parent.resolveFilenameCache) {
+        if (parent.resolveFilenameCache[request]) {
             return parent.resolveFilenameCache[request];
         }
-    }else{
+    } else {
         parent.resolveFilenameCache = {};
     }
 
-    res = _resolveFilename(request, parent);
+    const res = _resolveFilename(request, parent);
 
     parent.resolveFilenameCache[request] = res;
 
@@ -35,16 +34,16 @@ Module._resolveFilename = function(request, parent) {
 Module.prototype._compile = function(content, filename) {
     moduleStack.push(this);
     try {
-        if(filename.indexOf(plug.parent) === 0) {
+        if (filename.indexOf(plug.parent) === 0) {
             this.paths = plug.paths.concat(this.paths);
         }
         return _compile.call(this, content, filename);
-    }catch(err) {
+    } catch (err) {
         process.nextTick(function() {
             process.emit('warning', err);
         });
         throw err;
-    }finally {
+    } finally {
         moduleStack.pop();
     }
 };

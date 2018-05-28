@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -6,6 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+
 
 const WebSocket = require('ws');
 const WSServer = WebSocket.Server;
@@ -30,48 +31,48 @@ function bind_listen(server) {
 
         parseGet(req);
 
-        if(req.headers['x-client-proto'] === 'https') {
+        if (req.headers['x-client-proto'] === 'https') {
             req.REQUEST.protocol = 'wss';
         } else {
             req.REQUEST.protocol = 'ws';
         }
 
         const testSpaceInfo = h5test.getTestSpaceInfo(req);
-        if(testSpaceInfo) {
+        if (testSpaceInfo) {
             const clientReqHeaders = Object.assign({}, req.headers);
             delete clientReqHeaders['sec-websocket-key'];
             wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, {
-                headers : clientReqHeaders
+                headers: clientReqHeaders
             });
         }
-        if(wsClient) {
-            //存在代理,new websocket时相当于触发了connection了
+        if (wsClient) {
+            // 存在代理,new websocket时相当于触发了connection了
             wsClient.on('message', function(data) {
-                //代理收到目标服务器的回报，再发送给客户端
-                if(ws.readyState == WebSocket.OPEN) {
+                // 代理收到目标服务器的回报，再发送给客户端
+                if (ws.readyState === WebSocket.OPEN) {
                     ws.send(data);
                 }
             });
             wsClient.on('close', function(data, msg) {
-                //目标服务器关闭
+                // 目标服务器关闭
                 ws.close();
             });
             wsClient.on('error', function(error) {
-                if(ws.readyState == WebSocket.OPEN) {
+                if (ws.readyState === WebSocket.OPEN) {
                     ws.send('TSW_Websocket_proxy_client_error');
                 }
             });
-        }else{
+        } else {
             wsRoute.doRoute(ws, 'connection');
         }
 
         ws.on('message', function(message) {
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_MESSAGE', 1);
 
-            if(wsClient) {
-                //存在代理
-                if(wsClient.readyState == WebSocket.OPEN) {
-                    wsClient.send(message);    
+            if (wsClient) {
+                // 存在代理
+                if (wsClient.readyState === WebSocket.OPEN) {
+                    wsClient.send(message);
                 }
                 return;
             }
@@ -79,18 +80,18 @@ function bind_listen(server) {
             let requestData = {};
             try {
                 requestData = JSON.parse(message);
-            } catch(e) {
+            } catch (e) {
                 logger.error(`parse message fail ${e.message}`);
             }
 
             // var mod_act = wsModAct.getModAct(ws);
             const cwrap = new ContextWrap({
                 url: req.url
-                //reqSocket: ws,
-                //rspSocket: ws
+                // reqSocket: ws,
+                // rspSocket: ws
             });
 
-            //cwrap.add(ws);
+            // cwrap.add(ws);
             cwrap.run(function() {
                 const window = context.window || {};
                 window.websocket = ws;
@@ -99,7 +100,7 @@ function bind_listen(server) {
                 let hasEnd = false;
                 const tid = setTimeout(function() {
                     logger.debug('[websocket server] respond timeout');
-                    if(hasEnd) {
+                    if (hasEnd) {
                         return;
                     }
                     hasEnd = true;
@@ -107,7 +108,7 @@ function bind_listen(server) {
                     let respond;
                     const window = context.window || {};
 
-                    if(requestData.seq) {
+                    if (requestData.seq) {
                         respond = JSON.stringify({
                             'seq': requestData.seq,
                             'ret': 513,
@@ -121,12 +122,12 @@ function bind_listen(server) {
                         });
                     }
 
-                    //将message转成fiddler抓包的包体内容
-                    if(cwrap) {
-                        if(window.websocket) {
+                    // 将message转成fiddler抓包的包体内容
+                    if (cwrap) {
+                        if (window.websocket) {
                             window.websocket.upgradeReq.REQUEST.body = message;
                         }
-                        if(window.response) {
+                        if (window.response) {
                             window.response._body = Buffer.from(respond);
                             window.response.setHeader('content-length', window.response._body.length);
                             window.response.setHeader('content-type', 'websocket');
@@ -134,7 +135,7 @@ function bind_listen(server) {
                             window.response.emit('afterMessage');
                             window.response.removeAllListeners('sendMessage');
                         }
-                        //cwrap.remove(ws);
+                        // cwrap.remove(ws);
                         window.websocket = null;
                         cwrap.destroy();
                     }
@@ -145,18 +146,18 @@ function bind_listen(server) {
                 window.response.once('sendMessage', function(respondData) {
                     let respond;
 
-                    if(tid) {
+                    if (tid) {
                         clearTimeout(tid);
                     }
-                    //确认是否已经响应请求
-                    if(hasEnd) {
+                    // 确认是否已经响应请求
+                    if (hasEnd) {
                         return;
                     }
                     hasEnd = true;
 
                     tnm2.Attr_API('SUM_TSW_WEBSOCKET_RESPONSE', 1);
 
-                    if(respondData) {
+                    if (respondData) {
                         respond = respondData;
                     } else {
                         respond = {
@@ -164,19 +165,19 @@ function bind_listen(server) {
                             'msg': ''
                         };
                     }
-                    if(requestData.seq) {
+                    if (requestData.seq) {
                         respond.seq = requestData.seq;
                     }
                     respond = JSON.stringify(respond);
-                    if(ws.readyState === 1) {
+                    if (ws.readyState === 1) {
                         ws.send(respond);
                         logger.debug('websocket message respond: ' + respond);
                     } else {
                         logger.debug('websocket is not open, message respond abort, readyState: ' + ws.readyState);
                     }
 
-                    //将message转成fiddler抓包的包体内容
-                    if(window.websocket) {
+                    // 将message转成fiddler抓包的包体内容
+                    if (window.websocket) {
                         window.websocket.upgradeReq.REQUEST.body = message;
                     }
                     window.response._body = Buffer.from(respond);
@@ -184,7 +185,7 @@ function bind_listen(server) {
                     window.response.setHeader('content-type', 'websocket');
                     window.response.writeHead(101);
                     window.response.emit('afterMessage');
-                    //cwrap.remove(ws);
+                    // cwrap.remove(ws);
                     window.websocket = null;
                     cwrap.destroy();
                 });
@@ -194,7 +195,7 @@ function bind_listen(server) {
         });
         ws.on('close', function(code, reason) {
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_CLOSE', 1);
-            if(wsClient) {
+            if (wsClient) {
                 wsClient.close();
                 return;
             }
@@ -202,8 +203,8 @@ function bind_listen(server) {
         });
         ws.on('error', function(error) {
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_ERROR', 1);
-            if(wsClient) {
-                if(wsClient.readyState == WebSocket.OPEN) {
+            if (wsClient) {
+                if (wsClient.readyState === WebSocket.OPEN) {
                     wsClient.send('TSW_Websocket_proxy_server_error');
                 }
                 return;
@@ -219,7 +220,7 @@ exports.start_listen = function() {
     });
     bind_listen(ws);
 
-    if(global.TSW_HTTPS_SERVER) {
+    if (global.TSW_HTTPS_SERVER) {
         const wss = new WSServer({
             server: global.TSW_HTTPS_SERVER
         });

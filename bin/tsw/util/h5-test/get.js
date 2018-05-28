@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -6,6 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+
 
 const logger = require('logger');
 const Deferred = require('util/Deferred');
@@ -26,7 +27,7 @@ module.exports.go = async function(request, response) {
         return null;
     });
 
-    const result = {code: 0, data: data};
+    const result = { code: 0, data: data };
 
     returnJson(result);
 };
@@ -34,36 +35,36 @@ module.exports.go = async function(request, response) {
 module.exports.getTestUser = function() {
     logger.debug('getTestUser');
 
-    //从内存中读取testTargetMap
+    // 从内存中读取testTargetMap
     const memcached = isTest.cmem();
     let keyText = isTest.keyBitmap();
     const defer = Deferred.create();
     let appid = '';
 
-    if(context.appid && context.appkey) {
-        //开平过来的
+    if (context.appid && context.appkey) {
+        // 开平过来的
         appid = context.appid;
         keyText = `${keyText}.${appid}`;
     }
 
-    if(!memcached) {
+    if (!memcached) {
         return defer.resolve({});
     }
 
     memcached.get(keyText, function(err, data) {
 
-        if(appid && typeof data === 'string') {
-            //解密
+        if (appid && typeof data === 'string') {
+            // 解密
             data = post.decode(context.appid, context.appkey, data);
         }
 
-        if(err) {
+        if (err) {
             logger.error('memcache get error:' + err);
             defer.reject('memcache get error');
-        }else if(typeof data == 'object') {
+        } else if (typeof data === 'object') {
             logger.debug('getTestUser success!');
             defer.resolve(data);
-        }else{
+        } else {
             logger.debug('memcache return not a object');
             defer.resolve({});
         }
@@ -78,33 +79,33 @@ module.exports.openapi = async function(req, res) {
     const appid = context.appid;
     const appkey = context.appkey;
 
-    if(req.param('appid') !== appid) {
-        returnJson({ code: -2, message: 'appid错误'});
+    if (req.param('appid') !== appid) {
+        returnJson({ code: -2, message: 'appid错误' });
         return;
     }
 
-    if(!appid) {
-        returnJson({ code: -2, message: 'appid is required'});
+    if (!appid) {
+        returnJson({ code: -2, message: 'appid is required' });
         return;
     }
 
-    if(!appkey) {
-        returnJson({ code: -2, message: 'appkey is required'});
+    if (!appkey) {
+        returnJson({ code: -2, message: 'appkey is required' });
         return;
     }
 
-    if(!/^[a-zA-Z0-9_-]{0,50}$/.test(appid)) {
-        returnJson({ code: -2, message: 'appid is required'});
+    if (!/^[a-zA-Z0-9_-]{0,50}$/.test(appid)) {
+        returnJson({ code: -2, message: 'appid is required' });
         return;
     }
 
-    logger.setKey(`h5testSync_${appid}`);    //上报key
+    logger.setKey(`h5testSync_${appid}`);    // 上报key
 
     const data = await module.exports.getTestUser().toES6Promise().catch(function() {
         return null;
     });
 
-    const result = {code: 0, data: data};
+    const result = { code: 0, data: data };
 
     returnJson(result);
 };

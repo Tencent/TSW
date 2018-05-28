@@ -18,7 +18,8 @@ https://highlightjs.org/
         if(typeof define === 'function' && define.amd) {
             define('hljs', [], function() {
                 return window.hljs;
-            });
+            
+'use strict';});
         }
     } else if (typeof self !== 'undefined') {
     // Export hljs to web worker.

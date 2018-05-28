@@ -1,21 +1,23 @@
 
-//tmpl file list:
-//page/src/main.tmpl.html
-//page/src/new.tmpl.html
-//page/src/new_body.tmpl.html
+// tmpl file list:
+// page/src/main.tmpl.html
+// page/src/new.tmpl.html
+// page/src/new_body.tmpl.html
 define(function(require, exports, module) {
-    var tmpl = { 
+    var tmpl = {
         'encodeHtml': function(s) {
-            return (s+'').replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
-                return '&#'+$0.charCodeAt(0)+';';
+            return (String(s)).replace(/[\x26\x3c\x3e\x27\x22\x60]/g, function($0) {
+                return '&#' + $0.charCodeAt(0) + ';';
             });
         },
 
         'new_main': function(data) {
 
-            let __p=[], _p=function(s) {
+            let __p = [],
+                _p = function(s) {
                     __p.push(s);
-                }, out=_p;
+                },
+                out = _p;
 
             data = data || {};
 
@@ -28,14 +30,14 @@ define(function(require, exports, module) {
             __p.push('" />\n        <meta itemprop="name" content="');
             _p(tmpl.encodeHtml(head.share_name || ''));
             __p.push('">');
-            if(head.share_image) {
+            if (head.share_image) {
                 __p.push('        <meta itemprop="image" content="');
-                _p( head.share_image );
+                _p(head.share_image);
                 __p.push('">');
             }__p.push('        <meta name="robots" content="none" />\n        <meta name="format-detection" content="telephone=no" />\n        <meta name="HandheldFriendly" content="True" />\n        <meta name="MobileOptimized" content="320" />\n        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n        <meta name="x5-fast-scroller" content="disable" />\n        <meta name="apple-mobile-web-app-status-bar-style" content="black" />\n        <link rel="stylesheet" type="text/css" href="/static/tsw/styles/semantic-ui/dist/semantic.min.css">\n        <link rel="stylesheet" type="text/css" href="/static/tsw/styles/semantic-ui/stylesheets/docs.css">\n    </head>\n<body id="example">');
-            if(body === undefined || body === null || body =='') {
+            if (body === undefined || body === null || body == '') {
                 __p.push('<p style="height: 200px; line-height: 200px;text-align: center;font-size: 14px;color: #666">加载中，请稍候...</p>');
-            }else{
+            } else {
                 _p(body);
             }__p.push('</body>\n</html>');
 
@@ -44,15 +46,17 @@ define(function(require, exports, module) {
 
         'new_header': function(data) {
 
-            let __p=[], _p=function(s) {
+            let __p = [],
+                _p = function(s) {
                     __p.push(s);
-                }, out=_p;
+                },
+                out = _p;
             __p.push('<style type="text/css">\nhtml{\n    overflow-x: hidden;\n    overflow-y: scroll;\n}\n#header.header{\n    height: 50px;\n    margin: 0 auto;\n    overflow: hidden;\n    background-color: rgba(0,0,0,0.8);\n    *background-color: #000;\n    border-top: 2px solid #F00;\n    z-index: 88;\n    width: 100%;\n    font-size: 16px;\n    box-sizing: border-box;\n}\n\n#header .nav{\n    width: 1100px;\n    margin: 0 auto;\n    padding: 0;\n}\n\n#header .nav li{\n    list-style: none;\n    float: right;\n    display: block;\n    height: 50px;\n    line-height: 50px;\n    overflow: hidden;\n    cursor: pointer;\n}\n\n#header .nav li:hover{\n    background-color: rgba(255,0,0,0.9);\n    color: #fff;\n}\n\n#header .nav li a{\n    display: block;\n    padding: 0 20px;\n    text-decoration: none;\n    color: #FFF;\n    font-family: "Microsoft YaHei";\n}\n\n#header .nav li a:hover,\n#header .nav li a:active{\n    text-decoration: none;\n}\n.tooltips {\n    color: red;\n    text-align: center;\n    background-color: rgba(215, 215, 215, 0.8);\n    border-bottom: 2px solid #fff;\n    position: fixed;\n    top: 50px;\n    z-index: 999;\n    width: 100%;\n}\n</style>\n<div id="header" class="header">\n    <ul class="nav">');
- 
+
             const navMenus = data;
-            if(navMenus && navMenus.length>0) {
-                for(let i=0;i<navMenus.length;i++) {
-                    if(navMenus[i].href && navMenus[i].title) {
+            if (navMenus && navMenus.length > 0) {
+                for (let i = 0; i < navMenus.length; i++) {
+                    if (navMenus[i].href && navMenus[i].title) {
                         __p.push('                    <li><a href="');
                         _p(tmpl.encodeHtml(navMenus[i].href));
                         __p.push('">');
@@ -62,7 +66,7 @@ define(function(require, exports, module) {
                 }
             }
             __p.push('    </ul>\n</div>');
-            if(context.noticeMessage) {
+            if (context.noticeMessage) {
                 __p.push('<div class="tooltips">');
                 _p(context.noticeMessage);
                 __p.push('</div>');
@@ -73,9 +77,11 @@ define(function(require, exports, module) {
 
         'new_body_sync': function(data) {
 
-            let __p=[], _p=function(s) {
-                    __p.push(s); 
-                }, out=_p;
+            let __p = [],
+                _p = function(s) {
+                    __p.push(s);
+                },
+                out = _p;
             __p.push('    ');
             _p(tmpl.new_body(data));
             __p.push('    <scr');
@@ -93,9 +99,11 @@ define(function(require, exports, module) {
 
         'new_body': function(data) {
 
-            let __p=[], _p=function(s) {
-                    __p.push(s); 
-                }, out=_p;
+            let __p = [],
+                _p = function(s) {
+                    __p.push(s);
+                },
+                out = _p;
             __p.push('<div class="ui grid container">\n    <div class="row" style="display:inline;margin-top: 30px">\n        <h1>');
             _p(data.project && data.project.name || 'TSW 测试环境配置');
             __p.push('        </h1>\n        <p>注意：每天0点将清空号码</p>\n    </div>\n    <div class="row">\n        <div class="column">\n            <div x-class="ui raised segment" style="max-height: 400px; overflow-y: auto;">\n                <p class="ui"></p>');
@@ -103,70 +111,70 @@ define(function(require, exports, module) {
 
             data = data.group;
 
-            for(let i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 const item = data[i];
                 const val = item['ip'] + (item['port'] && (':' + item['port']) || '');
-                let name= item['name'];
+                let name = item['name'];
                 let desc = item['desc'];
                 const owner = item['owner'];
                 const module = item['moduleName'];
                 let isShow = false;
-                        
-                if(val && val != '') {
+
+                if (val && val != '') {
                     isShow = true;
                 }
 
-                if(!name) {
-                    if(module && module != '') {
+                if (!name) {
+                    if (module && module != '') {
                         name = module;
-                    }else {
+                    } else {
                         name = val;
                     }
                 }
 
                 let isShowDesc = false;
-                if(desc && desc != '') {
-                    if(owner && owner != '') {
+                if (desc && desc != '') {
+                    if (owner && owner != '') {
                         desc += '，负责人：' + owner;
                     }
-                }else {
+                } else {
                     desc = '';
-                    if(owner && owner != '') {
+                    if (owner && owner != '') {
                         desc += '负责人：' + owner;
                     }
                 }
-                if(desc && desc !='') {
+                if (desc && desc != '') {
                     isShowDesc = true;
                 }
 
                 __p.push('                    ');
-                if(isShow) {
+                if (isShow) {
                     __p.push('                    <div class="row">\n                        <button title="');
                     _p(val);
                     __p.push('" type="button" value="');
                     _p(val);
                     __p.push('" class="ui button btn  js-select-btn ');
-                    if(i==0) {
+                    if (i == 0) {
                         __p.push(' selected positive ');
                     } __p.push('">');
                     _p(name);
                     __p.push('</button>');
-                    if(/^[0-9.:]+$/.test(val)) {
+                    if (/^[0-9.:]+$/.test(val)) {
                         __p.push('                        <a class="ui tag label" href="http://');
                         _p(val);
                         __p.push('/l5" title="点击修改L5" target="_blank">');
                         _p(val);
                         __p.push('</a>');
-                        if(isShowDesc) {
+                        if (isShowDesc) {
                             __p.push('<a class="ui tag label">');
                             _p(desc);
                             __p.push('</a>');
                         } __p.push('                        ');
-                    }else{
+                    } else {
                         __p.push('                        <a class="ui tag label">');
                         _p(val);
                         __p.push('</a>');
-                        if(isShowDesc) {
+                        if (isShowDesc) {
                             __p.push('<a class="ui tag label">');
                             _p(desc);
                             __p.push('</a>');

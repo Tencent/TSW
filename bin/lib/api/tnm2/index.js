@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -6,6 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+
 
 const serverInfo = require('serverInfo.js');
 const mapping = require('./mapping.json');
@@ -19,14 +20,14 @@ let cache = {
 };
 let isFirstLoad = false;
 
-if(global[__filename]) {
+if (global[__filename]) {
     cache = global[__filename];
-}else{
+} else {
     global[__filename] = cache;
     isFirstLoad = true;
 }
 
-if(isFirstLoad) {
+if (isFirstLoad) {
     cluster.worker && cluster.worker.once('disconnect', function(worker) {
         const logger = require('logger');
         const last = cache.curr;
@@ -55,26 +56,25 @@ this.Attr_API = function (attr, iValue) {
 };
 
 const cacheOrRepoet = function(attr, iValue) {
-    let curr;
 
-    if(!mapping[attr]) {
+    if (!mapping[attr]) {
         return;
     }
 
-    if(!cache.curr[attr]) {
+    if (!cache.curr[attr]) {
         cache.curr[attr] = {
             count: 0,
             sum: 0
         };
     }
 
-    curr = cache.curr[attr];
+    const curr = cache.curr[attr];
     curr.sum += iValue;
     curr.count += 1;
 
     const now = Date.now();
 
-    if(now - cache.time < 60000) {
+    if (now - cache.time < 60000) {
         return;
     }
 
@@ -95,28 +95,28 @@ const reportOpenapi = function(last) {
     const config = require('config');
     let retCall;
 
-    if(typeof config.beforeReportApp === 'function') {
+    if (typeof config.beforeReportApp === 'function') {
         retCall = config.beforeReportApp(last);
     }
 
-    //阻止默认上报
-    if(retCall === false) {
+    // 阻止默认上报
+    if (retCall === false) {
         return defer.resolve();
     }
 
-    if(config.isTest) {
+    if (config.isTest) {
         return defer.resolve();
     }
 
-    if(config.devMode) {
+    if (config.devMode) {
         return defer.resolve();
     }
 
-    if(!config.appid || !config.appkey) {
+    if (!config.appid || !config.appkey) {
         return defer.resolve();
     }
 
-    if(!config.appReportUrl) {
+    if (!config.appReportUrl) {
         return defer.resolve();
     }
 
@@ -127,10 +127,10 @@ const reportOpenapi = function(last) {
     });
 
     const postData = {
-        appid   : config.appid,
-        ip      : serverInfo.intranetIp,
-        arr     : arr.join('-'),
-        now     : Date.now()
+        appid: config.appid,
+        ip: serverInfo.intranetIp,
+        arr: arr.join('-'),
+        now: Date.now()
     };
 
     const sig = openapi.signature({
@@ -143,25 +143,25 @@ const reportOpenapi = function(last) {
     postData.sig = sig;
 
     require('ajax').request({
-        url            : config.appReportUrl,
-        type        : 'POST',
-        l5api        : config.tswL5api['openapi.tswjs.org'],
-        dcapi        : {
+        url: config.appReportUrl,
+        type: 'POST',
+        l5api: config.tswL5api['openapi.tswjs.org'],
+        dcapi: {
             key: 'EVENT_TSW_OPENAPI_APP_REPORT'
         },
-        data        : postData,
-        keepAlive    : true,
-        autoToken    : false,
-        dataType    : 'json'
+        data: postData,
+        keepAlive: true,
+        autoToken: false,
+        dataType: 'json'
     }).fail(function() {
         logger.error('app report fail.');
         defer.reject();
     }).done(function(d) {
-        if(d.result) {
-            if(d.result.code === 0) {
+        if (d.result) {
+            if (d.result.code === 0) {
                 logger.debug('app report success.');
                 return defer.resolve();
-            }else{
+            } else {
                 logger.debug('app report fail.');
                 return defer.reject(d.result.code);
             }

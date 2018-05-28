@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,26 +7,27 @@
  */
 'use strict';
 
+
 const config = require('./config.js');
 let base = null;
 
-if(config.skyMode) {
+if (config.skyMode) {
     base = require('default/config.default.sky.js');
-}else if(config.isTest) {
+} else if (config.isTest) {
     base = require('default/config.default.h5test.js');
 }
 
-if(base) {
+if (base) {
     module.exports.find = function(mod_act, req, res) {
         const mod = base.modMap.find(mod_act, req, res);
 
-        if(mod) {
+        if (mod) {
             return mod;
         }
         return config.modMap.find(mod_act, req, res);
     };
 
-}else{
+} else {
     module.exports = config.modMap;
 }
 

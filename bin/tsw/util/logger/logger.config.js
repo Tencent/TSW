@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,14 +7,15 @@
  */
 'use strict';
 
-const {debugOptions} = process.binding('config');
+
+const { debugOptions } = process.binding('config');
 
 this.levelMap = {
-    'debug':10,
-    'info':20,
-    'warn':30,
-    'error':40,
-    'off':50
+    'debug': 10,
+    'info': 20,
+    'warn': 30,
+    'error': 40,
+    'off': 50
 };
 
 this.logLevel = null;
@@ -22,15 +23,15 @@ this.logLevel = null;
 
 this.getLogLevel = function() {
 
-    if(debugOptions && debugOptions.inspectorEnabled) {
+    if (debugOptions && debugOptions.inspectorEnabled) {
         return this.levelMap['debug'];
     }
 
-    if(typeof this.logLevel === 'string') {
+    if (typeof this.logLevel === 'string') {
         this.logLevel = this.levelMap[this.logLevel] || null;
     }
 
-    if(this.logLevel !== null) {
+    if (this.logLevel !== null) {
         return this.logLevel;
     }
 
@@ -38,10 +39,10 @@ this.getLogLevel = function() {
 
     const config = require('config.js');
 
-    if(config.logger) {
-        if(typeof config.logger.logLevel === 'number') {
+    if (config.logger) {
+        if (typeof config.logger.logLevel === 'number') {
             this.logLevel = config.logger.logLevel;
-        }else{
+        } else {
             this.logLevel = this.levelMap[config.logger.logLevel] || this.logLevel;
         }
 

@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -6,6 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+
 
 /**
  * 测试环境自动发现
@@ -21,30 +22,30 @@ const isWindows = require('util/isWindows.js');
 
 
 this.report = function() {
-    
-    if(isWindows.isWindows) {
+
+    if (isWindows.isWindows) {
         return;
     }
 
-    if(!config.isTest) {
+    if (!config.isTest) {
         return;
     }
 
     const logText = `${serverInfo.intranetIp}:${config.httpPort}`;
     let logJson = {
-        ip        : serverInfo.intranetIp,
-        port    : config.httpPort
+        ip: serverInfo.intranetIp,
+        port: config.httpPort
     };
 
     require('api/cmdb').GetDeviceThisServer().done(function(d) {
 
         let business;
 
-        if(d && d.business) {
+        if (d && d.business) {
             business = d.business[0];
         }
 
-        if(!business) {
+        if (!business) {
             business = {
                 moduleId: 0,
                 L1Business: '未知',
@@ -58,80 +59,80 @@ this.report = function() {
         logJson.moduleName = [business.L1Business, business.L2Business, business.L3Business, business.module].join('->');
 
         logJson = Deferred.extend(true, {
-            time    : new Date().toGMTString(),
-            name    : '',
-            group    : 'unknown',
-            desc    : '',
-            order    : 0,
-            owner    : ''
+            time: new Date().toGMTString(),
+            name: '',
+            group: 'unknown',
+            desc: '',
+            order: 0,
+            owner: ''
         }, config.testInfo, logJson);
 
         const logKey = 'h5test' + logJson.group;
 
-        //上报自己
+        // 上报自己
         post.report(logKey, logText, logJson);
 
-        //开放平台上报，不用再分组了
-        if(config.appid && config.appkey) {
+        // 开放平台上报，不用再分组了
+        if (config.appid && config.appkey) {
             logReport.reportCloud({
-                type        : 'alpha',
-                logText        : logText,
-                logJson        : logJson,
-                key            : 'h5test',
-                group        : 'tsw',
-                mod_act        : 'h5test',
-                ua             : '',
-                userip         : '',
-                host        : '',
-                pathname    : '',
-                statusCode    : ''
+                type: 'alpha',
+                logText: logText,
+                logJson: logJson,
+                key: 'h5test',
+                group: 'tsw',
+                mod_act: 'h5test',
+                ua: '',
+                userip: '',
+                host: '',
+                pathname: '',
+                statusCode: ''
             });
         }
 
-        //上报分组
+        // 上报分组
         require('util/CD.js').check('h5test' + logJson.group, 1, 60).done(function() {
             post.report('group.h5test', logText, logJson);
         });
 
     });
-        
+
 };
 
 
 this.list = function(group) {
-    
+
     const defer = Deferred.create();
     let getLogJsonDefer;
 
     group = group || '';
 
-    //开平对应的存储
-    if(context.appid && context.appkey) {
+    // 开平对应的存储
+    if (context.appid && context.appkey) {
         getLogJsonDefer = postOpenapi.getLogJson(`${context.appid}/tsw/h5test`);
-    }else{
+    } else {
         getLogJsonDefer = post.getLogJson(`h5test${group}`);
     }
 
     getLogJsonDefer.done(function(arr) {
-        
+
         const res = [];
         const map = {};
-        
+
         arr.forEach(function(v) {
-            if(!map[v.ip]) {
+            if (!map[v.ip]) {
                 map[v.ip] = true;
                 res.push(v);
             }
         });
 
-        //增加一个临时染色
+        // 增加一个临时染色
         res.push({
             time: new Date(),
             name: '临时染色',
             group: 'TSW',
             desc: '人在家中坐，包从天上来',
             order: -65536,
-            //owner: "TSW",
+            // owner: "TSW",
             groupName: group,
             ip: 'alpha',
             moduleId: 0,
@@ -144,7 +145,7 @@ this.list = function(group) {
 
         defer.resolve(res);
     });
-    
+
     return defer;
 };
 
@@ -159,7 +160,7 @@ this.getAllGroup = function() {
         const map = {};
 
         arr.forEach(function(v) {
-            if(!map[v.group]) {
+            if (!map[v.group]) {
                 map[v.group] = true;
                 res.push(v);
             }
