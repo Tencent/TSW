@@ -6,6 +6,8 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+const os = require('os');
+const mpc = Math.round(os.totalmem() / os.cpus().length / 1024 / 1024 / 1024);
 
 
 this.defaultConfigLoadFrom = __filename;
@@ -72,14 +74,14 @@ this.workerUid = 'nobody';
 
 // mod_act映射
 this.modAct = {
-    getModAct: function(req) {
+    getModAct: function (req) {
         return null;
     }
 };
 
 // 路由
 this.modMap = {
-    find: function(mod_act, req, res) {
+    find: function (mod_act, req, res) {
         return null;
     }
 };
@@ -99,7 +101,7 @@ this.logger = {
 this.cpuLimit = 85;
 
 // 内存限制
-this.memoryLimit = 768 * 1024 * 1024;
+this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 2 : 1);
 
 // 限制
 this.CCIPLimit = 500;
@@ -122,7 +124,8 @@ this.timeout = {
 
 
 this.extendMod = {
-    getUin: req => {}
+    getUin: req => {
+    }
 };
 
 // openapi
