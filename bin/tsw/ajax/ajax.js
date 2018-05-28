@@ -1072,7 +1072,6 @@ Ajax.prototype.doRequest = function(opt) {
 
                         require('util/mail/mail.js').SendMail(key, 'js data', 1800, {
                             'Title'            : key,
-                            'runtimeType'    : 'ParseError',
                             'Content'        : Content,
                             'MsgInfo'        : '错误堆栈:\n' + parseErr.stack
                         });
