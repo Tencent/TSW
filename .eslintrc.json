@@ -109,6 +109,10 @@
         ],
         "max-depth": [
             "off"
+        ],
+        "strict": [
+            "error",
+            "safe"
         ]
     },
     "overrides": [

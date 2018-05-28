@@ -495,7 +495,7 @@ function getToBindCpu(worker) {
     let cpu = 0;// 如果只有一个cpu或者都占用了
     let i;
 
-    if (typeof worker.cpuid === 'undefined') {
+    if (typeof worker.cpuid !== 'undefined') {
         cpu = worker.cpuid;
         return cpu;
     } else {

@@ -32,7 +32,7 @@ this.create = this.getGzipResponse = function(opt) {
 
     let gzipOutputStream;
 
-    if (headers && (typeof headers['content-length'] === 'undefined')) {
+    if (headers && (typeof headers['content-length'] !== 'undefined')) {
         response.useChunkedEncodingByDefault = false;
         delete headers['transfer-encoding'];
         delete headers['content-length'];
