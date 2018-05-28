@@ -1,11 +1,11 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
+
 
 const logger = require('logger');
 const gzipHttp = require('util/gzipHttp.js');
@@ -42,32 +42,32 @@ module.exports.go = function(request, response) {
     const limit = ~~context.limit || 64;
     let currPost = post;
 
-    if(appid) {
+    if (appid) {
         currPost = postOpenapi;
         groupKey = `${appid}/v2.group.alpha`;
     }
 
-    if(!key) {
+    if (!key) {
         key = group;
         group = '';
     }
 
-    if(!canIuse.test(appid)) {
+    if (!canIuse.test(appid)) {
         return returnError('appid格式非法');
     }
 
-    if(!canIuse.test(group)) {
+    if (!canIuse.test(group)) {
         return returnError('group格式非法');
     }
 
-    if(!canIuse.test(key)) {
+    if (!canIuse.test(key)) {
         return returnError('key格式非法');
     }
 
     const createLogKey = function(appid, group, key) {
         let logKey = key;
 
-        if(group) {
+        if (group) {
             logKey = `${group}/${logKey}`;
         }
 
@@ -76,11 +76,11 @@ module.exports.go = function(request, response) {
 
     let logKey = createLogKey(appid, group, key);
 
-    if(appid) {
+    if (appid) {
         logKey = `${appid}/${logKey}`;
     }
 
-    //上下文设置
+    // 上下文设置
     context.group = group;
     context.limit = limit;
     context.key = key;
@@ -91,13 +91,13 @@ module.exports.go = function(request, response) {
     let logCount = 0;
     let logKeyCount = 0;
     const logNumMax = context.MAX_ALPHA_LOG || MAX_ALPHA_LOG;
-    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24, 10);
 
     logger.debug('logKey :${logKey}', {
         logKey: logKey
     });
 
-    if(request.GET.type === 'json') {
+    if (request.GET.type === 'json') {
         currPost.getLogJson(logKey, limit).done(function(logArr) {
             const gzipResponse = gzipHttp.getGzipResponse({
                 request: request,
@@ -108,12 +108,12 @@ module.exports.go = function(request, response) {
 
             gzipResponse.end(JSON.stringify(logArr, null, 2));
         });
-    }else{
+    } else {
         CD.curr(`SUM_TSW_ALPHA_LOG_KEY.${currDays}`, logNumMax, 24 * 60 * 60).done(function(count) {
-            logKeyCount = ~~ count;
+            logKeyCount = ~~count;
         }).always(function() {
             CD.curr(`SUM_TSW_ALPHA_LOG.${currDays}`, logNumMax * logNumMax * logNumMax, 24 * 60 * 60).done(function(count) {
-                logCount = ~~ count;
+                logCount = ~~count;
             }).always(function() {
                 currPost.getLog(logKey, limit).done(function(logArr) {
                     currPost.getLog(groupKey, limit).done(function(groupArr) {
@@ -124,17 +124,17 @@ module.exports.go = function(request, response) {
                             logCount: logCount,
                             logArr: logArr,
                             groupArr: groupArr,
-                            //也代表顺序
-                            nameMap : {
-                                html    : 'html',
-                                XHR        : 'XHR',
-                                js        : 'js',
-                                image    : 'image',
-                                css        : 'css',
-                                webapp  : 'webapp',
-                                websocket : 'websocket',
-                                tsw        : 'tsw',
-                                font    : '字体'
+                            // 也代表顺序
+                            nameMap: {
+                                html: 'html',
+                                XHR: 'XHR',
+                                js: 'js',
+                                image: 'image',
+                                css: 'css',
+                                webapp: 'webapp',
+                                websocket: 'websocket',
+                                tsw: 'tsw',
+                                font: '字体'
                             }
                         });
 

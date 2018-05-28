@@ -1,20 +1,20 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
+
 
 const os = require('os');
 const fs = require('fs');
 const cp = require('child_process');
-const {isWindows} = require('./isWindows.js');
+const { isWindows } = require('./isWindows.js');
 const logger = require('logger');
 let cache;
 
-if(!global[__filename]) {
+if (!global[__filename]) {
     cache = {
         time: 0,
         total: 0,
@@ -22,7 +22,7 @@ if(!global[__filename]) {
         curr: 0
     };
     global[__filename] = cache;
-}else{
+} else {
     cache = {
         time: 0,
         total: 0,
@@ -38,23 +38,23 @@ this.getCpuUsed = function(cpu) {
 
     cpu = cpu || '';
 
-    if(isWindows) {
+    if (isWindows) {
         return cache.curr;
     }
 
-    if(now - cache.time < 3000) {
+    if (now - cache.time < 3000) {
         return cache.curr;
     }
 
     cache.time = now;
 
-    if(typeof cpu !== 'number') {
+    if (typeof cpu !== 'number') {
         cpu = '';
     }
 
     fs.readFile('/proc/stat', function(err, buffer) {
 
-        if(err) {
+        if (err) {
             /* eslint-disable no-console */
             console.error(err.stack);
             /* eslint-enable no-console */
@@ -65,16 +65,16 @@ this.getCpuUsed = function(cpu) {
         let str = '';
         let arr = [];
 
-        for(let i = 0; i < lines.length; i++) {
-            if(lines[i].startsWith(`cpu${cpu} `)) {
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith(`cpu${cpu} `)) {
                 str = lines[i];
                 break;
             }
         }
 
-        if(str) {
+        if (str) {
             arr = str.split(/\W+/);
-        }else{
+        } else {
             return;
         }
 
@@ -108,7 +108,7 @@ this.cpus = function() {
 
     os.cpus().forEach(function(v) {
 
-        if(v.times && v.times.idle !== 0) {
+        if (v.times && v.times.idle !== 0) {
             res.push(v);
         }
 
@@ -120,16 +120,16 @@ this.cpus = function() {
 
 
 this.taskset = function(oriCpu, pid) {
-    if(isWindows) {
+    if (isWindows) {
         return;
     }
 
-    //绑定CPU
+    // 绑定CPU
     logger.info('taskset -cp ${pid}', {
         pid: pid
     });
 
-    //打印shell执行信息
+    // 打印shell执行信息
     cp.exec(`taskset -cp ${pid}`, {
         timeout: 5000
     }, function(err, data, errData) {
@@ -138,28 +138,28 @@ this.taskset = function(oriCpu, pid) {
         const tmp = str.split(':');
         let cpus;
 
-        if(tmp.length >= 2) {
+        if (tmp.length >= 2) {
             cpus = exports.parseTaskset(tmp[1]);
         }
 
         let cpu = oriCpu;
-        if(cpus.length > 1) {
-            //cpu编号修正
+        if (cpus.length > 1) {
+            // cpu编号修正
             cpu = parseInt(cpus[cpu % cpus.length], 10);
-        }else{
-            //超过cpu编号时，修正
+        } else {
+            // 超过cpu编号时，修正
             cpu = cpu % exports.cpus().length;
         }
 
-        if(err) {
+        if (err) {
             logger.error(err.stack);
         }
 
-        if(data.length) {
+        if (data.length) {
             logger.info('\n' + data.toString('UTF-8'));
         }
 
-        if(errData.length) {
+        if (errData.length) {
             logger.error('\n' + errData.toString('UTF-8'));
         }
 
@@ -171,15 +171,15 @@ this.taskset = function(oriCpu, pid) {
         cp.exec(`taskset -cp ${cpu} ${pid}`, {
             timeout: 5000
         }, function(err, data, errData) {
-            if(err) {
+            if (err) {
                 logger.error(err.stack);
             }
 
-            if(data.length) {
+            if (data.length) {
                 logger.info('\n' + data.toString('UTF-8'));
             }
 
-            if(errData.length) {
+            if (errData.length) {
                 logger.error('\n' + errData.toString('UTF-8'));
             }
         });
@@ -203,11 +203,11 @@ this.parseTaskset = function(str) {
         let end = ~~tmp[1];
         let i;
 
-        if(end < start) {
+        if (end < start) {
             end = start;
         }
 
-        for(i = start; i<=end ;i++) {
+        for (i = start; i <= end; i++) {
             res.push(i);
         }
     });
@@ -215,7 +215,7 @@ this.parseTaskset = function(str) {
     return res;
 };
 
-if(process.mainModule === module) {
+if (process.mainModule === module) {
     setInterval(function() {
         /* eslint-disable no-console */
         console.log('cpu: ' + module.exports.getCpuUsed());

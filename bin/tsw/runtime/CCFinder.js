@@ -1,11 +1,11 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
+
 
 const config = require('config');
 const logger = require('logger');
@@ -14,8 +14,8 @@ const serverInfo = require('serverInfo.js');
 const isTST = require('util/isTST.js');
 const mail = require('util/mail/mail.js');
 const tnm2 = require('api/tnm2');
-const CCIPSize = 1000;                        //统计周期
-const CCIPLimit = config.CCIPLimit;            //限制
+const CCIPSize = 1000;                        // 统计周期
+const CCIPLimit = config.CCIPLimit;            // 限制
 let ipConut = CCIPSize;
 let cache = {
     ipCache: {},
@@ -23,9 +23,9 @@ let cache = {
     ipCacheLast: {}
 };
 
-if(global[__filename]) {
+if (global[__filename]) {
     cache = global[__filename];
-}else{
+} else {
     global[__filename] = cache;
 }
 
@@ -37,25 +37,27 @@ this.checkHost = function(req, res) {
 
     const hostAllow = config.allowHost || [];
     const host = req.headers['host'];
-    let i, len, v;
+    let i,
+        len,
+        v;
 
-    if(hostAllow.length === 0) {
+    if (hostAllow.length === 0) {
         return true;
     }
 
-    if(host === serverInfo.intranetIp) {
+    if (host === serverInfo.intranetIp) {
         return true;
     }
 
-    for( i = 0, len = hostAllow.length; i < len; i++) {
+    for (i = 0, len = hostAllow.length; i < len; i++) {
         v = hostAllow[i];
 
-        if(typeof v === 'string') {
-            if(v === host) {
+        if (typeof v === 'string') {
+            if (v === host) {
                 return true;
             }
-        }else if(typeof v === 'object') {
-            if(v.test && v.test(host)) {
+        } else if (typeof v === 'object') {
+            if (v.test && v.test(host)) {
                 return true;
             }
         }
@@ -70,7 +72,7 @@ this.checkHost = function(req, res) {
     return false;
 };
 
-//计算标准方差
+// 计算标准方差
 this.StdX10 = function(ipCache) {
 
     let res = 0;
@@ -78,14 +80,14 @@ this.StdX10 = function(ipCache) {
     let avg = 0;
     const arr = Object.keys(ipCache).filter(function(item) {
         const tmp = ipCache[item];
-        if(typeof tmp === 'object' && tmp.list) {
+        if (typeof tmp === 'object' && tmp.list) {
             sum += tmp.list.length;
             return true;
         }
         return false;
     });
 
-    if(arr.length <= 1) {
+    if (arr.length <= 1) {
         return 0;
     }
 
@@ -96,10 +98,10 @@ this.StdX10 = function(ipCache) {
         const value = item.list.length;
         item.avg = avg;
 
-        return pre + (value - avg)*(value - avg);
+        return pre + (value - avg) * (value - avg);
     }, 0);
 
-    res = parseInt(Math.sqrt(sumXsum / (arr.length - 1)) * 10);
+    res = parseInt(Math.sqrt(sumXsum / (arr.length - 1)) * 10, 10);
 
     return res;
 };
@@ -108,96 +110,97 @@ this.check = function(req, res) {
 
     const userIp = httpUtil.getUserIp(req);
     const userIp24 = httpUtil.getUserIp24(req);
-    let key, Content, curr;
+
+    let Content;
 
     const info = {
-        userIp        : userIp,
-        hostname    : req.headers.host,
-        pathname    : req.REQUEST.pathname
+        userIp: userIp,
+        hostname: req.headers.host,
+        pathname: req.REQUEST.pathname
     };
 
-    if(cache.whiteList[userIp]) {
+    if (cache.whiteList[userIp]) {
         return true;
     }
 
-    if(cache.whiteList[userIp24]) {
+    if (cache.whiteList[userIp24]) {
         return true;
     }
 
-    //忽略TST请求
-    if(isTST.isTST(req)) {
+    // 忽略TST请求
+    if (isTST.isTST(req)) {
         return true;
     }
 
-    if(!cache.ipCache.start) {
+    if (!cache.ipCache.start) {
         cache.ipCache.start = Date.now();
     }
-    
+
     ipConut = ipConut - 1;
-    
-    if(ipConut <= 0) {
+
+    if (ipConut <= 0) {
         ipConut = CCIPSize;
         cache.ipCache.end = Date.now();
-        cache.ipCache.StdX10= this.StdX10(cache.ipCache);
+        cache.ipCache.StdX10 = this.StdX10(cache.ipCache);
         cache.ipCacheLast = cache.ipCache;
         cache.ipCache = {};
         cache.whiteList = {};
 
-        //上报标准方差
+        // 上报标准方差
         tnm2.Attr_API_Set('AVG_TSW_IP_STD_X10', cache.ipCacheLast.StdX10);
     }
 
-    if(Date.now() - cache.ipCache.start > 60000) {
-        //时间太长
+    if (Date.now() - cache.ipCache.start > 60000) {
+        // 时间太长
         ipConut = 0;
         return true;
     }
-    
-    if(!cache.ipCache[userIp]) {
+
+    if (!cache.ipCache[userIp]) {
         cache.ipCache[userIp] = {
             ip007Info: null,
             isSendMail: false,
             list: []
         };
     }
-    
-    curr = cache.ipCache[userIp];
-    
+
+    const curr = cache.ipCache[userIp];
+
     curr.list.push(info);
 
-    if(CCIPLimit <= -1) {
+    if (CCIPLimit <= -1) {
         return true;
     }
 
-    if(config.isTest) {
-        //测试环境
-        return true;
-    }
-    
-    if(config.devMode) {
-        //开发环境
+    if (config.isTest) {
+        // 测试环境
         return true;
     }
 
-    if(!cache.ipCacheLast.StdX10) {
-        return true;
-    }
-    
-    if(cache.ipCacheLast.StdX10 <= CCIPLimit) {
+    if (config.devMode) {
+        // 开发环境
         return true;
     }
 
-    if(cache.ipCacheLast.hasSendMail) {
+    if (!cache.ipCacheLast.StdX10) {
         return true;
     }
 
-    //tnm2.Attr_API('SUM_TSW_CC_LIMIT', 1);
+    if (cache.ipCacheLast.StdX10 <= CCIPLimit) {
+        return true;
+    }
 
-    //确认没发送过邮件
+    if (cache.ipCacheLast.hasSendMail) {
+        return true;
+    }
+
+    // tnm2.Attr_API('SUM_TSW_CC_LIMIT', 1);
+
+    // 确认没发送过邮件
     cache.ipCacheLast.hasSendMail = true;
 
-    //发现目标，发邮件
-    key = `[AVG_TSW_IP_STD_X10]:${serverInfo.intranetIp}`;
+    // 发现目标，发邮件
+    const key = `[AVG_TSW_IP_STD_X10]:${serverInfo.intranetIp}`;
 
     Content = '';
 
@@ -205,26 +208,26 @@ this.check = function(req, res) {
 
         let num = '';
 
-        if(
+        if (
             cache.ipCacheLast[ip]
             && cache.ipCacheLast[ip].list
             && cache.ipCacheLast[ip].list.length > 1
         ) {
-            num = '' + cache.ipCacheLast[ip].list.length;
+            num = String(cache.ipCacheLast[ip].list.length);
             num = (num + 'XXXXXX').slice(0, 8).replace(/X/g, '&nbsp;');
             Content += `<div style="font-size:12px;">${num}${ip}</div>`;
         }
     });
 
     mail.SendMail(key, 'TSW', 3600, {
-        'To'            : config.mailTo,
-        'CC'            : config.mailCC,
-        'Title'            : `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
-        'Content'        : '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
+        'To': config.mailTo,
+        'CC': config.mailCC,
+        'Title': `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
+        'Content': '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
                         + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
                         + '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
                         + '<p><strong>正常值：</strong>5-50</p>'
-                        + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start)/1000) + 's</p>'
+                        + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10) + 's</p>'
                         + '<p><strong>证据列表：</strong></p>'
                         + Content
     });

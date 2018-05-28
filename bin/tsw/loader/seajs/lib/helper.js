@@ -51,10 +51,12 @@ exports.readFile = function(uri, callback) {
 
     connect.get(options, function(res) {
         if (res.statusCode !== 200) {
-            throw 'Error: No data received from ' + uri;
+            throw 'Error: No data received from ' + uri;        // eslint-disable-line no-throw-literal
         }
 
-        let ret = [], length = 0;
+        const ret = [];
+
+        let length = 0;
 
         res.on('data', function(chunk) {
             length += chunk.length;
@@ -62,7 +64,9 @@ exports.readFile = function(uri, callback) {
         });
 
         callback && res.on('end', function() {
-            let buf = Buffer.alloc(length), index = 0;
+            const buf = Buffer.alloc(length);
+
+            let index = 0;
 
             ret.forEach(function(chunk) {
                 chunk.copy(buf, index, 0, chunk.length);

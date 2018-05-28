@@ -1,11 +1,11 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
+
 
 const zlib = require('zlib');
 const logger = require('logger');
@@ -19,19 +19,20 @@ this.create = this.getGzipResponse = function(opt) {
     opt = opt || {};
     const window = context.window || {};
     const request = opt.request || window.request;
-    const response = opt.response ||window.response;
+    const response = opt.response || window.response;
 
-    if(!request || !response || response.headersSent) {
-        return {write:()=>{}, end:()=>{}, flush:()=>{}};
+    if (!request || !response || response.headersSent) {
+        return { write: () => {}, end: () => {}, flush: () => {} };
     }
 
-    let code = opt.code || 200,
+    const code = opt.code || 200,
         headers = opt.headers || null,
         chunkSize = opt.chunkSize || defaultChunkSize,
-        contentType = opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8',
-        gzipOutputStream;
+        contentType = opt.contentType || (headers && headers['content-type']) || 'text/html; charset=UTF-8';
 
-    if(headers && headers['content-length'] !== undefined) {
+    let gzipOutputStream;
+
+    if (headers && (typeof headers['content-length'] === 'undefined')) {
         response.useChunkedEncodingByDefault = false;
         delete headers['transfer-encoding'];
         delete headers['content-length'];
@@ -40,7 +41,7 @@ this.create = this.getGzipResponse = function(opt) {
 
     response.setHeader('Content-Type', contentType);
 
-    if(/\bgzip\b/.test(request.headers['accept-encoding'])) {
+    if (/\bgzip\b/.test(request.headers['accept-encoding'])) {
 
         response.setHeader('Content-Encoding', 'gzip');
         response.writeHead(code, headers);
@@ -55,7 +56,7 @@ this.create = this.getGzipResponse = function(opt) {
                 len: buffer.length
             });
 
-            if(!response.finished) {
+            if (!response.finished) {
                 response.write(buffer);
             }
         });
@@ -66,7 +67,7 @@ this.create = this.getGzipResponse = function(opt) {
 
         return gzipOutputStream;
 
-    }else{
+    } else {
 
         response.writeHead(code, headers);
 
@@ -76,13 +77,13 @@ this.create = this.getGzipResponse = function(opt) {
             });
         });
 
-        if(!response.flush) {
+        if (!response.flush) {
             response.flush = function() {
                 return true;
             };
         }
 
-        if(response.flush && response.flushHeaders) {
+        if (response.flush && response.flushHeaders) {
             response.flush = function() {
                 return true;
             };

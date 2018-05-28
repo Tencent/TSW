@@ -1,11 +1,11 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
+
 
 const cluster = require('cluster');
 const logger = require('logger');
@@ -21,7 +21,7 @@ const fileCache = require('api/fileCache');
 const openapi = require('util/openapi');
 let isFirstLoad = false;
 
-//以下是提高稳定性用的
+// 以下是提高稳定性用的
 function getFileCacheKey(project, key) {
     let cacheFilename = [project, key.replace(/\?.+$/, '')].join('/');
 
@@ -38,52 +38,52 @@ function updateFileCache(project, key, text) {
     text = text || JSON.stringify({});
     const cacheFilename = getFileCacheKey(project, key);
 
-    //保存到文件
+    // 保存到文件
     fileCache.set(cacheFilename, Buffer.from(text, 'UTF-8'));
 }
 
-//监听restart事件
-if(!global[ __filename + '.restart']) {
-    global[ __filename + '.restart'] = true;
+// 监听restart事件
+if (!global[__filename + '.restart']) {
+    global[__filename + '.restart'] = true;
     isFirstLoad = true;
 }
 
-if(isFirstLoad) {
+if (isFirstLoad) {
     cluster.worker && cluster.worker.once('disconnect', function(worker) {
         logger.info('save h5test on disconnect event...');
         onDisconnect('restart');
     });
 }
 
-function onDisconnect (type) {
+function onDisconnect(type) {
     type = type || 'restart';
-    if(global[__filename]) {
-        //有数据才fileCache
-        try{
+    if (global[__filename]) {
+        // 有数据才fileCache
+        try {
             updateFileCache('h5test', 'test.user.list', JSON.stringify(global[__filename]));
-        }catch(e) {
-            //依然谨慎
+        } catch (e) {
+            // 依然谨慎
         }
     }
 
 }
 
-//提高稳定性结束
+// 提高稳定性结束
 
-//1分钟从memcache中更新一次足够了
+// 1分钟从memcache中更新一次足够了
 const getTimeout = 60000;
 let lastUpdateTime = 0;
 
-//获取测试用户
+// 获取测试用户
 const getTestUserMap = function() {
 
-    //看下fileCache里面有没有
-    if(!global[__filename]) {
-        //进入这个逻辑，是worker restart后的一分钟内的[第一次]，从硬盘同步数据过来；一旦取到数据之后，这里将不再执行
+    // 看下fileCache里面有没有
+    if (!global[__filename]) {
+        // 进入这个逻辑，是worker restart后的一分钟内的[第一次]，从硬盘同步数据过来；一旦取到数据之后，这里将不再执行
         global[__filename] = module.exports.getTestUserMapFromFileCache() || {};
     }
 
-    if(Date.now() - lastUpdateTime > getTimeout || isWindows.isWindows) {
+    if (Date.now() - lastUpdateTime > getTimeout || isWindows.isWindows) {
         lastUpdateTime = Date.now();
         syncFromMemcachedOrCloud();
     }
@@ -92,7 +92,7 @@ const getTestUserMap = function() {
 };
 
 const syncFromMemcachedOrCloud = function() {
-    if(config.appid && config.appkey) {
+    if (config.appid && config.appkey) {
         return syncFromCloud();
     }
 
@@ -101,48 +101,48 @@ const syncFromMemcachedOrCloud = function() {
 
 const syncFromMemcached = function() {
 
-    //从内存中读取testTargetMap
+    // 从内存中读取testTargetMap
     const memcached = module.exports.cmem();
     const keyText = module.exports.keyBitmap();
 
-    if(!memcached) {
+    if (!memcached) {
         return;
     }
 
     memcached.get(keyText, function(err, data) {
-        if(err) {
+        if (err) {
             logger.error('memcache get error:' + err);
             data = {};
         }
-        if(data === true) {
+        if (data === true) {
             logger.error('memcache get data true');
             data = {};
         }
 
         global[__filename] = data || {};
 
-        //加到白名单里
+        // 加到白名单里
         alpha.update(global[__filename]);
 
-        //服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
-        if(isWindows.isWindows) {
+        // 服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
+        if (isWindows.isWindows) {
             onDisconnect('test.in.windows');
         }
     });
 };
 
-//从云端同步
+// 从云端同步
 const syncFromCloud = function(merge) {
 
-    if(!config.appid) {
+    if (!config.appid) {
         return;
     }
 
-    if(!config.appkey) {
+    if (!config.appkey) {
         return;
     }
 
-    if(!config.h5testSyncUrl) {
+    if (!config.h5testSyncUrl) {
         return;
     }
 
@@ -161,42 +161,42 @@ const syncFromCloud = function(merge) {
     postData.sig = sig;
 
     ajax.request({
-        url            : config.h5testSyncUrl,
-        type        : 'POST',
-        l5api        : config.tswL5api['openapi.tswjs.org'],
-        dcapi        : {
+        url: config.h5testSyncUrl,
+        type: 'POST',
+        l5api: config.tswL5api['openapi.tswjs.org'],
+        dcapi: {
             key: 'EVENT_TSW_OPENAPI_H5TEST_SYNC'
         },
-        data        : postData,
-        keepAlive    : true,
-        autoToken    : false,
-        dataType    : 'json'
+        data: postData,
+        keepAlive: true,
+        autoToken: false,
+        dataType: 'json'
     }).fail(function() {
         logger.error('syncFromCloud fail.');
-        if(merge === 'merge') {
+        if (merge === 'merge') {
             return;
         }
         global[__filename] = {};
     }).done(function(d) {
         let data = null;
-        if(d.result && d.result.code === 0) {
+        if (d.result && d.result.code === 0) {
             data = d.result.data || {};
         }
 
-        if(merge === 'merge') {
-            //追加
+        if (merge === 'merge') {
+            // 追加
             global[__filename] = global[__filename] || {};
             Object.assign(global[__filename], data);
-        }else{
-            //覆盖
+        } else {
+            // 覆盖
             global[__filename] = data || {};
         }
 
-        //加到白名单里
+        // 加到白名单里
         alpha.update(global[__filename]);
 
-        //服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
-        if(isWindows.isWindows) {
+        // 服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
+        if (isWindows.isWindows) {
             onDisconnect('test.in.windows');
         }
 
@@ -204,28 +204,28 @@ const syncFromCloud = function(merge) {
     });
 };
 
-//是否命中测试环境
+// 是否命中测试环境
 module.exports.getTestSpaceInfo = function(req) {
-    //windows版本，更不用转
-    if(isWindows.isWindows) {
+    // windows版本，更不用转
+    if (isWindows.isWindows) {
         return;
     }
 
-    //安全中心请求，也不用转了~
-    if(isTST.isTST(req)) {
+    // 安全中心请求，也不用转了~
+    if (isTST.isTST(req)) {
         return;
     }
 
-    //配置不转发H5测试环境
-    if(config.isForwardH5test && config.isForwardH5test(req) === false) {
+    // 配置不转发H5测试环境
+    if (config.isForwardH5test && config.isForwardH5test(req) === false) {
         return;
     }
 
-    //测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
+    // 测试环境虽然不用转发，但是还是需要通过拉取名单来触发更新本地名单
     const testTargetMap = getTestUserMap();
 
-    //如果已经是测试环境，就不用转发了
-    if(config.isTest) {
+    // 如果已经是测试环境，就不用转发了
+    if (config.isTest) {
         return;
     }
 
@@ -233,23 +233,23 @@ module.exports.getTestSpaceInfo = function(req) {
     let testIp = '';
     let testPort = 80;
 
-    if(
+    if (
         uin
         && testTargetMap
         && testTargetMap[uin]
         && typeof testTargetMap[uin] === 'string'
-        && testTargetMap[uin].split('.').length == 4
+        && testTargetMap[uin].split('.').length === 4
     ) {
         testIp = testTargetMap[uin];
 
         const arr = testIp.split(':');
 
-        if(arr.length === 2) {
+        if (arr.length === 2) {
             testIp = arr[0];
             testPort = ~~arr[1];
         }
 
-        if(serverInfo.intranetIp === testIp) {
+        if (serverInfo.intranetIp === testIp) {
             return;
         }
 
@@ -263,12 +263,12 @@ module.exports.getTestSpaceInfo = function(req) {
 };
 
 
-//是否命中测试环境
-//命中则直接转发请求，return true;不命中则return false
+// 是否命中测试环境
+// 命中则直接转发请求，return true;不命中则return false
 module.exports.isTestUser = function(req, res) {
     const testSpaceInfo = module.exports.getTestSpaceInfo(req);
 
-    if(!testSpaceInfo) {
+    if (!testSpaceInfo) {
         return false;
     }
 
@@ -276,7 +276,7 @@ module.exports.isTestUser = function(req, res) {
     let timeout = config.timeout[req.method.toLowerCase()] || config.timeout.get;
     const testPort = testSpaceInfo.testPort || 80;
     const testIp = testSpaceInfo.testIp || '';
-    timeout = parseInt(timeout * 0.8);
+    timeout = parseInt(timeout * 0.8, 10);
 
     logger.debug('isTestUser...');
     logger.setGroup('h5test');
@@ -284,24 +284,24 @@ module.exports.isTestUser = function(req, res) {
     context.mod_act = 'h5_test';
 
     ajax.proxy(req, res).request({
-        url         : reqUrl,
-        type        : req.method,
-        dataType    : 'proxy',
-        timeout        : timeout,
-        retry        : 0,        //不重试
-        devIp         : testIp,
-        devPort        : testPort,
-        ip            : testIp,
-        port        : testPort,
-        //关闭自动补token逻辑，安全第一
-        autoToken    : false,
-        headers        : {
-            'isTestUser' : 'true'
-            //后台不支持https开头的origin，把origin置空
-            //"origin": ""  发给node不需要这个
+        url: reqUrl,
+        type: req.method,
+        dataType: 'proxy',
+        timeout: timeout,
+        retry: 0,        // 不重试
+        devIp: testIp,
+        devPort: testPort,
+        ip: testIp,
+        port: testPort,
+        // 关闭自动补token逻辑，安全第一
+        autoToken: false,
+        headers: {
+            'isTestUser': 'true'
+            // 后台不支持https开头的origin，把origin置空
+            // "origin": ""  发给node不需要这个
         },
-        dcapi        :{
-            key        : 'EVENT_TSW_HTTP_H5_TEST'
+        dcapi: {
+            key: 'EVENT_TSW_HTTP_H5_TEST'
         }
     }).done(function(d) {
     }).fail(function(d) {
@@ -314,18 +314,18 @@ module.exports.isTestUser = function(req, res) {
     return true;
 };
 
-//cmem对象
+// cmem对象
 module.exports.cmem = function() {
     return cmemTSW.h5test();
 };
 
-//uin对应的存储key，每天一变
+// uin对应的存储key，每天一变
 module.exports.keyBitmap = function(uin) {
-    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24);
+    const currDays = parseInt(Date.now() / 1000 / 60 / 60 / 24, 10);
     return 'bitmap.h5.test.' + currDays;
 };
 
-//getTestUser for jest
+// getTestUser for jest
 module.exports.getTestUserMap = getTestUserMap;
 
 module.exports.getTestUserMapFromFileCache = function () {
@@ -333,20 +333,20 @@ module.exports.getTestUserMapFromFileCache = function () {
     const localData = fileCache.getSync(fileCacheKey).data;
     let localJSON = {};
 
-    if(localData) {
-        //发现有数据
-        try{
+    if (localData) {
+        // 发现有数据
+        try {
             localJSON = JSON.parse(localData.toString('utf-8'));
-        }catch(e) {
-            //加个try catch是谨慎一点，防止出现一些奇奇怪怪的问题
+        } catch (e) {
+            // 加个try catch是谨慎一点，防止出现一些奇奇怪怪的问题
         }
     }
 
-    if(typeof localJSON !== 'object') {
+    if (typeof localJSON !== 'object') {
         localJSON = {};
     }
 
-    if(!localJSON) {
+    if (!localJSON) {
         localJSON = {};
     }
 

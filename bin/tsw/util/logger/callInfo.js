@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -8,26 +8,27 @@
 'no use strict';
 
 this.getCallInfo = function(level) {
-    
-    let orig, err, stack;
+
     const res = {};
-    
+
     level = level || 0;
-    
-    orig = Error.prepareStackTrace;
+
+    const orig = Error.prepareStackTrace;
     Error.prepareStackTrace = function(_, stack) {
-        return stack; 
+        return stack;
     };
-    err = new Error();
-    Error.captureStackTrace(err, arguments.callee);
-    stack = err.stack;
+
+    const err = new Error();
+    Error.captureStackTrace(err, arguments.callee);     // eslint-disable-line no-caller
+
+    const stack = err.stack;
     Error.prepareStackTrace = orig;
-    
-    if(stack && stack[level] && typeof stack[level].getLineNumber === 'function') {
+
+    if (stack && stack[level] && typeof stack[level].getLineNumber === 'function') {
         res.line = stack[level].getLineNumber();
         res.column = stack[level].getColumnNumber();
         res.filename = stack[level].getFileName();
     }
-    
+
     return res;
 };

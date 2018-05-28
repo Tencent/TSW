@@ -1,11 +1,11 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
+
 
 const path = require('path');
 const fs = require('fs');
@@ -17,42 +17,43 @@ module.exports = function(request, response, plug) {
 
     let filename = path.normalize(request.REQUEST.pathname).replace(/\\/g, '/');
 
-    try{
-        //支持中文
+    try {
+        // 支持中文
         filename = decodeURIComponent(filename);
-    }catch(e) {
+    } catch (e) {
         logger.info(`decode file name fail ${e.message}`);
     }
-    
+
     const wwwroot = plug.parent + '/wwwroot';
 
-    if(filename === '' || filename === '/') {
+    if (filename === '' || filename === '/') {
         filename = '/index';
     }
 
-    //保证请求的文件是wwwroot目录下的
+    // 保证请求的文件是wwwroot目录下的
     const realPath = path.join(wwwroot, path.join('/', filename));
     let ext = path.extname(realPath);
 
-    if(ext) {
-        //.js --> js
+    if (ext) {
+        // .js --> js
         ext = ext.slice(1);
     }
 
 
-    if(fs.existsSync(realPath)) {
-        //保证是文件
+    if (fs.existsSync(realPath)) {
+        // 保证是文件
         fs.stat(realPath, function(err, stats) {
-            if(err) {
-                response.writeHead(500, {'Content-Type': 'text/plain'});
+            if (err) {
+                response.writeHead(500, { 'Content-Type': 'text/plain' });
                 response.end();
 
                 return;
             }
 
-            let opt, gzipResponse;
+            let opt,
+                gzipResponse;
 
-            if(mime.types[ext] && mime.types[ext] === 'application/json') {
+            if (mime.types[ext] && mime.types[ext] === 'application/json') {
                 opt = {
                     flags: 'r'
                 };
@@ -64,7 +65,7 @@ module.exports = function(request, response, plug) {
                     code: 200,
                     contentType: mime.types[ext]
                 });
-            }else if(mime.types[ext] && mime.types[ext].indexOf('text/') === 0) {
+            } else if (mime.types[ext] && mime.types[ext].indexOf('text/') === 0) {
                 opt = {
                     flags: 'r'
                 };
@@ -76,13 +77,13 @@ module.exports = function(request, response, plug) {
                     code: 200,
                     contentType: mime.types[ext]
                 });
-            }else{
+            } else {
                 const range = request.headers.range || '';
                 const positions = range.replace(/bytes=/, '').split('-');
                 const start = parseInt(positions[0], 10) || 0;
                 const end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
 
-                if(end < start || end >= stats.size) {
+                if (end < start || end >= stats.size) {
                     response.writeHead(416, {
                         'Connection': 'close',
                         'Content-Type': mime.types[ext] || 'application/octet-stream',
@@ -93,7 +94,7 @@ module.exports = function(request, response, plug) {
                 }
 
                 response.writeHead(positions.length === 2 ? 206 : 200, {
-                    'Cache-Control' : 'max-age=259200',
+                    'Cache-Control': 'max-age=259200',
 
                     'Connection': 'close',
                     'Content-Type': mime.types[ext] || 'application/octet-stream',
@@ -127,8 +128,8 @@ module.exports = function(request, response, plug) {
                 gzipResponse.end();
             });
         });
-    }else{
-        response.writeHead(404, {'Content-Type': 'text/plain'});
+    } else {
+        response.writeHead(404, { 'Content-Type': 'text/plain' });
         response.end();
     }
 

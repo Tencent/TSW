@@ -25,7 +25,7 @@ describe('test openapi', () => {
             const opt = {
                 method: 'get',
                 pathname: '/api',
-                data: {a:1}
+                data: { a: 1 }
             };
             expect(openapi.signature(opt)).to.equal('grX3/m7QAZ19L5WXM6xDzmXQa8s=');
         });
@@ -34,7 +34,7 @@ describe('test openapi', () => {
             const opt = {
                 method: 'get',
                 pathname: '/api',
-                data: {a:1},
+                data: { a: 1 },
                 appkey: '1234'
             };
             expect(openapi.signature(opt)).to.equal('oRtuUrmxnQ0+NOs9GkZpbZMq9bk=');
@@ -44,7 +44,7 @@ describe('test openapi', () => {
             const opt = {
                 method: 'get',
                 pathname: '/api',
-                data: {aa:'~'},
+                data: { aa: '~' },
                 appkey: '1234'
             };
             expect(openapi.signature(opt)).to.equal('RaeBv27oo3hOlDAYLXorp4zYhbs=');

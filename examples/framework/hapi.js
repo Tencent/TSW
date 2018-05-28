@@ -1,4 +1,4 @@
-'use strict';
+
 
 const Hapi = require('hapi');
 const server = new Hapi.Server();
@@ -7,10 +7,10 @@ const logger = plug('logger');
 server.connection();
 server.start();
 
-//http://127.0.0.1/hapi
+// http://127.0.0.1/hapi
 server.route({
     method: 'GET',
-    path:'/hapi',
+    path: '/hapi',
     handler: function (request, reply) {
         logger.debug('hello hapi');
         return reply('hello hapi~');
@@ -23,7 +23,7 @@ server.route({
  */
 module.exports = function(req, res) {
     logger.debug('hello hapi');
-    //全转给hapi去处理
+    // 全转给hapi去处理
     server.connections[0].listener.emit('request', req, res);
 };
 
