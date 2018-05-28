@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,8 +7,9 @@
  */
 'use strict';
 
+
 function Queue() {
-    
+
     this._queue = [];
 }
 
@@ -19,53 +20,50 @@ this.create = function() {
 
 
 Queue.prototype.queue = function(fn) {
-    
-    if(typeof fn !== 'function') {
-        
+
+    if (typeof fn !== 'function') {
+
         return this;
     }
-    
+
     fn._domain = process.domain;
-    
+
     this._queue.push(fn);
-    
-    if(this._queue.length === 1) {
+
+    if (this._queue.length === 1) {
         this.dequeue();
     }
-    
+
     return this;
 };
 
 Queue.prototype.dequeue = function() {
-    
-    let domain, fn;
-    
-    if(this._queue.length === 0) {
+
+    if (this._queue.length === 0) {
         return this;
     }
-    
-    if(this._queue[0] === 'pending') {
-        
+
+    if (this._queue[0] === 'pending') {
+
         this._queue.shift();
         this.dequeue();
-        
+
         return this;
     }
-    
-    fn = this._queue[0];
+
+    const fn = this._queue[0];
     this._queue[0] = 'pending';
-    
-    domain = fn._domain;
+
+    const domain = fn._domain;
     fn._domain = undefined;
-    
-    if(domain && domain !== process.domain) {
+
+    if (domain && domain !== process.domain) {
         domain.run(() => {
             fn.call(this);
         });
-    }else{
+    } else {
         fn.call(this);
     }
-    
+
     return this;
 };
-

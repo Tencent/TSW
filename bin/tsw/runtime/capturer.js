@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -6,6 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 'use strict';
+
 
 /**
  * 抓包
@@ -15,9 +16,9 @@ const http = require('http');
 const https = require('https');
 let isFirstLoad = true;
 
-if(global[__filename]) {
+if (global[__filename]) {
     isFirstLoad = false;
-}else{
+} else {
     global[__filename] = {};
 }
 
@@ -47,9 +48,9 @@ process.nextTick(function() {
             let localPort = '';
             const host = (opt.headers && opt.headers.host) || opt.host;
 
-            if(context.requestCaptureSN) {
+            if (context.requestCaptureSN) {
                 context.requestCaptureSN++;
-            }else{
+            } else {
                 context.requestCaptureSN = 1;
             }
 
@@ -57,21 +58,21 @@ process.nextTick(function() {
             const logPre = `[${SN}] `;
 
             logger.debug(logPre + '${method} ${ip}:${port} ~ ${protocol}//${host}${path}', {
-                protocol    : protocol,
-                method        : opt.method,
-                host        : host,
-                ip            : opt.host,
-                port        : opt.port || (protocol === 'https:' ? 443 : 80),
-                path        : opt.path
+                protocol: protocol,
+                method: opt.method,
+                host: host,
+                ip: opt.host,
+                port: opt.port || (protocol === 'https:' ? 443 : 80),
+                path: opt.path
             });
 
-            //抓包
-            if(alpha.isAlpha()) {
+            // 抓包
+            if (alpha.isAlpha()) {
                 logger.debug(logPre + 'capture body on');
                 captureBody = true;
             }
 
-            if(captureBody) {
+            if (captureBody) {
                 httpUtil.captureBody(request);
 
                 request.once('finish', function() {
@@ -82,62 +83,62 @@ process.nextTick(function() {
             const report = function(oriResponse) {
                 const logJson = logger.getJson();
                 const response = oriResponse || {
-                    headers : {
-                        'content-length'    : 0,
-                        'content-type'        : 'text/html'
+                    headers: {
+                        'content-length': 0,
+                        'content-type': 'text/html'
                     },
-                    httpVersion     : '1.1',
-                    statusCode        : 513,
-                    statusMessage    : 'server buisy'
+                    httpVersion: '1.1',
+                    statusCode: 513,
+                    statusMessage: 'server buisy'
                 };
 
-                if(!logJson) {
+                if (!logJson) {
                     logger.debug('logger.getJson() is empty!');
                     return;
                 }
 
                 const curr = {
-                    SN                : SN,
+                    SN: SN,
 
-                    protocol        : protocol === 'https:' ? 'HTTPS' : 'HTTP',
-                    host            : host,
-                    url             : `${protocol}//${host}${opt.path}`,
-                    cache           : '',
-                    process         : 'TSW:' + process.pid,
-                    resultCode      : response.statusCode,
-                    contentLength    : bodySize || response.headers['content-length'],
-                    contentType        : response.headers['content-type'],
-                    clientIp         : localAddress || serverInfo.intranetIp,
-                    clientPort         : localPort || '',
-                    serverIp           : remoteAddress || opt.host,
-                    serverPort        : remotePort || opt.port,
-                    requestRaw       : httpUtil.getClientRequestHeaderStr(request) + (request._body.toString('UTF-8') || ''),
-                    responseHeader     : httpUtil.getClientResponseHeaderStr(response, bodySize),
-                    responseBody      : (buffer.toString('base64')) || '',
-                    timestamps       : {
-                        ClientConnected    : new Date(timeStart),
-                        ClientBeginRequest : new Date(timeStart),
-                        GotRequestHeaders  : new Date(timeStart),
-                        ClientDoneRequest  : new Date(timeStart),
-                        GatewayTime        : 0,
-                        DNSTime            : 0,
-                        TCPConnectTime     : 0,
-                        HTTPSHandshakeTime : 0,
-                        ServerConnected    : new Date(timeStart),
+                    protocol: protocol === 'https:' ? 'HTTPS' : 'HTTP',
+                    host: host,
+                    url: `${protocol}//${host}${opt.path}`,
+                    cache: '',
+                    process: 'TSW:' + process.pid,
+                    resultCode: response.statusCode,
+                    contentLength: bodySize || response.headers['content-length'],
+                    contentType: response.headers['content-type'],
+                    clientIp: localAddress || serverInfo.intranetIp,
+                    clientPort: localPort || '',
+                    serverIp: remoteAddress || opt.host,
+                    serverPort: remotePort || opt.port,
+                    requestRaw: httpUtil.getClientRequestHeaderStr(request) + (request._body.toString('UTF-8') || ''),
+                    responseHeader: httpUtil.getClientResponseHeaderStr(response, bodySize),
+                    responseBody: (buffer.toString('base64')) || '',
+                    timestamps: {
+                        ClientConnected: new Date(timeStart),
+                        ClientBeginRequest: new Date(timeStart),
+                        GotRequestHeaders: new Date(timeStart),
+                        ClientDoneRequest: new Date(timeStart),
+                        GatewayTime: 0,
+                        DNSTime: 0,
+                        TCPConnectTime: 0,
+                        HTTPSHandshakeTime: 0,
+                        ServerConnected: new Date(timeStart),
                         FiddlerBeginRequest: new Date(timeStart),
-                        ServerGotRequest   : new Date(timeStart),
+                        ServerGotRequest: new Date(timeStart),
                         ServerBeginResponse: new Date(timeResponse),
-                        GotResponseHeaders : new Date(timeResponse),
-                        ServerDoneResponse : new Date(timeEnd),
+                        GotResponseHeaders: new Date(timeResponse),
+                        ServerDoneResponse: new Date(timeEnd),
                         ClientBeginResponse: new Date(timeResponse),
-                        ClientDoneResponse : new Date(timeEnd)
+                        ClientDoneResponse: new Date(timeEnd)
                     }
                 };
 
                 logJson.ajax.push(curr);
             };
 
-            request.once('response', (response)=>{
+            request.once('response', (response) => {
                 timeResponse = Date.now();
 
                 const socket = response.socket;
@@ -150,10 +151,10 @@ process.nextTick(function() {
                 localPort = socket.localPort;
 
                 logger.debug(logPre + '${localAddress}:${localPort} > ${remoteAddress}:${remotePort} response ${statusCode} cost:${cost}ms ${encoding}', {
-                    remoteAddress    : remoteAddress,
-                    remotePort        : remotePort,
-                    localAddress    : localAddress,
-                    localPort        : localPort,
+                    remoteAddress: remoteAddress,
+                    remotePort: remotePort,
+                    localAddress: localAddress,
+                    localPort: localPort,
                     statusCode: response.statusCode,
                     encoding: response.headers['content-encoding'],
                     cost: timeResponse - timeStart
@@ -162,19 +163,19 @@ process.nextTick(function() {
                 const done = function() {
                     this.removeListener('data', data);
 
-                    if(timeEnd) {
+                    if (timeEnd) {
                         return;
                     }
 
                     timeEnd = new Date().getTime();
 
-                    if(captureBody) {
+                    if (captureBody) {
                         buffer = Buffer.concat(result);
                         result = [];
                     }
 
-                    //上报
-                    if(captureBody) {
+                    // 上报
+                    if (captureBody) {
                         report(response);
                     }
                 };
@@ -184,15 +185,15 @@ process.nextTick(function() {
 
                     // timeCurr = Date.now();
 
-                    //logger.debug('${logPre}receive data: ${size},\tcost: ${cost}ms',{
+                    // logger.debug('${logPre}receive data: ${size},\tcost: ${cost}ms',{
                     //    logPre: logPre,
                     //    cost: cost,
                     //    size: chunk.length
-                    //});
+                    // });
 
                     bodySize += chunk.length;
 
-                    if(captureBody && bodySize <= maxBodySize) {
+                    if (captureBody && bodySize <= maxBodySize) {
                         result.push(chunk);
                     }
                 };

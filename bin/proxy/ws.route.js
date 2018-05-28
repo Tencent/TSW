@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,14 +7,16 @@
  */
 'use strict';
 
+
 exports.doRoute = function(ws, type, d1, d2) {
     const wsModAct = require('./ws.mod.act');
     const wsModMap = require('./ws.mod.map');
     const logger = require('logger');
     const contextMod = require('context.js');
 
-    let mod_act = wsModAct.getModAct(ws),
+    const mod_act = wsModAct.getModAct(ws),
         moduleObj = wsModMap.find(mod_act, ws);
+
     if (typeof moduleObj !== 'object') {
         try {
             ws.send('module ' + mod_act + ' is not object');
@@ -23,22 +25,22 @@ exports.doRoute = function(ws, type, d1, d2) {
         }
         return;
     }
-    if (typeof moduleObj.onConnection != 'function') {
+    if (typeof moduleObj.onConnection !== 'function') {
         moduleObj.onConnection = function(ws) {
             ws.readyState === 1 && ws.send('no onConnection funtion,so go default');
         };
     }
-    if (typeof moduleObj.onMessage != 'function') {
+    if (typeof moduleObj.onMessage !== 'function') {
         moduleObj.onMessage = function(ws, data) {
             ws.readyState === 1 && ws.send('no onMessage function,so go default,ws server get message:' + data);
         };
     }
-    if (typeof moduleObj.onClose != 'function') {
+    if (typeof moduleObj.onClose !== 'function') {
         moduleObj.onClose = function() {
             logger.debug('no onClose function, so go default');
         };
     }
-    if (typeof moduleObj.onError != 'function') {
+    if (typeof moduleObj.onError !== 'function') {
         moduleObj.onError = function() {
             logger.debug('no onError function, so go default');
         };

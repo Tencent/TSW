@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,30 +7,31 @@
  */
 'use strict';
 
+
 const config = require('config');
 
 module.exports.report = function(data) {
     let retValue;
     const reportData = {
-        table:'reportData',
-        data:{
-            type    : data.type,
-            log        : data.logText,
-            uin        : data.key,
-            mod_act    : data.mod_act,
-            ua         : data.ua,
-            userip     : data.userip,
-            domain    : data.host,
-            path    : data.pathname,
+        table: 'reportData',
+        data: {
+            type: data.type,
+            log: data.logText,
+            uin: data.key,
+            mod_act: data.mod_act,
+            ua: data.ua,
+            userip: data.userip,
+            domain: data.host,
+            path: data.pathname,
             httpCode: data.statusCode
         }
     };
 
-    if(config.beforeReportLog && typeof config.beforeReportLog === 'function') {
+    if (config.beforeReportLog && typeof config.beforeReportLog === 'function') {
         retValue = config.beforeReportLog(reportData);
     }
 
-    if(retValue === false) {
+    if (retValue === false) {
         return;
     }
 };

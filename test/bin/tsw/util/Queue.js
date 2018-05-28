@@ -28,8 +28,10 @@ describe('test Queue', () => {
 
     it('#queue sort', () => {
         const queue = Queue.create();
-        let num = 10,
-            list = [];
+        let num = 10;
+
+        const list = [];
+
         const addOne = () => list.push(num--);
 
         queue.queue(addOne);
@@ -60,8 +62,10 @@ describe('test Queue', () => {
 
     it('#dequeue', () => {
         const queue = Queue.create();
-        let num = 10,
-            list = [];
+        let num = 10;
+
+        const list = [];
+
         const addOne = () =>
             list.push(num--);
 

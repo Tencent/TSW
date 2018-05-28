@@ -82,9 +82,9 @@
             return d;
         }
 
-        var pad = function(n){return n < 10 ? '0' + n : n;}, 
+        var pad = function(n){return n < 10 ? '0' + n : n;},
             tz  = d.getTimezoneOffset(),
-            tzs = (tz > 0 ? "-" : "+") + pad(parseInt(Math.abs(tz / 60)));
+            tzs = (tz > 0 ? "-" : "+") + pad(parseInt(Math.abs(tz / 60), 10));
 
         if (tz === 0){
             tzs = 'Z';
@@ -105,26 +105,26 @@
 
     var timeStamp   = data.timestamps || {},
         defaultTime = new Date();
-        
+
 %>
 <?xml version="1.0" encoding="utf-8"?>
 <Session>
-  <SessionTimers 
-    ClientConnected     ="<%=localISOString(timeStamp.ClientConnected || defaultTime)%>" 
-    ClientBeginRequest  ="<%=localISOString(timeStamp.ClientBeginRequest || defaultTime)%>" 
-    GotRequestHeaders   ="<%=localISOString(timeStamp.GotRequestHeaders || defaultTime)%>" 
-    ClientDoneRequest   ="<%=localISOString(timeStamp.ClientDoneRequest || defaultTime)%>" 
-    GatewayTime         ="<%=timeStamp.GatewayTime || 0%>" 
-    DNSTime             ="<%=timeStamp.DNSTime || 0%>" 
-    TCPConnectTime      ="<%=timeStamp.TCPConnectTime || 0%>" 
-    HTTPSHandshakeTime  ="<%=timeStamp.HTTPSHandshakeTime || 0%>" 
-    ServerConnected     ="<%=localISOString(timeStamp.ServerConnected || defaultTime)%>" 
-    FiddlerBeginRequest ="<%=localISOString(timeStamp.FiddlerBeginRequest || defaultTime)%>" 
-    ServerGotRequest    ="<%=localISOString(timeStamp.ServerGotRequest || defaultTime)%>" 
-    ServerBeginResponse ="<%=localISOString(timeStamp.ServerBeginResponse || defaultTime)%>" 
-    GotResponseHeaders  ="<%=localISOString(timeStamp.GotResponseHeaders || defaultTime)%>" 
-    ServerDoneResponse  ="<%=localISOString(timeStamp.ServerDoneResponse || defaultTime)%>" 
-    ClientBeginResponse ="<%=localISOString(timeStamp.ClientBeginResponse || defaultTime)%>" 
+  <SessionTimers
+    ClientConnected     ="<%=localISOString(timeStamp.ClientConnected || defaultTime)%>"
+    ClientBeginRequest  ="<%=localISOString(timeStamp.ClientBeginRequest || defaultTime)%>"
+    GotRequestHeaders   ="<%=localISOString(timeStamp.GotRequestHeaders || defaultTime)%>"
+    ClientDoneRequest   ="<%=localISOString(timeStamp.ClientDoneRequest || defaultTime)%>"
+    GatewayTime         ="<%=timeStamp.GatewayTime || 0%>"
+    DNSTime             ="<%=timeStamp.DNSTime || 0%>"
+    TCPConnectTime      ="<%=timeStamp.TCPConnectTime || 0%>"
+    HTTPSHandshakeTime  ="<%=timeStamp.HTTPSHandshakeTime || 0%>"
+    ServerConnected     ="<%=localISOString(timeStamp.ServerConnected || defaultTime)%>"
+    FiddlerBeginRequest ="<%=localISOString(timeStamp.FiddlerBeginRequest || defaultTime)%>"
+    ServerGotRequest    ="<%=localISOString(timeStamp.ServerGotRequest || defaultTime)%>"
+    ServerBeginResponse ="<%=localISOString(timeStamp.ServerBeginResponse || defaultTime)%>"
+    GotResponseHeaders  ="<%=localISOString(timeStamp.GotResponseHeaders || defaultTime)%>"
+    ServerDoneResponse  ="<%=localISOString(timeStamp.ServerDoneResponse || defaultTime)%>"
+    ClientBeginResponse ="<%=localISOString(timeStamp.ClientBeginResponse || defaultTime)%>"
     ClientDoneResponse  ="<%=localISOString(timeStamp.ClientDoneResponse || defaultTime)%>"/>
   <PipeInfo />
   <SessionFlags>

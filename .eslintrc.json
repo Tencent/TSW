@@ -4,7 +4,7 @@
         "commonjs": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
+    "extends": "eslint-config-alloy",
     "parserOptions": {
         "sourceType": "module",
         "ecmaVersion": 2017
@@ -79,6 +79,39 @@
         ],
         "prefer-const": [
             "warn"
+        ],
+        "no-param-reassign": [
+            "off"
+        ],
+        "no-template-curly-in-string": [
+            "off"
+        ],
+        "one-var": [
+            "off"
+        ],
+        "guard-for-in": [
+            "off"
+        ],
+        "no-undefined": [
+            "off"
+        ],
+        "complexity": [
+            "off"
+        ],
+        "max-nested-callbacks": [
+            "off"
+        ],
+        "no-path-concat": [
+            "off"
+        ],
+        "eqeqeq": [
+            "off"
+        ],
+        "max-depth": [
+            "off"
+        ],
+        "strict": [
+            "off"
         ]
     },
     "overrides": [
@@ -89,6 +122,13 @@
             },
             "globals": {
                 "define": true
+            }
+        }, {
+            "files": ["bin/tsw/util/auto-report/tmpl.js"],
+            "rules": {
+                "no-inner-declarations": [
+                    "off"
+                ]
             }
         }, {
             "files": ["bin/lib/util/mail/tmpl.js", "bin/tsw/util/**/tmpl.js"],

@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,10 +7,11 @@
  */
 'use strict';
 
+
 this.types = {
 
     'zip': 'application/octet-stream',
-    
+
     'css': 'text/css',
 
     'gif': 'image/gif',
@@ -44,9 +45,9 @@ this.types = {
     'wma': 'audio/x-ms-wma',
 
     'mov': 'video/mov',
-    
+
     'mp4': 'video/mp4',
-    
+
     'wmv': 'video/x-ms-wmv',
 
     'xml': 'text/xml',
