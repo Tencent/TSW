@@ -425,6 +425,7 @@ Logger.prototype = {
             empty.write = () => {};
             empty.end = () => {};
             console._stdout = empty;
+            console._stderr = empty;
         }
 
         if (level <= 20) {
