@@ -13,10 +13,11 @@ let i;
 
 // 解析进程参数
 for (i = 2; i < process.argv.length; i++) {
-    process.argv[i].replace(/(.+)=(.+)/, function($0, $1, $2) {
-        args[$1] = $2;
-    });
+    const res = /^(.+)=(.+)$/.exec(process.argv[i]);
 
+    if (res) {
+        args[res[1]] = res[2];
+    }
 }
 
 module.exports = args;

@@ -57,36 +57,37 @@ module.exports = {
 
         cp.exec('./check.js', {
             timeout: 5000,
+            encoding: 'utf8',
             cwd: __dirname
         }, function (err, stdout, stderr) {
-            let hasError = false;
+            let errMessage = '';
             if (err) {
-                hasError = true;
+                errMessage = err.stack;
                 logger.error(err.stack);
             }
 
-            if (stderr && stderr.length > 0) {
-                hasError = true;
-                logger.error(stderr.toString('UTF-8'));
+            if (stderr) {
+                errMessage = stderr;
+                logger.error(stderr);
             }
 
-            if (hasError) {
+            if (errMessage) {
                 // 异常情况下，不能直接res.end()，需要模拟http异常，让shell感知到异常
                 res.writeHead(200, { 'Content-Type': 'text/plain; charset=UTF-8' });
-                res.write(stderr.toString('UTF-8'));
+                res.write(errMessage);
 
                 res.socket && res.socket.end();
                 return;
             }
 
-            if (stdout && stdout.length > 0) {
-                logger.info(stdout.toString('UTF-8'));
+            if (stdout) {
+                logger.info(stdout);
 
-                // 开始reload
+                // 开始执行reload
                 process.emit('reload', req.GET);
 
                 res.writeHead(200, { 'Content-Type': 'text/plain; charset=UTF-8' });
-                res.write(stderr.toString('UTF-8'));
+                res.write(stdout);
                 res.end('\r\ndone!\r\n');
 
                 return;

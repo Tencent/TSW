@@ -15,7 +15,6 @@ try {
     const config = plug('config');
 
     process.stdout.write('typeof config: ' + typeof config + '\r\n');
-
     process.stdout.write('check config ok');
     process.stdout.write('\r\n');
 
