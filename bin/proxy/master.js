@@ -22,6 +22,8 @@ const isDeaded = false;
 
 // 阻止进程因异常而退出
 process.on('uncaughtException', function(e) {
+
+    // Mac和linux权限不足时给予提醒
     if (/\blisten EACCES\b/.test(e.message) && config.httpPort < 1024 && (serverOS.isOSX || serverOS.isLinux)) {
         logger.error('This is OSX/Linux, you may need to use "sudo" prefix to start server.\n');
     }
@@ -33,16 +35,9 @@ process.on('uncaughtException', function(e) {
 process.on('warning', function(warning) {
     const key = String(warning);
     const errStr = warning && warning.stack || String(warning);
+    const Content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
     logger.error(errStr);
-
-    const Content = [
-        '<p><strong>错误堆栈</strong></p>',
-        '<p><pre><code>',
-        errStr,
-        '</code></pre></p>',
-    ].join('');
-
 
     setImmediate(function() {
         require('util/mail/mail.js').SendMail(key, 'js', 600, {
@@ -51,65 +46,29 @@ process.on('warning', function(warning) {
             'Content': Content
         });
     });
-
 });
 
 
-process.on('unhandledRejection', (reason = {}, p = {}) => {
-    let errStr = String(reason.stack),
-        mod_act,
-        module,
-        REQUEST;
+process.on('unhandledRejection', (errorOrReason, currPromise) => {
+    const errStr = String(errorOrReason && errorOrReason.stack || JSON.stringify(errorOrReason));
+    const key = String(errorOrReason && errorOrReason.message);
+    const Content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
-    const key = String(reason.message);
-
-    if (p && p.domain && p.domain.currentContext) {
-        mod_act = p.domain.currentContext.mod_act;
-        module = p.domain.currentContext.module;
-        REQUEST = p.domain.currentContext.window.request.REQUEST;
+    // 恢复上下文
+    if (currPromise && currPromise.domain) {
+        currPromise.domain.run(function() {
+            logger.error(`unhandledRejection reason: ${errStr}`);
+            setImmediate(function() {
+                require('util/mail/mail.js').SendMail(key, 'js', 600, {
+                    'Title': key,
+                    'runtimeType': 'warning',
+                    'Content': Content
+                });
+            });
+        });
+    } else {
+        logger.error(`unhandledRejection reason: ${errStr}`);
     }
-
-    if (errStr === 'undefined') {
-
-        const reasonStr = JSON.stringify(reason);
-
-        logger.error('unhandledRejection reason: ' + reasonStr);
-
-        if (reasonStr === '{}') {
-            return;
-        }
-
-        errStr = reasonStr;
-    }
-
-    logger.error(errStr);
-
-    let Content = [
-        '<p><strong>错误堆栈</strong></p>',
-        '<p><pre><code>',
-        errStr,
-        '</code></pre></p>',
-    ].join('');
-
-    if (mod_act) {
-        Content += `<p><strong>mod_act： </strong>${mod_act}</p>`;
-    }
-    if (module) {
-        Content += `<p><strong>module： </strong>${module}</p>`;
-    }
-    if (REQUEST) {
-        Content += `<p><strong>url： </strong>${REQUEST.protocol}://${REQUEST.hostname}${REQUEST.href}</p>`;
-    }
-
-    if (serverOS.isWindows) {
-        // return;
-    }
-
-    require('util/mail/mail.js').SendMail(key, 'js', 600, {
-        'Title': key,
-        'runtimeType': 'unhandledRejection',
-        'Content': Content
-    });
 });
 
 process.noProcessWarnings = true;
