@@ -754,28 +754,17 @@ function doRoute(req, res) {
     }
 
     // webso柔性
-    if (global.cpuUsed > 80) {
-
+    if (global.cpuUsed > config.cpuLimit) {
         if (httpUtil.isFromWns(req) && req.headers['if-none-match']) {
-
-            logger.debug('webso limit 304, cpuUsed: ${cpuUsed}', {
-                cpuUsed: global.cpuUsed
-            });
-
+            logger.debug(`webso limit 304, cpuUsed: ${global.cpuUsed}, cpuLimit: ${config.cpuLimit}`);
             tnm2.Attr_API('SUM_TSW_WEBSO_LIMIT', 1);
-            try {
-                res.writeHead(304, {
-                    'Content-Type': 'text/html; charset=UTF-8',
-                    'Etag': req.headers['if-none-match']
-                });
-                res.end();
-            } catch (e) {
-                logger.info(`response 304 fail ${e.message}`);
-            }
-
+            res.writeHead(304, {
+                'Content-Type': 'text/html; charset=UTF-8',
+                'Etag': req.headers['if-none-match']
+            });
+            res.end();
             return;
         }
-
     }
 
     const contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
