@@ -46,7 +46,6 @@ module.exports.Logger = Logger;
 
 function Logger() {
 
-    return this;
 }
 
 Logger.prototype = {
