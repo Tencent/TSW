@@ -37,16 +37,183 @@ const serverInfo = {
     cpu: 'X'
 };
 
-let serverHttps;
+process.serverInfo = serverInfo;
+
 let config = require('./config.js');
 let routeCache = null;
 let cleanCacheTid = null;
 let isStartHeartBeat = false;
 let heartBeatCount = 0;
+let serverHttps;
+const server = http.createServer(requestHandler);
+const serverThis = http.createServer(requestHandler);
+
+server.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
+serverThis.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
+server.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
+serverThis.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
+
+if (config.httpsOptions) {
+    serverHttps = https.createServer(config.httpsOptions, function(req, res) {
+        req.headers['x-client-proto'] = 'https';
+        requestHandler(req, res);
+    });
+
+    serverHttps.on('clientError', function(err, socket) {   // eslint-disable-line handle-callback-err
+        socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+    });
+
+    serverHttps.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
+    serverHttps.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
+}
+
+global.TSW_HTTP_SERVER = server;
+global.TSW_HTTPS_SERVER = serverHttps;
+
+logger.info('pid:${pid} createServer ok', {
+    pid: process.pid
+});
+
+// start RPC server
+require('webapp/Server.js').startServer();
+
+// 分发父进程发送来的消息
+process.on('message', function(m) {
+    if (m && methodMap[m.cmd]) {
+        logger.info(`cpu: ${serverInfo.cpu} ${m.cmd}`);
+        methodMap[m.cmd].apply(this, arguments);
+    }
+});
+
+if (cluster.isMaster) {
+    if (debugOptions && debugOptions.inspectorEnabled) {
+        logger.setLogLevel('debug');
+        logger.info('inspectorEnabled, start listening');
+        listen(0);
+    }
+}
+
+// restart
+methodMap.restart = function() {
+    process.emit('restart');
+};
+
+// reload
+methodMap.reload = function() {
+    process.emit('reload');
+};
+
+// heapdump
+methodMap.heapdump = function(m) {
+    process.emit('heapdump', m.GET);
+};
+
+// profiler
+methodMap.profiler = function(m) {
+    process.emit('profiler', m.GET);
+};
+
+// globaldump
+methodMap.globaldump = function(m) {
+    process.emit('globaldump', m.GET);
+};
+
+// top100
+methodMap.top100 = function(m) {
+    process.emit('top100', m.GET);
+};
+
+// 监听端口
+methodMap.listen = function(message) {
+    listen(message.cpu || 0);
+};
+
+process.on('top100', function(e) {
+    global.top100 = [];
+});
+
+
+process.on('heapdump', function(e) {
+    if (isWindows) {
+        return;
+    }
+
+    require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot', function(err, filename) {
+        if (err) {
+            logger.error(`dump heap error ${err.message}`);
+            return;
+        }
+        logger.info('dump written to ${filename}', {
+            filename: filename
+        });
+    });
+});
+
+
+process.on('profiler', function(data = {}) {
+    logger.info('profiler time: ${time}', data);
+    if (isWindows) {
+        return;
+    }
+
+    require('util/v8-profiler.js').writeProfilerOpt(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.cpuprofile', {
+        recordTime: data.time || 5000
+    }, function(filename) {
+        logger.info('dump written to ${filename}', {
+            filename: filename
+        });
+    });
+});
+
+// process.emit('globaldump',m.GET);
+process.on('globaldump', function(GET) {
+    const cpu = parseInt(GET.cpu, 10) || 0;
+    const depth = GET.depth || 6;
+    if (cpu !== serverInfo.cpu) {
+        return;
+    }
+
+    const filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
+    logger.info('globaldump');
+    logger.info(GET);
+    logger.info(filename);
+    const str = util.inspect(global, {
+        depth: depth
+    });
+
+    fs.writeFile(filename, str, 'UTF-8', function() {
+        logger.info('globaldump finish');
+    });
+});
+
+function empty() {}
+
+function requestHandler(req, res) {
+    if (server.keepAliveTimeout > 0) {
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('Keep-Alive', `timeout=${parseInt(server.keepAliveTimeout / 1000, 10)}`);
+    } else {
+        res.setHeader('Connection', 'close');
+    }
+    res.setHeader('X-Powered-By', 'TSW/Node.js');
+    res.setHeader('Server', headerServer);
+    res.setHeader('Cache-Control', 'no-cache');
+
+    if (config.devMode) {
+        // 发者模式清除缓存
+        cleanCache();
+    }
+    if (req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {
+        // websocket
+        return;
+    }
+    res.flush = res.flush || empty;
+    parseGet(req);  // 解析get参数
+    doRoute(req, res); // HTTP路由
+}
 
 
 function doRoute(req, res) {
-
     if (routeCache === null) {
         routeCache = require('./http.route.js');
         config = require('./config.js');
@@ -61,336 +228,18 @@ function doRoute(req, res) {
     routeCache(req, res);
 }
 
-process.serverInfo = serverInfo;
-
 // 清除缓存
 function cleanCache() {
-
     clearTimeout(cleanCacheTid);
-
     cleanCacheTid = setTimeout(function() {
         require('util/cache.cleaner.js').clear('/');
         routeCache = null;
-
     }, 5000);
 }
 
-process.on('top100', function(e) {
-    logger.info('top100');
-    global.top100 = [];
-});
-
-
-process.on('heapdump', function(e) {
-    logger.info('heapdump');
-
-    if (!isWindows) {
-
-        require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot', function(err, filename) {
-
-            if (err) {
-                logger.error(`dump heap error ${err.message}`);
-
-                return;
-            }
-
-            logger.info('dump written to ${filename}', {
-                filename: filename
-            });
-        });
-
-    }
-
-});
-
-
-process.on('profiler', function(data = {}) {
-    logger.info('profiler time: ${time}', data);
-
-    if (!isWindows) {
-
-        require('util/v8-profiler.js').writeProfilerOpt(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.cpuprofile', {
-            recordTime: data.time || 5000
-        }, function(filename) {
-            logger.info('dump written to ${filename}', {
-                filename: filename
-            });
-        });
-
-    }
-
-});
-
-// process.emit('globaldump',m.GET);
-process.on('globaldump', function(GET) {
-
-    const cpu = parseInt(GET.cpu, 10) || 0;
-    const depth = GET.depth || 6;
-
-    if (cpu !== serverInfo.cpu) {
-        return;
-    }
-
-    const filename = __dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.globaldump';
-
-    logger.info('globaldump');
-    logger.info(GET);
-    logger.info(filename);
-
-
-    const str = util.inspect(global, {
-        depth: depth
-    });
-
-    fs.writeFile(filename, str, 'UTF-8', function() {
-        logger.info('globaldump finish');
-    });
-
-});
-
-function requestHandler(req, res) {
-    if (server.keepAliveTimeout > 0) {
-        res.setHeader('Connection', 'keep-alive');
-        res.setHeader('Keep-Alive', `timeout=${parseInt(server.keepAliveTimeout / 1000, 10)}`);
-    } else {
-        res.setHeader('Connection', 'close');
-    }
-
-    res.setHeader('X-Powered-By', 'TSW/Node.js');
-    res.setHeader('Server', headerServer);
-    res.setHeader('Cache-Control', 'no-cache');
-
-    if (config.devMode) {
-        // 发者模式清除缓存
-        cleanCache();
-    }
-
-    if (req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {
-        // websocket
-        return;
-    }
-
-    res.flush = res.flush || function() {
-        return true;
-    };
-
-    // 解析get参数
-    parseGet(req);
-
-    // HTTP路由
-    doRoute(req, res);
-}
-
-
-const server = http.createServer(requestHandler);
-const serverThis = http.createServer(requestHandler);
-
-server.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
-serverThis.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
-server.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
-serverThis.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
-
-global.TSW_HTTP_SERVER = server;
-
-if (config.httpsOptions) {
-    serverHttps = https.createServer(config.httpsOptions, function(req, res) {
-        req.headers['x-client-proto'] = 'https';
-
-        requestHandler(req, res);
-    });
-
-    serverHttps.on('clientError', function(err, socket) {   // eslint-disable-line handle-callback-err
-        socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-    });
-
-    serverHttps.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
-    serverHttps.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
-
-    global.TSW_HTTPS_SERVER = serverHttps;
-}
-
-
-logger.info('pid:${pid} createServer ok', {
-    pid: process.pid
-});
-
-
-// 分发父进程发送来的消息
-process.on('message', function(m) {
-    if (m && methodMap[m.cmd]) {
-        methodMap[m.cmd].apply(this, arguments);
-    }
-});
-
-function startHeartBeat() {
-
-    if (isStartHeartBeat) {
-        return;
-    }
-
-    isStartHeartBeat = true;
-
-    global.cpuUsed = 0;
-
-    // 定时给父进程发送心跳包
-    setInterval(function() {
-
-        heartBeatCount += 1;
-
-        process.connected && process.send && process.send({
-            cmd: 'heartBeat',
-            memoryUsage: process.memoryUsage()
-        });
-
-        if (serverInfo.cpu === 0) {
-            // 测试环境1分钟上报一次
-            if (heartBeatCount % 12 === 0) {
-                TEReport.report();
-            }
-        }
-
-        global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
-
-        tnm2.Attr_API_Set('AVG_TSW_CPU_USED', global.cpuUsed);
-
-        if (global.cpuUsed >= 80) {
-            global.cpuUsed80 = ~~global.cpuUsed80 + 1;
-        } else {
-            global.cpuUsed80 = 0;
-        }
-
-        const cpuUsed = global.cpuUsed;
-
-        // 高负载告警
-        if (
-            global.cpuUsed80 === 4 &&
-            !config.isTest &&
-            !isWindows
-        ) {
-            // 取进程快照
-            // ps aux --sort=-pcpu
-            cp.exec('top -bcn1', {
-                env: {
-                    COLUMNS: 200
-                },
-                timeout: 5000
-            }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
-                const key = ['cpu80.v4', serverInfo.intranetIp].join(':');
-                let Content = [
-                    '<strong>单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%, 最近5秒钟CPU Profiler见附件</strong>'
-                ].join('<br>');
-
-                let str = '';
-
-                if (data) {
-                    str = data.toString('utf-8');
-                    str = str.replace(/</g, '&gt;');
-                    str = str.replace(/\r\n|\r|\n/g, '<br>');
-
-                    Content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
-                }
-
-
-                // 获取本机信息，用来分组
-                require('api/cmdb').GetDeviceThisServer().done(function(data) {
-                    data = data || {};
-                    const business = data.business && data.business[0] || {};
-                    let owner = '';
-
-                    if (data.ownerMain) {
-                        owner = [owner, data.ownerMain].join(';');
-                    }
-
-                    if (data.ownerBack) {
-                        owner = [owner, data.ownerBack].join(';');
-                    }
-
-                    // 再抓一份CPU Profiler
-                    require('util/v8-profiler.js').getProfiler({
-                        recordTime: 5000
-                    }, result => {
-                        mail.SendMail(key, 'js', 600, {
-                            'To': config.mailTo,
-                            'CC': owner,
-                            'MsgInfo': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                            'Title': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                            'Content': Content,
-                            'attachment': result ? {
-                                fileType: true,
-                                dispositionType: 'attachment',
-                                fileName: 'cpu-profiler.cpuprofile',
-                                content: result
-                            } : ''
-                        });
-                    });
-                });
-            });
-        }
-
-        const currMemory = process.memoryUsage();
-
-        tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS', currMemory.rss);
-        tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
-        tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL', currMemory.external);
-
-    }, 5000);
-
-}
-
-
-// restart
-methodMap.restart = function() {
-
-    logger.info('cpu: ${cpu} restart', serverInfo);
-
-    process.emit('restart');
-};
-
-// reload
-methodMap.reload = function() {
-
-    logger.info('cpu: ${cpu} reload', serverInfo);
-
-    process.emit('reload');
-};
-
-// heapdump
-methodMap.heapdump = function(m) {
-
-    logger.info('cpu: ${cpu} heapdump', serverInfo);
-
-    process.emit('heapdump', m.GET);
-};
-
-// profiler
-methodMap.profiler = function(m) {
-
-    logger.info('cpu: ${cpu} profiler', serverInfo);
-
-    process.emit('profiler', m.GET);
-};
-
-// globaldump
-methodMap.globaldump = function(m) {
-
-    logger.info('cpu: ${cpu} globaldump', serverInfo);
-
-    process.emit('globaldump', m.GET);
-};
-
-// top100
-methodMap.top100 = function(m) {
-
-    logger.info('cpu: ${cpu} top100', serverInfo);
-
-    process.emit('top100', m.GET);
-};
-
-// 监听端口
-methodMap.listen = function(message) {
-
+function listen(cpu) {
     const user_00 = config.workerUid || 'user_00';
-    serverInfo.cpu = message.cpu || 0;
+    serverInfo.cpu = cpu || 0;
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
     process.title = 'TSW/worker/' + serverInfo.cpu;
@@ -505,18 +354,105 @@ methodMap.listen = function(message) {
         });
 
     });
-
-
-};
-
-if (cluster.isMaster) {
-    if (debugOptions && debugOptions.inspectorEnabled) {
-        logger.setLogLevel('debug');
-        logger.info('inspectorEnabled, start listening');
-        methodMap.listen({ cpu: 0 });
-    }
 }
 
+function startHeartBeat() {
+    if (isStartHeartBeat) {
+        return;
+    }
+    isStartHeartBeat = true;
+    global.cpuUsed = 0;
 
-require('webapp/Server.js').startServer();
+    // 定时给父进程发送心跳包
+    setInterval(heartBeat, 5000);
+}
 
+function heartBeat() {
+    heartBeatCount += 1;
+    process.connected && process.send && process.send({
+        cmd: 'heartBeat',
+        memoryUsage: process.memoryUsage()
+    });
+
+    if (serverInfo.cpu === 0) {
+        // 测试环境1分钟上报一次
+        if (heartBeatCount % 12 === 0) {
+            TEReport.report();
+        }
+    }
+
+    global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
+    if (global.cpuUsed >= 80) {
+        global.cpuUsed80 = ~~global.cpuUsed80 + 1;
+    } else {
+        global.cpuUsed80 = 0;
+    }
+
+    const cpuUsed = global.cpuUsed;
+    tnm2.Attr_API_Set('AVG_TSW_CPU_USED', cpuUsed);
+
+    // 高负载告警
+    if (global.cpuUsed80 === 4 && !config.isTest && !isWindows) {
+        // 取进程快照
+        cp.exec('top -bcn1', {
+            env: {
+                COLUMNS: 200
+            },
+            encoding: 'utf8',
+            timeout: 5000
+        }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
+            const key = `cpu80.v4:${serverInfo.intranetIp}`;
+            let Content = `<strong>单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%, 最近5秒钟CPU Profiler见附件</strong>`;
+            let str = '';
+
+            if (data) {
+                str = data;
+                str = str.replace(/</g, '&gt;');
+                str = str.replace(/\r\n|\r|\n/g, '<br>');
+
+                Content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
+            }
+
+
+            // 获取本机信息，用来分组
+            require('api/cmdb').GetDeviceThisServer().done(function(data) {
+                data = data || {};
+                const business = data.business && data.business[0] || {};
+                let owner = '';
+
+                if (data.ownerMain) {
+                    owner = [owner, data.ownerMain].join(';');
+                }
+
+                if (data.ownerBack) {
+                    owner = [owner, data.ownerBack].join(';');
+                }
+
+                // 再抓一份CPU Profiler
+                require('util/v8-profiler.js').getProfiler({
+                    recordTime: 5000
+                }, result => {
+                    mail.SendMail(key, 'js', 600, {
+                        'To': config.mailTo,
+                        'CC': owner,
+                        'MsgInfo': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
+                        'Title': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
+                        'Content': Content,
+                        'attachment': result ? {
+                            fileType: true,
+                            dispositionType: 'attachment',
+                            fileName: 'cpu-profiler.cpuprofile',
+                            content: result
+                        } : ''
+                    });
+                });
+            });
+        });
+    }
+
+    const currMemory = process.memoryUsage();
+
+    tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS', currMemory.rss);
+    tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
+    tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL', currMemory.external);
+}
