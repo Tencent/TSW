@@ -132,10 +132,11 @@ this.taskset = function(oriCpu, pid) {
 
     // 打印shell执行信息
     cp.exec(`taskset -cp ${pid}`, {
+        encoding: 'utf8',
         timeout: 5000
     }, function(err, data, errData) {
 
-        const str = data.toString('UTF-8');
+        const str = data;
         const tmp = str.split(':');
         let cpus;
 
@@ -156,12 +157,12 @@ this.taskset = function(oriCpu, pid) {
             logger.error(err.stack);
         }
 
-        if (data.length) {
-            logger.info('\n' + data.toString('UTF-8'));
+        if (data) {
+            logger.info('\n' + data);
         }
 
-        if (errData.length) {
-            logger.error('\n' + errData.toString('UTF-8'));
+        if (errData) {
+            logger.error('\n' + errData);
         }
 
         logger.info('taskset -cp ${cpu} ${pid}', {
@@ -170,18 +171,19 @@ this.taskset = function(oriCpu, pid) {
         });
 
         cp.exec(`taskset -cp ${cpu} ${pid}`, {
+            encoding: 'utf8',
             timeout: 5000
         }, function(err, data, errData) {
             if (err) {
                 logger.error(err.stack);
             }
 
-            if (data.length) {
-                logger.info('\n' + data.toString('UTF-8'));
+            if (data) {
+                logger.info('\n' + data);
             }
 
-            if (errData.length) {
-                logger.error('\n' + errData.toString('UTF-8'));
+            if (errData) {
+                logger.error('\n' + errData);
             }
         });
 
