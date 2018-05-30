@@ -34,7 +34,7 @@ if [ -f "/etc/node_args.ini" ]
 then
 	CUR_ARGS=$(head -1 /etc/node_args.ini)
 else
-    echo "do nothing, args.ini ignore"
+    echo "do nothing, node_args.ini ignore"
 fi
 
 echo "args: $CUR_ARGS"
