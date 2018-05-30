@@ -26,7 +26,7 @@ if (!global.context) {
     Object.defineProperty(global, 'window', {
         get: function() {
 
-            if (Window.windowHasDisabled) {
+            if (global.windowHasDisabled) {
                 return undefined;
             }
 
