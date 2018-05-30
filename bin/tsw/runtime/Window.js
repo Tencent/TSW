@@ -15,10 +15,10 @@ function Window() {
 }
 
 Window.prototype.disable = function() {
-    Window.windowHasDisabled = true;
+    global.windowHasDisabled = true;
 };
 
 Window.prototype.enable = function() {
-    Window.windowHasDisabled = false;
+    global.windowHasDisabled = false;
 };
 
