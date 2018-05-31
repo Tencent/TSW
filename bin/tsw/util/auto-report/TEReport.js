@@ -18,12 +18,12 @@ const logReport = require('./logReport.js');
 const post = require('util/auto-report/post.js');
 const postOpenapi = require('util/auto-report/post.openapi.js');
 const Deferred = require('util/Deferred');
-const isWindows = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 
 
 this.report = function() {
 
-    if (isWindows.isWindows) {
+    if (isWin32Like) {
         return;
     }
 

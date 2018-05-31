@@ -7,22 +7,17 @@
  */
 'use strict';
 
+module.exports = plug;
 
-const path = require('path');
-
-/**
- *
- * 获取内置模块
- *
- * @param {String} id
- */
+// 内置模块
 function plug(id) {
     return require(id);
 }
 
 if (!global.plug) {
+    global.plug = plug;
 
-
+    const path = require('path');
     plug.__dirname = __dirname;
     plug.parent = path.join(__dirname, '..');
     plug.paths = [
@@ -31,18 +26,16 @@ if (!global.plug) {
         path.join(__dirname, '../tencent'),
         path.join(__dirname, '../lib')
     ];
-
     module.paths = plug.paths.concat(module.paths);
-
-    global.plug = plug;
 
     // 支持seajs模块
     require('loader/seajs');
     require('loader/extentions.js');
 
+    // 加固stringify
     JSON.stringify = (function(stringify) {
-        return function() {
-            let str = stringify.apply(this, arguments);
+        return function(...args) {
+            let str = stringify.apply(this, args);
 
             if (str && str.indexOf('<') > -1) {
                 str = str.replace(/</g, '\\u003C');
@@ -50,8 +43,5 @@ if (!global.plug) {
             return str;
         };
     })(JSON.stringify);
-
 }
-
-module.exports = plug;
 

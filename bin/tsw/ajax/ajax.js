@@ -18,7 +18,7 @@ const qs = require('qs');
 const form = require('./form.js');
 const token = require('./token.js');
 const config = require('config.js');
-const { isWindows } = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 const zlib = require('zlib');
 const L5 = require('api/L5/L5.api.js');
 const dcapi = require('api/libdcapi/dcapi.js');
@@ -63,7 +63,7 @@ Ajax.prototype.proxy = function(req, res) {
 
 Ajax.prototype.request = function(opt) {
 
-    if (config.devMode && isWindows && config.httpProxy && config.httpProxy.enable && !opt.ip && !opt.devIp) {
+    if (config.devMode && isWin32Like && config.httpProxy && config.httpProxy.enable && !opt.ip && !opt.devIp) {
         opt.proxyIp = config.httpProxy.ip;
         opt.proxyPort = config.httpProxy.port;
     }
@@ -97,7 +97,7 @@ Ajax.prototype.l5Request = function(opt) {
         return this.doRequest(opt);
     }
 
-    if (isWindows) {
+    if (isWin32Like) {
         // windows不走L5，直接请求
         return this.doRequest(opt);
     }
@@ -369,7 +369,7 @@ Ajax.prototype.doRequest = function(opt) {
             opt.ip = opt.testIp || opt.ip;
             opt.port = opt.testPort || opt.port;
         }
-    } else if ((config.devMode || isWindows)) {
+    } else if ((config.devMode || isWin32Like)) {
 
         if (opt.devIp) {
             logger.debug('use devIp');

@@ -11,7 +11,7 @@
 const os = require('os');
 const fs = require('fs');
 const cp = require('child_process');
-const { isWindows } = require('./isWindows.js');
+const { isWin32Like } = require('./isWindows.js');
 const logger = require('logger');
 let cache;
 
@@ -39,7 +39,7 @@ this.getCpuUsed = function(cpu) {
 
     cpu = cpu || '';
 
-    if (isWindows) {
+    if (isWin32Like) {
         return cache.curr;
     }
 
@@ -121,7 +121,7 @@ this.cpus = function() {
 
 
 this.taskset = function(oriCpu, pid) {
-    if (isWindows) {
+    if (isWin32Like) {
         return;
     }
 

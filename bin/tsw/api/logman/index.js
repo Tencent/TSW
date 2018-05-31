@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('logger');
 const dateApi = require('api/date.js');
-const { isWindows } = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 const logDir = path.resolve(__dirname, '../../../../log/').replace(/\\/g, '/');
 const backupDir = path.resolve(logDir, './backup/').replace(/\\/g, '/');
 const runlogPath = path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
@@ -72,7 +72,7 @@ const LogMan = {
             let cmdClear = 'cat /dev/null > ' + runlogPath;
 
             // 兼容windows
-            if (isWindows) {
+            if (isWin32Like) {
                 logFilePath = logFilePath.replace(/\\/g, '\\\\');
                 cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
                 cmdClear = 'type NUL > ' + runlogPath;

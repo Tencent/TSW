@@ -10,7 +10,7 @@
 
 const serverInfo = require('serverInfo.js');
 const config = require('config.js');
-const isWindows = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 const httpUtil = require('util/http');
 const logger = require('logger');
 const Deferred = require('util/Deferred');
@@ -22,7 +22,7 @@ this.SendMail = function(key, group, second, oriOpt) {
     const data = {};
     const now = new Date();
 
-    if (isWindows.isWindows) {
+    if (isWin32Like) {
         return;
     }
 
@@ -49,7 +49,7 @@ this.SendMail = function(key, group, second, oriOpt) {
 
     opt.data = data;
 
-    if (isWindows.isWindows) {
+    if (isWin32Like) {
         key = key + Date.now();
     }
 
