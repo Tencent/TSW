@@ -29,20 +29,20 @@ this.SendMail = function(opt) {
     opt = Deferred.extend({
         'appKey': '',
         'sysId': 0,
-        'EmailType': 1,        // 邮件类型，可选值0（外部邮件），1（内部邮件），2（约会邮件）
-        'From': '',       // 邮件发送人
-        'To': '',       // 邮件接收人
-        'Title': '',       // 邮件标题
-        'Content': '',       // 邮件内容
-        'Priority': 0,        // 邮件优先级，-1低优先级，0普通，1高优先级
-        'BodyFormat': 0,        // 邮件格式，0 文本、1 Html
+        'emailType': 1,        // 邮件类型，可选值0（外部邮件），1（内部邮件），2（约会邮件）
+        'from': '',       // 邮件发送人
+        'to': '',       // 邮件接收人
+        'title': '',       // 邮件标题
+        'content': '',       // 邮件内容
+        'priority': 0,        // 邮件优先级，-1低优先级，0普通，1高优先级
+        'bodyFormat': 0,        // 邮件格式，0 文本、1 Html
 
-        'CC': '',       // 邮件抄送人
-        'Bcc': '',       // 邮件密送人
-        'Location': '',       // 当邮件为约会邮件时，约会地点
-        'Organizer': '',       // 当邮件为约会邮件时，约会组织者
-        'StartTime': '',       // 当邮件为约会邮件时，约会开始时间
-        'EndTime': '',       // 当邮件为约会邮件时，约会结束时间
+        'cc': '',       // 邮件抄送人
+        'bcc': '',       // 邮件密送人
+        'location': '',       // 当邮件为约会邮件时，约会地点
+        'organizer': '',       // 当邮件为约会邮件时，约会组织者
+        'startTime': '',       // 当邮件为约会邮件时，约会开始时间
+        'endTime': '',       // 当邮件为约会邮件时，约会结束时间
         'attachment': ''        // 邮件附件的文件名以及文件的内容（在发送请求时，文件内容是二进制数据流的形式发送）
     }, opt);
 
@@ -57,10 +57,10 @@ this.SendWeiXin = function(opt) {
     opt = Deferred.extend({
         'appKey': '',
         'sysId': 0,
-        'MsgInfo': '',       // 内容
-        'Priority': 0,        // 优先级，-1低优先级，0普通，1高优先级
-        'Receiver': '',       // 接收人，英文名，多人用英文分号分隔
-        'Sender': ''        // 发送人
+        'msgInfo': '',       // 内容
+        'priority': 0,        // 优先级，-1低优先级，0普通，1高优先级
+        'receiver': '',       // 接收人，英文名，多人用英文分号分隔
+        'sender': ''        // 发送人
     }, opt);
 
     const defer = Deferred.create();
@@ -74,10 +74,10 @@ this.SendSMS = function(opt) {
     opt = Deferred.extend({
         'appKey': '',
         'sysId': 0,
-        'MsgInfo': '',       // 内容
-        'Priority': 0,        // 优先级，-1低优先级，0普通，1高优先级
-        'Receiver': '',       // 接收人，英文名，多人用英文分号分隔
-        'Sender': ''        // 发送人
+        'msgInfo': '',       // 内容
+        'priority': 0,        // 优先级，-1低优先级，0普通，1高优先级
+        'receiver': '',       // 接收人，英文名，多人用英文分号分隔
+        'sender': ''        // 发送人
     }, opt);
 
     const defer = Deferred.create();

@@ -49,7 +49,6 @@ module.exports = function(req, res) {
 
         clearTimeout(tid);
         tid = null;
-
         logger.debug('clear called');
 
         process.nextTick(function() {
@@ -69,7 +68,6 @@ module.exports = function(req, res) {
             }
 
             req.removeAllListeners('fail');
-
             res.removeAllListeners('timeout');
             res.removeAllListeners('close');
             res.removeAllListeners('finish');
@@ -101,8 +99,6 @@ module.exports = function(req, res) {
                 clear = null;
 
                 logger.debug('cleared');
-
-
             }, timeout);
         });
 
@@ -151,49 +147,19 @@ module.exports = function(req, res) {
 
     d.on('error', function(err) {
 
-        if (err && err.message === 'socket hang up') {
+        if (clear === null) {
             logger.warn(err && err.stack);
-
-            // 忽略ajax错误
             return;
         }
 
-        if (err && err.message === 'Cannot read property \'asyncReset\' of null') {
+        if (err && err.message && errorIgnore[err.message] === 'ignore') {
             logger.warn(err && err.stack);
-
-            // 忽略asyncReset错误
-            return;
-        }
-
-        if (err && err.message === 'Cannot read property \'resume\' of null') {
-            logger.warn(err && err.stack);
-
-            // 忽略io错误
-            return;
-        }
-
-        if (err && err.message === 'write ECONNRESET') {
-            logger.warn(err && err.stack);
-
-            // 忽略io错误
-            return;
-        }
-
-        if (err && err.message === 'This socket is closed') {
-            logger.warn(err && err.stack);
-
-            // 忽略io错误
             return;
         }
 
         if (err && err.stack && err.stack.indexOf('/') === -1 && err.stack.indexOf('\\') === -1) {
             logger.warn(err && err.stack);
             // 忽略原生错误
-            return;
-        }
-
-        if (clear === null) {
-            logger.warn(err && err.stack);
             return;
         }
 
@@ -231,64 +197,41 @@ module.exports = function(req, res) {
 
             try {
                 res.writeHead(503, { 'Content-Type': 'text/html; charset=UTF-8' });
-                res.end();
             } catch (e) {
                 logger.info(`response 503 fail ${e.message}`);
+            } finally {
+                res.end();
             }
         }
 
-        try {
-            res.emit('done');
-        } catch (e) {
-            logger.info(`emit done event fail ${e.message}`);
-        }
-
-        let key,
-            Content;
+        res.emit('done');
 
         if (err && err.stack && err.message) {
-
             if (err.message === 'Cannot read property \'asyncReset\' of null') {
                 return;
             }
-
             if (err.message.indexOf('ETIMEDOUT') > 0) {
                 return;
             }
-
             if (err.message.indexOf('timeout') > 0) {
                 return;
             }
-
             if (err.message.indexOf('hang up') > 0) {
                 return;
             }
-
             if (err.message.indexOf('error:140943FC') > 0) {
                 return;
             }
 
-            if (isWindows) {
-                // return;
-            }
-
-            key = [err.message].join(':');
-
-            Content = [
-                '<p><strong>错误堆栈</strong></p>',
-                '<p><pre><code>',
-                err.stack,
-                '</code></pre></p>',
-            ].join('');
-
+            const key = err.message;
+            const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
             mail.SendMail(key, 'js', 600, {
-                'Title': key,
+                'title': key,
                 'runtimeType': 'Error',
-                'MsgInfo': err.stack || err.message,
-                'Content': Content
+                'msgInfo': err.stack || err.message,
+                'content': content
             });
         }
-
     });
 
     res.once('finish', function() {
@@ -373,40 +316,10 @@ module.exports = function(req, res) {
         req.timestamps.ClientBeginResponse = req.timestamps.ServerBeginResponse;
         req.timestamps.ClientDoneResponse = req.timestamps.ServerDoneResponse;
 
-
-        if (isFail === 1) {
-            logger.debug('finish, statusCode: ${statusCode},cost: ${cost}ms', {
-                statusCode: res.statusCode,
-                cost: Date.now() - start.getTime()
-            });
-
-            if (typeof req.REQUEST.body === 'string') {
-
-                if (req.REQUEST.body.length < 32 * 1024) {
-                    logger.debug('\n${head}${body}', {
-                        head: httpUtil.getRequestHeaderStr(req),
-                        body: req.REQUEST.body || ''
-                    });
-                } else {
-                    logger.debug('\n${head}${body}', {
-                        head: httpUtil.getRequestHeaderStr(req),
-                        body: 'body size >= 32KB'
-                    });
-                }
-            } else {
-
-                logger.debug('\n${head}${body}', {
-                    head: httpUtil.getRequestHeaderStr(req),
-                    body: req.REQUEST.body || ''
-                });
-            }
-
-        } else {
-            logger.debug('finish, statusCode: ${statusCode}, cost: ${cost}ms', {
-                statusCode: res.statusCode,
-                cost: Date.now() - start.getTime()
-            });
-        }
+        logger.debug('finish, statusCode: ${statusCode},cost: ${cost}ms', {
+            statusCode: res.statusCode,
+            cost: Date.now() - start.getTime()
+        });
 
         if (res.__hasTimeout && isFail !== 1) {
 
@@ -444,55 +357,30 @@ module.exports = function(req, res) {
                 isFail: isFail,
                 delay: Date.now() - start.getTime()
             });
-
         }
-
-
         res.emit('afterFinish');
     });
 
     d.run(function() {
         tid = setTimeout(function() {
-
             res.__hasTimeout = true;
-
             logger.debug('timeout: ' + timeLimit);
-
             onerror(req, res, new Error('timeout'));
 
             if (res.__hasClosed) {
-
                 try {
                     res.writeHead(202);
                 } catch (e) {
                     logger.info(`response 202 fail ${e.message}`);
-                }
-                try {
+                } finally {
                     res.end();
-                } catch (e) {
-                    logger.info(`response end fail ${e.message}`);
                 }
-                try {
-                    res.emit('done');
-                } catch (e) {
-                    logger.info(`emit done event fail ${e.message}`);
-                }
+                res.emit('done');
             } else if (res.finished) {
-
-                try {
-                    res.end();
-                } catch (e) {
-                    logger.info(`response end fail ${e.message}`);
-                }
-                try {
-                    res.emit('done');
-                } catch (e) {
-                    logger.info(`emit done event fail ${e.message}`);
-                }
-            } else if (!res._headerSent && !res.headersSent && !res.finished && res.statusCode === 200) {
-                logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}', res);
-
-                // 输出一条错误log方便定位问题
+                res.end();
+                res.emit('done');
+            } else if (!res.headersSent && !res.finished && res.statusCode === 200) {
+                logger.debug('statusCode: ${statusCode}, headersSent: ${headersSent}, finished: ${finished}', res);
                 logger.error('response timeout http://${host}${url}', {
                     url: req.url,
                     host: req.headers.host
@@ -502,31 +390,14 @@ module.exports = function(req, res) {
                     res.writeHead(513);
                 } catch (e) {
                     logger.info(`response 513 fail ${e.message}`);
-                }
-                try {
+                } finally {
                     res.end();
-                } catch (e) {
-                    logger.info(`response end fail ${e.message}`);
                 }
-
-                try {
-                    res.emit('done');
-                } catch (e) {
-                    logger.info(`emit done event fail ${e.message}`);
-                }
+                res.emit('done');
             } else {
-                logger.debug('statusCode: ${statusCode}, _headerSent: ${_headerSent}, headersSent: ${headersSent}, finished: ${finished}', res);
-
-                try {
-                    res.end();
-                } catch (e) {
-                    logger.info(`response end fail ${e.message}`);
-                }
-                try {
-                    res.emit('done');
-                } catch (e) {
-                    logger.info(`emit done event fail ${e.message}`);
-                }
+                logger.debug('statusCode: ${statusCode},  headersSent: ${headersSent}, finished: ${finished}', res);
+                res.end();
+                res.emit('done');
             }
 
             req.emit('close');
@@ -543,11 +414,6 @@ function doRoute(req, res) {
 
     const clientIp = httpUtil.getUserIp(req);
     const userIp24 = httpUtil.getUserIp24(req);
-
-    // 增加测试环境header
-    if (config.isTest) {
-        res.setHeader('Test-Head', serverInfo.intranetIp || '');
-    }
 
     logger.debug('${method} ${protocol}://${host}${path}', {
         protocol: req.REQUEST.protocol,
@@ -576,18 +442,13 @@ function doRoute(req, res) {
         }
     }
 
-
-    // 安全中心扫描报个指标
-    // 支持从配置中直接屏蔽安全中心扫描请求
+    // 支持从配置中直接屏蔽扫描请求
     if (isTST.isTST(req)) {
         tnm2.Attr_API('SUM_TSW_HTTP_TST', 1);
-
         if (config.ignoreTST) {
             logger.debug('ignore TST request');
-
             res.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
             res.end('200');
-
             return;
         }
     }
@@ -635,7 +496,7 @@ function doRoute(req, res) {
         appid: config.appid || null
     });
 
-    // 测试环境
+    // 检查测试环境
     if (h5test.isTestUser(req, res)) {
         return;
     }
@@ -645,24 +506,23 @@ function doRoute(req, res) {
 
     // 深度超过5层，直接拒绝
     if (steps >= 5) {
-
         tnm2.Attr_API('SUM_TSW_ROUTE_EXCEED', 1);
-
         try {
             res.writeHead(503, { 'Content-Type': 'text/html; charset=UTF-8' });
-            res.end('503');
         } catch (e) {
             logger.info(`response 503 fail ${e.message}`);
+        } finally {
+            res.end();
         }
-
         return;
     }
 
+    // +1
     req.headers['tsw-trace-steps'] = steps + 1;
 
     let modulePath = httpModMap.find(mod_act, req, res);
 
-    if (res.headersSent || res._headerSent || res.finished) {
+    if (res.headersSent || res.finished) {
         return;
     }
 
@@ -697,9 +557,10 @@ function doRoute(req, res) {
     if (typeof modulePath !== 'function') {
         try {
             res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });
-            res.end('404');
         } catch (e) {
             logger.info(`response 404 fail ${e.message}`);
+        } finally {
+            res.end();
         }
         return;
     }
@@ -745,6 +606,7 @@ function doRoute(req, res) {
         return;
     }
 
+    // allowHost
     if (CCFinder.checkHost(req, res) === false) {
         return;
     }
@@ -754,28 +616,17 @@ function doRoute(req, res) {
     }
 
     // webso柔性
-    if (global.cpuUsed > 80) {
-
+    if (global.cpuUsed > config.cpuLimit) {
         if (httpUtil.isFromWns(req) && req.headers['if-none-match']) {
-
-            logger.debug('webso limit 304, cpuUsed: ${cpuUsed}', {
-                cpuUsed: global.cpuUsed
-            });
-
+            logger.debug(`webso limit 304, cpuUsed: ${global.cpuUsed}, cpuLimit: ${config.cpuLimit}`);
             tnm2.Attr_API('SUM_TSW_WEBSO_LIMIT', 1);
-            try {
-                res.writeHead(304, {
-                    'Content-Type': 'text/html; charset=UTF-8',
-                    'Etag': req.headers['if-none-match']
-                });
-                res.end();
-            } catch (e) {
-                logger.info(`response 304 fail ${e.message}`);
-            }
-
+            res.writeHead(304, {
+                'Content-Type': 'text/html; charset=UTF-8',
+                'Etag': req.headers['if-none-match']
+            });
+            res.end();
             return;
         }
-
     }
 
     const contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
@@ -783,7 +634,7 @@ function doRoute(req, res) {
     if (req.method === 'GET' || req.method === 'HEAD') {
 
         if (httpUtil.isFromWns(req)) {
-            // wns请求不过门神检查
+            // wns请求不过XSS检查
             return modulePathHandler();
         }
 
@@ -794,6 +645,7 @@ function doRoute(req, res) {
             res.end('501 by TSW');
         });
     } else if (context.autoParseBody === false) {
+        // stream handler
         return modulePathHandler();
     } else if (
         contentType.indexOf('application/x-www-form-urlencoded') > -1
@@ -814,7 +666,7 @@ function onerror(req, res, err) {
     const listener = req.listeners('fail');
     const window = context.window || {};
 
-    if (res.headersSent || res._headerSent || res.finished) {
+    if (res.headersSent || res.finished) {
         return;
     }
 
@@ -832,8 +684,17 @@ function onerror(req, res, err) {
             window.onerror(err);
         } catch (e) {
             logger.error(e && e.stack);
+        } finally {
+            window.onerror = null;
         }
-
-        window.onerror = null;
     }
 }
+
+
+const errorIgnore = {
+    'socket hang up': 'ignore',
+    'Cannot read property \'asyncReset\' of null': 'ignore',
+    'Cannot read property \'resume\' of null': 'ignore',
+    'write ECONNRESET': 'ignore',
+    'This socket is closed': 'ignore'
+};

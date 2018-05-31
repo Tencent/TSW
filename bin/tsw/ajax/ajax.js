@@ -905,8 +905,6 @@ Ajax.prototype.doRequest = function(opt) {
                 responseText,
                 buffer,
                 code;
-            let key,
-                Content;
 
             this.removeAllListeners('close');
             this.removeAllListeners('end');
@@ -1065,19 +1063,13 @@ Ajax.prototype.doRequest = function(opt) {
                             times: times
                         });
 
-                        key = [window.request.headers.host, context.mod_act, parseErr.message].join(':');
-
-                        Content = [
-                            '<p><strong>错误堆栈</strong></p>',
-                            '<p><pre><code>',
-                            parseErr.stack,
-                            '</code></pre></p>',
-                        ].join('');
+                        const key = [window.request.headers.host, context.mod_act, parseErr.message].join(':');
+                        const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${parseErr.stack}</code></pre></p>`;
 
                         require('util/mail/mail.js').SendMail(key, 'js data', 1800, {
-                            'Title': key,
-                            'Content': Content,
-                            'MsgInfo': '错误堆栈:\n' + parseErr.stack
+                            'title': key,
+                            'content': content,
+                            'msgInfo': '错误堆栈:\n' + parseErr.stack
                         });
 
                         return;

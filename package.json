@@ -1,13 +1,14 @@
 {
   "name": "TSW",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
   "scripts": {
     "lint": "eslint examples bin test --fix",
     "precommit": "lint-staged",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "test": "mocha --recursive test/bin",
-    "coverage": "nyc --reporter=lcov  --reporter=text npm test && codecov"
+    "coverage": "nyc --reporter=lcov  --reporter=text npm test && codecov",
+    "optional": "npm i heapdump && npm i v8-profiler"
   },
   "repository": {
     "type": "git",
@@ -35,10 +36,6 @@
     "nyc": "^11.6.0",
     "plug": "file:./bin/plug",
     "sinon": "^4.1.2"
-  },
-  "optionalDependencies": {
-    "heapdump": "^0.3.9",
-    "v8-profiler": "^5.7.0"
   },
   "keywords": [
     "TSW"

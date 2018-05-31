@@ -32,28 +32,31 @@ echo "copy so done"
 if [ -e "../log" ]
 then
 	echo "log exists"
+	chmod 777 ../log
 else
 	echo "mkdir log"
 	mkdir ../log
-	chmod -R 777 ../log
+	chmod 777 ../log
 fi
 
 if [ -e "../log/diff" ]
 then
 	echo "log/diff exists"
+	chmod 777 ../log/diff
 else
 	echo "mkdir diff"
 	mkdir ../log/diff
-	chmod -R 777 ../log/diff
+	chmod 777 ../log/diff
 fi
 
 if [ -e "../log/cache" ]
 then
 	echo "log/cache exists"
+	chmod 777 ../log/cache
 else
 	echo "mkdir cache"
 	mkdir ../log/cache
-	chmod -R 777 ../log/cache
+	chmod 777 ../log/cache
 fi
 
 
