@@ -21,7 +21,7 @@ if (global[__filename]) {
     // 追踪重复读写
     process.nextTick(function() {
         const cache = global[__filename];
-        const isWindows = require('util/isWindows');
+        const { isWin32Like } = require('util/isWindows');
         const fs = require('fs');
         const logger = require('logger');
         const config = require('config');
@@ -156,7 +156,7 @@ if (global[__filename]) {
 
         function hack(fn, callback) {
 
-            if (isWindows.isWindows) {
+            if (isWin32Like) {
                 return fn;
             }
 

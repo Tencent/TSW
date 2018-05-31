@@ -9,12 +9,12 @@
 
 
 const os = require('os');
-const { isWindows } = require('util/isWindows');
+const { isWin32Like } = require('util/isWindows');
 const isInnerIP = require('util/http.isInnerIP.js');
 
 this.intranetIp = '127.0.0.1';
 
-if (isWindows) {
+if (isWin32Like) {
     this.intranetIp = getWinLocalIpv4();
 } else {
     this.intranetIp = getLinuxLocalIpv4();

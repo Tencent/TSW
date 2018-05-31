@@ -9,5 +9,6 @@
 
 
 this.isOSX = process.platform === 'darwin';
-this.isWindows = /\\/.test(__dirname) || this.isOSX;
+this.isWindows = process.platform === 'win32' || this.isOSX;
+this.isWin32Like = this.isWindows;
 this.isLinux = !(this.isWindows || this.isOSX);

@@ -30,7 +30,7 @@ const websocket = require('./websocket.js');
 const packageJSON = require('../../package.json');
 const headerServer = `TSW/${packageJSON.version}`;
 const methodMap = {};
-const { isWindows } = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 const { debugOptions } = process.binding('config');
 const serverInfo = {
     intranetIp: require('serverInfo.js').intranetIp,
@@ -134,7 +134,7 @@ process.on('top100', function(e) {
 
 
 process.on('heapdump', function(e) {
-    if (isWindows) {
+    if (isWin32Like) {
         return;
     }
 
@@ -152,7 +152,7 @@ process.on('heapdump', function(e) {
 
 process.on('profiler', function(data = {}) {
     logger.info('profiler time: ${time}', data);
-    if (isWindows) {
+    if (isWin32Like) {
         return;
     }
 
@@ -282,7 +282,7 @@ function listen(cpu) {
 
             startHeartBeat();
 
-            if (!isWindows) {
+            if (!isWin32Like) {
                 try {
                     process.setuid(user_00);
                 } catch (err) {
@@ -392,7 +392,7 @@ function heartBeat() {
     tnm2.Attr_API_Set('AVG_TSW_CPU_USED', cpuUsed);
 
     // 高负载告警
-    if (global.cpuUsed80 === 4 && !config.isTest && !isWindows) {
+    if (global.cpuUsed80 === 4 && !config.isTest && !isWin32Like) {
         // 取进程快照
         cp.exec('top -bcn1', {
             env: {

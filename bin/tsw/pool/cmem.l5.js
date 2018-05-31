@@ -12,7 +12,7 @@ const logger = require('logger');
 const Queue = require('util/Queue');
 const dcapi = require('api/libdcapi/dcapi.js');
 const L5 = require('api/L5/L5.api.js');
-const { isWindows } = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 let cache = global[__filename];
 
 if (!cache) {
@@ -36,7 +36,7 @@ module.exports.getCmem = function(opt) {
         return null;
     }
 
-    if (!isWindows && opt.modid && opt.cmd) {
+    if (!isWin32Like && opt.modid && opt.cmd) {
 
         route = L5.ApiGetRouteSync(opt);
 

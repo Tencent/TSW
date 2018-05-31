@@ -13,7 +13,7 @@ const domain = require('domain');
 const serverInfo = require('serverInfo.js');
 const config = require('./config.js');
 const dcapi = require('api/libdcapi/dcapi.js');
-const { isWindows } = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 const contextMod = require('context.js');
 const Context = require('runtime/Context');
 const Window = require('runtime/Window');
@@ -137,7 +137,7 @@ module.exports = function(req, res) {
         ClientDoneResponse: 0
     };
 
-    if (isWindows || config.devMode) {
+    if (isWin32Like || config.devMode) {
         d.currentContext.log.showLineNumber = true;
     }
 

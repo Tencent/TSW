@@ -8,7 +8,7 @@
 'use strict';
 
 
-const isWindows = require('util/isWindows');
+const { isWin32Like } = require('util/isWindows');
 const serverInfo = require('serverInfo.js');
 const logger = require('logger');
 const isInnerIP = require('util/http.isInnerIP.js');
@@ -336,7 +336,7 @@ this.getUserIp = function(request) {
     }
 
     // win7判断
-    if (isWindows.isWindows && userIp === '127.0.0.1') {
+    if (isWin32Like && userIp === '127.0.0.1') {
         userIp = serverInfo.intranetIp || userIp;
         request.userIp = userIp;
 

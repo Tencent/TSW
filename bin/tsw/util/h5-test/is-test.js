@@ -13,7 +13,7 @@ const logger = require('logger');
 const serverInfo = require('serverInfo');
 const config = require('config');
 const ajax = require('ajax');
-const isWindows = require('util/isWindows');
+const { isWin32Like } = require('util/isWindows');
 const isTST = require('util/isTST');
 const alpha = require('util/auto-report/alpha');
 const cmemTSW = require('data/cmem.tsw.js');
@@ -84,7 +84,7 @@ const getTestUserMap = function() {
         global[__filename] = module.exports.getTestUserMapFromFileCache() || {};
     }
 
-    if (Date.now() - lastUpdateTime > getTimeout || isWindows.isWindows) {
+    if (Date.now() - lastUpdateTime > getTimeout || isWin32Like) {
         lastUpdateTime = Date.now();
         syncFromMemcachedOrCloud();
     }
@@ -126,7 +126,7 @@ const syncFromMemcached = function() {
         alpha.update(global[__filename]);
 
         // 服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
-        if (isWindows.isWindows) {
+        if (isWin32Like) {
             onDisconnect('test.in.windows');
         }
     });
@@ -197,7 +197,7 @@ const syncFromCloud = function(merge) {
         alpha.update(global[__filename]);
 
         // 服务器上超时逻辑里面不做fileCache，较少不必要的磁盘IO;windows环境下一般不会走到这里,just for jest
-        if (isWindows.isWindows) {
+        if (isWin32Like) {
             onDisconnect('test.in.windows');
         }
 
@@ -212,7 +212,7 @@ module.exports.getTestSpaceInfo = function(req) {
     const testTargetMap = getTestUserMap();
 
     // windows版本，更不用转
-    if (isWindows.isWindows) {
+    if (isWin32Like) {
         return;
     }
 
