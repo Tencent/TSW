@@ -35,15 +35,15 @@ process.on('uncaughtException', function(e) {
 process.on('warning', function(warning) {
     const key = String(warning);
     const errStr = warning && warning.stack || String(warning);
-    const Content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
+    const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
     logger.error(errStr);
 
     setImmediate(function() {
         require('util/mail/mail.js').SendMail(key, 'js', 600, {
-            'Title': key,
+            'title': key,
             'runtimeType': 'warning',
-            'Content': Content
+            'content': content
         });
     });
 });
@@ -52,7 +52,7 @@ process.on('warning', function(warning) {
 process.on('unhandledRejection', (errorOrReason, currPromise) => {
     const errStr = String(errorOrReason && errorOrReason.stack || JSON.stringify(errorOrReason));
     const key = String(errorOrReason && errorOrReason.message);
-    const Content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
+    const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
     // 恢复上下文
     if (currPromise && currPromise.domain) {
@@ -60,9 +60,9 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
             logger.error(`unhandledRejection reason: ${errStr}`);
             setImmediate(function() {
                 require('util/mail/mail.js').SendMail(key, 'js', 600, {
-                    'Title': key,
+                    'title': key,
                     'runtimeType': 'unhandledRejection',
-                    'Content': Content
+                    'content': content
                 });
             });
         });

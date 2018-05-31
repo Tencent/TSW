@@ -112,7 +112,7 @@ this.check = function(req, res) {
     const userIp = httpUtil.getUserIp(req);
     const userIp24 = httpUtil.getUserIp24(req);
 
-    let Content;
+    let content;
 
     const info = {
         userIp: userIp,
@@ -203,7 +203,7 @@ this.check = function(req, res) {
     // 发现目标，发邮件
     const key = `[AVG_TSW_IP_STD_X10]:${serverInfo.intranetIp}`;
 
-    Content = '';
+    content = '';
 
     Object.keys(cache.ipCacheLast).forEach(function(ip, i) {
 
@@ -216,21 +216,21 @@ this.check = function(req, res) {
         ) {
             num = String(cache.ipCacheLast[ip].list.length);
             num = (num + 'XXXXXX').slice(0, 8).replace(/X/g, '&nbsp;');
-            Content += `<div style="font-size:12px;">${num}${ip}</div>`;
+            content += `<div style="font-size:12px;">${num}${ip}</div>`;
         }
     });
 
     mail.SendMail(key, 'TSW', 3600, {
-        'To': config.mailTo,
-        'CC': config.mailCC,
-        'Title': `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
-        'Content': '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
+        'to': config.mailTo,
+        'cc': config.mailCC,
+        'title': `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
+        'content': '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
                         + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
                         + '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
                         + '<p><strong>正常值：</strong>5-50</p>'
                         + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10) + 's</p>'
                         + '<p><strong>证据列表：</strong></p>'
-                        + Content
+                        + content
     });
 
 

@@ -402,7 +402,7 @@ function heartBeat() {
             timeout: 5000
         }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
             const key = `cpu80.v4:${serverInfo.intranetIp}`;
-            let Content = `<strong>单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%, 最近5秒钟CPU Profiler见附件</strong>`;
+            let content = `<strong>单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%, 最近5秒钟CPU Profiler见附件</strong>`;
             let str = '';
 
             if (data) {
@@ -410,7 +410,7 @@ function heartBeat() {
                 str = str.replace(/</g, '&gt;');
                 str = str.replace(/\r\n|\r|\n/g, '<br>');
 
-                Content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
+                content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
             }
 
 
@@ -433,11 +433,11 @@ function heartBeat() {
                     recordTime: 5000
                 }, result => {
                     mail.SendMail(key, 'js', 600, {
-                        'To': config.mailTo,
-                        'CC': owner,
-                        'MsgInfo': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                        'Title': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                        'Content': Content,
+                        'to': config.mailTo,
+                        'cc': owner,
+                        'msgInfo': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
+                        'title': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
+                        'content': content,
                         'attachment': result ? {
                             fileType: true,
                             dispositionType: 'attachment',
