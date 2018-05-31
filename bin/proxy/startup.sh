@@ -28,9 +28,20 @@ else
 	echo "do nothing, there is no pids"
 fi
 
+CUR_ARGS=""
+
+if [ -f "/etc/node_args.ini" ]
+then
+	CUR_ARGS=$(head -1 /etc/node_args.ini)
+else
+    echo "do nothing, node_args.ini ignore"
+fi
+
+echo "args: $CUR_ARGS"
+
 cd ${CUR_DIR}/../
 pwd
-./TSW --expose_internals ./proxy >> ../log/run.log.0 2>&1 &
+./TSW --expose_internals $CUR_ARGS ./proxy >> ../log/run.log.0 2>&1 &
 
 echo start done
 

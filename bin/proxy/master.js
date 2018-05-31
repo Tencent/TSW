@@ -61,7 +61,7 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
             setImmediate(function() {
                 require('util/mail/mail.js').SendMail(key, 'js', 600, {
                     'Title': key,
-                    'runtimeType': 'warning',
+                    'runtimeType': 'unhandledRejection',
                     'Content': Content
                 });
             });
