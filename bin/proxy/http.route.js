@@ -152,7 +152,7 @@ module.exports = function(req, res) {
             return;
         }
 
-        if (errorIgnore[err || err.message] === 'ignore') {
+        if (err && err.message && errorIgnore[err.message] === 'ignore') {
             logger.warn(err && err.stack);
             return;
         }
@@ -224,12 +224,12 @@ module.exports = function(req, res) {
             }
 
             const key = err.message;
-            const Content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
+            const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
             mail.SendMail(key, 'js', 600, {
-                'Title': key,
+                'title': key,
                 'runtimeType': 'Error',
-                'MsgInfo': err.stack || err.message,
-                'Content': Content
+                'msgInfo': err.stack || err.message,
+                'content': content
             });
         }
     });

@@ -21,7 +21,6 @@ this.SendMail = function(key, group, second, oriOpt) {
     const opt = Deferred.extend({}, oriOpt);
     const data = {};
     const now = new Date();
-    let prefix = '[runtime]';
 
     if (isWindows.isWindows) {
         return;
@@ -33,24 +32,12 @@ this.SendMail = function(key, group, second, oriOpt) {
         return;
     }
 
-    if (context.title) {
-        opt.Title = `[${context.title}]${opt.Title}`;
-    }
-
-    if (config.isTest) {
-        prefix += '[测试环境]';
-    } else {
-        if (opt.runtimeType) {
-            prefix += `[${opt.runtimeType}][考核]`;
-        }
-    }
-
-    opt.Title = prefix + opt.Title;
-
-    data.Title = opt.Title || '';
+    data.title = opt.title || '';
+    data.oriTitle = oriOpt.title || '';
+    data.ctxTitle = context.title || '';
     data.isTest = ~~config.isTest;
-    data.Content = opt.Content || '';
-    data.MsgInfo = opt.MsgInfo || '';
+    data.content = opt.content || '';
+    data.msgInfo = opt.msgInfo || '';
     data.intranetIp = serverInfo.intranetIp || '';
     data.second = second || '';
     data.idc = config.idc || '';

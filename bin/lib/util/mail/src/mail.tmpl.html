@@ -27,7 +27,7 @@ code{
 
 </head>
 <body>
-	<p><%=data.Content%></p>
+	<p><%=data.content%></p>
 	<p><strong>服务器IP:</strong> <%=data.intranetIp%></p>
 
 	<p><strong>进程名字:</strong> <%=tmpl.encodeHtml(data.processTitle)%></p>
@@ -57,7 +57,7 @@ code{
 
 var window = context.window || {};
 %>
-<%=data.MsgInfo%>
+<%=data.msgInfo%>
 <%='\r\n\r\n'%>
 服务器IP:<%=data.intranetIp%><%='\r\n'%>
 进程名字: <%=tmpl.encodeHtml(process.title)%><%='\r\n'%>
