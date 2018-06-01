@@ -12,7 +12,7 @@ const config = require('./logger.config');
 const util = require('util');
 const contextMod = require('context.js');
 const callInfo = require('./callInfo.js');
-const { isWindows } = require('util/isWindows.js');
+const { isWin32Like } = require('util/isWindows.js');
 const { debugOptions } = process.binding('config');
 const tnm2 = require('api/tnm2');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
@@ -345,7 +345,7 @@ Logger.prototype = {
             enable = true;
         }
 
-        if ((enable) || isWindows) {
+        if ((enable) || isWin32Like) {
 
             info = callInfo.getCallInfo(3);
 
@@ -366,7 +366,7 @@ Logger.prototype = {
 
             filename = filename || '';
 
-            if (isWindows) {
+            if (isWin32Like) {
                 filename = filename.replace(/\\/g, '/');
             }
 
@@ -521,7 +521,7 @@ function isExceedFreq(level, str, obj) {
     let exceed = false;
     let cfg;
 
-    if (isWindows) {
+    if (isWin32Like) {
         return false;
     }
 

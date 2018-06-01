@@ -7,15 +7,11 @@
  */
 'use strict';
 
-
-const logger = require('logger');
-const httpRoute = require('../proxy/http.route.js');
-const parseGet = require('util/http/parseGet.js');
-
-this.route = function(url, mod_act) {
-
+this.route = function(url, name) {
+    const logger = require('logger');
+    const httpRoute = require('../proxy/http.route.js');
+    const parseGet = require('util/http/parseGet.js');
     const window = context.window || {};
-
     const req = window.request;
     const res = window.response;
 
@@ -26,22 +22,14 @@ this.route = function(url, mod_act) {
     res.removeAllListeners('afterFinish');
 
     if (url) {
-
-        logger.debug('route to : ${url}', {
-            url: url
-        });
-
+        logger.debug(`route to : ${url}`);
         req.url = url;
-        // 解析get参数
-        parseGet(req);
+        parseGet(req);  // 解析get参数
     }
 
-    if (mod_act) {
-        logger.debug('route to mod_act: ${mod_act}', {
-            mod_act: mod_act
-        });
-
-        context.mod_act = mod_act;
+    if (name) {
+        logger.debug(`route to name: ${name}`);
+        context.mod_act = name;
     } else {
         context.mod_act = null;
     }

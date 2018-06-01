@@ -10,7 +10,7 @@
 
 const config = require('config');
 const logger = require('logger');
-const { isWindows } = require('util/isWindows');
+const { isWin32Like } = require('util/isWindows');
 const TSW = require('api/keyman');
 
 if (!global[__filename]) {
@@ -50,7 +50,7 @@ this.isAlpha = function(req) {
         }
     }
 
-    if (uin && isWindows) {
+    if (uin && isWin32Like) {
         // windows 抓包用
         if (config.skyMode) {
             return true;
