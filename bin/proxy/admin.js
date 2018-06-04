@@ -15,7 +15,7 @@ const codeWatch = require('api/code/watcher.js');
 const parseGet = require('util/http/parseGet.js');
 const actions = require('./admin.actions.js');
 
-const server = http.createServer(function(req, res) {
+const server = http.createServer(function (req, res) {
     logger.info('admin request by： ${url}', {
         url: req.url
     });
@@ -25,24 +25,27 @@ const server = http.createServer(function(req, res) {
     action.call(actions, req, res);
 });
 
-logger.info('start admin...');
+this.start = function () {
+    // 管理进程开启debug日志
+    logger.setLogLevel('debug');
 
-server.listen(config.httpAdminPort, '127.0.0.1', function(err) {
-    if (err) {
-        logger.info('admin listen error ${address}:${port}', {
-            address: '127.0.0.1',
-            port: config.httpAdminPort
-        });
-    } else {
-        logger.info('admin listen ok ${address}:${port}', {
-            address: '127.0.0.1',
-            port: config.httpAdminPort
-        });
-    }
-});
+    logger.info('start admin...');
 
-// 管理进程开启debug日志
-logger.setLogLevel('debug');
+    server.listen(config.httpAdminPort, '127.0.0.1', function (err) {
+        if (err) {
+            logger.info('admin listen error ${address}:${port}', {
+                address: '127.0.0.1',
+                port: config.httpAdminPort
+            });
+        } else {
+            logger.info('admin listen ok ${address}:${port}', {
+                address: '127.0.0.1',
+                port: config.httpAdminPort
+            });
+        }
+    });
 
-// 变更感知
-codeWatch.watch();
+    // 变更感知
+    codeWatch.watch();
+};
+
