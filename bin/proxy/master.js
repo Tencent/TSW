@@ -82,7 +82,7 @@ function startServer() {
 
     let useWorker = true;
 
-    if (debugOptions && debugOptions.inspectorEnabled) {
+    if (debugOptions.inspectorEnabled) {
         useWorker = false;
     }
 
@@ -290,6 +290,14 @@ function startServer() {
         setTimeout(function() {
             require('runtime/md5.check.js').check();
         }, 30 * 60000);
+
+        if (cluster.isMaster && debugOptions.inspectorEnabled) {
+            logger.setLogLevel('debug');
+            logger.info('inspectorEnabled, start listening');
+            process.emit('message', {
+                cmd: 'listen', cpu: 0
+            });
+        }
     }
 }
 
