@@ -16,7 +16,6 @@ process.on('uncaughtException', function(e) {
 const logger = require('logger');
 const http = require('http');
 const https = require('https');
-const cluster = require('cluster');
 const util = require('util');
 const fs = require('fs');
 const cp = require('child_process');
@@ -31,7 +30,6 @@ const packageJSON = require('../../package.json');
 const headerServer = `TSW/${packageJSON.version}`;
 const methodMap = {};
 const { isWin32Like } = require('util/isWindows.js');
-const { debugOptions } = process.binding('config');
 const serverInfo = {
     intranetIp: require('serverInfo.js').intranetIp,
     cpu: 'X'
@@ -78,20 +76,20 @@ logger.info('pid:${pid} createServer ok', {
 require('webapp/Server.js').startServer();
 
 // 分发父进程发送来的消息
-process.on('message', function(m) {
-    if (m && methodMap[m.cmd]) {
-        logger.info(`cpu: ${serverInfo.cpu} ${m.cmd}`);
-        methodMap[m.cmd].apply(this, arguments);
+process.on('message', function(message) {
+    if (!message) {
+        return;
     }
-});
+    if (!message.cmd) {
+        return;
+    }
+    if (!methodMap[message.cmd]) {
+        return;
+    }
 
-if (cluster.isMaster) {
-    if (debugOptions && debugOptions.inspectorEnabled) {
-        logger.setLogLevel('debug');
-        logger.info('inspectorEnabled, start listening');
-        listen(0);
-    }
-}
+    logger.info(`cpu: ${serverInfo.cpu} ${message.cmd}`);
+    methodMap[message.cmd](message);
+});
 
 // restart
 methodMap.restart = function() {
@@ -104,23 +102,23 @@ methodMap.reload = function() {
 };
 
 // heapdump
-methodMap.heapdump = function(m) {
-    process.emit('heapdump', m.GET);
+methodMap.heapdump = function(message) {
+    process.emit('heapdump', message.GET);
 };
 
 // profiler
-methodMap.profiler = function(m) {
-    process.emit('profiler', m.GET);
+methodMap.profiler = function(message) {
+    process.emit('profiler', message.GET);
 };
 
 // globaldump
-methodMap.globaldump = function(m) {
-    process.emit('globaldump', m.GET);
+methodMap.globaldump = function(message) {
+    process.emit('globaldump', message.GET);
 };
 
 // top100
-methodMap.top100 = function(m) {
-    process.emit('top100', m.GET);
+methodMap.top100 = function(message) {
+    process.emit('top100', message.GET);
 };
 
 // 监听端口
@@ -165,7 +163,6 @@ process.on('profiler', function(data = {}) {
     });
 });
 
-// process.emit('globaldump',m.GET);
 process.on('globaldump', function(GET) {
     const cpu = parseInt(GET.cpu, 10) || 0;
     const depth = GET.depth || 6;
