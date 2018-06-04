@@ -117,157 +117,7 @@ function startServer() {
             });
         }
 
-        // 监听子进程是否fork成功
-        cluster.on('fork', function(currWorker) {
-
-            const cpu = getToBindCpu(currWorker);
-
-            logger.info('worker fork success! pid:${pid} cpu: ${cpu}', {
-                pid: currWorker.process.pid,
-                cpu: cpu
-            });
-
-            // 绑定cpu
-            cpuUtil.taskset(cpu, currWorker.process.pid);
-
-            if (workerMap[cpu]) {
-                closeWorker(workerMap[cpu]);
-            }
-
-            workerMap[cpu] = currWorker;
-            cpuMap[cpu] = 1;
-
-            // 监听子进程发来的消息并处理
-            currWorker.on('message', function(...args) {
-                const m = args[0];
-                if (m && methodMap[m.cmd]) {
-                    methodMap[m.cmd].apply(this, args);
-                }
-            });
-
-            // 给子进程发送消息，启动http服务
-            currWorker.send({
-                from: 'master',
-                cmd: 'listen',
-                cpu: cpu
-            });
-
-        });
-
-        // 子进程退出时做下处理
-        cluster.on('disconnect', function(worker) {
-            const cpu = getToBindCpu(worker);
-
-            if (worker.hasRestart) {
-                return;
-            }
-
-            logger.info('worker${cpu} pid=${pid} has disconnected. restart new worker again.', {
-                pid: worker.process.pid,
-                cpu: cpu
-            });
-
-            restartWorker(worker);
-        });
-
-        // 子进程被杀死的时候做下处理，原地复活
-        cluster.on('exit', function(worker) {
-
-            const cpu = getToBindCpu(worker);
-
-            if (worker.hasRestart) {
-                return;
-            }
-
-            logger.info('worker${cpu} pid=${pid} has been killed. restart new worker again.', {
-                pid: worker.process.pid,
-                cpu: cpu
-            });
-
-            restartWorker(worker);
-        });
-
-        process.on('reload', function(GET) {
-
-            let timeout = 1000,
-                cpu = 0,
-                key,
-                worker;
-
-            if (isDeaded) {
-                process.exit(0);
-            }
-
-            logger.info('reload');
-
-            for (key in workerMap) {
-                worker = workerMap[key];
-                try {
-
-                    cpu = getToBindCpu(worker);
-
-                    if (config.isTest || config.devMode) {
-                        timeout = (cpu % 8) * 1000;
-                    } else {
-                        timeout = (cpu % 8) * 3000;
-                    }
-
-                    setTimeout((function(worker, cpu) {
-                        return function() {
-                            if (!worker.exitedAfterDisconnect) {
-                                logger.info('cpu${cpu} send restart message', {
-                                    cpu: cpu
-                                });
-                                worker.send({ from: 'master', cmd: 'restart' });
-                            }
-                            restartWorker(worker);
-                        };
-                    })(worker, cpu), timeout);
-
-                    logger.info('cpu${cpu} reload after ${timeout}ms', {
-                        cpu: cpu,
-                        timeout: timeout
-                    });
-
-                } catch (e) {
-                    logger.error(e.stack);
-                }
-            }
-
-        });
-
-        process.on('sendCmd2workerOnce', function(data) {
-
-            let key,
-                worker;
-            const CMD = data.CMD;
-            const GET = data.GET;
-
-            if (isDeaded) {
-                process.exit(0);
-            }
-
-            logger.info('sendCmd2workerOnce CMD: ${CMD}', {
-                CMD
-            });
-
-            const targetCpu = parseInt(GET.cpu, 10) || 0;
-
-            for (key in workerMap) {
-                worker = workerMap[key];
-                try {
-                    if (targetCpu === getToBindCpu(worker)) {
-                        if (!worker.exitedAfterDisconnect) {
-                            worker.send({ from: 'master', cmd: CMD, GET: GET });
-                        }
-                        break;
-                    }
-                } catch (e) {
-                    logger.error(e.stack);
-                }
-            }
-        });
-
+        masterEventHandler();
         checkWorkerAlive();
         startAdmin();
 
@@ -485,5 +335,164 @@ function startAdmin() {
     // log管理
     require('api/logman').start({
         delay: 'H' // 按小时归类log
+    });
+}
+
+
+function masterEventHandler() {
+
+    if (!cluster.isMaster) {
+        return;
+    }
+
+    // 监听子进程是否fork成功
+    cluster.on('fork', function(currWorker) {
+
+        const cpu = getToBindCpu(currWorker);
+
+        logger.info('worker fork success! pid:${pid} cpu: ${cpu}', {
+            pid: currWorker.process.pid,
+            cpu: cpu
+        });
+
+        // 绑定cpu
+        cpuUtil.taskset(cpu, currWorker.process.pid);
+
+        if (workerMap[cpu]) {
+            closeWorker(workerMap[cpu]);
+        }
+
+        workerMap[cpu] = currWorker;
+        cpuMap[cpu] = 1;
+
+        // 监听子进程发来的消息并处理
+        currWorker.on('message', function(...args) {
+            const m = args[0];
+            if (m && methodMap[m.cmd]) {
+                methodMap[m.cmd].apply(this, args);
+            }
+        });
+
+        // 给子进程发送消息，启动http服务
+        currWorker.send({
+            from: 'master',
+            cmd: 'listen',
+            cpu: cpu
+        });
+
+    });
+
+    // 子进程退出时做下处理
+    cluster.on('disconnect', function(worker) {
+        const cpu = getToBindCpu(worker);
+
+        if (worker.hasRestart) {
+            return;
+        }
+
+        logger.info('worker${cpu} pid=${pid} has disconnected. restart new worker again.', {
+            pid: worker.process.pid,
+            cpu: cpu
+        });
+
+        restartWorker(worker);
+    });
+
+    // 子进程被杀死的时候做下处理，原地复活
+    cluster.on('exit', function(worker) {
+
+        const cpu = getToBindCpu(worker);
+
+        if (worker.hasRestart) {
+            return;
+        }
+
+        logger.info('worker${cpu} pid=${pid} has been killed. restart new worker again.', {
+            pid: worker.process.pid,
+            cpu: cpu
+        });
+
+        restartWorker(worker);
+    });
+
+    process.on('reload', function(GET) {
+
+        let timeout = 1000,
+            cpu = 0,
+            key,
+            worker;
+
+        if (isDeaded) {
+            process.exit(0);
+        }
+
+        logger.info('reload');
+
+        for (key in workerMap) {
+            worker = workerMap[key];
+            try {
+
+                cpu = getToBindCpu(worker);
+
+                if (config.isTest || config.devMode) {
+                    timeout = (cpu % 8) * 1000;
+                } else {
+                    timeout = (cpu % 8) * 3000;
+                }
+
+                setTimeout((function(worker, cpu) {
+                    return function() {
+                        if (!worker.exitedAfterDisconnect) {
+                            logger.info('cpu${cpu} send restart message', {
+                                cpu: cpu
+                            });
+                            worker.send({ from: 'master', cmd: 'restart' });
+                        }
+                        restartWorker(worker);
+                    };
+                })(worker, cpu), timeout);
+
+                logger.info('cpu${cpu} reload after ${timeout}ms', {
+                    cpu: cpu,
+                    timeout: timeout
+                });
+
+            } catch (e) {
+                logger.error(e.stack);
+            }
+        }
+
+    });
+
+    process.on('sendCmd2workerOnce', function(data) {
+
+        let key,
+            worker;
+        const CMD = data.CMD;
+        const GET = data.GET;
+
+        if (isDeaded) {
+            process.exit(0);
+        }
+
+        logger.info('sendCmd2workerOnce CMD: ${CMD}', {
+            CMD
+        });
+
+        const targetCpu = parseInt(GET.cpu, 10) || 0;
+
+        for (key in workerMap) {
+            worker = workerMap[key];
+            try {
+                if (targetCpu === getToBindCpu(worker)) {
+                    if (!worker.exitedAfterDisconnect) {
+                        worker.send({ from: 'master', cmd: CMD, GET: GET });
+                    }
+                    break;
+                }
+            } catch (e) {
+                logger.error(e.stack);
+            }
+        }
     });
 }
