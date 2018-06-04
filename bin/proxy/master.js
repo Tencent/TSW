@@ -96,9 +96,6 @@ function startServer() {
             global.cpuUsed = cpuUtil.getCpuUsed();
         }, 3000);
 
-        // 启动管理进程
-        require('./admin.js');
-
         logger.info('start master....');
         logger.info('version node: ${node}, modules: ${modules}', process.versions);
 
@@ -272,10 +269,7 @@ function startServer() {
         });
 
         checkWorkerAlive();
-        startLogMan();
-
-        // process.title = 'TSW/master/node';
-        // 保留node命令，不然运维监控不到
+        startAdmin();
 
     } else {
 
@@ -483,8 +477,12 @@ function getToBindCpu(worker) {
     return cpu;
 }
 
-// log管理
-function startLogMan() {
+
+function startAdmin() {
+    // 启动管理进程
+    require('./admin.js').start();
+
+    // log管理
     require('api/logman').start({
         delay: 'H' // 按小时归类log
     });
