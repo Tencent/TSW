@@ -169,6 +169,10 @@ this.getAllGroup = function() {
         const res = [];
         const map = {};
 
+        arr.sort(function(a, b) {
+            return a.order - b.order;
+        });
+
         arr.forEach(function(v) {
             if (!map[v.group]) {
                 map[v.group] = true;
