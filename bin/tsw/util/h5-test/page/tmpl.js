@@ -108,14 +108,15 @@ define(function(require, exports, module) {
 
             var allGroup = data.allGroup || [],
                 i;
-            __p.push('<style>\n.group-menu .group-item {\n    padding: 0.3em;\n    cursor: pointer;\n    background: #FFF;\n    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);\n    margin: 0 1em 1em 0;\n    border-radius: .28571429rem;\n    border: 1px solid rgba(34,36,38,.15);\n}\n.h5test-envs {\n    max-height: 400px;\n    overflow-y: auto;\n    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);\n    border-radius: .28571429rem;\n    padding: 5px;\n    border: 1px solid rgba(34,36,38,.15);\n}\n</style>\n<div class="ui grid container">\n    <div class="row" style="margin-top: 30px">\n        <h1>');
-            _p(tmpl.encodeHtml(data.project && data.project.name || 'TSW 测试环境配置'));
-            __p.push('        </h1>\n    </div>\n    <div class="row">\n        <div class="column">\n            <div class="ui raised segment">\n                <a class="ui blue ribbon label">#1 选择测试环境</a>\n                <br>');
+            __p.push('<style>\n.group-menu {\n    position: absolute;\n    width: 100%;\n    text-align: right;\n    top: 0;\n    right: .5em;\n}\n.group-menu .group-item {\n    padding: 0.3em 0.6em;\n    cursor: pointer;\n    background: #FFF;\n    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);\n    margin: 0 1em 1em 0;\n    border-radius: .28571429rem;\n    border: 1px solid rgba(34,36,38,.15);\n    font-size: 50%;\n}\n.group-menu .group-item.cur{\n    background: green !important;\n}\n\n.group-menu .group-item.cur a{\n    color: white !important;\n}\n\n.group-menu .group-item:hover{\n    background: #eee;\n}\n.group-menu .group-item a {\n    color: rgba(0,0,0,.6);\n    font-weight: 700;\n    text-transform: none;\n}\n.h5test-envs {\n    max-height: 400px;\n    overflow-y: auto;\n}\n    #join-submit2{\n        margin-right: 1em;\n    }\n</style>\n<div class="ui grid container">');
+            if (!data.project) {
+                __p.push('    <div class="row" style="margin-top: 30px">\n        <h1>TSW 测试环境配置</h1>\n    </div>');
+            } __p.push('    <div class="row">\n        <div class="column">\n            <div class="ui raised segment">\n                <a class="ui blue ribbon label">#1 选择测试环境</a>');
             if (allGroup.length > 0) {
-                __p.push('                <p class="group-menu">\n                    分组：');
+                __p.push('                <p class="group-menu">');
                 for (i = 0; i < allGroup.length; i++) {
                     __p.push('                    <span class="');
-                    _p(data.group == allGroup[i].group ? 'cur ' : '');
+                    _p(data.groupName == allGroup[i].group ? 'cur ' : '');
                     __p.push('group-item">\n                        <a href="/h5test/page/');
                     _p(tmpl.encodeHtml(allGroup[i].group));
                     __p.push('" title="');
@@ -124,7 +125,7 @@ define(function(require, exports, module) {
                     _p(tmpl.encodeHtml(allGroup[i].groupName));
                     __p.push('                        </a>\n                    </span>');
                 } __p.push('                </p>');
-            } __p.push('                <br>\n                <div class="h5test-envs">');
+            } __p.push('                <br>\n                <br>\n                <div class="h5test-envs">');
 
             data = data.group;
             var item,
