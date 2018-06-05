@@ -119,6 +119,10 @@ this.list = function(group) {
         const map = {};
 
         arr.forEach(function(v) {
+            if (group && v.group !== group) {
+                return;
+            }
+
             if (!map[v.ip]) {
                 map[v.ip] = true;
                 res.push(v);
@@ -134,9 +138,7 @@ this.list = function(group) {
             order: -65536,
             // owner: "TSW",
             groupName: group,
-            ip: 'alpha',
-            moduleId: 0,
-            moduleName: 'null'
+            ip: 'alpha'
         });
 
         res.sort(function(a, b) {
@@ -153,8 +155,16 @@ this.list = function(group) {
 this.getAllGroup = function() {
 
     const defer = Deferred.create();
+    let getLogJsonDefer;
 
-    post.getLogJson('group.h5test').done(function(arr) {
+    // 开平对应的存储
+    if (context.appid && context.appkey) {
+        getLogJsonDefer = postOpenapi.getLogJson(`${context.appid}/tsw/h5test`);
+    } else {
+        getLogJsonDefer = post.getLogJson('group.h5test');
+    }
+
+    getLogJsonDefer.done(function(arr) {
 
         const res = [];
         const map = {};
