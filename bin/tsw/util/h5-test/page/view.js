@@ -40,9 +40,15 @@ module.exports.go = async function(request, response, plug) {
         return null;
     });
 
+    const allGroup = await TEReport.getAllGroup().toES6Promise().catch(function() {
+        return null;
+    });
+
     const bodyHtml = pagetmpl.new_body_sync({
         appid: '', // 私有化部署不存在
-        group: group
+        group: group,
+        allGroup: allGroup,
+        groupName: groupName
     });
 
     let navMenus = context.navMenus;
