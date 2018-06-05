@@ -2,16 +2,36 @@
 <%
     var allGroup = data.allGroup || [],i;
 %>
-
+<style>
+.group-menu .group-item {
+    padding: 0.3em;
+    cursor: pointer;
+    background: #FFF;
+    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
+    margin: 0 1em 1em 0;
+    border-radius: .28571429rem;
+    border: 1px solid rgba(34,36,38,.15);
+}
+.h5test-envs {
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
+    border-radius: .28571429rem;
+    padding: 5px;
+    border: 1px solid rgba(34,36,38,.15);
+}
+</style>
 <div class="ui grid container">
-    <div class="row" style="display:inline;margin-top: 30px">
+    <div class="row" style="margin-top: 30px">
         <h1>
             <%-data.project && data.project.name || 'TSW 测试环境配置'%>
         </h1>
     </div>
     <div class="row">
         <div class="column">
-            <div style="max-height: 400px; overflow-y: auto;">
+            <div class="ui raised segment">
+                <a class="ui blue ribbon label">#1 选择测试环境</a>
+                <br>
                 <% if(allGroup.length>0) { %>
                 <p class="group-menu">
                     分组：<% for(i=0;i < allGroup.length ; i++) { %>
@@ -23,6 +43,8 @@
                     <% } %>
                 </p>
                 <% } %>
+                <br>
+                <div class="h5test-envs">
                 <%
                     data = data.group;
                     var item, val, name, desc, owner, module, isShow,isShowDesc;
@@ -75,13 +97,14 @@
                     <br>
                     <% } %>
                 <% } %>
+                </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="column">
             <div class="ui raised segment">
-                <a class="ui blue ribbon label">#1 输入用户id（支持批量，换行即可）</a>
+                <a class="ui blue ribbon label">#2 输入用户id（支持批量，换行即可）</a>
                 <p class="ui">
                     <textarea style="width:100%;height:80px;" id="join-textarea" ></textarea>
                 <p class="ui">
@@ -94,7 +117,7 @@
     <div class="row">
         <div class="column">
             <div class="ui raised segment">
-                <button id="number-get" class="ui button primary large">查看所有H5测试号码</button>
+                <button id="number-get" class="ui button primary large">查看H5测试号码列表</button>
                 <div class="ui divider"></div>
                 <div id="number-list" class="row">
                     <p>注意：每天0点将清空号码</p>
@@ -108,11 +131,11 @@
 <script type="text/javascript">
     // hack系统alert提示
     window.alert = function(msg){
-        $('.top-tip').remove()
-        $('<div class="top-tip">' + msg + '</div>').appendTo('body')
+        $('.top-tip').remove();
+        $('<div class="top-tip">' + msg + '</div>').appendTo('body');
         setTimeout(function(){
             $('.top-tip').remove()
-        }, 3000)
+        }, 3000);
     }
 </script>
 

@@ -179,6 +179,12 @@
 
         //查看所有
         $('#number-get').click(function(event){
+            var self = this;
+            if($(self).is('.expended')){
+                $(self).removeClass('expended').text('查看H5测试号码列表');
+                $('#number-list').html('');
+                return;
+            }
             var request = api.getTestUser();
             request.done(function(data) {
                 var html = "";
@@ -192,6 +198,7 @@
                     html = "还没有测试号码~"
                 }
                 $('#number-list').html(html);
+                $(self).addClass('expended').text('收起H5测试号码列表');
             }).fail(function(errMsg) {
                 errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
                 alert(errMsg);
