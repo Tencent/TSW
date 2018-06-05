@@ -3,39 +3,61 @@
     var allGroup = data.allGroup || [],i;
 %>
 <style>
+.group-menu {
+    position: absolute;
+    width: 100%;
+    text-align: right;
+    top: 0;
+    right: .5em;
+}
 .group-menu .group-item {
-    padding: 0.3em;
+    padding: 0.3em 0.6em;
     cursor: pointer;
     background: #FFF;
     box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
     margin: 0 1em 1em 0;
     border-radius: .28571429rem;
     border: 1px solid rgba(34,36,38,.15);
+    font-size: 50%;
+}
+.group-menu .group-item.cur{
+    background: green !important;
+}
+
+.group-menu .group-item.cur a{
+    color: white !important;
+}
+
+.group-menu .group-item:hover{
+    background: #eee;
+}
+.group-menu .group-item a {
+    color: rgba(0,0,0,.6);
+    font-weight: 700;
+    text-transform: none;
 }
 .h5test-envs {
     max-height: 400px;
     overflow-y: auto;
-    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
-    border-radius: .28571429rem;
-    padding: 5px;
-    border: 1px solid rgba(34,36,38,.15);
+}
+#join-submit2{
+    margin-right: 1em;
 }
 </style>
 <div class="ui grid container">
+    <% if(!data.project) { %>
     <div class="row" style="margin-top: 30px">
-        <h1>
-            <%-data.project && data.project.name || 'TSW 测试环境配置'%>
-        </h1>
+        <h1>TSW 测试环境配置</h1>
     </div>
+    <% } %>
     <div class="row">
         <div class="column">
             <div class="ui raised segment">
                 <a class="ui blue ribbon label">#1 选择测试环境</a>
-                <br>
                 <% if(allGroup.length>0) { %>
                 <p class="group-menu">
-                    分组：<% for(i=0;i < allGroup.length ; i++) { %>
-                    <span class="<%=data.group == allGroup[i].group ? 'cur ':''%>group-item">
+                    <%  for(i=0;i < allGroup.length ; i++) { %>
+                    <span class="<%=data.groupName == allGroup[i].group ? 'cur ':''%>group-item">
                         <a href="/h5test/page/<%-allGroup[i].group%>" title="<%-allGroup[i].group%>">
                         <%-allGroup[i].groupName%>
                         </a>
@@ -43,6 +65,7 @@
                     <% } %>
                 </p>
                 <% } %>
+                <br>
                 <br>
                 <div class="h5test-envs">
                 <%
