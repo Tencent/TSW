@@ -219,15 +219,16 @@ this.check = function (req, res) {
     Object.keys(cache.ipCacheLast).forEach(function (ip, i) {
 
         let num = '';
+        let tmp = '';
 
         if (
             cache.ipCacheLast[ip]
             && cache.ipCacheLast[ip].list
             && cache.ipCacheLast[ip].list.length > 1
         ) {
-            num = String(cache.ipCacheLast[ip].list.length);
-            num = (num + 'XXXXXX').slice(0, 8).replace(/X/g, '&nbsp;');
-            content += `<div style="font-size:12px;">${num}${ip}</div>`;
+            num = cache.ipCacheLast[ip].list.length;
+            tmp = (num + '--------').slice(0, 8);
+            content += `<div style="font-size:12px;">${tmp}${ip}</div>`;
 
             if (num > max.num) {
                 max.num = num;
