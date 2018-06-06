@@ -69,9 +69,6 @@ this.report = function() {
 
         const logKey = 'h5test' + logJson.group;
 
-        // 上报自己
-        post.report(logKey, logText, logJson);
-
         // 开放平台上报，不用再分组了
         if (config.appid && config.appkey) {
             logReport.reportCloud({
@@ -87,12 +84,16 @@ this.report = function() {
                 pathname: '',
                 statusCode: ''
             });
-        }
+        } else {
+            // 私有化部署上报
+            // 上报自己
+            post.report(logKey, logText, logJson);
 
-        // 上报分组
-        require('util/CD.js').check('h5test' + logJson.group, 1, 60).done(function() {
-            post.report('group.h5test', logText, logJson);
-        });
+            // 上报分组
+            require('util/CD.js').check('h5test' + logJson.group, 1, 60).done(function() {
+                post.report('group.h5test', logText, logJson);
+            });
+        }
 
     });
 
