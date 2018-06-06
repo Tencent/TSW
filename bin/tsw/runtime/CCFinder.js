@@ -255,7 +255,7 @@ this.check = function (req, res) {
         + '<p><strong>恶意IP：</strong>' + max.ip + '</p>'
         + '<p><strong>自动拉黑：</strong>' + (config.CCIPLimitAutoBlock ? '是' : '否') + '</p>'
         + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
-        + '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
+        + '<p><strong>告警阈值：</strong>' + CCIPLimit + '</p>'
         + '<p><strong>正常值：</strong>5-50</p>'
         + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10) + 's</p>'
         + '<p><strong>证据列表：</strong></p>'
