@@ -69,9 +69,6 @@ this.report = function() {
 
         const logKey = 'h5test' + logJson.group;
 
-        // 上报自己
-        post.report(logKey, logText, logJson);
-
         // 开放平台上报，不用再分组了
         if (config.appid && config.appkey) {
             logReport.reportCloud({
@@ -87,12 +84,16 @@ this.report = function() {
                 pathname: '',
                 statusCode: ''
             });
-        }
+        } else {
+            // 私有化部署上报
+            // 上报自己
+            post.report(logKey, logText, logJson);
 
-        // 上报分组
-        require('util/CD.js').check('h5test' + logJson.group, 1, 60).done(function() {
-            post.report('group.h5test', logText, logJson);
-        });
+            // 上报分组
+            require('util/CD.js').check('h5test' + logJson.group, 1, 60).done(function() {
+                post.report('group.h5test', logText, logJson);
+            });
+        }
 
     });
 
@@ -119,6 +120,10 @@ this.list = function(group) {
         const map = {};
 
         arr.forEach(function(v) {
+            if (group && v.group !== group) {
+                return;
+            }
+
             if (!map[v.ip]) {
                 map[v.ip] = true;
                 res.push(v);
@@ -134,9 +139,7 @@ this.list = function(group) {
             order: -65536,
             // owner: "TSW",
             groupName: group,
-            ip: 'alpha',
-            moduleId: 0,
-            moduleName: 'null'
+            ip: 'alpha'
         });
 
         res.sort(function(a, b) {
@@ -153,11 +156,23 @@ this.list = function(group) {
 this.getAllGroup = function() {
 
     const defer = Deferred.create();
+    let getLogJsonDefer;
 
-    post.getLogJson('group.h5test').done(function(arr) {
+    // 开平对应的存储
+    if (context.appid && context.appkey) {
+        getLogJsonDefer = postOpenapi.getLogJson(`${context.appid}/tsw/h5test`);
+    } else {
+        getLogJsonDefer = post.getLogJson('group.h5test');
+    }
+
+    getLogJsonDefer.done(function(arr) {
 
         const res = [];
         const map = {};
+
+        arr.sort(function(a, b) {
+            return a.order - b.order;
+        });
 
         arr.forEach(function(v) {
             if (!map[v.group]) {

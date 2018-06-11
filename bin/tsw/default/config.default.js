@@ -106,6 +106,9 @@ this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 2 : 1);
 // 限制
 this.CCIPLimit = 500;
 
+// 超限后自动拉黑
+this.CCIPLimitAutoBlock = false;
+
 // allowHost
 this.allowHost = [];
 

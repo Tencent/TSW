@@ -21,6 +21,7 @@ let ipConut = CCIPSize;
 let cache = {
     ipCache: {},
     whiteList: {},
+    blackList: {},
     ipCacheLast: {}
 };
 
@@ -30,11 +31,16 @@ if (global[__filename]) {
     global[__filename] = cache;
 }
 
-this.addWhiteList = function(userIp) {
+this.addWhiteList = function (userIp) {
     cache.whiteList[userIp] = true;
 };
 
-this.checkHost = function(req, res) {
+this.addBlackList = function (userIp) {
+    cache.blackList[userIp] = true;
+};
+
+
+this.checkHost = function (req, res) {
 
     const hostAllow = config.allowHost || [];
     const host = req.headers['host'];
@@ -74,12 +80,12 @@ this.checkHost = function(req, res) {
 };
 
 // 计算标准方差
-this.StdX10 = function(ipCache) {
+this.StdX10 = function (ipCache) {
 
     let res = 0;
     let sum = 0;
     let avg = 0;
-    const arr = Object.keys(ipCache).filter(function(item) {
+    const arr = Object.keys(ipCache).filter(function (item) {
         const tmp = ipCache[item];
         if (typeof tmp === 'object' && tmp.list) {
             sum += tmp.list.length;
@@ -94,7 +100,7 @@ this.StdX10 = function(ipCache) {
 
     avg = sum / arr.length;
 
-    const sumXsum = arr.reduce(function(pre, key) {
+    const sumXsum = arr.reduce(function (pre, key) {
         const item = ipCache[key];
         const value = item.list.length;
         item.avg = avg;
@@ -107,18 +113,23 @@ this.StdX10 = function(ipCache) {
     return res;
 };
 
-this.check = function(req, res) {
+this.check = function (req, res) {
 
     const userIp = httpUtil.getUserIp(req);
     const userIp24 = httpUtil.getUserIp24(req);
-
-    let content;
-
     const info = {
         userIp: userIp,
         hostname: req.headers.host,
         pathname: req.REQUEST.pathname
     };
+
+    if (cache.blackList[userIp]) {
+        tnm2.Attr_API('SUM_TSW_CC_LIMIT', 1);
+        logger.report();
+        res.writeHead(403, { 'Content-Type': 'text/plain; charset=UTF-8' });
+        res.end();
+        return false;
+    }
 
     if (cache.whiteList[userIp]) {
         return true;
@@ -195,42 +206,60 @@ this.check = function(req, res) {
         return true;
     }
 
-    // tnm2.Attr_API('SUM_TSW_CC_LIMIT', 1);
-
     // 确认没发送过邮件
     cache.ipCacheLast.hasSendMail = true;
 
     // 发现目标，发邮件
-    const key = `[AVG_TSW_IP_STD_X10]:${serverInfo.intranetIp}`;
+    let content = '';
+    const max = {
+        num: 0,
+        ip: ''
+    };
 
-    content = '';
-
-    Object.keys(cache.ipCacheLast).forEach(function(ip, i) {
+    Object.keys(cache.ipCacheLast).forEach(function (ip, i) {
 
         let num = '';
+        let tmp = '';
 
         if (
             cache.ipCacheLast[ip]
             && cache.ipCacheLast[ip].list
             && cache.ipCacheLast[ip].list.length > 1
         ) {
-            num = String(cache.ipCacheLast[ip].list.length);
-            num = (num + 'XXXXXX').slice(0, 8).replace(/X/g, '&nbsp;');
-            content += `<div style="font-size:12px;">${num}${ip}</div>`;
+            num = cache.ipCacheLast[ip].list.length;
+            tmp = (num + '--------').slice(0, 8);
+            content += `<div style="font-size:12px;">${tmp}${ip}</div>`;
+
+            if (num > max.num) {
+                max.num = num;
+                max.ip = ip;
+            }
         }
     });
+
+    const key = `[AVG_TSW_IP_STD_X10]:${max.ip}`;
+    let title = '';
+
+    if (config.CCIPLimitAutoBlock) {
+        title = `[IP聚集自动拉黑周知][${cache.ipCacheLast.StdX10}%]${max.ip}`;
+        this.addBlackList(max.ip);
+    } else {
+        title = `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${max.ip}`;
+    }
 
     mail.SendMail(key, 'TSW', 3600, {
         'to': config.mailTo,
         'cc': config.mailCC,
-        'title': `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`,
+        'title': title,
         'content': '<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
-                        + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
-                        + '<p><strong>告警阀值：</strong>' + CCIPLimit + '</p>'
-                        + '<p><strong>正常值：</strong>5-50</p>'
-                        + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10) + 's</p>'
-                        + '<p><strong>证据列表：</strong></p>'
-                        + content
+        + '<p><strong>恶意IP：</strong>' + max.ip + '</p>'
+        + '<p><strong>自动拉黑：</strong>' + (config.CCIPLimitAutoBlock ? '是' : '否') + '</p>'
+        + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
+        + '<p><strong>告警阈值：</strong>' + CCIPLimit + '</p>'
+        + '<p><strong>正常值：</strong>5-50</p>'
+        + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10) + 's</p>'
+        + '<p><strong>证据列表：</strong></p>'
+        + content
     });
 
 
@@ -238,12 +267,12 @@ this.check = function(req, res) {
 };
 
 
-this.getIpCache = function() {
+this.getIpCache = function () {
     return cache.ipCacheLast;
 };
 
 
-this.getIpSize = function() {
+this.getIpSize = function () {
     return CCIPSize;
 };
 
