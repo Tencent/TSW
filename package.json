@@ -1,6 +1,6 @@
 {
   "name": "TSW",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
   "scripts": {
     "lint": "eslint examples bin test --fix",
