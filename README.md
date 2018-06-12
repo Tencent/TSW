@@ -51,6 +51,14 @@ TSW 支持用户维度的抓包
 1. 启动 --  `node --inspect index.js`
 1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
 
+## docker
+```shell
+# build
+docker build -t tsw .
+# run
+docker run -v configure_dir:/data/release/node_modules -p 8080:80 tsw
+```
+
 ## 官方网站
 
 - 更多教程 [https://tswjs.org/guide/index](https://tswjs.org/guide/index)

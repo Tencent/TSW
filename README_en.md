@@ -46,6 +46,15 @@ The full content of the request can be seen through the log.
 - Open `http://127.0.0.1/` in your browser.
 
 
+## docker
+```shell
+# build
+docker build -t tsw .
+# run
+docker run -v configure_dir:/data/release/node_modules -p 8080:80 tsw
+```
+
+
 ## Documentation
 
 - More Tutorials [https://tswjs.org/guide/index](https://tswjs.org/guide/index)

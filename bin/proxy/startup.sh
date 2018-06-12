@@ -41,7 +41,13 @@ echo "args: $CUR_ARGS"
 
 cd ${CUR_DIR}/../
 pwd
-./TSW --expose_internals $CUR_ARGS ./proxy >> ../log/run.log.0 2>&1 &
 
-echo start done
+IS_DOCKER=${IS_DOCKER:=0}
+if [ ${IS_DOCKER} = 1 ]
+then
+    ./TSW --expose_internals $CUR_ARGS ./proxy >> ../log/run.log.0 2>&1
+else
+    ./TSW --expose_internals $CUR_ARGS ./proxy >> ../log/run.log.0 2>&1 &
+    echo start down
+fi
 
