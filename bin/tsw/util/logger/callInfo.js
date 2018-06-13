@@ -9,20 +9,25 @@
 
 this.getCallInfo = function(level) {
 
-    const res = {};
+    const res = {
+        line: 0,
+        column: 0,
+        filename: ''
+    };
 
     level = level || 0;
 
     const orig = Error.prepareStackTrace;
-    Error.prepareStackTrace = function(_, stack) {
-        return stack;
-    };
+    const origLimit = Error.stackTraceLimit;
+    Error.prepareStackTrace = captureStackTrace;
+    Error.stackTraceLimit = 5;
 
-    const err = new Error();
+    const err = Object.create(null);
     Error.captureStackTrace(err, arguments.callee);     // eslint-disable-line no-caller
+    const { stack } = err;
 
-    const stack = err.stack;
     Error.prepareStackTrace = orig;
+    Error.stackTraceLimit = origLimit;
 
     if (stack && stack[level] && typeof stack[level].getLineNumber === 'function') {
         res.line = stack[level].getLineNumber();
@@ -32,3 +37,8 @@ this.getCallInfo = function(level) {
 
     return res;
 };
+
+function captureStackTrace(_, stack) {
+    return stack;
+}
+
