@@ -12,3 +12,10 @@ this.logger = {
 };
 
 this.memcached = { host: '127.0.0.1:11211', timeout: 500, poolSize: 20, retries: 1, maxQueueSize: 1000 };
+
+this.extendMod = {
+    getUid: req => {
+        // http://127.0.0.1/log/view/xxx?uid=xxx
+        return req.GET.uid;
+    }
+};
