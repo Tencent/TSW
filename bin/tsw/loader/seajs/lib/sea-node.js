@@ -12,12 +12,14 @@ const _compile = Module.prototype._compile;
 const _resolveFilename = Module._resolveFilename;
 const moduleStack = [];
 
-Module._resolveFilename = function(request, parent) {
+Module._resolveFilename = function(request, parent, isMain, options = {}) {
     let res;
     //request = request.replace(/\?.*$/, '') // remove timestamp etc.
 
     //性能优化
-    if(parent.resolveFilenameCache) {
+    // do not use cache when `options` has `paths` property
+    // in v8.9.0 require.resolve case
+    if(parent.resolveFilenameCache && !options.paths) {
         if(parent.resolveFilenameCache[request]) {
             return parent.resolveFilenameCache[request];
         }
@@ -25,7 +27,7 @@ Module._resolveFilename = function(request, parent) {
         parent.resolveFilenameCache = {};
     }
 
-    res = _resolveFilename(request, parent);
+    res = _resolveFilename(request, parent, isMain, options);
 
     parent.resolveFilenameCache[request] = res;
 
