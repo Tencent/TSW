@@ -144,10 +144,6 @@ this.check = function (req, res) {
         return true;
     }
 
-    if (!cache.ipCache.start) {
-        cache.ipCache.start = Date.now();
-    }
-
     ipConut = ipConut - 1;
 
     if (ipConut <= 0) {
@@ -162,6 +158,10 @@ this.check = function (req, res) {
         tnm2.Attr_API_Set('AVG_TSW_IP_STD_X10', cache.ipCacheLast.StdX10);
     }
 
+    if (!cache.ipCache.start) {
+        cache.ipCache.start = Date.now();
+    }
+
     if (Date.now() - cache.ipCache.start > 60000) {
         // 时间太长
         ipConut = 0;
@@ -170,7 +170,6 @@ this.check = function (req, res) {
 
     if (!cache.ipCache[userIp]) {
         cache.ipCache[userIp] = {
-            ip007Info: null,
             isSendMail: false,
             list: []
         };
