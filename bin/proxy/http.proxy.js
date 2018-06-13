@@ -101,11 +101,6 @@ methodMap.reload = function() {
     process.emit('reload');
 };
 
-// heapdump
-methodMap.heapdump = function(message) {
-    process.emit('heapdump', message.GET);
-};
-
 // profiler
 methodMap.profiler = function(message) {
     process.emit('profiler', message.GET);
@@ -129,24 +124,6 @@ methodMap.listen = function(message) {
 process.on('top100', function(e) {
     global.top100 = [];
 });
-
-
-process.on('heapdump', function(e) {
-    if (isWin32Like) {
-        return;
-    }
-
-    require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot', function(err, filename) {
-        if (err) {
-            logger.error(`dump heap error ${err.message}`);
-            return;
-        }
-        logger.info('dump written to ${filename}', {
-            filename: filename
-        });
-    });
-});
-
 
 process.on('profiler', function(data = {}) {
     logger.info('profiler time: ${time}', data);
@@ -390,61 +367,7 @@ function heartBeat() {
 
     // 高负载告警
     if (global.cpuUsed80 === 4 && !config.isTest && !isWin32Like) {
-        // 取进程快照
-        cp.exec('top -bcn1', {
-            env: {
-                COLUMNS: 200
-            },
-            encoding: 'utf8',
-            timeout: 5000
-        }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
-            const key = `cpu80.v4:${serverInfo.intranetIp}`;
-            let content = `<strong>单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%, 最近5秒钟CPU Profiler见附件</strong>`;
-            let str = '';
-
-            if (data) {
-                str = data;
-                str = str.replace(/</g, '&gt;');
-                str = str.replace(/\r\n|\r|\n/g, '<br>');
-
-                content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
-            }
-
-
-            // 获取本机信息，用来分组
-            require('api/cmdb').GetDeviceThisServer().done(function(data) {
-                data = data || {};
-                const business = data.business && data.business[0] || {};
-                let owner = '';
-
-                if (data.ownerMain) {
-                    owner = [owner, data.ownerMain].join(';');
-                }
-
-                if (data.ownerBack) {
-                    owner = [owner, data.ownerBack].join(';');
-                }
-
-                // 再抓一份CPU Profiler
-                require('util/v8-profiler.js').getProfiler({
-                    recordTime: 5000
-                }, result => {
-                    mail.SendMail(key, 'js', 600, {
-                        'to': config.mailTo,
-                        'cc': owner,
-                        'msgInfo': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                        'title': business.module + '[CPU]' + serverInfo.intranetIp + '单核CPU' + serverInfo.cpu + '使用率为：' + cpuUsed + '，超过80%',
-                        'content': content,
-                        'attachment': result ? {
-                            fileType: true,
-                            dispositionType: 'attachment',
-                            fileName: 'cpu-profiler.cpuprofile',
-                            content: result
-                        } : ''
-                    });
-                });
-            });
-        });
+        afterCpu80(cpuUsed);
     }
 
     const currMemory = process.memoryUsage();
@@ -452,4 +375,64 @@ function heartBeat() {
     tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS', currMemory.rss);
     tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
     tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL', currMemory.external);
+}
+
+
+function afterCpu80(cpuUsed) {
+    // 取进程快照
+    cp.exec('top -bcn1', {
+        env: {
+            COLUMNS: 200
+        },
+        encoding: 'utf8',
+        timeout: 5000
+    }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
+        const key = `cpu80.v4:${serverInfo.intranetIp}`;
+        let content = `<strong>单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%, 最近5秒钟CPU Profiler见附件</strong>`;
+        let str = '';
+
+        if (data) {
+            str = data;
+            str = str.replace(/</g, '&gt;');
+            str = str.replace(/\r\n|\r|\n/g, '<br>');
+
+            content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
+        }
+
+
+        // 获取本机信息，用来分组
+        require('api/cmdb').GetDeviceThisServer().done(function(data) {
+            data = data || {};
+            const business = data.business && data.business[0] || {};
+            const profCallback = (result) => {
+                mail.SendMail(key, 'js', 600, {
+                    'to': config.mailTo,
+                    'cc': config.mailCC,
+                    'msgInfo': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
+                    'title': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
+                    'content': content,
+                    'attachment': result ? {
+                        fileType: true,
+                        dispositionType: 'attachment',
+                        fileName: 'cpu-profiler.cpuprofile',
+                        content: result
+                    } : ''
+                });
+            };
+
+            // 再抓一份CPU Profiler
+            let profiler;
+            try {
+                profiler = require('util/v8-profiler.js');
+            } catch (err) {
+                logger.info(err.stack);
+            }
+
+            if (profiler) {
+                profiler.getProfiler({ recordTime: 5000 }, profCallback);
+            } else {
+                profCallback();
+            }
+        });
+    });
 }

@@ -73,6 +73,11 @@ this.getUin = function(req) {
         return uin;
     }
 
+    // 业务有可能不使用uin登录态，支持业务扩展getUid实现
+    if (config.extendMod && typeof config.extendMod.getUid === 'function') {
+        return config.extendMod.getUid(req);
+    }
+
     // 业务有可能不使用uin登录态，支持业务扩展getUin实现
     if (config.extendMod && typeof config.extendMod.getUin === 'function') {
         return config.extendMod.getUin(req);
