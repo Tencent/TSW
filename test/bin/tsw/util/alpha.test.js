@@ -5,22 +5,12 @@ const plug = require('plug');
 const logger = plug('logger');
 const alpha = plug('util/alpha.js');
 const config = plug('config');
-const isWindows = plug('util/isWindows');
 
 logger.setLogLevel('error');
 
 describe('test tsw/util/alpha', () => {
 
     describe('#isAlpha', () => {
-        it('#check a num in isWin32Like & skymode', () => {
-            config.skyMode = true;
-            const stub = sinon.stub(isWindows, 'isWin32Like').callsFake(() => {
-                return true;
-            });
-            const uid = 1;
-            expect(alpha.isAlpha(uid)).to.be.equal(true);
-            stub.restore();
-        });
 
         it('#check a num not skymode', () => {
             config.skyMode = false;
