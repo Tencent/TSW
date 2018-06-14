@@ -100,7 +100,13 @@ Logger.prototype = {
         return json;
     },
 
-    getText: function() {
+    getTextLength: function() {
+        const log = this.getLog();
+
+        return (log && log.arr && log.arr.length) || 0;
+    },
+
+    getText: function(cleared) {
         const log = this.getLog();
         const arr = [];
 
@@ -109,6 +115,11 @@ Logger.prototype = {
             log.arr.forEach(function(fn) {
                 arr.push(fn());
             });
+
+            if (cleared) {
+                // 清除缓存的log
+                log.arr = [];
+            }
 
             return arr.join('\n');
         }

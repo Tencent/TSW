@@ -68,6 +68,7 @@ module.exports = function(req, res) {
             }
 
             req.removeAllListeners('fail');
+            req.removeAllListeners('reportLog');
             res.removeAllListeners('timeout');
             res.removeAllListeners('close');
             res.removeAllListeners('finish');
