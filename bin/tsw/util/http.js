@@ -14,6 +14,7 @@ const logger = require('logger');
 const isInnerIP = require('util/http.isInnerIP.js');
 const Deferred = require('util/Deferred');
 const more = require('util/http.more.js');
+const maxBodySize = 1024 * 1024;  // 1MB
 
 
 this.formatHeader = function(headers) {
@@ -75,7 +76,38 @@ this.filterInvalidHeaderChar = function(val) {
     return val;
 };
 
-this.captureBody = function(res) {
+this.captureIncomingMessageBody = function(req) {
+    // init...
+    const result = [];
+    let bodySize = 0;
+
+    if (req._capturing) {
+        return;
+    }
+
+    req._capturing = true;
+
+    const data = function(chunk) {
+        bodySize += chunk.length;
+
+        if (bodySize <= maxBodySize) {
+            result.push(chunk);
+        }
+    };
+
+    logger.debug('capture IncomingMessage body on');
+
+    req.on('data', data);
+    req.once('end', function() {
+        logger.debug('receive end');
+        this.removeListener('data', data);
+        const buffer = Buffer.concat(result);
+        req._bodySize = bodySize;
+        req._body = buffer;
+    });
+};
+
+this.captureBody = this.captureServerResponseBody = function(res) {
 
     if (res._capturing) {
         return;
@@ -84,6 +116,8 @@ this.captureBody = function(res) {
     res._capturing = true;
     res._body = [];
     res._bodySize = 0;
+
+    logger.debug('capture ServerResponse body on');
 
     res.captrueBody = function(data, encoding) {
         // 大于1M的不抓包
@@ -118,7 +152,7 @@ this.captureBody = function(res) {
             this._body.push(Buffer.from(String(size.toString(16)) + '\r\n'));
         }
 
-        if (this._bodySize < 1024 * 1024) {
+        if (this._bodySize < maxBodySize) {
             this._body.push(buffer);
             // chunked
             if (this.useChunkedEncodingByDefaultNoNeed) {

@@ -3,7 +3,6 @@
 echo
 
 CUR_DIR=$(cd $(dirname $0); pwd)
-LIBC_VERSION=$(ls -l /lib64/libc.so.6  | sed -e 's/.*libc-2.\(.*\).so/\1/g')
 
 cd ${CUR_DIR}/../
 pwd
@@ -12,22 +11,12 @@ BIN_DIR=$(pwd)
 
 echo "BIN_DIR: ${BIN_DIR}"
 
-echo "libc-2.${LIBC_VERSION}"
-
-if [ -e "/usr/local/bin/node" ]
-then
-    echo "/usr/local/bin/node"
-    ln -sf /usr/local/bin/node ./TSW
-else
-    echo "/usr/bin/node"
-    ln -sf /usr/bin/node ./TSW
-fi
-
+NODE_PATH=$(node -p process.execPath)
+echo "use node:$NODE_PATH"
+ln -sf $NODE_PATH ./TSW
 chmod +x ./TSW
 
 ./TSW -v
-
-echo "copy so done"
 
 if [ -e "../log" ]
 then

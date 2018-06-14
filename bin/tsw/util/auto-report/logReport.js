@@ -187,9 +187,22 @@ module.exports = function(req, res) {
             req.REQUEST.body = format.formatBuffer(req.REQUEST.body);
         }
 
+        let requestBodyText = req.REQUEST.body;
+
+        if (!requestBodyText) {
+            if (req._body) {
+                requestBodyText = req._body.toString('UTF-8');
+            }
+        }
+
+        // limit 64KB
+        if (requestBodyText && requestBodyText.length >= 64 * 1024) {
+            requestBodyText = `[Large than 64KB]: ${requestBodyText.length}`;
+        }
+
         logger.debug('\n${headers}${body}\r\nresponse ${statusCode} ${resHeaders}', {
             headers: httpUtil.getRequestHeaderStr(req),
-            body: req.REQUEST.body || '',
+            body: requestBodyText,
             statusCode: res.statusCode,
             resHeaders: JSON.stringify(res._headers, null, 2)
         });
@@ -218,7 +231,8 @@ module.exports = function(req, res) {
                     clientPort: req.socket && req.socket.remotePort,
                     serverIp: serverInfo.intranetIp,
                     serverPort: config.httpPort,
-                    requestRaw: httpUtil.getRequestHeaderStr(req) + (req.REQUEST.body || ''),
+                    requestHeader: httpUtil.getRequestHeaderStr(req),
+                    requestBody: req._body ? req._body.toString('base64') : '',
                     responseHeader: httpUtil.getResponseHeaderStr(res),
                     responseBody: res._body ? res._body.toString('base64') : '',
                     logText: logText,

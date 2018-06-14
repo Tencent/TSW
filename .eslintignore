@@ -1,1 +1,4 @@
 bin/wwwroot
+bin/deps
+node_modules
+

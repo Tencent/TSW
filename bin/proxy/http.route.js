@@ -469,7 +469,7 @@ function doRoute(req, res) {
                 }
 
                 // 抓回包
-                httpUtil.captureBody(this);
+                httpUtil.captureServerResponseBody(this);
             }
 
             logger.debug('response ${statusCode}', {
@@ -488,6 +488,8 @@ function doRoute(req, res) {
             logger.getLog().showLineNumber = true;
             logger.debug('showLineNumber on');
         }
+
+        httpUtil.captureIncomingMessageBody(req);
     }
 
     logger.debug('node-${version}, name: ${name}, appid: ${appid}', {

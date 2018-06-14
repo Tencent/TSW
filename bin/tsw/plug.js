@@ -22,9 +22,8 @@ if (!global.plug) {
     plug.parent = path.join(__dirname, '..');
     plug.paths = [
         path.join(__dirname, '../deps'),
-        path.join(__dirname, '../tsw'),
         path.join(__dirname, '../tencent'),
-        path.join(__dirname, '../lib')
+        path.join(__dirname, '../tsw')
     ];
     module.paths = plug.paths.concat(module.paths);
 

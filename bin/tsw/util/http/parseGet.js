@@ -31,7 +31,7 @@ module.exports = function(req) {
 
     req.GET = {};
     req.query = req.GET;
-    req.POST = {};
+    req.POST = req.POST || {};  // keep body same in router
     req.body = req.POST;
     req.params = {};
     if (req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {

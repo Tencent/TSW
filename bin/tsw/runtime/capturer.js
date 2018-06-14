@@ -112,7 +112,8 @@ process.nextTick(function() {
                     clientPort: localPort || '',
                     serverIp: remoteAddress || opt.host,
                     serverPort: remotePort || opt.port,
-                    requestRaw: httpUtil.getClientRequestHeaderStr(request) + (request._body.toString('UTF-8') || ''),
+                    requestHeader: httpUtil.getClientRequestHeaderStr(request),
+                    requestBody: request._body ? request._body.toString('base64') : '',
                     responseHeader: httpUtil.getClientResponseHeaderStr(response, bodySize),
                     responseBody: (buffer.toString('base64')) || '',
                     timestamps: {
