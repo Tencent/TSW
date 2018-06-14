@@ -91,4 +91,11 @@ describe('测试获取cpu信息的接口', () => {
         expect(Array.isArray(cpus)).to.equal(true);
         os.cpus.restore();
     });
+
+    it('# getCpuUsed ', () => {
+
+        const cpuUsed = cpuUtil.getCpuUsed();
+        expect(cpuUsed).to.equal(0);
+
+    });
 });
