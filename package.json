@@ -55,8 +55,7 @@
   },
   "nyc": {
     "include": [
-      "bin/tsw/",
-      "bin/lib/"
+      "bin/tsw/"
     ]
   }
 }
