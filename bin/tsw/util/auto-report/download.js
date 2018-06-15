@@ -419,8 +419,8 @@ const downloadHaz = function (request, response, opt) {
     viewData.forEach(function(tmp, i) {
         if (tmp.requestHeader) {
             tmp.requestRaw = Buffer.concat([
-                Buffer.from(tmp.curr.requestHeader || '', 'utf-8'),
-                Buffer.from(tmp.curr.requestBody || '', 'base64')
+                Buffer.from(tmp.requestHeader || '', 'utf-8'),
+                Buffer.from(tmp.requestBody || '', 'base64')
             ]).toString('UTF-8');
         }
 
