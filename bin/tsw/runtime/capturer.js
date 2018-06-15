@@ -39,9 +39,10 @@ process.nextTick(function() {
             let bodySize = 0;
             const maxBodySize = 1024 * 1024;
             const timeStart = Date.now();
-            let timeEnd = 0;
+            let timeLookup = timeStart;
+            let timeConnect = timeStart;
             let timeResponse = 0;
-            // var timeCurr        = timeStart;
+            let timeEnd = 0;
             let remoteAddress = '';
             let remotePort = '';
             let localAddress = '';
@@ -122,10 +123,10 @@ process.nextTick(function() {
                         GotRequestHeaders: new Date(timeStart),
                         ClientDoneRequest: new Date(timeStart),
                         GatewayTime: 0,
-                        DNSTime: 0,
-                        TCPConnectTime: 0,
+                        DNSTime: timeLookup - timeStart,
+                        TCPConnectTime: timeConnect - timeStart,
                         HTTPSHandshakeTime: 0,
-                        ServerConnected: new Date(timeStart),
+                        ServerConnected: new Date(timeConnect),
                         FiddlerBeginRequest: new Date(timeStart),
                         ServerGotRequest: new Date(timeStart),
                         ServerBeginResponse: new Date(timeResponse),
@@ -138,6 +139,51 @@ process.nextTick(function() {
 
                 logJson.ajax.push(curr);
             };
+
+
+            const finish = function(maybeResponse) {
+                if (timeEnd) {
+                    return;
+                }
+
+                timeEnd = new Date().getTime();
+
+                if (captureBody) {
+                    buffer = Buffer.concat(result);
+                    result = [];
+                }
+
+                // 上报
+                if (captureBody) {
+                    report(maybeResponse);
+                }
+            };
+
+            request.once('socket', function(socket) {
+                socket.once('lookup', (err, address, family, host) => {
+                    timeLookup = Date.now();
+                    if (err) {
+                        logger.error(logPre + err.stack);
+                        finish();
+                        return;
+                    }
+                    const cost = timeLookup - timeStart;
+                    logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
+                });
+
+                socket.once('connect', function() {
+                    timeConnect = Date.now();
+                    const cost = timeConnect - timeStart;
+                    remoteAddress = this.remoteAddress;
+                    remotePort = this.remotePort;
+                    logger.debug(`${logPre}connect ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+                });
+            });
+
+            request.once('error', function(err) {
+                logger.error(err.stack);
+                finish();
+            });
 
             request.once('response', (response) => {
                 timeResponse = Date.now();
@@ -163,35 +209,10 @@ process.nextTick(function() {
 
                 const done = function() {
                     this.removeListener('data', data);
-
-                    if (timeEnd) {
-                        return;
-                    }
-
-                    timeEnd = new Date().getTime();
-
-                    if (captureBody) {
-                        buffer = Buffer.concat(result);
-                        result = [];
-                    }
-
-                    // 上报
-                    if (captureBody) {
-                        report(response);
-                    }
+                    finish(response);
                 };
 
                 const data = function(chunk) {
-                    // var cost = Date.now() - timeCurr;
-
-                    // timeCurr = Date.now();
-
-                    // logger.debug('${logPre}receive data: ${size},\tcost: ${cost}ms',{
-                    //    logPre: logPre,
-                    //    cost: cost,
-                    //    size: chunk.length
-                    // });
-
                     bodySize += chunk.length;
 
                     if (captureBody && bodySize <= maxBodySize) {
