@@ -11,15 +11,15 @@ define(function(require, exports, module) {
 
         'email': function(data) {
 
-            let __p = [],
+            var __p = [],
                 _p = function(s) {
                     __p.push(s);
                 },
                 out = _p;
 
 
-            const window = context.window || {};
-            __p.push('<html>\n<head>\n<meta charset="utf-8" />\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n<meta name="robots" content="none" />\n<meta name="format-detection" content="telephone=no" />\n<meta name="HandheldFriendly" content="True" />\n<meta name="MobileOptimized" content="320" />\n<meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n<meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n<meta name="x5-fast-scroller" content="disable" />\n\n<style>\np{\n    line-height: 1.5;\n}\ncode{\n    font-size: 12px;\n}\n</style>\n\n</head>\n<body>\n    <p>');
+            var window = context.window || {};
+            __p.push('<html>\n<head>\n<meta charset="utf-8" />\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n<meta name="robots" content="none" />\n<meta name="format-detection" content="telephone=no" />\n<meta name="HandheldFriendly" content="True" />\n<meta name="MobileOptimized" content="320" />\n<meta name="viewport" content="width=320,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />\n<meta name="viewport" content="width=319.9,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" media="(device-height: 568px)" />\n<meta name="x5-fast-scroller" content="disable" />\n\n<style>\np{\n    line-height: 1.5;\n}\npre{\n    font-size: 12px;\n}\n</style>\n\n</head>\n<body>\n    <p>');
             _p(data.content);
             __p.push('</p>\n    <p><strong>服务器IP:</strong> ');
             _p(data.intranetIp);
@@ -42,12 +42,12 @@ define(function(require, exports, module) {
             _p(data.second);
             __p.push('s</p>');
             if (data.headerText) {
-                __p.push('    <p><strong>请求头:</strong></p>\n    <div style="font-size:12px">');
+                __p.push('    <p><strong>请求头:</strong></p>\n    <pre>');
                 _p(tmpl.encodeHtml(data.headerText || '').replace(/\r\n|\r|\n/g, '<br>'));
-                __p.push('</div>');
+                __p.push('</pre>');
             }__p.push('    ');
             if (data.logText) {
-                __p.push('    <p><strong>全息日志:</strong></p>\n    <pre style="font-size:12px">');
+                __p.push('    <p><strong>全息日志:</strong></p>\n    <pre>');
                 _p(tmpl.encodeHtml(data.logText || '').replace(/\r\n|\r|\n/g, '<br>'));
                 __p.push('</pre>');
             }__p.push('</body>\n</html>');
@@ -57,14 +57,14 @@ define(function(require, exports, module) {
 
         'rtx': function(data) {
 
-            let __p = [],
+            var __p = [],
                 _p = function(s) {
                     __p.push(s);
                 },
                 out = _p;
 
 
-            const window = context.window || {};
+            var window = context.window || {};
             _p(data.msgInfo);
             _p('\r\n\r\n');
             __p.push('服务器IP:');
