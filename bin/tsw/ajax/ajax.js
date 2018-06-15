@@ -402,11 +402,10 @@ Ajax.prototype.doRequest = function(opt) {
     times.start = new Date().getTime();
 
     function report(opt, isFail, code) {
-
+        const toIp = request.remoteIp || opt.ip;
 
         if (isTST.isTST(opt)) {
-            // 忽略安全中心请求
-            return;
+            return; // 忽略安全中心请求
         }
 
         if (isFail === 1 && opt.ignoreErrorReport) {
@@ -414,11 +413,10 @@ Ajax.prototype.doRequest = function(opt) {
         }
 
         if (opt.dcapi) {
-
             logger.debug(logPre + '返回码：' + code + ', isFail:' + isFail);
 
             dcapi.report(Deferred.extend({}, opt.dcapi, {
-                toIp: opt.ip,
+                toIp: toIp,
                 code: code,
                 isFail: isFail,
                 delay: new Date() - times.start
@@ -553,6 +551,17 @@ Ajax.prototype.doRequest = function(opt) {
 
     request.setNoDelay(true);
     request.setSocketKeepAlive(true);
+
+    request.once('socket', function(socket) {
+        socket.once('lookup', (err, address, family, host) => {
+            if (err) {
+                logger.error(logPre + err.stack);
+                this.emit('fail');
+                return;
+            }
+            this.remoteIp = address;
+        });
+    });
 
     defer.always(function() {
         clearTimeout(tid);
