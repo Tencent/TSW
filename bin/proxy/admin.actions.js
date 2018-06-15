@@ -47,7 +47,7 @@ module.exports = {
 
     '/reload': function (req, res) {
 
-        cp.exec('./check.js', {
+        cp.exec('node --no-warnings ./check.js', {
             timeout: 5000,
             encoding: 'utf8',
             cwd: __dirname
