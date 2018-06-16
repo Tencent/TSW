@@ -192,7 +192,7 @@
                 for (var i in data.data) {
                     num++;
                     var val = data.data[i];
-                    html += '<p>' + i + ':' + val + '</p>';
+                    html += '<p><a href="/log/view/' + i + '" target="_blank" class="link">' + i + '</a>' + ':' + val + '</p>';
                 }
                 if (num == 0) {
                     html = "还没有测试号码~"

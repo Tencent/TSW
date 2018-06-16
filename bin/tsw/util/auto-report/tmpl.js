@@ -182,7 +182,8 @@ define(function(require, exports, module) {
             if (data.total_arr.length) {
                 __p.push('<table>\n    <thead>\n    <tr>\n        <th>项目名称</th>\n        <th>mod_act</th>\n        <th>报错次数</th>\n        <th>负责人</th>\n    </tr>\n    </thead>\n    <tbody>');
                 for (i = 0; i < data.total_arr.length; i++) {
-                    __p.push('    item = data.total_arr[i++];\n    <tr class="');
+                    item = data.total_arr[i++];
+                    __p.push('    \n    <tr class="');
                     _p((i % 2 == 0 ? 'alt' : ''));
                     __p.push('">\n        <td class="dimension">');
                     _p(item.config.title);

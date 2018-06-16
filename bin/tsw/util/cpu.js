@@ -24,13 +24,7 @@ if (!global[__filename]) {
     };
     global[__filename] = cache;
 } else {
-    cache = {
-        time: 0,
-        total: 0,
-        used: 0,
-        curr: 0
-    };
-    global[__filename] = cache;
+    cache = global[__filename];
 }
 
 this.getCpuUsed = function(cpu) {
@@ -145,7 +139,7 @@ this.taskset = function(oriCpu, pid) {
         }
 
         let cpu = oriCpu;
-        if (cpus.length > 1) {
+        if (cpus && cpus.length > 1) {
             // cpu编号修正
             cpu = parseInt(cpus[cpu % cpus.length], 10);
         } else {
