@@ -14,6 +14,7 @@
  */
 const http = require('http');
 const https = require('https');
+const net = require('net');
 let isFirstLoad = true;
 
 if (global[__filename]) {
@@ -160,16 +161,28 @@ process.nextTick(function() {
             };
 
             request.once('socket', function(socket) {
-                socket.once('lookup', (err, address, family, host) => {
+                if (socket.remoteAddress) {
                     timeLookup = Date.now();
-                    if (err) {
-                        logger.error(logPre + err.stack);
-                        finish();
-                        return;
-                    }
+                    timeConnect = Date.now();
+                    remoteAddress = socket.remoteAddress;
+                    remotePort = socket.remotePort;
                     const cost = timeLookup - timeStart;
-                    logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
-                });
+                    logger.debug(`${logPre}socket reuse ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+                    return;
+                }
+
+                if (!net.isIP(opt.host)) {
+                    socket.once('lookup', (err, address, family, host) => {
+                        timeLookup = Date.now();
+                        if (err) {
+                            logger.error(logPre + err.stack);
+                            finish();
+                            return;
+                        }
+                        const cost = timeLookup - timeStart;
+                        logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
+                    });
+                }
 
                 socket.once('connect', function() {
                     timeConnect = Date.now();

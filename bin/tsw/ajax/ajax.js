@@ -14,6 +14,7 @@ const http = require('http');
 const https = require('https');
 const vm = require('vm');
 const url = require('url');
+const net = require('net');
 const qs = require('qs');
 const form = require('./form.js');
 const token = require('./token.js');
@@ -553,14 +554,21 @@ Ajax.prototype.doRequest = function(opt) {
     request.setSocketKeepAlive(true);
 
     request.once('socket', function(socket) {
-        socket.once('lookup', (err, address, family, host) => {
-            if (err) {
-                logger.error(logPre + err.stack);
-                this.emit('fail');
-                return;
-            }
-            this.remoteIp = address;
-        });
+        if (socket.remoteAddress) {
+            this.remoteIp = socket.remoteAddress;
+            return;
+        }
+
+        if (!net.isIP(opt.host)) {
+            socket.once('lookup', (err, address, family, host) => {
+                if (err) {
+                    logger.error(logPre + err.stack);
+                    this.emit('fail');
+                    return;
+                }
+                this.remoteIp = address;
+            });
+        }
     });
 
     defer.always(function() {
