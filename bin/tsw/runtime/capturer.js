@@ -149,6 +149,10 @@ process.nextTick(function() {
 
                 timeEnd = new Date().getTime();
 
+                request.removeListener('response', onResponse);
+                request.removeListener('socket', onSocket);
+                request.removeListener('error', onError);
+
                 if (captureBody) {
                     buffer = Buffer.concat(result);
                     result = [];
@@ -160,45 +164,7 @@ process.nextTick(function() {
                 }
             };
 
-            request.once('socket', function(socket) {
-                if (socket.remoteAddress) {
-                    timeLookup = Date.now();
-                    timeConnect = Date.now();
-                    remoteAddress = socket.remoteAddress;
-                    remotePort = socket.remotePort;
-                    const cost = timeLookup - timeStart;
-                    logger.debug(`${logPre}socket reuse ${remoteAddress}:${remotePort}, cost ${cost}ms`);
-                    return;
-                }
-
-                if (!net.isIP(opt.host)) {
-                    socket.once('lookup', (err, address, family, host) => {
-                        timeLookup = Date.now();
-                        if (err) {
-                            logger.error(logPre + err.stack);
-                            finish();
-                            return;
-                        }
-                        const cost = timeLookup - timeStart;
-                        logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
-                    });
-                }
-
-                socket.once('connect', function() {
-                    timeConnect = Date.now();
-                    const cost = timeConnect - timeStart;
-                    remoteAddress = this.remoteAddress;
-                    remotePort = this.remotePort;
-                    logger.debug(`${logPre}connect ${remoteAddress}:${remotePort}, cost ${cost}ms`);
-                });
-            });
-
-            request.once('error', function(err) {
-                logger.error(err.stack);
-                finish();
-            });
-
-            request.once('response', (response) => {
+            const onResponse = function(response) {
                 timeResponse = Date.now();
 
                 const socket = response.socket;
@@ -253,7 +219,68 @@ process.nextTick(function() {
                     done.call(this);
                 });
 
-            });
+            };
+
+            const onError = function(err) {
+                logger.error(err.stack);
+                finish();
+            };
+
+            const onSocket = function(socket) {
+                if (socket.remoteAddress) {
+                    timeLookup = Date.now();
+                    timeConnect = Date.now();
+                    remoteAddress = socket.remoteAddress;
+                    remotePort = socket.remotePort;
+                    const cost = timeLookup - timeStart;
+                    logger.debug(`${logPre}socket reuse ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+                    return;
+                }
+
+                const onError = function(err) {
+                    logger.error(logPre + err.stack);
+                    clean();
+                    finish();
+                };
+
+                const onConnect = function() {
+                    timeConnect = Date.now();
+                    const cost = timeConnect - timeStart;
+                    remoteAddress = this.remoteAddress;
+                    remotePort = this.remotePort;
+                    logger.debug(`${logPre}connect ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+                    clean();
+                };
+
+                const onLookup = function(err, address, family, host) {
+                    timeLookup = Date.now();
+                    if (err) {
+                        logger.error(logPre + err.stack);
+                        clean();
+                        finish();
+                        return;
+                    }
+                    const cost = timeLookup - timeStart;
+                    logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
+                };
+
+                const clean = function() {
+                    socket.removeListener('error', onError);
+                    socket.removeListener('connect', onConnect);
+                    socket.removeListener('lookup', onLookup);
+                };
+
+                if (!net.isIP(opt.host)) {
+                    socket.once('lookup', onLookup);
+                }
+
+                socket.once('connect', onConnect);
+                socket.once('error', onError);
+            };
+
+            request.once('socket', onSocket);
+            request.once('error', onError);
+            request.once('response', onResponse);
 
             return request;
         };
