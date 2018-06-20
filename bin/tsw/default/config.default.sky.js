@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,56 +7,57 @@
  */
 'use strict';
 
-//路由
+
+// 路由
 this.modAct = this.modMap = {
 
     map: {
-        log_view	 		: 'util/auto-report/view.js',
-        log_download 		: 'util/auto-report/download.js',
-        group_page 			: 'util/h5-test/group/view.js',
-        h5test_page 		: 'util/h5-test/page/view.js',
-        h5test_managerget	: 'util/h5-test/get.js',
-        h5test_manageradd	: 'util/h5-test/add.js',
-        h5test_managerdel	: 'util/h5-test/del.js',
-        '/api/h5test/get'	: 'util/h5-test/get.js',
-        '/api/h5test/add'	: 'util/h5-test/add.js',
-        '/api/h5test/del'	: 'util/h5-test/del.js',
-        '/' 				: 'util/home/view.js',
-        '/index'	 		: 'util/home/view.js',
-        static_tsw  		: 'util/static/static.js',
-        default_page  		: 'util/static/static.js'
+        log_view: 'util/auto-report/view.js',
+        log_download: 'util/auto-report/download.js',
+        group_page: 'util/h5-test/group/view.js',
+        h5test_page: 'util/h5-test/page/view.js',
+        h5test_managerget: 'util/h5-test/get.js',
+        h5test_manageradd: 'util/h5-test/add.js',
+        h5test_managerdel: 'util/h5-test/del.js',
+        '/api/h5test/get': 'util/h5-test/get.js',
+        '/api/h5test/add': 'util/h5-test/add.js',
+        '/api/h5test/del': 'util/h5-test/del.js',
+        '/': 'util/home/view.js',
+        '/index': 'util/home/view.js',
+        static_tsw: 'util/static/static.js',
+        default_page: 'util/static/static.js'
     },
 
-    getModAct: function(req){
-        var pathname= req.REQUEST.pathname || '';
-        var arr		= pathname.split('/',3);
-        var mod		= arr[1] || 'default';
-        var act		= arr[2] || 'page';
-        var mod_act	= mod + '_' + act;
+    getModAct: function(req) {
+        const pathname = req.REQUEST.pathname || '';
+        const arr = pathname.split('/', 3);
+        const mod = arr[1] || 'default';
+        const act = arr[2] || 'page';
+        const mod_act = mod + '_' + act;
 
 
-        if(this.map[pathname]){
+        if (this.map[pathname]) {
             req.__mod_act = pathname;
             return pathname;
         }
 
-        if(this.map[mod_act]){
+        if (this.map[mod_act]) {
             req.__mod_act = mod_act;
             return mod_act;
         }
 
         return null;
     },
-    find: function(mod_act,req,res){
+    find: function(mod_act, req, res) {
         mod_act = req.__mod_act;
 
-        var mod = this.map[mod_act];
+        const mod = this.map[mod_act];
 
-        if(mod_act === 'default_page'){
+        if (mod_act === 'default_page') {
             req.REQUEST.pathname = '/static/tsw/index.html';
         }
 
-        if(mod){
+        if (mod) {
             res.setHeader('Mod-Map', mod_act + ':' + mod);
             return plug(mod);
         }
@@ -64,5 +65,4 @@ this.modAct = this.modMap = {
         return null;
     }
 };
-
 

@@ -3,48 +3,51 @@
  * @author lifesinger@gmail.com
  */
 
-var Module = module.constructor;
-var helper = require('./helper');
-var vm = require('vm');
+const Module = module.constructor;
+const helper = require('./helper');
+const vm = require('vm');
 
 
-var _compile = Module.prototype._compile;
-var _resolveFilename = Module._resolveFilename;
-var moduleStack = [];
+const _compile = Module.prototype._compile;
+const _resolveFilename = Module._resolveFilename;
+const moduleStack = [];
 
-Module._resolveFilename = function(request, parent) {
-    var res;
+
+Module._resolveFilename = function(request, parent, isMain, options = {}) {
+    let res;
     //request = request.replace(/\?.*$/, '') // remove timestamp etc.
-  
+
     //性能优化
-    if(parent.resolveFilenameCache){
-        if(parent.resolveFilenameCache[request]){
+    // do not use cache when `options` has `paths` property
+    // in v8.9.0 require.resolve case
+    if(parent.resolveFilenameCache && !options.paths) {
+        if(parent.resolveFilenameCache[request]) {
             return parent.resolveFilenameCache[request];
         }
     }else{
         parent.resolveFilenameCache = {};
     }
-  
-    res = _resolveFilename(request, parent);
-  
+
+    res = _resolveFilename(request, parent, isMain, options);
+
     parent.resolveFilenameCache[request] = res;
-  
+
     return res;
 };
 
 Module.prototype._compile = function(content, filename) {
     moduleStack.push(this);
     try {
-        if(filename.indexOf(plug.parent) === 0){
+        if (filename.indexOf(plug.parent) === 0) {
             this.paths = plug.paths.concat(this.paths);
         }
         return _compile.call(this, content, filename);
-    }catch(err){
-        process.nextTick(function(){
-            process.emit('warning',err);
+    } catch (err) {
+        process.nextTick(function() {
+            process.emit('warning', err);
         });
         throw err;
-    }finally {
+    } finally {
         moduleStack.pop();
     }
 };
@@ -61,15 +64,15 @@ global.seajs = {
 /* eslint-enable no-console */
 
 global.define = function() {
-    var factory = arguments[arguments.length - 1];
-    var ret = factory;
-    var module = moduleStack[moduleStack.length - 1] || require.main;
+    const factory = arguments[arguments.length - 1];
+    let ret = factory;
+    const module = moduleStack[moduleStack.length - 1] || require.main;
 
     // define(function(require, exports, module) { ... })
     if (typeof factory === 'function') {
         module.uri = module.id;
 
-        var req = function(id) {
+        const req = function(id) {
             return module.require(id);
         };
         req.async = createAsync(module);
@@ -83,9 +86,7 @@ global.define = function() {
         if (ret !== undefined) {
             module.exports = ret;
         }
-    }
-    // define(object)
-    else {
+    } else {
         module.exports = factory;
     }
 };
@@ -95,15 +96,15 @@ function createAsync(module) {
     return function(ids, callback) {
         if (typeof ids === 'string') ids = [ids];
 
-        var args = [];
-        var remain = ids.length;
+        const args = [];
+        let remain = ids.length;
 
         ids.forEach(function(id, index) {
 
             // http or https file
             if (/^https?:\/\//.test(id)) {
                 helper.readFile(id, function(data) {
-                    var m = {
+                    const m = {
                         id: id,
                         exports: {}
                     };
@@ -114,9 +115,7 @@ function createAsync(module) {
 
                     done(m.exports, index);
                 });
-            }
-            // local file
-            else {
+            } else {
                 done(module.require(id), index);
             }
         });

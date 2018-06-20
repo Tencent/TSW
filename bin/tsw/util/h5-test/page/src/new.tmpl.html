@@ -19,166 +19,172 @@
             }
             return '';
         };
-    	window.api = (function(){
-    		var commomData = {
-    			appid: '<%=data.appid%>',
-    			uid: getCookie('uid'),
-    			token: getCookie('token')
-    		};
-    		var _api = {};
-    		    /*
-				 * 添加白名单
-				 */
-			    _api.addTestUser = function(params){
-					var defer =$.Deferred();
-					$.ajax({
-						url: '/api/h5test/add',
-						data:$.extend({},commomData,{
-							uin: params.uin,
-							val: params.val
-						}),
-						success: function(data){
-							//封装一下
-							if(data && data.code === 0 ) {
-								defer.resolve(data);
-							}else {
-								var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
-								defer.reject( message);
-							}
-						},
-						fail: function(err){
-							var message = "系统繁忙，请稍后再试";
-							if(err && err.msg) {
-								message = err.msg;
-							}
-							defer.reject( message);
-						}
-					});
+        window.api = (function(){
+            var commomData = {
+                appid: '<%=data.appid%>',
+                uid: getCookie('uid'),
+                token: getCookie('token')
+            };
+            var _api = {};
+            /*
+            * 添加白名单
+            * */
+            _api.addTestUser = function(params){
+                var defer =$.Deferred();
+                $.ajax({
+                    url: '/api/h5test/add',
+                    data:$.extend({},commomData,{
+                        uin: params.uin,
+                        val: params.val
+                    }),
+                    success: function(data){
+                        //封装一下
+                        if(data && data.code === 0 ) {
+                            defer.resolve(data);
+                        }else {
+                            var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
+                            defer.reject( message);
+                        }
+                    },
+                    fail: function(err){
+                        var message = "系统繁忙，请稍后再试";
+                        if(err && err.msg) {
+                            message = err.msg;
+                        }
+                        defer.reject( message);
+                    }
+                });
 
-					return defer;
-			    };
+                return defer;
+            };
 
-			    /*
-				 * 删除白名单
-				 */
-			    _api.delTestUser = function(params){
-					var defer =$.Deferred();
-					$.ajax({
-						url: '/api/h5test/del',
-						data:$.extend({},commomData,{
-							uin: params.uin
-						}),
-						success: function(data){
-							//封装一下
-							if(data && data.code === 0 ) {
-								defer.resolve(data);
-							}else {
-								var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
-								defer.reject( message);
-							}
-						},
-						fail: function(err){
-							var message = "系统繁忙，请稍后再试";
-							if(err && err.msg) {
-								message = err.msg;
-							}
-							defer.reject( message);
-						}
-					});
+            /*
+             * 删除白名单
+             */
+            _api.delTestUser = function(params){
+                var defer =$.Deferred();
+                $.ajax({
+                    url: '/api/h5test/del',
+                        data:$.extend({},commomData,{
+                            uin: params.uin
+                        }),
+                        success: function(data){
+                            //封装一下
+                            if(data && data.code === 0 ) {
+                                defer.resolve(data);
+                            }else {
+                                var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
+                                defer.reject( message);
+                            }
+                        },
+                        fail: function(err){
+                            var message = "系统繁忙，请稍后再试";
+                            if(err && err.msg) {
+                                message = err.msg;
+                            }
+                            defer.reject( message);
+                        }
+                    });
 
-					return defer;
-			    };
+                    return defer;
+                };
 
-				//拉取所有
-				_api.getTestUser = function(params){
-					var defer =$.Deferred();
-					
-					$.ajax({
-						url: '/api/h5test/get',
-						data:$.extend({},commomData),
-						success: function(data){
-							//封装一下
-							if(data && data.code === 0 ) {
-								defer.resolve(data);
-							}else {
-								var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
-								defer.reject( message);
-							}
-						},
-						fail: function(err){
-							var message = "系统繁忙，请稍后再试";
-							if(err && err.msg) {
-								message = err.msg;
-							}
-							defer.reject( message);
-						}
-					});
-					
-					return defer;
-				};
-				return _api;
-    	})()
+                //拉取所有
+                _api.getTestUser = function(params){
+                    var defer =$.Deferred();
+
+                    $.ajax({
+                        url: '/api/h5test/get',
+                        data:$.extend({},commomData),
+                        success: function(data){
+                            //封装一下
+                            if(data && data.code === 0 ) {
+                                defer.resolve(data);
+                            }else {
+                                var message = (data && data.msg && data.msg != "") ? data.msg : "系统繁忙，请稍后再试";
+                                defer.reject( message);
+                            }
+                        },
+                        fail: function(err){
+                            var message = "系统繁忙，请稍后再试";
+                            if(err && err.msg) {
+                                message = err.msg;
+                            }
+                            defer.reject( message);
+                        }
+                    });
+
+                    return defer;
+                };
+                return _api;
+        })()
     </script>
     <script type="text/javascript">
     (function() {
-    	var handlerNums = function(val){
-    		return val.split(/(\b[0-9a-zA-Z_\-]{1,64}\b)/g);
-    	}
-    	//批量加入
-		$('#join-submit2').click(function(event){
-			var deferArr = [];
-			var val = $('#join-textarea').val();
-			// var arr = val.split(/(\b[0-9A-Za-z]+\b)/g);
-			var arr = handlerNums(val);
-			var selectVal = $('.selected')[0].value;
-			for(var i = 1; i < arr.length; i++) {
-				(function(uin){
-					var request = api.addTestUser({
-						uin : uin,
-						val : selectVal
-					});
-					deferArr.push(request);
-				}(arr[i]));
-				i++;
-			}
-			$.when.apply(this, deferArr).done(function(){
-				alert("你的号码，现已加入H5测试环境");
-			}).fail(function(errMsg){
-				errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
-				alert(errMsg);
-			}).always(function () {
-				//$('#number-get').trigger('click');
-			});
-			return false;
-		});
-		//移除
-		$('#remove-submit2').click(function(event){
-			var deferArr = [];
-			var val = $('#join-textarea').val();
-			var arr = handlerNums(val);
+        var handlerNums = function(val){
+            return val.split(/(\b[0-9a-zA-Z_\-]{1,64}\b)/g);
+        }
+        //批量加入
+        $('#join-submit2').click(function(event){
+            var deferArr = [];
+            var val = $('#join-textarea').val();
+            // var arr = val.split(/(\b[0-9A-Za-z]+\b)/g);
+            var arr = handlerNums(val);
+            var selectVal = $('.selected')[0].value;
+            for(var i = 1; i < arr.length; i++) {
+                (function(uin){
+                    var request = api.addTestUser({
+                        uin : uin,
+                        val : selectVal
+                    });
+                    deferArr.push(request);
+                }(arr[i]));
+                i++;
+            }
+            $.when.apply(this, deferArr).done(function(){
+                alert("你的号码，现已加入H5测试环境");
+            }).fail(function(errMsg){
+                errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
+                alert(errMsg);
+            }).always(function () {
+                //$('#number-get').trigger('click');
+            });
+            return false;
+        });
+        //移除
+        $('#remove-submit2').click(function(event){
+            var deferArr = [];
+            var val = $('#join-textarea').val();
+            var arr = handlerNums(val);
 
-			for(var i = 1; i < arr.length; i++) {
-								
-				var request = api.delTestUser({
-					uin : arr[i]
-				});
-				deferArr.push(request);
-				
-				i++;
-			}
-			$.when.apply(this, deferArr).done(function(){
-				alert("H5测试环境删除成功");
-			}).fail(function(errMsg){
-				errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
-				alert(errMsg);
-			}).always(function () {
-				//$('#number-get').trigger('click');
-			});
-			return false;
-		});
+            for(var i = 1; i < arr.length; i++) {
 
-		//查看所有
-		$('#number-get').click(function(event){
+                var request = api.delTestUser({
+                    uin : arr[i]
+                });
+                deferArr.push(request);
+
+                i++;
+            }
+            $.when.apply(this, deferArr).done(function(){
+                alert("H5测试环境删除成功");
+            }).fail(function(errMsg){
+                errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
+                alert(errMsg);
+            }).always(function () {
+                //$('#number-get').trigger('click');
+            });
+            return false;
+        });
+
+        //查看所有
+        $('#number-get').click(function(event){
+            var self = this;
+            if($(self).is('.expended')){
+                $(self).removeClass('expended').text('查看H5测试号码列表');
+                $('#number-list').html('');
+                return;
+            }
             var request = api.getTestUser();
             request.done(function(data) {
                 var html = "";
@@ -186,25 +192,26 @@
                 for (var i in data.data) {
                     num++;
                     var val = data.data[i];
-                    html += '<p>' + i + ':' + val + '</p>';
+                    html += '<p><a href="/log/view/' + i + '" target="_blank" class="link">' + i + '</a>' + ':' + val + '</p>';
                 }
                 if (num == 0) {
                     html = "还没有测试号码~"
                 }
                 $('#number-list').html(html);
+                $(self).addClass('expended').text('收起H5测试号码列表');
             }).fail(function(errMsg) {
                 errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
                 alert(errMsg);
             });
             return false;
-		});
+        });
 
-		$(document).on('click', '.js-select-btn', function(event){
-			var target = $(this);
-			$('.js-select-btn').removeClass('btn-primary positive');
-			$('.js-select-btn').removeClass('selected positive');
-			target.addClass('btn-primary positive');
-			target.addClass('selected');
+        $(document).on('click', '.js-select-btn', function(event){
+            var target = $(this);
+            $('.js-select-btn').removeClass('btn-primary positive');
+            $('.js-select-btn').removeClass('selected positive');
+            target.addClass('btn-primary positive');
+            target.addClass('selected');
 
             // 选中服务器后，动态变更url方便拷贝
             if (history.replaceState) {

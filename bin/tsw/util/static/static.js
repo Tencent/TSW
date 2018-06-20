@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,52 +7,54 @@
  */
 'use strict';
 
-const path		= require('path');
-const fs		= require('fs');
-const gzipHttp 	= require('util/gzipHttp.js');
-const logger	= require('logger');
-const mime		= require('./mime.js');
 
-module.exports = function(request,response,plug){
+const path = require('path');
+const fs = require('fs');
+const gzipHttp = require('util/gzipHttp.js');
+const logger = require('logger');
+const mime = require('./mime.js');
 
-    var filename	= path.normalize(request.REQUEST.pathname).replace(/\\/g,'/');
+module.exports = function(request, response, plug) {
 
-    try{
-        //支持中文
+    let filename = path.normalize(request.REQUEST.pathname).replace(/\\/g, '/');
+
+    try {
+        // 支持中文
         filename = decodeURIComponent(filename);
-    }catch(e){
+    } catch (e) {
         logger.info(`decode file name fail ${e.message}`);
     }
-    
-    var wwwroot		= plug.parent + '/wwwroot';
 
-    if(filename === '' || filename === '/'){
+    const wwwroot = plug.parent + '/wwwroot';
+
+    if (filename === '' || filename === '/') {
         filename = '/index';
     }
 
-    //保证请求的文件是wwwroot目录下的
-    var realPath	= path.join(wwwroot,path.join('/',filename));
-    var ext			= path.extname(realPath);
+    // 保证请求的文件是wwwroot目录下的
+    const realPath = path.join(wwwroot, path.join('/', filename));
+    let ext = path.extname(realPath);
 
-    if(ext){
-        //.js --> js
+    if (ext) {
+        // .js --> js
         ext = ext.slice(1);
     }
 
 
-    if(fs.existsSync(realPath)){
-        //保证是文件
-        fs.stat(realPath, function(err, stats){
-            if(err){
-                response.writeHead(500, {'Content-Type': 'text/plain'});
+    if (fs.existsSync(realPath)) {
+        // 保证是文件
+        fs.stat(realPath, function(err, stats) {
+            if (err) {
+                response.writeHead(500, { 'Content-Type': 'text/plain' });
                 response.end();
 
                 return;
             }
 
-            var opt, gzipResponse;
+            let opt,
+                gzipResponse;
 
-            if(mime.types[ext] && mime.types[ext] === 'application/json'){
+            if (mime.types[ext] && mime.types[ext] === 'application/json') {
                 opt = {
                     flags: 'r'
                 };
@@ -64,7 +66,7 @@ module.exports = function(request,response,plug){
                     code: 200,
                     contentType: mime.types[ext]
                 });
-            }else if(mime.types[ext] && mime.types[ext].indexOf('text/') === 0){
+            } else if (mime.types[ext] && mime.types[ext].indexOf('text/') === 0) {
                 opt = {
                     flags: 'r'
                 };
@@ -76,13 +78,13 @@ module.exports = function(request,response,plug){
                     code: 200,
                     contentType: mime.types[ext]
                 });
-            }else{
-                var range = request.headers.range || '';
-                var positions = range.replace(/bytes=/, '').split('-');
-                var start = parseInt(positions[0], 10) || 0;
-                var end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
+            } else {
+                const range = request.headers.range || '';
+                const positions = range.replace(/bytes=/, '').split('-');
+                const start = parseInt(positions[0], 10) || 0;
+                const end = positions[1] ? parseInt(positions[1], 10) : (stats.size - 1);
 
-                if(end < start || end >= stats.size){
+                if (end < start || end >= stats.size) {
                     response.writeHead(416, {
                         'Connection': 'close',
                         'Content-Type': mime.types[ext] || 'application/octet-stream',
@@ -93,7 +95,7 @@ module.exports = function(request,response,plug){
                 }
 
                 response.writeHead(positions.length === 2 ? 206 : 200, {
-                    'Cache-Control' : 'max-age=259200',
+                    'Cache-Control': 'max-age=259200',
 
                     'Connection': 'close',
                     'Content-Type': mime.types[ext] || 'application/octet-stream',
@@ -112,26 +114,25 @@ module.exports = function(request,response,plug){
                 gzipResponse = response;
             }
 
-            var rs = fs.createReadStream(realPath, opt);
+            const rs = fs.createReadStream(realPath, opt);
 
-            rs.on('error', function(e){
+            rs.on('error', function(e) {
                 logger.error(e.stack);
                 gzipResponse.end();
             });
 
-            rs.on('data', function(buffer){
+            rs.on('data', function(buffer) {
                 gzipResponse.write(buffer);
             });
 
-            rs.on('end', function(){
+            rs.on('end', function() {
                 gzipResponse.end();
             });
         });
-    }else{
-        response.writeHead(404, {'Content-Type': 'text/plain'});
+    } else {
+        response.writeHead(404, { 'Content-Type': 'text/plain' });
         response.end();
     }
 
 };
-
 

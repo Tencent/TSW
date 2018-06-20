@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,27 +7,28 @@
  */
 'use strict';
 
-const TEReport	= require('util/auto-report/TEReport.js');
-const gzipHttp	= require('util/gzipHttp.js');
-const tmpl		= require('./tmpl.js');
-const navMenus 	= require('./navMenus.js');
 
-module.exports = function(request,response){
+const TEReport = require('util/auto-report/TEReport.js');
+const gzipHttp = require('util/gzipHttp.js');
+const tmpl = require('./tmpl.js');
+const navMenus = require('./navMenus.js');
 
-    var gzipResponse = gzipHttp.getGzipResponse({
+module.exports = function(request, response) {
+
+    const gzipResponse = gzipHttp.getGzipResponse({
         request: request,
         response: response,
         code: 200,
         contentType: 'text/html; charset=UTF-8'
     });
 
-    TEReport.getAllGroup().done(function(allGroup){
+    TEReport.getAllGroup().done(function(allGroup) {
 
-        var data = {};
+        const data = {};
 
-        data.head	= { title: 'TSW'};
+        data.head = { title: 'TSW' };
         data.header = tmpl.new_header(navMenus());
-        data.body	= tmpl.body();
+        data.body = tmpl.body();
 
         gzipResponse.end(tmpl.html(data));
     });

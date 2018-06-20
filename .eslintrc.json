@@ -4,7 +4,7 @@
         "commonjs": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
+    "extends": "eslint-config-alloy",
     "parserOptions": {
         "sourceType": "module",
         "ecmaVersion": 2017
@@ -24,6 +24,23 @@
             "error",
             "unix"
         ],
+        "eol-last": [
+            "error",
+            "always"
+        ],
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 2,
+                "maxEOF": 1
+            }
+        ],
+        "no-multi-spaces": [
+            "error",
+            {
+                "ignoreEOLComments": true
+            }
+        ],
         "quotes": [
             "error",
             "single"
@@ -33,10 +50,103 @@
             "always"
         ],
         "no-unused-vars": [
-            "error", 
+            "error",
             {
                 "args": "none"
             }
+        ],
+        "no-mixed-requires": [
+            "error",
+            true
+        ],
+        "block-spacing": [
+            "error",
+            "always"
+        ],
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
+        "comma-spacing": [
+            "error"
+        ],
+        "space-before-blocks": [
+            "error",
+            "always"
+        ],
+        "no-var": [
+            "error"
+        ],
+        "prefer-const": [
+            "warn"
+        ],
+        "no-param-reassign": [
+            "off"
+        ],
+        "no-template-curly-in-string": [
+            "off"
+        ],
+        "one-var": [
+            "off"
+        ],
+        "guard-for-in": [
+            "off"
+        ],
+        "no-undefined": [
+            "off"
+        ],
+        "complexity": [
+            "off"
+        ],
+        "max-nested-callbacks": [
+            "off"
+        ],
+        "no-path-concat": [
+            "off"
+        ],
+        "eqeqeq": [
+            "off"
+        ],
+        "max-depth": [
+            "off"
+        ],
+        "strict": [
+            "off"
         ]
-    }
+    },
+    "overrides": [
+        {
+            "files": ["bin/tsw/wwwroot/*.js"],
+            "env": {
+                "browser": true
+            },
+            "globals": {
+                "define": true
+            }
+        }, {
+            "files": ["bin/tsw/util/auto-report/tmpl.js"],
+            "rules": {
+                "no-inner-declarations": [
+                    "off"
+                ]
+            }
+        }, {
+            "files": ["bin/lib/util/mail/tmpl.js", "bin/tsw/util/**/tmpl.js"],
+            "rules": {
+                "no-unused-vars": [
+                    "error",
+                    {
+                        "varsIgnorePattern": "out",
+                        "args": "none"
+                    }
+                ],
+                "no-var": [
+                    "off"
+                ],
+                "prefer-const": [
+                    "off"
+                ]
+            }
+        }
+    ]
 }

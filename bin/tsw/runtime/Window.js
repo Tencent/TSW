@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,27 +7,18 @@
  */
 'use strict';
 
+
 module.exports = Window;
 
-function Window(){
+function Window() {
 
 }
 
-Window.prototype.disable = function(){
-    Window.windowHasDisabled = true;
+Window.prototype.disable = function() {
+    global.windowHasDisabled = true;
 };
 
-Window.prototype.enable = function(){
-    Window.windowHasDisabled = false;
+Window.prototype.enable = function() {
+    global.windowHasDisabled = false;
 };
 
-//兼容vue-server-render
-Object.defineProperty(Window.prototype, 'navigator', {
-    get : function(){
-        if(this.request) {
-            return {userAgent:this.request.headers['user-agent']};
-        }else {
-            return {userAgent:''};
-        }
-    }
-});

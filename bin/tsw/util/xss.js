@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,30 +7,31 @@
  */
 'use strict';
 
-this.filterParams = function(params){
 
-    var _params = params || {};
+this.filterParams = function(params) {
+
+    const _params = params || {};
 
     /* eslint-disable no-control-regex */
-    var replaceMap = {
-        reg  : /(['"<\r\n\t\s\u0000-\u001f])/gim,
-        '\'' : '\u0027',
-        '"' : '\u0022',
-        '<'  : '\u003C'
+    const replaceMap = {
+        reg: /(['"<\r\n\t\s\u0000-\u001f])/gim,
+        '\'': '\u0027',
+        '"': '\u0022',
+        '<': '\u003C'
     };
     /* eslint-enable no-control-regex */
 
-    var replaceFunc = function(n){
+    const replaceFunc = function(n) {
         return replaceMap[n] || '';
     };
 
-    for(var key in _params){
-        if(Array.isArray(_params[key])){
-            for(var i=_params[key].length-1; i>=0; i--){
-                _params[key][i] = _params[key][i] && (_params[key][i]+'').replace(replaceMap.reg,replaceFunc);
+    for (const key in _params) {
+        if (Array.isArray(_params[key])) {
+            for (let i = _params[key].length - 1; i >= 0; i--) {
+                _params[key][i] = _params[key][i] && (String(_params[key][i])).replace(replaceMap.reg, replaceFunc);
             }
-        }else{
-            _params[key] = _params[key] && (_params[key]+'').replace(replaceMap.reg,replaceFunc);
+        } else {
+            _params[key] = _params[key] && (String(_params[key])).replace(replaceMap.reg, replaceFunc);
         }
     }
 
@@ -38,46 +39,53 @@ this.filterParams = function(params){
 };
 
 this.filterXSS = function (str) {
-    var _param = {
-        xss : str || ''
+    const _param = {
+        xss: str || ''
     };
 
     return this.filterParams(_param).xss;
 };
 
 
-var encodeMap	= {
-        reg	: /([&"'<>])/g,
-        '&' : '&amp;',
-        '"'	: '&quot;',
-        '\''	: '&#039;',
-        '<'	: '&lt;',
-        '>'	: '&gt;'
-    },
-    decodeMap = {
-        reg : /(&lt;)|(&quot;)|(&#0039;)|(&#039;)|(&#39;)|(&amp;)|(&gt;)/g,
-        '&lt;' : '<',
-        '&gt;' : '>',
-        '&quot;' : '"',
-        '&#0039;' : '\'',
-        '&#039;' : '\'',
-        '&#39;' : '\'',
-        '&amp;' : '&'
-    },
-    encode	= function($0,c){return encodeMap[c];},
-    decode = function(c){return decodeMap[c];};
-
-//encode
-this.htmlEncode = function(str){
-    if(typeof str != 'string'){
-        str = str + '';
-    }
-    return str.replace(encodeMap.reg,encode);
+const encodeMap = {
+    'reg': /([&"'<>])/g,
+    '&': '&amp;',
+    '"': '&quot;',
+    '\'': '&#039;',
+    '<': '&lt;',
+    '>': '&gt;'
 };
-//decode
-this.htmlDecode = function(str){
-    if(typeof str != 'string'){
-        str = str + '';
+
+const decodeMap = {
+    'reg': /(&lt;)|(&quot;)|(&#0039;)|(&#039;)|(&#39;)|(&amp;)|(&gt;)/g,
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#0039;': '\'',
+    '&#039;': '\'',
+    '&#39;': '\'',
+    '&amp;': '&'
+};
+
+const encode = function($0, c) {
+    return encodeMap[c];
+};
+
+const decode = function(c) {
+    return decodeMap[c];
+};
+
+// encode
+this.htmlEncode = function(str) {
+    if (typeof str !== 'string') {
+        str = String(str);
     }
-    return str.replace(decodeMap.reg,decode);
+    return str.replace(encodeMap.reg, encode);
+};
+// decode
+this.htmlDecode = function(str) {
+    if (typeof str !== 'string') {
+        str = String(str);
+    }
+    return str.replace(decodeMap.reg, decode);
 };

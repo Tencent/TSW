@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,23 +7,23 @@
  */
 'use strict';
 
+
 module.exports = Context;
 
 
-function Context(){
+function Context() {
 
 }
 
-Context.prototype.setModAct = function(mod_act){
-	
+Context.prototype.setModAct = function(mod_act) {
+
     context.mod_act = mod_act;
-	
+
     return true;
 };
 
-Context.prototype.getModAct = function(){
-	
+Context.prototype.getModAct = function() {
+
     return context.mod_act;
 };
-
 

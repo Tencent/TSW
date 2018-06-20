@@ -3,8 +3,8 @@
  * @author lifesinger@gmail.com
  */
 
-var aliasCache = {};
-var url = require('url');
+const aliasCache = {};
+const url = require('url');
 
 
 exports.parseAlias = function (id) {
@@ -13,12 +13,12 @@ exports.parseAlias = function (id) {
         return id.substring(1);
     }
 
-    var alias = aliasCache;
+    const alias = aliasCache;
 
     // Only top-level id needs to parse alias.
     if (alias && isTopLevel(id)) {
-        var parts = id.split('/');
-        var first = parts[0];
+        const parts = id.split('/');
+        const first = parts[0];
 
         if (alias.hasOwnProperty(first)) {
             parts[0] = alias[first];
@@ -32,9 +32,9 @@ exports.parseAlias = function (id) {
 
 exports.configFn = function(o) {
     if (o && o.alias) {
-        var alias = o.alias;
+        const alias = o.alias;
 
-        for (var p in alias) {
+        for (const p in alias) {
             if (alias.hasOwnProperty(p)) {
                 aliasCache[p] = alias[p];
             }
@@ -46,15 +46,17 @@ exports.configFn = function(o) {
 
 // Reads content from http(s)/local filesystem
 exports.readFile = function(uri, callback) {
-    var options = url.parse(uri);
-    var connect = require(options.protocol.slice(0, -1));
+    const options = url.parse(uri);
+    const connect = require(options.protocol.slice(0, -1));
 
     connect.get(options, function(res) {
         if (res.statusCode !== 200) {
-            throw 'Error: No data received from ' + uri;
+            throw 'Error: No data received from ' + uri;        // eslint-disable-line no-throw-literal
         }
 
-        var ret = [], length = 0;
+        const ret = [];
+
+        let length = 0;
 
         res.on('data', function(chunk) {
             length += chunk.length;
@@ -62,14 +64,16 @@ exports.readFile = function(uri, callback) {
         });
 
         callback && res.on('end', function() {
-            var buf = Buffer.alloc(length), index = 0;
+            const buf = Buffer.alloc(length);
+
+            let index = 0;
 
             ret.forEach(function(chunk) {
                 chunk.copy(buf, index, 0, chunk.length);
                 index += chunk.length;
             });
 
-            var data = buf.toString();
+            const data = buf.toString();
             callback(data);
         });
 
@@ -81,6 +85,6 @@ exports.readFile = function(uri, callback) {
 // -------
 
 function isTopLevel(id) {
-    var c = id.charAt(0);
+    const c = id.charAt(0);
     return id.indexOf('://') === -1 && c !== '.' && c !== '/';
 }

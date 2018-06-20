@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -9,27 +9,26 @@
  */
 'use strict';
 
-try{
+try {
 
-    var plug        = require('plug');
-    var config      = plug('config');
+    const plug = require('plug');
+    const config = plug('config');
 
     process.stdout.write('typeof config: ' + typeof config + '\r\n');
-
     process.stdout.write('check config ok');
     process.stdout.write('\r\n');
 
-    setTimeout(function(){
+    setTimeout(function() {
         process.exit(0);
-    },500);
-}catch(err){
+    }, 500);
+} catch (err) {
 
-    if(err){
+    if (err) {
         process.stderr.write(err.stack);
         process.stderr.write('\r\n');
-        setTimeout(function(){
+        setTimeout(function() {
             process.exit(0);
-        },500);
+        }, 500);
     }
 
 }

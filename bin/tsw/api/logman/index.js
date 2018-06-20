@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,88 +7,89 @@
  */
 'use strict';
 
-const cp			= require('child_process');
-const fs			= require('fs');
-const path			= require('path');
-const logger		= require('logger');
-const dateApi		= require('api/date.js');
-const {isWindows}	= require('util/isWindows.js');
-const logDir		= path.resolve(__dirname, '../../../../log/').replace(/\\/g, '/');
-const backupDir		= path.resolve(logDir, './backup/').replace(/\\/g, '/');
-const runlogPath	= path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
 
-//判断logDir目录是否存在
-fs.exists(logDir, function(exists){
+const cp = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const logger = require('logger');
+const dateApi = require('api/date.js');
+const { isWin32Like } = require('util/isWindows.js');
+const logDir = path.resolve(__dirname, '../../../../log/').replace(/\\/g, '/');
+const backupDir = path.resolve(logDir, './backup/').replace(/\\/g, '/');
+const runlogPath = path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
+
+// 判断logDir目录是否存在
+fs.exists(logDir, function(exists) {
     if (!exists) {
-        fs.mkdirSync(logDir,0o777);
+        fs.mkdirSync(logDir, 0o777);
     }
 
-    //判断backup目录是否存在
-    fs.exists(backupDir, function(exists){
+    // 判断backup目录是否存在
+    fs.exists(backupDir, function(exists) {
         if (!exists) {
-            fs.mkdirSync(backupDir,0o777);
+            fs.mkdirSync(backupDir, 0o777);
         }
     });
 });
 
-var LogMan = {
-	
+const LogMan = {
+
     /**
-	 * 按分钟\小时\天去备份log
-	 */
+     * 按分钟\小时\天去备份log
+     */
     delayMap: {
         m: 60000,
         H: 3600000,
         D: 86400000
     },
-	
+
     /**
-	 * 启动log管理
-	 */
-    start: function(config){
+     * 启动log管理
+     */
+    start: function(config) {
         logger.info('start log manager');
-        var self = this;
+        const self = this;
         this.delayType = config.delay || 'D';
         this.delay = this.delayMap[this.delayType];
-        this.timer = setInterval(function(){
+        this.timer = setInterval(function() {
             self.backLog();
         }, this.delay);
     },
-	
+
     /**
-	 * 备份log
-	 */
-    backLog: function(){
+     * 备份log
+     */
+    backLog: function() {
         logger.info('start backup log');
-        var self = this;
-        var curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date, 'YYYY-MM-DD'));
-        fs.exists(curBackupDir, function(exists){
-            if(!exists){
+        const self = this;
+        const curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date(), 'YYYY-MM-DD'));
+        fs.exists(curBackupDir, function(exists) {
+            if (!exists) {
                 fs.mkdirSync(curBackupDir);
             }
-            var logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date, self.delayType + self.delayType) + '.log');
-            var cmdCat = 'cat ' + runlogPath + ' >> ' + logFilePath;
-            var cmdClear = 'cat /dev/null > ' + runlogPath;
-			
-            //兼容windows
-            if(isWindows){
+            let logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date(), self.delayType + self.delayType) + '.log');
+            let cmdCat = 'cat ' + runlogPath + ' >> ' + logFilePath;
+            let cmdClear = 'cat /dev/null > ' + runlogPath;
+
+            // 兼容windows
+            if (isWin32Like) {
                 logFilePath = logFilePath.replace(/\\/g, '\\\\');
                 cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
                 cmdClear = 'type NUL > ' + runlogPath;
             }
-			
-            //backup
-            logger.info('backup: '+ cmdCat);
-            
-            cp.exec(cmdCat, function(error, stdout, stderr){
+
+            // backup
+            logger.info('backup: ' + cmdCat);
+
+            cp.exec(cmdCat, function(error, stdout, stderr) {
                 if (error !== null) {
                     logger.error('cat error, ' + error);
                 }
-				
-                //clear
+
+                // clear
                 logger.info('clear: ' + cmdClear);
 
-                cp.exec(cmdClear, function(error, stdout, stderr){
+                cp.exec(cmdClear, function(error, stdout, stderr) {
                     if (error !== null) {
                         logger.error('clear error, ' + error);
                     }
@@ -96,7 +97,7 @@ var LogMan = {
             });
         });
     }
-	
+
 };
 
 module.exports = LogMan;

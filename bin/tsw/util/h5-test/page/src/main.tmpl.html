@@ -1,9 +1,9 @@
 <script id="new_main" type="text/html" nowith="yes" >
 <%
-data	= data || {};
+data = data || {};
 
-var body	= data.body || '',
-    head	= data.head || {};
+var body = data.body || '',
+    head = data.head || {};
 %>
 <!DOCTYPE html>
 <html>
@@ -11,11 +11,11 @@ var body	= data.body || '',
         <meta charset="UTF-8">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title><%=tmpl.encodeHtml(head.title || '')%></title>
-        <meta name="description" itemprop="description" content="<%=tmpl.encodeHtml(head.description || '')%>" />
-        <meta itemprop="name" content="<%=tmpl.encodeHtml(head.share_name || '')%>">
+        <title><%-head.title || ''%></title>
+        <meta name="description" itemprop="description" content="<%-head.description || ''%>" />
+        <meta itemprop="name" content="<%-head.share_name || ''%>">
         <% if(head.share_image){%>
-        <meta itemprop="image" content="<%= head.share_image %>">
+        <meta itemprop="image" content="<%- head.share_image %>">
         <%}%>
         <meta name="robots" content="none" />
         <meta name="format-detection" content="telephone=no" />
@@ -100,15 +100,29 @@ html{
     z-index: 999;
     width: 100%;
 }
+
+.top-tip{
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    background-color: rgba(33, 186, 69, 0.75);
+    z-index: 999;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 30px;
+}
 </style>
 <div id="header" class="header">
     <ul class="nav">
-        <% 
-            var navMenus = data;
+        <%
+            var navMenus = data,i;
             if(navMenus && navMenus.length>0) {
-                for(var i=0;i<navMenus.length;i++){
+                for(i=0;i<navMenus.length;i++){
                     if(navMenus[i].href && navMenus[i].title){ %>
-                    <li><a href="<%=tmpl.encodeHtml(navMenus[i].href)%>"><%=tmpl.encodeHtml(navMenus[i].title)%></a></li>
+                    <li><a href="<%-navMenus[i].href%>"><%-navMenus[i].title%></a></li>
                 <%}
                 }
             }

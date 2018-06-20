@@ -16,7 +16,7 @@ TSW supports packet capture based on user granularity.
 
 #### Holographic logging
 
-TSW provides powerful logging abilities for developers to locate problems quickly.
+The full content of the request can be seen through the log.
 
 - Record packets within requests' lifecycles holographically in the form of log flow.
 - Aggregate log flows based on user granularity.
@@ -41,16 +41,18 @@ TSW provides powerful logging abilities for developers to locate problems quickl
 
 - NPM : `npm install --no-optional`
 
-- Config ``TSW/conf/config.js``
-    ```js
-    this.httpAddress = '0.0.0.0'
-
-    this.httpPort = 80;
-    ```
-
-- Run `node index.js` to start Node.js server
+- Run `node --inspect index.js` to start Node.js server
 
 - Open `http://127.0.0.1/` in your browser.
+
+
+## docker
+```shell
+# build
+docker build -t tsw .
+# run
+docker run -v configure_dir:/data/release/node_modules -p 8080:80 tsw
+```
 
 
 ## Documentation

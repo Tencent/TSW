@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,31 +7,32 @@
  */
 'use strict';
 
-const Context   = require('runtime/Context');
-const Window    = require('runtime/Window');
 
-this.currentContext = function(){
+const Context = require('runtime/Context');
+const Window = require('runtime/Window');
+
+this.currentContext = function () {
     return (process.domain && process.domain.currentContext) || new Context();
 };
 
-if(!global.context){
-    
+if (!global.context) {
+
     Object.defineProperty(global, 'context', {
-        get : function(){
+        get: function () {
             return module.exports.currentContext();
         }
     });
-    
-    Object.defineProperty(global, 'window', {
-        get : function(){
 
-            if(Window.windowHasDisabled){
+    Object.defineProperty(global, 'window', {
+        get: function () {
+
+            if (global.windowHasDisabled) {
                 return undefined;
             }
 
-            var curr = module.exports.currentContext();
+            const curr = module.exports.currentContext();
 
-            if(!curr.window){
+            if (!curr.window) {
                 curr.window = new Window();
             }
 
@@ -39,5 +40,4 @@ if(!global.context){
         }
     });
 }
-
 

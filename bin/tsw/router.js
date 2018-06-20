@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,46 +7,33 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const httpRoute		= require('../proxy/http.route.js');
-const parseGet		= require('util/http/parseGet.js');
+this.route = function(url, name) {
+    const logger = require('logger');
+    const httpRoute = require('../proxy/http.route.js');
+    const parseGet = require('util/http/parseGet.js');
+    const window = context.window || {};
+    const req = window.request;
+    const res = window.response;
 
-this.route = function(url,mod_act){
-	
-    var req,res;
-    var window   	= context.window || {};
-	
-    req = window.request;
-    res = window.response;
-	
-    if(!req){
+    if (!req) {
         return;
     }
-	
-    res.removeAllListeners('afterFinish');
-	
-    if(url){
-		
-        logger.debug('route to : ${url}',{
-            url: url
-        });
-		
-        req.url = url;
-        //解析get参数
-        parseGet(req);
-    }
-	
-    if(mod_act){
-        logger.debug('route to mod_act: ${mod_act}',{
-            mod_act: mod_act
-        });
-		
-        context.mod_act   = mod_act;
-    }else{
-        context.mod_act   = null;
-    }
-	
-    httpRoute.doRoute(req,res);
-};
 
+    res.removeAllListeners('afterFinish');
+
+    if (url) {
+        logger.debug(`route to : ${url}`);
+        req.url = url;
+        parseGet(req);  // 解析get参数
+    }
+
+    if (name) {
+        logger.debug(`route to name: ${name}`);
+        context.mod_act = name;
+    } else {
+        context.mod_act = null;
+    }
+
+    httpRoute.doRoute(req, res);
+};
 

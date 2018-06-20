@@ -26,7 +26,7 @@ TSW 支持用户维度的抓包
 
 #### 全息日志
 
-TSW 提供用户维度的全息日志帮助开发者快速定位问题
+通过日志可以洞见请求的全部
 
 - 对请求生命周期内的日志，采用全息的方式记录，形成流水
 - 流水按用户维度聚合
@@ -48,16 +48,16 @@ TSW 提供用户维度的全息日志帮助开发者快速定位问题
 1. 安装 -- `git clone https://github.com/Tencent/TSW.git`
 1. 切换工作目录 -- `cd TSW`
 1. 补全依赖 -- `npm install --no-optional`
-1. 配置 -- 修改 `TSW/conf/config.js`，更多配置项参考 [手册](https://tswjs.org/doc/api/config) 
-
-    ```js
-    this.httpAddress = '0.0.0.0';
-
-    this.httpPort = 80;
-    ```
-
-1. 启动 --  `node index.js`
+1. 启动 --  `node --inspect index.js`
 1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
+
+## docker
+```shell
+# build
+docker build -t tsw .
+# run
+docker run -v configure_dir:/data/release/node_modules -p 8080:80 tsw
+```
 
 ## 官方网站
 

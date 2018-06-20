@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,35 +7,36 @@
  */
 'use strict';
 
+
 const TIMES_LIMIT = 5;
 
-if(global[__filename]){
+if (global[__filename]) {
     global[__filename].map = {};
-}else{
+} else {
 
     global[__filename] = {
         map: {}
     };
 
-    //追踪重复读写
-    process.nextTick(function(){
-        var cache		= global[__filename];
-        var isWindows	= require('util/isWindows');
-        var fs			= require('fs');
-        var logger 		= require('logger');
-        var config 		= require('config');
-        var tnm2 		= require('api/tnm2');
+    // 追踪重复读写
+    process.nextTick(function() {
+        const cache = global[__filename];
+        const { isWin32Like } = require('util/isWindows');
+        const fs = require('fs');
+        const logger = require('logger');
+        const config = require('config');
+        const tnm2 = require('api/tnm2');
 
-        fs.existsSync = hack(fs.existsSync,function(file){
-            var sum 	= 0;
-            var name	= 'fs.existsSync';
-            var key		= name + file;
+        fs.existsSync = hack(fs.existsSync, function(file) {
+            let sum = 0;
+            const name = 'fs.existsSync';
+            const key = name + file;
 
-            cache.map[key]	= ~~cache.map[key] + 1;
-            sum			= cache.map[key];
+            cache.map[key] = ~~cache.map[key] + 1;
+            sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -46,16 +47,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.writeFileSync = hack(fs.writeFileSync,function(file){
-            var sum 	= 0;
-            var name	= 'fs.writeFileSync';
-            var key		= name + file;
+        fs.writeFileSync = hack(fs.writeFileSync, function(file) {
+            let sum = 0;
+            const name = 'fs.writeFileSync';
+            const key = name + file;
 
-            cache.map[key]	= ~~cache.map[key] + 1;
-            sum			= cache.map[key];
+            cache.map[key] = ~~cache.map[key] + 1;
+            sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -66,16 +67,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.statSync = hack(fs.statSync,function(file){
-            var sum 	= 0;
-            var name	= 'fs.statSync';
-            var key		= name + file;
+        fs.statSync = hack(fs.statSync, function(file) {
+            let sum = 0;
+            const name = 'fs.statSync';
+            const key = name + file;
 
-            cache.map[key]	= ~~cache.map[key] + 1;
-            sum			= cache.map[key];
+            cache.map[key] = ~~cache.map[key] + 1;
+            sum = cache.map[key];
 
-            if(sum > TIMES_LIMIT && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if (sum > TIMES_LIMIT && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -86,16 +87,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.accessSync = hack(fs.accessSync,function(file){
-            var sum 	= 0;
-            var name	= 'fs.accessSync';
-            var key		= name + file;
+        fs.accessSync = hack(fs.accessSync, function(file) {
+            let sum = 0;
+            const name = 'fs.accessSync';
+            const key = name + file;
 
-            cache.map[key]	= ~~cache.map[key] + 1;
-            sum			= cache.map[key];
+            cache.map[key] = ~~cache.map[key] + 1;
+            sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -106,16 +107,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.readFileSync = hack(fs.readFileSync,function(file){
-            var sum 	= 0;
-            var name	= 'fs.readFileSync';
-            var key		= name + file;
+        fs.readFileSync = hack(fs.readFileSync, function(file) {
+            let sum = 0;
+            const name = 'fs.readFileSync';
+            const key = name + file;
 
-            cache.map[key]	= ~~cache.map[key] + 1;
-            sum			= cache.map[key];
+            cache.map[key] = ~~cache.map[key] + 1;
+            sum = cache.map[key];
 
-            if(sum > TIMES_LIMIT && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if (sum > TIMES_LIMIT && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -126,16 +127,16 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        fs.readdirSync = hack(fs.readdirSync,function(file){
-            var sum 	= 0;
-            var name	= 'fs.readdirSync';
-            var key		= name + file;
+        fs.readdirSync = hack(fs.readdirSync, function(file) {
+            let sum = 0;
+            const name = 'fs.readdirSync';
+            const key = name + file;
 
-            cache.map[key]	= ~~cache.map[key] + 1;
-            sum			= cache.map[key];
+            cache.map[key] = ~~cache.map[key] + 1;
+            sum = cache.map[key];
 
-            if(sum % TIMES_LIMIT === 0 && !config.devMode){
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}',{
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -146,20 +147,20 @@ if(global[__filename]){
             tnm2.Attr_API('SUM_TSW_FILE_SYNC', 1);
         });
 
-        //fs.realpathSync = hack(fs.realpathSync,function(file){
-        //	logger.debug('[sync] ${name} ${file}',{
-        //		name: 'fs.realpathSync',
-        //		file: file
-        //	});
-        //});
+        // fs.realpathSync = hack(fs.realpathSync,function(file){
+        //    logger.debug('[sync] ${name} ${file}',{
+        //        name: 'fs.realpathSync',
+        //        file: file
+        //    });
+        // });
 
-        function hack(fn,callback){
+        function hack(fn, callback) {
 
-            if(isWindows.isWindows){
+            if (isWin32Like) {
                 return fn;
             }
 
-            return function(){
+            return function() {
                 callback.apply(this, arguments);
                 return fn.apply(this, arguments);
             };
@@ -167,5 +168,4 @@ if(global[__filename]){
     });
 
 }
-
 

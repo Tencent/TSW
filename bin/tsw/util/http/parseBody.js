@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,68 +7,69 @@
  */
 'use strict';
 
-const logger		= require('logger');
-const xssFilter		= require('api/xssFilter');
-const httpUtil		= require('util/http.js');
-const qs			= require('qs');
 
-module.exports = function(req,res,next){
-	
-    var arr = [];
-	
-    if(!httpUtil.isPostLike(req)){
+const logger = require('logger');
+const xssFilter = require('api/xssFilter');
+const httpUtil = require('util/http.js');
+const qs = require('qs');
+
+module.exports = function(req, res, next) {
+
+    const arr = [];
+
+    if (!httpUtil.isPostLike(req)) {
         next();
-		
+
         return;
     }
-	
-    if(req.REQUEST.body !== undefined){
+
+    if (req.REQUEST.body !== undefined) {
         next();
-		
+
         return;
     }
-	
-    req.on('data',function(txt){
-		
+
+    req.on('data', function(txt) {
+
         arr.push(txt);
-		
+
         logger.debug('receive ' + txt.length);
     });
 
-    req.once('end',function(){
-		
+    req.once('end', function() {
+
         logger.debug('receive end');
 
-        var buffer = Buffer.concat(arr);
-        var willParseBody	= '';
-        req.REQUEST.body	= buffer.toString('UTF-8');
-        req.POST			= {};
-        req.body			= req.POST;
+        const buffer = Buffer.concat(arr);
+        let willParseBody = '';
+        req.REQUEST.body = buffer.toString('UTF-8');
+        req.POST = {};
+        req.body = req.POST;
 
-        var contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
+        const contentType = req.headers['content-type'] || 'application/x-www-form-urlencoded';
 
-        if(contentType.indexOf('application/x-www-form-urlencoded') > -1){
+        if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
 
-            if(req.REQUEST.body.indexOf('+') > -1){
-                willParseBody = req.REQUEST.body.replace(/\+/g,' ');
-            }else{
+            if (req.REQUEST.body.indexOf('+') > -1) {
+                willParseBody = req.REQUEST.body.replace(/\+/g, ' ');
+            } else {
                 willParseBody = req.REQUEST.body;
             }
 
-            try{
-                req.POST = qs.parse(willParseBody,{ parameterLimit: 4096 });
-            }catch(e){
+            try {
+                req.POST = qs.parse(willParseBody, { parameterLimit: 4096 });
+            } catch (e) {
                 req.POST = {};
                 logger.debug(e.stack);
                 logger.report();
             }
 
             req.body = req.POST;
-        }else if(contentType.indexOf('application/json') > -1){
+        } else if (contentType.indexOf('application/json') > -1) {
 
-            try{
+            try {
                 req.POST = JSON.parse(req.REQUEST.body);
-            }catch(e){
+            } catch (e) {
                 req.POST = {};
                 logger.debug(e.stack);
                 logger.report();
@@ -76,15 +77,14 @@ module.exports = function(req,res,next){
             req.body = req.POST;
         }
 
-        xssFilter.check().fail(function(){
-            res.writeHead(501, {'Content-Type': 'text/plain; charset=UTF-8'});
+        xssFilter.check().fail(function() {
+            res.writeHead(501, { 'Content-Type': 'text/plain; charset=UTF-8' });
             res.end('501 by TSW');
-        }).done(function(){
+        }).done(function() {
             next();
         });
-		
-    });
-	
-};
 
+    });
+
+};
 

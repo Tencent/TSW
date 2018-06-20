@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,14 +7,19 @@
  */
 'use strict';
 
-exports.doRoute = function(ws, type, d1, d2) {
-    var  wsModAct	= require('./ws.mod.act');
-    var	 wsModMap	= require('./ws.mod.map');
-    var  logger		= require('logger');
-    var  contextMod	= require('context.js');
+exports.getModAct = function (ws) {
+    const wsModAct = require('./ws.mod.act');
+    return wsModAct.getModAct(ws);
+};
 
-    var mod_act = wsModAct.getModAct(ws),
+exports.doRoute = function(ws, type, d1, d2) {
+    const wsModMap = require('./ws.mod.map');
+    const logger = require('logger');
+    const contextMod = require('context.js');
+
+    const mod_act = exports.getModAct(ws),
         moduleObj = wsModMap.find(mod_act, ws);
+
     if (typeof moduleObj !== 'object') {
         try {
             ws.send('module ' + mod_act + ' is not object');
@@ -23,34 +28,34 @@ exports.doRoute = function(ws, type, d1, d2) {
         }
         return;
     }
-    if (typeof moduleObj.onConnection != 'function') {
+    if (typeof moduleObj.onConnection !== 'function') {
         moduleObj.onConnection = function(ws) {
-            1 == ws.readyState && ws.send('no onConnection funtion,so go default');
+            ws.readyState === 1 && ws.send('no onConnection funtion,so go default');
         };
     }
-    if (typeof moduleObj.onMessage != 'function') {
+    if (typeof moduleObj.onMessage !== 'function') {
         moduleObj.onMessage = function(ws, data) {
-            1 == ws.readyState && ws.send('no onMessage function,so go default,ws server get message:' + data);
+            ws.readyState === 1 && ws.send('no onMessage function,so go default,ws server get message:' + data);
         };
     }
-    if (typeof moduleObj.onClose != 'function') {
+    if (typeof moduleObj.onClose !== 'function') {
         moduleObj.onClose = function() {
             logger.debug('no onClose function, so go default');
         };
     }
-    if (typeof moduleObj.onError != 'function') {
+    if (typeof moduleObj.onError !== 'function') {
         moduleObj.onError = function() {
             logger.debug('no onError function, so go default');
         };
     }
-    if ('connection' == type) {
+    if (type === 'connection') {
         moduleObj.onConnection(ws);
-    } else if ('message' == type) {
+    } else if (type === 'message') {
         contextMod.currentContext().mod_act = mod_act;
         moduleObj.onMessage(ws, d1);
-    } else if ('close' == type) {
+    } else if (type === 'close') {
         moduleObj.onClose(ws, d1, d2);
-    } else if ('error' == type) {
+    } else if (type === 'error') {
         moduleObj.onError(ws, d1);
     }
 };

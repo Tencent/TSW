@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,25 +7,38 @@
  */
 'no use strict';
 
-this.getCallInfo = function(level){
-	
-    var orig,err,stack;
-    var res = {};
-	
+this.getCallInfo = function(level) {
+
+    const res = {
+        line: 0,
+        column: 0,
+        filename: ''
+    };
+
     level = level || 0;
-	
-    orig					= Error.prepareStackTrace;
-    Error.prepareStackTrace = function(_, stack){ return stack; };
-    err						= new Error();
-    Error.captureStackTrace(err, arguments.callee);
-    stack					= err.stack;
+
+    const orig = Error.prepareStackTrace;
+    const origLimit = Error.stackTraceLimit;
+    Error.prepareStackTrace = captureStackTrace;
+    Error.stackTraceLimit = 5;
+
+    const err = Object.create(null);
+    Error.captureStackTrace(err, arguments.callee);     // eslint-disable-line no-caller
+    const { stack } = err;
+
     Error.prepareStackTrace = orig;
-	
-    if(stack && stack[level] && typeof stack[level].getLineNumber === 'function'){
-        res.line		= stack[level].getLineNumber();
-        res.column		= stack[level].getColumnNumber();
-        res.filename	= stack[level].getFileName();
+    Error.stackTraceLimit = origLimit;
+
+    if (stack && stack[level] && typeof stack[level].getLineNumber === 'function') {
+        res.line = stack[level].getLineNumber();
+        res.column = stack[level].getColumnNumber();
+        res.filename = stack[level].getFileName();
     }
-	
+
     return res;
 };
+
+function captureStackTrace(_, stack) {
+    return stack;
+}
+

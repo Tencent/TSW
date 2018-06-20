@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,40 +7,41 @@
  */
 'use strict';
 
-const https     = require('https');
-const http      = require('http');
-const cache     = {};
+
+const https = require('https');
+const http = require('http');
+const cache = {};
 
 
-///etc/pki/tls/certs/ca-bundle.crt
+// /etc/pki/tls/certs/ca-bundle.crt
 
-this.getHttpsAgent = function(host){
+this.getHttpsAgent = function(host) {
 
-    var key = ['https',host].join('.');
+    const key = ['https', host].join('.');
 
-    if(!cache[key]){
+    if (!cache[key]) {
         cache[key] = new https.Agent({
-            maxSockets          : 65535,
-            maxFreeSockets      : 32,
-            maxCachedSessions   : 65535,
-            keepAlive	        : true,
-            keepAliveMsecs      : 5000
+            maxSockets: 65535,
+            maxFreeSockets: 32,
+            maxCachedSessions: 65535,
+            keepAlive: true,
+            keepAliveMsecs: 5000
         });
     }
 
     return cache[key];
 };
 
-this.getHttpAgent = function(host){
+this.getHttpAgent = function(host) {
 
-    var key = ['http',host].join('.');
+    const key = ['http', host].join('.');
 
-    if(!cache[key]){
+    if (!cache[key]) {
         cache[key] = new http.Agent({
-            maxSockets          : 65535,
-            maxFreeSockets      : 32,
-            keepAlive           : true,
-            keepAliveMsecs      : 5000
+            maxSockets: 65535,
+            maxFreeSockets: 32,
+            keepAlive: true,
+            keepAliveMsecs: 5000
         });
     }
 

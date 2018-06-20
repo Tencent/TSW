@@ -1,4 +1,4 @@
-/*!
+/* !
  * Tencent is pleased to support the open source community by making Tencent Server Web available.
  * Copyright (C) 2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -7,7 +7,9 @@
  */
 'use strict';
 
-const fs       = require('fs');
+
+const fs = require('fs');
+const logger = require('logger');
 const profiler = require('v8-profiler');
 const DEFAULT_RECORD_TIME = 5 * 1000;
 const MAX_RECORD_TIME = 5 * 60 * 1000;
@@ -21,7 +23,7 @@ let _isRecording = false;
  * @return {[type]}            [description]
  */
 function getProfiler(opt, callback) {
-    if(_isRecording){
+    if (_isRecording) {
         callback && callback(null);
 
         return;
@@ -39,6 +41,10 @@ function getProfiler(opt, callback) {
         const prof = profiler.stopProfiling(tag);
 
         prof.export((err, result) => {
+            if (err) {
+                logger.error(`export profiler error ${err.message}`);
+            }
+
             callback && callback(result);
 
             prof.delete();
@@ -56,11 +62,16 @@ function getProfiler(opt, callback) {
  */
 function writeProfilerOpt(path, opt = {}, callback) {
     getProfiler(opt, result => {
-        if(path && result){
+        if (path && result) {
             fs.writeFile(path, result, err => {
+
+                if (err) {
+                    logger.error(`write profiler to file error ${err.message}`);
+                }
+
                 callback && callback(path);
             });
-        }else{
+        } else {
             callback && callback(path);
         }
     });
