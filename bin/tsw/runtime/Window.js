@@ -22,3 +22,13 @@ Window.prototype.enable = function() {
     global.windowHasDisabled = false;
 };
 
+//兼容vue-server-render
+Object.defineProperty(Window.prototype, 'navigator', {
+    get : function(){
+        if(this.request) {
+            return {userAgent:this.request.headers['user-agent']};
+        }else {
+            return {userAgent:''};
+        }
+    }
+});
