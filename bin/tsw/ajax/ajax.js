@@ -556,19 +556,43 @@ Ajax.prototype.doRequest = function(opt) {
     request.once('socket', function(socket) {
         if (socket.remoteAddress) {
             this.remoteIp = socket.remoteAddress;
+            logger.debug(`${logPre}socket reuse ${socket.remoteAddress}:${socket.remotePort}`);
             return;
         }
 
+        const onError = (err) => {
+            logger.error(logPre + err.stack);
+            clean();
+            this.emit('fail');
+        };
+
+        const onConnect = function() {
+            logger.debug(`${logPre}connect ${this.remoteAddress}:${this.remotePort}`);
+            clean();
+        };
+
+        const onLookup = (err, address, family, host) => {
+            if (err) {
+                logger.error(logPre + err.stack);
+                clean();
+                this.emit('fail');
+                return;
+            }
+            this.remoteIp = address;
+        };
+
+        const clean = function() {
+            socket.removeListener('error', onError);
+            socket.removeListener('connect', onConnect);
+            socket.removeListener('lookup', onLookup);
+        };
+
         if (!net.isIP(opt.host)) {
-            socket.once('lookup', (err, address, family, host) => {
-                if (err) {
-                    logger.error(logPre + err.stack);
-                    this.emit('fail');
-                    return;
-                }
-                this.remoteIp = address;
-            });
+            socket.once('lookup', onLookup);
         }
+
+        socket.once('connect', onConnect);
+        socket.once('error', onError);
     });
 
     defer.always(function() {

@@ -92,6 +92,11 @@ function bind_listen(server) {
         }
 
         d.on('error', function(err) {
+            if (err && err.message && errorIgnore[err.message] === 'ignore') {
+                logger.warn(err && err.stack);
+                return;
+            }
+
             if (err && err.stack && err.message) {
                 const key = err.message;
                 const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
@@ -262,4 +267,12 @@ exports.start_listen = function() {
         });
         bind_listen(wss);
     }
+};
+
+const errorIgnore = {
+    'socket hang up': 'ignore',
+    'Cannot read property \'asyncReset\' of null': 'ignore',
+    'Cannot read property \'resume\' of null': 'ignore',
+    'write ECONNRESET': 'ignore',
+    'This socket is closed': 'ignore'
 };
