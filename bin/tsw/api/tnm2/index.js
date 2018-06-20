@@ -128,7 +128,7 @@ const reportOpenapi = function(last) {
 
     const postData = {
         appid: config.appid,
-        ip: serverInfo.intranetIp,
+        ip: serverInfo.intranetIp || '',    // 不能为空
         arr: arr.join('-'),
         now: Date.now()
     };
