@@ -25,7 +25,8 @@ this.signature = opt => {
 
     const busidataArr = [opt.method, encode(opt.pathname)]; // HTTP请求方式 & encode(uri) & encode(a=x&b=y&...)
 
-    for (const i in opt.data) {
+    let i;
+    for (i in opt.data) {
         // i !== 'sig' && queryArray.push(i + '=' + opt.data[i]); // 过滤掉undefined value的key，因为发送的时候data，会做JSON.stringify, 没有定义值的key会被过滤掉
         if (typeof opt.data[i] !== 'undefined' && i !== 'sig') {
             queryArray.push(i + '=' + opt.data[i]);
