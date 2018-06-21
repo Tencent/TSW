@@ -665,6 +665,7 @@ function reportLog() {
         });
 
         logText = firstLogFn() + logText;
+        ws.reportIndex++;
     }
 
     if (type === 'alpha') {
