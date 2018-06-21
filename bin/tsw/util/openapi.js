@@ -18,8 +18,7 @@ const crypto = require('crypto');
  * @param  {string} opt.appkey   应用appkey
  * @return {string} sig      签名结果
  */
-this.signature = opt => {
-    opt = opt || {};
+this.signature = (opt = {}) => {
 
     const queryArray = [];
 
