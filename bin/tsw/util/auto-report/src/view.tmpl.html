@@ -153,7 +153,15 @@ var XSS = plug('util/xss.js');
                 <span style="display:none">&nbsp;<span class="log_pass_time"></span>前</span>
                 <p style="display: none;" class="firstReq">
                     <label class="button label expand" style="cursor:pointer;" data-j="expand<%=i%>"><input type="checkbox" class="expandChk">展开</label>
-                    <%=XSS.htmlEncode(reqUrl.replace(/\[.*?\]/g, '').replace(/\s+/, ' '))%>
+                    <%
+                        var titleText = XSS.htmlEncode(reqUrl.replace(/\[.*?\]/g, '').replace(/\s+/, ' '))
+                        var matchHttp = titleText.indexOf('http');
+                    %>
+                    <% if(matchHttp>0) { %>
+                    <%=titleText.substring(0,matchHttp)%><label title="点击三次选中URL"><%=titleText.substring(matchHttp)%></label>
+                    <% } else { %>
+                    <label><%=titleText%></label>
+                    <% } %>
                 </p>
             </div>
             <pre class="view-logText-log expand<%=i%>_code"><code class="tswlog hljs"><%=(logText)%></code></pre>
