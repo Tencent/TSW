@@ -158,7 +158,7 @@ var XSS = plug('util/xss.js');
                         var matchHttp = titleText.indexOf('http');
                     %>
                     <% if(matchHttp>0) { %>
-                    <%=titleText.substring(0,matchHttp)%><label title="点击三次选中URL"><%=titleText.substring(matchHttp)%></label>
+                    <%=titleText.substring(0,matchHttp)%><label title="连击三次选中URL"><%=titleText.substring(matchHttp)%></label>
                     <% } else { %>
                     <label><%=titleText%></label>
                     <% } %>

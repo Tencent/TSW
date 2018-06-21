@@ -391,7 +391,7 @@ define(function(require, exports, module) {
                 if (matchHttp > 0) {
                     __p.push('                    ');
                     _p(titleText.substring(0, matchHttp));
-                    __p.push('<label title="点击三次选中URL">');
+                    __p.push('<label title="连击三次选中URL">');
                     _p(titleText.substring(matchHttp));
                     __p.push('</label>');
                 } else {
