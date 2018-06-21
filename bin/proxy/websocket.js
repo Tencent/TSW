@@ -33,6 +33,7 @@ function wsFiller(ws, req) {
 
     ws.logReportTimer = null;
     ws.__tempSend = ws.send;
+    ws.reportIndex = 1;
 
     ws.send = function(message) {
         logger.debug('server send message : ${message}', {
