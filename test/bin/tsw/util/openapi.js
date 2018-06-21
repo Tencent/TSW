@@ -9,8 +9,7 @@ logger.setLogLevel('error');
 describe('test openapi', () => {
     describe('test signature', () => {
         it('#test empty opt', () => {
-            const opt = {};
-            expect(openapi.signature(opt)).to.equal('KN+ey6lAXAAjHfJXOHiEXkBIge4=');
+            expect(openapi.signature()).to.equal('WpwWYWdXU3pZcrGelrkKmp5O2Mo=');
         });
 
         it('#test GET :/api', () => {
