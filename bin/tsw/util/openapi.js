@@ -7,38 +7,37 @@
  */
 'use strict';
 
-
 const crypto = require('crypto');
 
 /**
  * 计算openapi签名
- * @param  {[string]} method   请求方法  GET/POST
- * @param  {[string]} pathname 请求路径
- * @param  {[object]} data     请求数据
- * @param  {[string]} appkey   应用appkey
- * @return {[string]} sig      签名结果
+ * @param {object} opt 签名数据
+ * @param  {string} opt.method   请求方法  GET/POST
+ * @param  {string} opt.pathname 请求路径
+ * @param  {object} opt.data     请求数据
+ * @param  {string} opt.appkey   应用appkey
+ * @return {string} sig      签名结果
  */
-this.signature = function(opt) {
+this.signature = opt => {
     opt = opt || {};
 
     const queryArray = [];
 
     const busidataArr = [opt.method, encode(opt.pathname)]; // HTTP请求方式 & encode(uri) & encode(a=x&b=y&...)
 
-    let i;
-    for (i in opt.data) {
-        i !== 'sig' && queryArray.push(i + '=' + opt.data[i]);
+    for (const i in opt.data) {
+        // i !== 'sig' && queryArray.push(i + '=' + opt.data[i]); // 过滤掉undefined value的key，因为发送的时候data，会做JSON.stringify, 没有定义值的key会被过滤掉
+        if (typeof opt.data[i] !== 'undefined' && i !== 'sig') {
+            queryArray.push(i + '=' + opt.data[i]);
+        }
     }
 
-    queryArray.sort(function(val1, val2) {
+    queryArray.sort((val1, val2) => {
         if (val1 > val2) {
             return 1;
-        }
-
-        if (val1 < val2) {
+        } else if (val1 < val2) {
             return -1;
         }
-
         return 0;
     });
 
@@ -49,14 +48,14 @@ this.signature = function(opt) {
 };
 
 // encode
-function encode(str) {
+const encode = (str = '') => {
     let res = encodeURIComponent(str);
 
     // 0~9 a~z A~Z !*()
-    res = res.replace(/[^0-9a-zA-Z\-_.%]/g, function($0) {
-        // 不用考虑一位数了
-        return '%' + $0.charCodeAt(0).toString(16).toUpperCase();
-    });
+    // 不用考虑一位数了
+    res = res.replace(/[^0-9a-zA-Z\-_.%]/g, ($0) =>
+        '%' + $0.charCodeAt(0).toString(16).toUpperCase()
+    );
 
     return res;
-}
+};
