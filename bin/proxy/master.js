@@ -47,7 +47,6 @@ process.on('warning', function(warning) {
     setImmediate(function() {
         require('util/mail/mail.js').SendMail(key, 'js', 600, {
             'title': key,
-            'runtimeType': 'warning',
             'content': content
         });
     });
