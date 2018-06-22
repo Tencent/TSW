@@ -75,8 +75,6 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
     }
 });
 
-process.noProcessWarnings = true;
-
 
 startServer();
 
