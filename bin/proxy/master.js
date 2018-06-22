@@ -47,7 +47,6 @@ process.on('warning', function(warning) {
     setImmediate(function() {
         require('util/mail/mail.js').SendMail(key, 'js', 600, {
             'title': key,
-            'runtimeType': 'warning',
             'content': content
         });
     });
@@ -75,8 +74,6 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
         logger.error(`unhandledRejection reason: ${errStr}`);
     }
 });
-
-process.noProcessWarnings = true;
 
 
 startServer();
