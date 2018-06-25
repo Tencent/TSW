@@ -593,7 +593,7 @@ function doRoute(req, res) {
     const blackIpMap = TSW.getBlockIpMapSync() || {};
 
     if (!clientIp) {
-        logger.debug('client ip is empty');
+        logger.debug('client ip has been empty');
 
         tnm2.Attr_API('SUM_TSW_IP_EMPTY', 1);
         res.writeHead(403, { 'Content-Type': 'text/plain; charset=UTF-8' });
