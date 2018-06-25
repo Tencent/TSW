@@ -539,16 +539,15 @@ function doRoute(req, res) {
 
     if (modulePath && typeof modulePath.callback === 'function') {
         const app = modulePath;
-
         // if beforeStart exists
         if (typeof app.beforeStart === 'function') {
-            modulePath = function(req, res, plug) {
-                return app.beforeStart(function() {
+            modulePath = (req, res, plug) => {
+                return app.beforeStart(() => {
                     app.callback()(req, res);
                 });
             };
         } else {
-            modulePath = function(req, res, plug) {
+            modulePath = (req, res, plug) => {
                 return app.callback()(req, res);
             };
         }
