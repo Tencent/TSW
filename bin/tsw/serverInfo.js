@@ -37,7 +37,7 @@ function getLinuxLocalIpv4() {
             return;
         }
 
-        if (tmp === '127.0.0.1') {
+        if (tmp.startsWith('127.')) {
             return;
         }
 
