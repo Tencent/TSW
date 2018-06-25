@@ -249,3 +249,6 @@ this.getCpuLoadAsync = function() {
         });
     });
 };
+
+
+this.getCpuUsed();
