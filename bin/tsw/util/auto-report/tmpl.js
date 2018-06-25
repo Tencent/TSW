@@ -182,7 +182,8 @@ define(function(require, exports, module) {
             if (data.total_arr.length) {
                 __p.push('<table>\n    <thead>\n    <tr>\n        <th>项目名称</th>\n        <th>mod_act</th>\n        <th>报错次数</th>\n        <th>负责人</th>\n    </tr>\n    </thead>\n    <tbody>');
                 for (i = 0; i < data.total_arr.length; i++) {
-                    __p.push('    item = data.total_arr[i++];\n    <tr class="');
+                    item = data.total_arr[i++];
+                    __p.push('    \n    <tr class="');
                     _p((i % 2 == 0 ? 'alt' : ''));
                     __p.push('">\n        <td class="dimension">');
                     _p(item.config.title);
@@ -383,8 +384,21 @@ define(function(require, exports, module) {
                 __p.push('&fileFormat=har"\n                   target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.har</a>\n\n                <span style="display:none">&nbsp;<span class="log_pass_time"></span>前</span>\n                <p style="display: none;" class="firstReq">\n                    <label class="button label expand" style="cursor:pointer;" data-j="expand');
                 _p(i);
                 __p.push('"><input type="checkbox" class="expandChk">展开</label>');
-                _p(XSS.htmlEncode(reqUrl.replace(/\[.*?\]/g, '').replace(/\s+/, ' ')));
-                __p.push('                </p>\n            </div>\n            <pre class="view-logText-log expand');
+
+                var titleText = XSS.htmlEncode(reqUrl.replace(/\[.*?\]/g, '').replace(/\s+/, ' '));
+                var matchHttp = titleText.indexOf('http');
+                __p.push('                    ');
+                if (matchHttp > 0) {
+                    __p.push('                    ');
+                    _p(titleText.substring(0, matchHttp));
+                    __p.push('<label title="连击三次选中URL">');
+                    _p(titleText.substring(matchHttp));
+                    __p.push('</label>');
+                } else {
+                    __p.push('                    <label>');
+                    _p(titleText);
+                    __p.push('</label>');
+                } __p.push('                </p>\n            </div>\n            <pre class="view-logText-log expand');
                 _p(i);
                 __p.push('_code"><code class="tswlog hljs">');
                 _p((logText));

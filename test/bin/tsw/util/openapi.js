@@ -9,8 +9,7 @@ logger.setLogLevel('error');
 describe('test openapi', () => {
     describe('test signature', () => {
         it('#test empty opt', () => {
-            const opt = {};
-            expect(openapi.signature(opt)).to.equal('KN+ey6lAXAAjHfJXOHiEXkBIge4=');
+            expect(openapi.signature()).to.equal('WpwWYWdXU3pZcrGelrkKmp5O2Mo=');
         });
 
         it('#test GET :/api', () => {
@@ -48,6 +47,36 @@ describe('test openapi', () => {
                 appkey: '1234'
             };
             expect(openapi.signature(opt)).to.equal('RaeBv27oo3hOlDAYLXorp4zYhbs=');
+        });
+
+        it('#test undefined value key', () => {
+            let undefinedValue;
+            const opt = {
+                method: 'get',
+                pathname: '/api',
+                data: { a: 1, key: undefinedValue }
+            };
+            expect(openapi.signature(opt)).to.equal('grX3/m7QAZ19L5WXM6xDzmXQa8s=');
+        });
+
+        it('#test null value key', () => {
+            const undefinedValue = null;
+            const opt = {
+                method: 'get',
+                pathname: '/api',
+                data: { a: 1, key: undefinedValue }
+            };
+            expect(openapi.signature(opt)).to.equal('3hfVrbEv5VKMYu9QP4kB6rtBd4o=');
+        });
+
+        it('#test empty value key', () => {
+            const undefinedValue = '';
+            const opt = {
+                method: 'get',
+                pathname: '/api',
+                data: { a: 1, key: undefinedValue }
+            };
+            expect(openapi.signature(opt)).to.equal('AGMogi7bjCvtnnCecK+TnZGzR3M=');
         });
     });
 });

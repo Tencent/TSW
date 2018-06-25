@@ -44,7 +44,6 @@ const limit = {
     time: 0
 };
 
-
 module.exports = function(req, res) {
 
     const window = context.window || {};
@@ -54,12 +53,7 @@ module.exports = function(req, res) {
         req = window.websocket.upgradeReq;
     }
 
-    if (isWebSocket) {
-        res.removeAllListeners('afterMessage');
-        res.once('afterMessage', function() {
-            req.emit('reportLog');
-        });
-    } else {
+    if (!isWebSocket) {
         res.removeAllListeners('afterFinish');
         res.once('afterFinish', function() {
             req.emit('reportLog');
@@ -68,209 +62,10 @@ module.exports = function(req, res) {
 
     req.removeAllListeners('reportLog');
     req.once('reportLog', function() {
-
-        let log = logger.getLog(),
-            type = '',
-            typeKey = '',
-            arrtKey = '',
-            code = 0,
-            logJson,
-            key;
-
-
-        if (!isWebSocket && global.top100) {
-            module.exports.top100(req, res);
-        }
-
-        if (!log) {
-            logger.debug('log is null');
-            return;
-        }
-
-        key = logger.getKey();
-        const group = logger.getGroup();
-
-        if (!key) {
-            key = alpha.getUin(req);
-
-            if (key) {
-                if (canIuse.test(key)) {
-                    logger.setKey(key);
-                } else {
-                    key = '';
-                }
-            }
-        }
-
-        const mod_act = context.mod_act || 'null';
-        log = logger.getLog();
-
-        if (alpha.isAlpha(key) && !isTST.isTST(req)) {
-            type = 'alpha';
-            typeKey = 'EVENT_TSW_LOG_ALPHA';
-            arrtKey = 'SUM_TSW_LOG_ALPHA';
-            code = 0;
-        } else if (log.ERRO || log.WARN) {
-            key && logger.error('report key: ${key}', { key: key });
-            type = 'error';
-            typeKey = 'EVENT_TSW_LOG_ERROR';
-            arrtKey = 'SUM_TSW_LOG_ERROR';
-            code = 1;
-        } else if (log.force) {
-            type = 'force';
-            typeKey = 'EVENT_TSW_LOG_FORCE';
-            arrtKey = 'SUM_TSW_LOG_FORCE';
-            code = 3;
-        } else if (context.dcapiIsFail && key) {
-            type = 'fail';
-            typeKey = 'EVENT_TSW_LOG_FAIL';
-            arrtKey = 'SUM_TSW_LOG_FAIL';
-            code = 2;
-        } else {
-            logger.debug('report nothing: ' + key);
-            // 不用上报
-            return;
-        }
-
-        if (isTST.isTST(req)) {
-            logger.debug('log type origin: ' + type);
-            type = 'TST';
-            typeKey = 'EVENT_TSW_LOG_TST';
-            arrtKey = 'SUM_TSW_LOG_TST';
-            code = -1;
-        }
-
-        if (limit.max[type] > 0 === false) {
-            return;
-        }
-
-        // 频率限制
-        if (limit.count[type] > 0) {
-            limit.count[type]++;
-        } else {
-            limit.count[type] = 1;
-        }
-
-        if (Date.now() - limit.time < 5000) {
-
-            if (limit.count[type] > limit.max[type]) {
-
-                dcapi.report({
-                    key: typeKey,
-                    toIp: '127.0.0.1',
-                    code: -1,
-                    isFail: 1,
-                    delay: 100
-                });
-
-                return;
-            }
-
-        } else {
-            limit.count = {};
-            limit.time = Date.now();
-        }
-
-        logger.debug('logType: ' + type);
-
-        dcapi.report({
-            key: typeKey,
-            toIp: '127.0.0.1',
-            code: code,
-            isFail: 0,
-            delay: 100
-        });
-
-        tnm2.Attr_API(arrtKey, 1);
-
-        if (Buffer.isBuffer(req.REQUEST.body)) {
-            req.REQUEST.body = format.formatBuffer(req.REQUEST.body);
-        }
-
-        logger.debug('\n${headers}${body}\r\nresponse ${statusCode} ${resHeaders}', {
-            headers: httpUtil.getRequestHeaderStr(req),
-            body: req.REQUEST.body || '',
-            statusCode: res.statusCode,
-            resHeaders: JSON.stringify(res._headers, null, 2)
-        });
-
-        const logText = logger.getText();
-
-        if (type === 'alpha') {
-            try {
-
-                // webapp的二进制回包转成可视化的结构
-                if (res._body && res._headers['content-type'] === 'webapp') {
-                    res._body = Buffer.from(format.formatBuffer(res._body));
-                }
-
-                logJson = logJson || logger.getJson();
-                logJson.curr = {
-                    protocol: 'HTTP',
-                    host: req.headers.host,
-                    url: req.REQUEST.path,
-                    cache: '',
-                    process: 'TSW:' + process.pid,
-                    resultCode: res.statusCode,
-                    contentLength: isWebSocket ? (res._body ? res._body.length : 0) : (res._headers['content-length'] || res._bodySize),
-                    contentType: isWebSocket ? 'websocket' : res._headers['content-type'],
-                    clientIp: httpUtil.getUserIp(req),
-                    clientPort: req.socket && req.socket.remotePort,
-                    serverIp: serverInfo.intranetIp,
-                    serverPort: config.httpPort,
-                    requestRaw: httpUtil.getRequestHeaderStr(req) + (req.REQUEST.body || ''),
-                    responseHeader: httpUtil.getResponseHeaderStr(res),
-                    responseBody: res._body ? res._body.toString('base64') : '',
-                    logText: logText,
-                    timestamps: req.timestamps
-                };
-            } catch (e) {
-                logger.error(e.stack);
-            }
-
-        }
-
-        const reportData = {
-            type: type || '',
-            logText: logText || '',
-            logJson: logJson,
-            key: String(key),
-            group: String(group || ''),
-            mod_act: String(mod_act || ''),
-            ua: req.headers['user-agent'] || '',
-            userip: req.userIp || '',
-            host: req.headers.host || '',
-            pathname: req.REQUEST.pathname || '',
-            ext_info: '',
-            statusCode: res.statusCode
-        };
-
-        if (type === 'alpha') {
-            // 根据content-type设置group便于分类查询抓包
-            if (!reportData.group) {
-                const pathName = req.REQUEST.pathname;
-                const fileName = pathName.substr(pathName.lastIndexOf('/') + 1);
-                reportData.group = module.exports.fingureCroup({
-                    resHeaders: res._headers,
-                    reqHeaders: req.headers,
-                    suffix: fileName.indexOf('.') !== -1 ? fileName.substr(fileName.lastIndexOf('.') + 1) : '',
-                    method: req.method,
-                    mod_act: mod_act,
-                    returnCode: res.statusCode
-                });
-            }
-
-            if (config.appid && config.appkey) {
-                module.exports.reportCloud(reportData);
-            } else {
-                module.exports.reportAlpha(reportData);
-            }
-
-        }
-
-        module.exports.report(reportData);
+        reportLog();
+        this.removeAllListeners('reportLogStream', reportLog);
     });
-
+    req.on('reportLogStream', reportLog);
 };
 
 module.exports.fingureCroup = function(opts) {
@@ -709,3 +504,242 @@ module.exports.top100 = function(req, res) {
     });
 
 };
+
+function reportLog() {
+    const window = context.window || {};
+    const isWebSocket = !!window.websocket;
+    const req = window.request;
+    const res = window.response;
+
+    let log = logger.getLog(),
+        type = '',
+        typeKey = '',
+        arrtKey = '',
+        code = 0,
+        logJson = logger.getJson(),
+        key;
+
+
+    if (!isWebSocket && global.top100) {
+        module.exports.top100(req, res);
+    }
+
+    if (!log) {
+        logger.debug('log is null');
+        return;
+    }
+
+    key = logger.getKey();
+    const group = logger.getGroup();
+
+    if (!key) {
+        key = alpha.getUin(req);
+
+        if (key) {
+            if (canIuse.test(key)) {
+                logger.setKey(key);
+            } else {
+                key = '';
+            }
+        }
+    }
+
+    const mod_act = context.mod_act || 'null';
+    log = logger.getLog();
+
+    if (alpha.isAlpha(key) && !isTST.isTST(req)) {
+        type = 'alpha';
+        typeKey = 'EVENT_TSW_LOG_ALPHA';
+        arrtKey = 'SUM_TSW_LOG_ALPHA';
+        code = 0;
+    } else if (log.ERRO || log.WARN) {
+        key && logger.error('report key: ${key}', { key: key });
+        type = 'error';
+        typeKey = 'EVENT_TSW_LOG_ERROR';
+        arrtKey = 'SUM_TSW_LOG_ERROR';
+        code = 1;
+    } else if (log.force) {
+        type = 'force';
+        typeKey = 'EVENT_TSW_LOG_FORCE';
+        arrtKey = 'SUM_TSW_LOG_FORCE';
+        code = 3;
+    } else if (context.dcapiIsFail && key) {
+        type = 'fail';
+        typeKey = 'EVENT_TSW_LOG_FAIL';
+        arrtKey = 'SUM_TSW_LOG_FAIL';
+        code = 2;
+    } else {
+        logger.debug('report nothing: ' + key);
+        // 不用上报
+        return;
+    }
+
+    if (isTST.isTST(req)) {
+        logger.debug('log type origin: ' + type);
+        type = 'TST';
+        typeKey = 'EVENT_TSW_LOG_TST';
+        arrtKey = 'SUM_TSW_LOG_TST';
+        code = -1;
+    }
+
+    if (limit.max[type] > 0 === false) {
+        return;
+    }
+
+    // 频率限制
+    if (limit.count[type] > 0) {
+        limit.count[type]++;
+    } else {
+        limit.count[type] = 1;
+    }
+
+    if (Date.now() - limit.time < 5000) {
+
+        if (limit.count[type] > limit.max[type]) {
+
+            dcapi.report({
+                key: typeKey,
+                toIp: '127.0.0.1',
+                code: -1,
+                isFail: 1,
+                delay: 100
+            });
+
+            return;
+        }
+
+    } else {
+        limit.count = {};
+        limit.time = Date.now();
+    }
+
+    logger.debug('logType: ' + type);
+
+    dcapi.report({
+        key: typeKey,
+        toIp: '127.0.0.1',
+        code: code,
+        isFail: 0,
+        delay: 100
+    });
+
+    tnm2.Attr_API(arrtKey, 1);
+
+    if (!isWebSocket && Buffer.isBuffer(req.REQUEST.body)) {
+        req.REQUEST.body = format.formatBuffer(req.REQUEST.body);
+    }
+
+    if (!isWebSocket) {
+        let requestBodyText = req.REQUEST.body;
+
+        if (!requestBodyText) {
+            if (req._body) {
+                requestBodyText = req._body.toString('UTF-8');
+            }
+        }
+
+        // limit 64KB
+        if (requestBodyText && requestBodyText.length >= 64 * 1024) {
+            requestBodyText = `[Large than 64KB]: ${requestBodyText.length}`;
+        }
+
+        logger.debug('\n${headers}${body}\r\nresponse ${statusCode} ${resHeaders}', {
+            headers: httpUtil.getRequestHeaderStr(req),
+            body: requestBodyText,
+            statusCode: res.statusCode,
+            resHeaders: JSON.stringify(res._headers, null, 2)
+        });
+    }
+
+    // websocket的log是分片上报的，每次上报后清除当前Log
+    let logText = logger.getText(isWebSocket);
+    if (isWebSocket) {
+        const ws = window.websocket;
+        const firstLogFn = logger._getLog('DBUG', 0, '${method} ${protocol}://${host}${path}, reportIndex: ${reportIndex}, logkey: ${logKey}\n', {
+            protocol: req.REQUEST.protocol,
+            path: req.REQUEST.path,
+            host: req.headers.host,
+            method: req.method,
+            reportIndex: ws.reportIndex,
+            logKey: ws.logKey
+        });
+
+        logText = firstLogFn() + logText;
+        ws.reportIndex++;
+    }
+
+    if (type === 'alpha') {
+        try {
+
+            // webapp的二进制回包转成可视化的结构
+            if (!isWebSocket && res._body && res._headers['content-type'] === 'webapp') {
+                res._body = Buffer.from(format.formatBuffer(res._body));
+            }
+
+            logJson = logJson || logger.getJson();
+            logJson.curr = {
+                protocol: 'HTTP',
+                host: req.headers.host,
+                url: req.REQUEST.path,
+                cache: '',
+                process: 'TSW:' + process.pid,
+                resultCode: (res && res.statusCode) || 101,
+                contentLength: isWebSocket ? 0 : (res._headers['content-length'] || res._bodySize),
+                contentType: isWebSocket ? 'websocket' : res._headers['content-type'],
+                clientIp: httpUtil.getUserIp(req),
+                clientPort: req.socket && req.socket.remotePort,
+                serverIp: serverInfo.intranetIp,
+                serverPort: config.httpPort,
+                requestHeader: httpUtil.getRequestHeaderStr(req),
+                requestBody: req._body ? req._body.toString('base64') : '',
+                responseHeader: httpUtil.getResponseHeaderStr(res),
+                responseBody: res && res._body ? res._body.toString('base64') : '',
+                logText: logText,
+                timestamps: req.timestamps
+            };
+        } catch (e) {
+            logger.error(e.stack);
+        }
+
+    }
+
+    const reportData = {
+        type: type || '',
+        logText: logText || '',
+        logJson: logJson,
+        key: String(key),
+        group: String(group || ''),
+        mod_act: String(mod_act || ''),
+        ua: req.headers['user-agent'] || '',
+        userip: req.userIp || '',
+        host: req.headers.host || '',
+        pathname: req.REQUEST.pathname || '',
+        ext_info: '',
+        statusCode: (res && res.statusCode) || 101
+    };
+
+    if (type === 'alpha') {
+        // 根据content-type设置group便于分类查询抓包
+        if (!isWebSocket && !reportData.group) {
+            const pathName = req.REQUEST.pathname;
+            const fileName = pathName.substr(pathName.lastIndexOf('/') + 1);
+            reportData.group = module.exports.fingureCroup({
+                resHeaders: res._headers,
+                reqHeaders: req.headers,
+                suffix: fileName.indexOf('.') !== -1 ? fileName.substr(fileName.lastIndexOf('.') + 1) : '',
+                method: req.method,
+                mod_act: mod_act,
+                returnCode: res.statusCode
+            });
+        }
+
+        if (config.appid && config.appkey) {
+            module.exports.reportCloud(reportData);
+        } else {
+            module.exports.reportAlpha(reportData);
+        }
+
+    }
+
+    module.exports.report(reportData);
+}
