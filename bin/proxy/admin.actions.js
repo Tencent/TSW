@@ -26,14 +26,6 @@ module.exports = {
         res.end('done!\r\n');
     },
 
-    '/heapdump': function (req, res) {
-        process.emit('sendCmd2workerOnce', {
-            CMD: 'heapdump',
-            GET: req.GET
-        });
-        res.writeHead(200, { 'Content-Type': 'text/plain; charset=UTF-8' });
-        res.end('done!\r\n');
-    },
 
     '/profiler': function (req, res) {
         process.emit('sendCmd2workerOnce', {
@@ -55,7 +47,7 @@ module.exports = {
 
     '/reload': function (req, res) {
 
-        cp.exec('./check.js', {
+        cp.exec('node --no-warnings ./check.js', {
             timeout: 5000,
             encoding: 'utf8',
             cwd: __dirname

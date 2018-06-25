@@ -417,10 +417,14 @@ const downloadHaz = function (request, response, opt) {
     });
 
     viewData.forEach(function(tmp, i) {
+        if (tmp.requestHeader) {
+            tmp.requestRaw = Buffer.concat([
+                Buffer.from(tmp.requestHeader || '', 'utf-8'),
+                Buffer.from(tmp.requestBody || '', 'base64')
+            ]).toString('UTF-8');
+        }
 
         hazJson.log.entries.push(initRequestHar(tmp));
-
-
     });
     const buf = Buffer.from(JSON.stringify(hazJson), 'UTF-8');
     gzipResponse.write(buf);
@@ -511,7 +515,8 @@ const download = function(request, response, opt) {
                 clientPort: '',
                 serverIp: '',
                 serverPort: '',
-                requestRaw: 'GET log/' + logSNKey + ' HTTP/1.1\r\n\r\n',
+                requestHeader: 'GET log/' + logSNKey + ' HTTP/1.1\r\n\r\n',
+                requestBody: '',
                 responseHeader: 'HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n',
                 responseBody: Buffer.from(tmp.curr.logText || '', 'UTF-8').toString('base64'),
                 timestamps: tmp.curr.timestamps
@@ -539,8 +544,19 @@ const download = function(request, response, opt) {
     });
 
     viewData.forEach(function(tmp, i) {
+        let requestRaw;
+
+        if (tmp.curr.requestHeader) {
+            requestRaw = Buffer.concat([
+                Buffer.from(tmp.curr.requestHeader || '', 'utf-8'),
+                Buffer.from(tmp.curr.requestBody || '', 'base64')
+            ]);
+        } else {
+            requestRaw = tmp.curr.requestRaw || '';
+        }
+
         archiver.append(
-            tmp.curr.requestRaw || '',
+            requestRaw,
             {
                 name: 'raw/' + (tmp.curr.sid) + '_c.txt'
             }

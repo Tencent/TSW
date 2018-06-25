@@ -14,6 +14,7 @@ const http = require('http');
 const https = require('https');
 const vm = require('vm');
 const url = require('url');
+const net = require('net');
 const qs = require('qs');
 const form = require('./form.js');
 const token = require('./token.js');
@@ -402,11 +403,10 @@ Ajax.prototype.doRequest = function(opt) {
     times.start = new Date().getTime();
 
     function report(opt, isFail, code) {
-
+        const toIp = request.remoteIp || opt.ip;
 
         if (isTST.isTST(opt)) {
-            // 忽略安全中心请求
-            return;
+            return; // 忽略安全中心请求
         }
 
         if (isFail === 1 && opt.ignoreErrorReport) {
@@ -414,11 +414,10 @@ Ajax.prototype.doRequest = function(opt) {
         }
 
         if (opt.dcapi) {
-
             logger.debug(logPre + '返回码：' + code + ', isFail:' + isFail);
 
             dcapi.report(Deferred.extend({}, opt.dcapi, {
-                toIp: opt.ip,
+                toIp: toIp,
                 code: code,
                 isFail: isFail,
                 delay: new Date() - times.start
@@ -553,6 +552,48 @@ Ajax.prototype.doRequest = function(opt) {
 
     request.setNoDelay(true);
     request.setSocketKeepAlive(true);
+
+    request.once('socket', function(socket) {
+        if (socket.remoteAddress) {
+            this.remoteIp = socket.remoteAddress;
+            logger.debug(`${logPre}socket reuse ${socket.remoteAddress}:${socket.remotePort}`);
+            return;
+        }
+
+        const onError = (err) => {
+            logger.error(logPre + err.stack);
+            clean();
+            this.emit('fail');
+        };
+
+        const onConnect = function() {
+            logger.debug(`${logPre}connect ${this.remoteAddress}:${this.remotePort}`);
+            clean();
+        };
+
+        const onLookup = (err, address, family, host) => {
+            if (err) {
+                logger.error(logPre + err.stack);
+                clean();
+                this.emit('fail');
+                return;
+            }
+            this.remoteIp = address;
+        };
+
+        const clean = function() {
+            socket.removeListener('error', onError);
+            socket.removeListener('connect', onConnect);
+            socket.removeListener('lookup', onLookup);
+        };
+
+        if (!net.isIP(opt.host)) {
+            socket.once('lookup', onLookup);
+        }
+
+        socket.once('connect', onConnect);
+        socket.once('error', onError);
+    });
 
     defer.always(function() {
         clearTimeout(tid);

@@ -68,6 +68,7 @@ module.exports = function(req, res) {
             }
 
             req.removeAllListeners('fail');
+            req.removeAllListeners('reportLog');
             res.removeAllListeners('timeout');
             res.removeAllListeners('close');
             res.removeAllListeners('finish');
@@ -469,7 +470,7 @@ function doRoute(req, res) {
                 }
 
                 // 抓回包
-                httpUtil.captureBody(this);
+                httpUtil.captureServerResponseBody(this);
             }
 
             logger.debug('response ${statusCode}', {
@@ -488,6 +489,8 @@ function doRoute(req, res) {
             logger.getLog().showLineNumber = true;
             logger.debug('showLineNumber on');
         }
+
+        httpUtil.captureIncomingMessageBody(req);
     }
 
     logger.debug('node-${version}, name: ${name}, appid: ${appid}', {
@@ -536,10 +539,18 @@ function doRoute(req, res) {
 
     if (modulePath && typeof modulePath.callback === 'function') {
         const app = modulePath;
-
-        modulePath = function(req, res, plug) {
-            return app.callback()(req, res);
-        };
+        // if beforeStart exists
+        if (typeof app.beforeStart === 'function') {
+            modulePath = (req, res, plug) => {
+                return app.beforeStart(() => {
+                    app.callback()(req, res);
+                });
+            };
+        } else {
+            modulePath = (req, res, plug) => {
+                return app.callback()(req, res);
+            };
+        }
     }
 
     if (typeof modulePath !== 'function') {
@@ -581,8 +592,8 @@ function doRoute(req, res) {
 
     const blackIpMap = TSW.getBlockIpMapSync() || {};
 
-    if (blackIpMap[clientIp] || blackIpMap[userIp24] || !clientIp) {
-        logger.debug('连接已断开');
+    if (!clientIp) {
+        logger.debug('client ip has been empty');
 
         tnm2.Attr_API('SUM_TSW_IP_EMPTY', 1);
         res.writeHead(403, { 'Content-Type': 'text/plain; charset=UTF-8' });

@@ -2,10 +2,20 @@
 
 // 定义一个路由表
 const map = {
-    hapi: './hapi.js',            // http://127.0.0.1/hapi
-    express: './express.js',    // http://127.0.0.1/express
-    koa: './koa.js',            // http://127.0.0.1/koa
-    default: './helloworld.js' // http://127.0.0.1/other
+    // http://127.0.0.1/egg
+    egg: './helloworld.egg/app.js',
+
+    // http://127.0.0.1/hapi
+    hapi: './hapi.js',
+
+    // http://127.0.0.1/express
+    express: './express.js',
+
+    // http://127.0.0.1/koa
+    koa: './koa.js',
+
+    // http://127.0.0.1/other
+    default: './helloworld.js'
 };
 
 // 路由：起个名字

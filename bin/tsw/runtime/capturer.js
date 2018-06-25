@@ -14,6 +14,7 @@
  */
 const http = require('http');
 const https = require('https');
+const net = require('net');
 let isFirstLoad = true;
 
 if (global[__filename]) {
@@ -39,9 +40,10 @@ process.nextTick(function() {
             let bodySize = 0;
             const maxBodySize = 1024 * 1024;
             const timeStart = Date.now();
-            let timeEnd = 0;
+            let timeLookup = timeStart;
+            let timeConnect = timeStart;
             let timeResponse = 0;
-            // var timeCurr        = timeStart;
+            let timeEnd = 0;
             let remoteAddress = '';
             let remotePort = '';
             let localAddress = '';
@@ -112,7 +114,8 @@ process.nextTick(function() {
                     clientPort: localPort || '',
                     serverIp: remoteAddress || opt.host,
                     serverPort: remotePort || opt.port,
-                    requestRaw: httpUtil.getClientRequestHeaderStr(request) + (request._body.toString('UTF-8') || ''),
+                    requestHeader: httpUtil.getClientRequestHeaderStr(request),
+                    requestBody: request._body ? request._body.toString('base64') : '',
                     responseHeader: httpUtil.getClientResponseHeaderStr(response, bodySize),
                     responseBody: (buffer.toString('base64')) || '',
                     timestamps: {
@@ -121,10 +124,10 @@ process.nextTick(function() {
                         GotRequestHeaders: new Date(timeStart),
                         ClientDoneRequest: new Date(timeStart),
                         GatewayTime: 0,
-                        DNSTime: 0,
-                        TCPConnectTime: 0,
+                        DNSTime: timeLookup - timeStart,
+                        TCPConnectTime: timeConnect - timeStart,
                         HTTPSHandshakeTime: 0,
-                        ServerConnected: new Date(timeStart),
+                        ServerConnected: new Date(timeConnect),
                         FiddlerBeginRequest: new Date(timeStart),
                         ServerGotRequest: new Date(timeStart),
                         ServerBeginResponse: new Date(timeResponse),
@@ -138,7 +141,30 @@ process.nextTick(function() {
                 logJson.ajax.push(curr);
             };
 
-            request.once('response', (response) => {
+
+            const finish = function(maybeResponse) {
+                if (timeEnd) {
+                    return;
+                }
+
+                timeEnd = new Date().getTime();
+
+                request.removeListener('response', onResponse);
+                request.removeListener('socket', onSocket);
+                request.removeListener('error', onError);
+
+                if (captureBody) {
+                    buffer = Buffer.concat(result);
+                    result = [];
+                }
+
+                // 上报
+                if (captureBody) {
+                    report(maybeResponse);
+                }
+            };
+
+            const onResponse = function(response) {
                 timeResponse = Date.now();
 
                 const socket = response.socket;
@@ -162,35 +188,10 @@ process.nextTick(function() {
 
                 const done = function() {
                     this.removeListener('data', data);
-
-                    if (timeEnd) {
-                        return;
-                    }
-
-                    timeEnd = new Date().getTime();
-
-                    if (captureBody) {
-                        buffer = Buffer.concat(result);
-                        result = [];
-                    }
-
-                    // 上报
-                    if (captureBody) {
-                        report(response);
-                    }
+                    finish(response);
                 };
 
                 const data = function(chunk) {
-                    // var cost = Date.now() - timeCurr;
-
-                    // timeCurr = Date.now();
-
-                    // logger.debug('${logPre}receive data: ${size},\tcost: ${cost}ms',{
-                    //    logPre: logPre,
-                    //    cost: cost,
-                    //    size: chunk.length
-                    // });
-
                     bodySize += chunk.length;
 
                     if (captureBody && bodySize <= maxBodySize) {
@@ -218,7 +219,68 @@ process.nextTick(function() {
                     done.call(this);
                 });
 
-            });
+            };
+
+            const onError = function(err) {
+                logger.error(err.stack);
+                finish();
+            };
+
+            const onSocket = function(socket) {
+                if (socket.remoteAddress) {
+                    timeLookup = Date.now();
+                    timeConnect = Date.now();
+                    remoteAddress = socket.remoteAddress;
+                    remotePort = socket.remotePort;
+                    const cost = timeLookup - timeStart;
+                    logger.debug(`${logPre}socket reuse ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+                    return;
+                }
+
+                const onError = function(err) {
+                    logger.error(logPre + err.stack);
+                    clean();
+                    finish();
+                };
+
+                const onConnect = function() {
+                    timeConnect = Date.now();
+                    const cost = timeConnect - timeStart;
+                    remoteAddress = this.remoteAddress;
+                    remotePort = this.remotePort;
+                    logger.debug(`${logPre}connect ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+                    clean();
+                };
+
+                const onLookup = function(err, address, family, host) {
+                    timeLookup = Date.now();
+                    if (err) {
+                        logger.error(logPre + err.stack);
+                        clean();
+                        finish();
+                        return;
+                    }
+                    const cost = timeLookup - timeStart;
+                    logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
+                };
+
+                const clean = function() {
+                    socket.removeListener('error', onError);
+                    socket.removeListener('connect', onConnect);
+                    socket.removeListener('lookup', onLookup);
+                };
+
+                if (!net.isIP(opt.host)) {
+                    socket.once('lookup', onLookup);
+                }
+
+                socket.once('connect', onConnect);
+                socket.once('error', onError);
+            };
+
+            request.once('socket', onSocket);
+            request.once('error', onError);
+            request.once('response', onResponse);
 
             return request;
         };

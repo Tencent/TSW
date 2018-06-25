@@ -1,11 +1,13 @@
 {
   "version": "0.0.1",
   "dependencies": {
-    "koa": "*",
+    "egg": "^2.9.1",
     "express": "*",
-    "hapi": "*"
+    "hapi": "*",
+    "koa": "*"
   },
   "engines": {
     "node": ">= 8.0.0"
-  }
+  },
+  "private": true
 }

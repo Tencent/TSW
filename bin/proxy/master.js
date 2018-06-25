@@ -37,12 +37,16 @@ process.on('warning', function(warning) {
     const errStr = warning && warning.stack || String(warning);
     const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
-    logger.error(errStr);
+    if (warning.message && warning.message.indexOf('N-API') > -1) {
+        logger.warn(warning.message);
+        return;
+    }
+
+    logger.warn(errStr);
 
     setImmediate(function() {
         require('util/mail/mail.js').SendMail(key, 'js', 600, {
             'title': key,
-            'runtimeType': 'warning',
             'content': content
         });
     });
@@ -70,8 +74,6 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
         logger.error(`unhandledRejection reason: ${errStr}`);
     }
 });
-
-process.noProcessWarnings = true;
 
 
 startServer();
