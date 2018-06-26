@@ -240,9 +240,9 @@ this.getCpuLoadAsync = function() {
             }
 
             const result = {
-                '1': parseInt(tmp[1] * 100 / cpuNum, 10),
-                '5': parseInt(tmp[2] * 100 / cpuNum, 10),
-                '15': parseInt(tmp[3] * 100 / cpuNum, 10)
+                'L1': parseInt(tmp[1] * 100 / cpuNum, 10),
+                'L5': parseInt(tmp[2] * 100 / cpuNum, 10),
+                'L15': parseInt(tmp[3] * 100 / cpuNum, 10)
             };
 
             return resolve(result);
