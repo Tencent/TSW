@@ -356,18 +356,16 @@ function heartBeat() {
     }
 
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
+
     if (global.cpuUsed >= 80) {
         global.cpuUsed80 = ~~global.cpuUsed80 + 1;
     } else {
         global.cpuUsed80 = 0;
     }
 
-    const cpuUsed = global.cpuUsed;
-    tnm2.Attr_API_Set('AVG_TSW_CPU_USED', cpuUsed);
-
     // 高负载告警
     if (global.cpuUsed80 === 4 && !config.isTest && !isWin32Like) {
-        afterCpu80(cpuUsed);
+        afterCpu80(global.cpuUsed);
     }
 
     const currMemory = process.memoryUsage();
