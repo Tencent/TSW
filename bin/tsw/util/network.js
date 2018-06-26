@@ -226,3 +226,6 @@ this.getNetInfo = function() {
 
 
 this.getNetInfo();
+setTimeout(() => {
+    this.getNetInfo();
+}, 3000);

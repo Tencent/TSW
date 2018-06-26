@@ -16,6 +16,6 @@ if (process.mainModule === module) {
         const info = network.getNetInfo();
         console.log(info);
         /* eslint-enable no-console */
-    }, 3000);
+    }, 5000);
 }
 
