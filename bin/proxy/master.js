@@ -19,6 +19,8 @@ const methodMap = {};
 const workerMap = {};
 const cpuMap = [];
 const isDeaded = false;
+const tnm2 = require('api/tnm2');
+const network = require('util/network.js');
 
 // 阻止进程因异常而退出
 process.on('uncaughtException', function(e) {
@@ -236,21 +238,19 @@ function restartWorker(worker) {
     cluster.fork(process.env).cpuid = cpu;
 }
 
-// 定时检测子进程存活，发现15秒没响应的就干掉
+// 定时检测子进程存活，15秒未响应的采取措施
 function checkWorkerAlive() {
+    let checkWorkerAliveCount = 0;
 
     setInterval(function() {
-
-        let key,
-            worker,
-            cpuid;
-
+        checkWorkerAliveCount += 1;
         const nowDate = new Date();
         const now = nowDate.getTime();
 
+        let key;
         for (key in workerMap) {
-            worker = workerMap[key];
-            cpuid = worker.cpuid;
+            const worker = workerMap[key];
+            const cpuid = worker.cpuid;
 
             worker.lastLiveTime = worker.lastLiveTime || now;
             if (!worker.startTime) {
@@ -300,6 +300,37 @@ function checkWorkerAlive() {
             require('api/keyman/runtimeAdd.js').hello();
         }
 
+        // after 1 minute
+        if (checkWorkerAliveCount % 12 === 0) {
+            const info = network.getNetInfo();
+
+            // network report
+            tnm2.Attr_API('SUM_TSW_NET_ERB', info.external.receive.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_ERP', info.external.receive.packets);
+            tnm2.Attr_API('SUM_TSW_NET_ETB', info.external.transmit.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_ETP', info.external.transmit.packets);
+            tnm2.Attr_API('SUM_TSW_NET_IRB', info.internal.receive.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_IRP', info.internal.receive.packets);
+            tnm2.Attr_API('SUM_TSW_NET_ITB', info.internal.transmit.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_ITP', info.internal.transmit.packets);
+            tnm2.Attr_API('SUM_TSW_NET_LRB', info.local.receive.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_LRP', info.local.receive.packets);
+            tnm2.Attr_API('SUM_TSW_NET_LTB', info.local.transmit.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_LTP', info.local.transmit.packets);
+
+            // cpu load report
+            cpuUtil.getCpuLoadAsync().then(function(data) {
+                if (!data) {
+                    return;
+                }
+
+                tnm2.Attr_API_Set('AVG_TSW_CPU_LOAD_1', data.L1);
+                tnm2.Attr_API_Set('AVG_TSW_CPU_LOAD_5', data.L5);
+                tnm2.Attr_API_Set('AVG_TSW_CPU_LOAD_15', data.L15);
+            });
+        }
+
+        tnm2.Attr_API_Set('AVG_TSW_CPU_USED', global.cpuUsed);
     }, 5000);
 }
 

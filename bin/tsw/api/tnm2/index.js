@@ -45,17 +45,17 @@ if (isFirstLoad) {
  * 平均值类型上报
  */
 this.Attr_API_Set = function (attr, iValue) {
-    cacheOrRepoet(attr, iValue);
+    cacheOrReport(attr, iValue);
 };
 
 /**
  * 叠加类型上报
  */
 this.Attr_API = function (attr, iValue) {
-    cacheOrRepoet(attr, iValue);
+    cacheOrReport(attr, iValue);
 };
 
-const cacheOrRepoet = function(attr, iValue) {
+const cacheOrReport = function(attr, iValue) {
 
     if (!mapping[attr]) {
         return;
