@@ -18,38 +18,7 @@ if (!global[__filename]) {
     cache = {
         time: 0,
         total: null,
-        curr: {
-            external: {
-                receive: {
-                    bytes: 0,
-                    packets: 0,
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            },
-            internal: {
-                receive: {
-                    bytes: 0,
-                    packets: 0
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            },
-            local: {
-                receive: {
-                    bytes: 0,
-                    packets: 0
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            }
-        }
+        curr: createEmpty()
     };
     global[__filename] = cache;
 } else {
@@ -113,70 +82,9 @@ this.getNetInfo = function() {
         }
 
         const lines = buffer.toString('UTF-8').split('\n');
-        const sum = {
-            external: {
-                receive: {
-                    bytes: 0,
-                    packets: 0,
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            },
-            internal: {
-                receive: {
-                    bytes: 0,
-                    packets: 0
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            },
-            local: {
-                receive: {
-                    bytes: 0,
-                    packets: 0
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            }
-        };
-        const incr = {
-            external: {
-                receive: {
-                    bytes: 0,
-                    packets: 0,
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            },
-            internal: {
-                receive: {
-                    bytes: 0,
-                    packets: 0
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            },
-            local: {
-                receive: {
-                    bytes: 0,
-                    packets: 0
-                },
-                transmit: {
-                    bytes: 0,
-                    packets: 0
-                }
-            }
-        };
+        const sum = createEmpty();
+        const incr = createEmpty();
+        const curr = createEmpty();
 
         lines.forEach((v, i) => {
             const tmp = v.split(/\W+/);
@@ -199,62 +107,63 @@ this.getNetInfo = function() {
         });
 
         if (!cache.total) {
+            // init total first
             cache.total = sum;
         }
 
-        incr.external.receive.bytes = sum.external.receive.bytes - cache.total.external.receive.bytes;
-        incr.external.receive.packets = sum.external.receive.packets - cache.total.external.receive.packets;
-        incr.external.transmit.bytes = sum.external.transmit.bytes - cache.total.external.transmit.bytes;
-        incr.external.transmit.packets = sum.external.transmit.packets - cache.total.external.transmit.packets;
-        incr.internal.receive.bytes = sum.internal.receive.bytes - cache.total.internal.receive.bytes;
-        incr.internal.receive.packets = sum.internal.receive.packets - cache.total.internal.receive.packets;
-        incr.internal.transmit.bytes = sum.internal.transmit.bytes - cache.total.internal.transmit.bytes;
-        incr.internal.transmit.packets = sum.internal.transmit.packets - cache.total.internal.transmit.packets;
-        incr.local.receive.bytes = sum.local.receive.bytes - cache.total.local.receive.bytes;
-        incr.local.receive.packets = sum.local.receive.packets - cache.total.local.receive.packets;
-        incr.local.transmit.bytes = sum.local.transmit.bytes - cache.total.local.transmit.bytes;
-        incr.local.transmit.packets = sum.local.transmit.packets - cache.total.local.transmit.packets;
-        incr.cost = cost; // ms
+        Object.keys(sum).forEach(function(type) {
+            incr[type].receive.bytes = sum[type].receive.bytes - cache.total[type].receive.bytes;
+            incr[type].receive.packets = sum[type].receive.packets - cache.total[type].receive.packets;
+            incr[type].transmit.bytes = sum[type].transmit.bytes - cache.total[type].transmit.bytes;
+            incr[type].transmit.packets = sum[type].transmit.packets - cache.total[type].transmit.packets;
 
-        cache.curr = {
-            external: {
-                receive: {
-                    bytes: Math.floor(incr.external.receive.bytes * 8 / cost), // kbps
-                    packets: Math.floor(incr.external.receive.packets * 1000 / cost),
-                },
-                transmit: {
-                    bytes: Math.floor(incr.external.transmit.bytes * 8 / cost), // kbps
-                    packets: Math.floor(incr.external.transmit.packets * 1000 / cost)
-                }
-            },
-            internal: {
-                receive: {
-                    bytes: Math.floor(incr.internal.receive.bytes * 8 / cost), // kbps
-                    packets: Math.floor(incr.internal.receive.packets * 1000 / cost)
-                },
-                transmit: {
-                    bytes: Math.floor(incr.internal.transmit.bytes * 8 / cost), // kbps
-                    packets: Math.floor(incr.internal.transmit.packets * 1000 / cost)
-                }
-            },
-            local: {
-                receive: {
-                    bytes: Math.floor(incr.local.receive.bytes * 8 / cost), // kbps
-                    packets: Math.floor(incr.local.receive.packets * 1000 / cost)
-                },
-                transmit: {
-                    bytes: Math.floor(incr.local.transmit.bytes * 8 / cost), // kbps
-                    packets: Math.floor(incr.local.transmit.packets * 1000 / cost)
-                }
-            }
-        };
+            curr[type].receive.bytes = Math.floor(incr[type].receive.bytes * 8 / cost); // kbps
+            curr[type].receive.packets = Math.floor(incr[type].receive.packets * 1000 / cost);
+            curr[type].transmit.bytes = Math.floor(incr[type].transmit.bytes * 8 / cost); // kbps
+            curr[type].transmit.packets = Math.floor(incr[type].transmit.packets * 1000 / cost);
+        });
 
+        cache.curr = curr;
         cache.total = sum;
     });
 
     return cache.curr;
 };
 
+function createEmpty() {
+    return {
+        external: {
+            receive: {
+                bytes: 0,
+                packets: 0,
+            },
+            transmit: {
+                bytes: 0,
+                packets: 0
+            }
+        },
+        internal: {
+            receive: {
+                bytes: 0,
+                packets: 0
+            },
+            transmit: {
+                bytes: 0,
+                packets: 0
+            }
+        },
+        local: {
+            receive: {
+                bytes: 0,
+                packets: 0
+            },
+            transmit: {
+                bytes: 0,
+                packets: 0
+            }
+        }
+    };
+}
 
 this.getNetInfo();
 setTimeout(() => {
