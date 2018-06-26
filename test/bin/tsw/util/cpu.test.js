@@ -95,7 +95,7 @@ describe('测试获取cpu信息的接口', () => {
     it('# getCpuUsed ', () => {
 
         const cpuUsed = cpuUtil.getCpuUsed();
-        expect(cpuUsed).to.equal(0);
+        expect(cpuUsed >= 0).to.equal(true);
 
     });
 });
