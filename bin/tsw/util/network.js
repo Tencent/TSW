@@ -18,7 +18,38 @@ if (!global[__filename]) {
     cache = {
         time: 0,
         total: null,
-        curr: null
+        curr: {
+            external: {
+                receive: {
+                    bytes: 0,
+                    packets: 0,
+                },
+                transmit: {
+                    bytes: 0,
+                    packets: 0
+                }
+            },
+            internal: {
+                receive: {
+                    bytes: 0,
+                    packets: 0
+                },
+                transmit: {
+                    bytes: 0,
+                    packets: 0
+                }
+            },
+            local: {
+                receive: {
+                    bytes: 0,
+                    packets: 0
+                },
+                transmit: {
+                    bytes: 0,
+                    packets: 0
+                }
+            }
+        }
     };
     global[__filename] = cache;
 } else {
