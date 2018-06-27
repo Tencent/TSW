@@ -122,7 +122,7 @@ this.timeout = {
     post: 30000,
     get: 10000,
     keepAlive: 10000,
-    dns: 3000
+    dns: 1000
 };
 
 
