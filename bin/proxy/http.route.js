@@ -598,7 +598,7 @@ function doRoute(req, res) {
 
         dcapi.report({
             key: 'EVENT_TSW_HTTP_IP_BLOCK',
-            toIp: clientIp || '127.0.0.1',
+            toIp: clientIp,
             code: 0,
             isFail: 0,
             delay: 100
