@@ -117,10 +117,10 @@ this.getNetInfo = function() {
             incr[type].transmit.bytes = sum[type].transmit.bytes - cache.total[type].transmit.bytes;
             incr[type].transmit.packets = sum[type].transmit.packets - cache.total[type].transmit.packets;
 
-            curr[type].receive.bytes = Math.floor(incr[type].receive.bytes * 8 / cost * 1000 / 1024); // Kbps
-            curr[type].receive.packets = Math.floor(incr[type].receive.packets * 1000 / cost);
-            curr[type].transmit.bytes = Math.floor(incr[type].transmit.bytes * 8 / cost * 1000 / 1024); // Kbps
-            curr[type].transmit.packets = Math.floor(incr[type].transmit.packets * 1000 / cost);
+            curr[type].receive.bytes = Math.floor(incr[type].receive.bytes * 8 / (cost / 1000)); // bps
+            curr[type].receive.packets = Math.floor(incr[type].receive.packets / (cost / 1000));
+            curr[type].transmit.bytes = Math.floor(incr[type].transmit.bytes * 8 / (cost / 1000)); // bps
+            curr[type].transmit.packets = Math.floor(incr[type].transmit.packets / (cost / 1000));
         });
 
         cache.curr = curr;
