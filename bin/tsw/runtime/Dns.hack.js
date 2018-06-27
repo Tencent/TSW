@@ -38,6 +38,8 @@ if (!global[__filename]) {
                 let timeoutError;
                 let isCalled = false;
 
+                logger.debug(`dns lookup for ${hostname}`);
+
                 const callbackWrap = function(err, address, family) {
                     if (isCalled) return;
 
@@ -52,10 +54,12 @@ if (!global[__filename]) {
                         isFail = 1;
                     }
 
+                    const cost = Date.now() - start;
+
                     if (err) {
-                        logger.error('dns lookup error: ' + err.stack);
+                        logger.error(`dns lookup [${cost}ms] error:  ${err.stack}`);
                     } else {
-                        logger.debug(`dns lookup: ${hostname} --> ${address}`);
+                        logger.debug(`dns lookup ${cost}ms: ${hostname} --> ${address}`);
                     }
 
                     dcapi.report({
@@ -63,7 +67,7 @@ if (!global[__filename]) {
                         toIp: '127.0.0.1',
                         code: code,
                         isFail: isFail,
-                        delay: Date.now() - start
+                        delay: cost
                     });
 
                     isCalled = true;
