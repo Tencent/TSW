@@ -131,7 +131,7 @@
                 ]
             }
         }, {
-            "files": ["bin/lib/util/mail/tmpl.js", "bin/tsw/util/**/tmpl.js"],
+            "files": ["bin/**/tmpl.js"],
             "rules": {
                 "no-unused-vars": [
                     "error",
