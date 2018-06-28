@@ -921,6 +921,11 @@ Ajax.prototype.doRequest = function(opt) {
             this.emit('done');
         });
 
+        pipe.once('error', function(err) {
+            logger.debug(logPre + ' decode error: ' + err.stack);
+            this.emit('done');
+        });
+
         pipe.once('end', function() {
             const cost = Date.now() - pipe.timeStart;
 
