@@ -102,24 +102,7 @@ this.captureIncomingMessageBody = function(req) {
     // 直接监听data事件会有问题：
     // request流是消费型的，前面监听的data监听器会优先消费缓存中已经接收到的数据，
     // 导致当业务侧在异步绑定data事件监听器的时候会丢失前面已经接收的数据
-    const oriPush = req.push;
-
-    // req.readableBuffer for node >=9, req._readableState.buffer for node < 9
-    const bufferData = req.readableBuffer || req._readableState.buffer;
-
-    let head = bufferData.head;
-
-    while (head) {
-        data(head.data);
-
-        head = head.next;
-    }
-
-    req.push = (chunk, encoding) => {
-        oriPush.call(req, chunk, encoding);
-
-        chunk && data(chunk);
-    };
+    this.captureStream(req, data);
 
     req.once('end', function() {
         logger.debug('receive end');
@@ -128,6 +111,27 @@ this.captureIncomingMessageBody = function(req) {
         req._bodySize = bodySize;
         req._body = buffer;
     });
+};
+
+this.captureStream = function(stream, handler) {
+    const oriPush = stream.push;
+
+    // stream.readableBuffer for node >=9, stream._readableState.buffer for node < 9
+    const bufferData = stream.readableBuffer || stream._readableState.buffer;
+
+    let head = bufferData.head;
+
+    while (head) {
+        handler(head.data);
+
+        head = head.next;
+    }
+
+    stream.push = (chunk, encoding) => {
+        oriPush.call(stream, chunk, encoding);
+
+        chunk && handler(chunk);
+    };
 };
 
 this.captureBody = this.captureServerResponseBody = function(res) {

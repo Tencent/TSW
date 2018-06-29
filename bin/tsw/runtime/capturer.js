@@ -199,7 +199,8 @@ process.nextTick(function() {
                     }
                 };
 
-                response.on('data', data);
+                // response.on('data', data);
+                httpUtil.captureStream(response, data);
 
                 response.once('close', function() {
                     logger.debug(logPre + 'close');
