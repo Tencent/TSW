@@ -112,6 +112,9 @@
         ],
         "strict": [
             "off"
+        ],
+        "new-cap": [
+            "off"
         ]
     },
     "overrides": [
