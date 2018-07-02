@@ -119,6 +119,20 @@
     },
     "overrides": [
         {
+            "files": ["bin/**/*Jce.js"],
+            "rules": {
+                "no-var": [
+                    "off"
+                ],
+                "no-unused-vars": [
+                    "off"
+                ],
+                "no-use-before-define": [
+                    "off"
+                ]
+            }
+        },
+        {
             "files": ["bin/tsw/wwwroot/*.js"],
             "env": {
                 "browser": true
