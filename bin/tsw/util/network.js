@@ -47,7 +47,7 @@ this.getNetworkInterfacesTypes = function() {
             types[key] = 'external';
         }
 
-        if (tmp.startsWith('127.')) {
+        if (address.startsWith('127.')) {
             types[key] = 'local';
         } else {
             types[key] = 'internal';
