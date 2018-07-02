@@ -128,9 +128,13 @@ this.captureStream = function(stream, handler) {
     }
 
     stream.push = (chunk, encoding) => {
-        oriPush.call(stream, chunk, encoding);
+        try {
+            chunk && handler(chunk);
+        } catch (e) {
+            logger.debug(`captrue stream chunk error ${e.message}`);
+        }
 
-        chunk && handler(chunk);
+        return oriPush.call(stream, chunk, encoding);
     };
 };
 
