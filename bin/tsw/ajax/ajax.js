@@ -560,7 +560,7 @@ Ajax.prototype.doRequest = function(opt) {
         }
 
         const onError = (err) => {
-            logger.error(logPre + 'socket error: ' + err.stack);
+            logger.error(logPre + err.stack);
             clean();
             this.emit('fail');
         };
@@ -572,7 +572,9 @@ Ajax.prototype.doRequest = function(opt) {
 
         const onLookup = (err, address, family, host) => {
             if (err) {
-                logger.error(logPre + 'lookup error: ' + err.stack);
+                logger.error(logPre + err.stack);
+                clean();
+                this.emit('fail');
                 return;
             }
             this.remoteIp = address;
