@@ -223,7 +223,7 @@ process.nextTick(function() {
             };
 
             const onError = function(err) {
-                logger.error(err.stack);
+                logger.error(logPre + 'request error: ' + err.stack);
                 finish();
             };
 
@@ -239,7 +239,7 @@ process.nextTick(function() {
                 }
 
                 const onError = function(err) {
-                    logger.error(logPre + err.stack);
+                    logger.error(logPre + 'socket error: ' + err.stack);
                     clean();
                     finish();
                 };
@@ -255,14 +255,13 @@ process.nextTick(function() {
 
                 const onLookup = function(err, address, family, host) {
                     timeLookup = Date.now();
-                    if (err) {
-                        logger.error(logPre + err.stack);
-                        clean();
-                        finish();
-                        return;
-                    }
                     const cost = timeLookup - timeStart;
-                    logger.debug(`${logPre}dns lookup ${host} -> ${address}, cost ${cost}ms`);
+                    logger.debug(`${logPre}dns lookup ${host} -> ${address || 'null'}, cost ${cost}ms`);
+
+                    if (err) {
+                        logger.error(logPre + 'lookup error: ' + err.stack);
+                        // 会触发socket的error事件，这里不能clean
+                    }
                 };
 
                 const clean = function() {

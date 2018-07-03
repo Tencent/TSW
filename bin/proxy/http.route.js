@@ -481,7 +481,10 @@ function doRoute(req, res) {
         };
     })(res.writeHead);
 
-    const mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    let mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    if (typeof mod_act !== 'string' || !mod_act) {
+        mod_act = null;
+    }
     contextMod.currentContext().mod_act = mod_act;
 
     if (alpha.isAlpha(req)) {
