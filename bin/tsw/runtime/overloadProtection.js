@@ -7,9 +7,10 @@
  */
 'use strict';
 
+const cluster = require('cluster');
 
 // 过载保护
-process.nextTick(function() {
+cluster.isMaster && process.nextTick(function() {
 
     const logger = require('logger');
     const tnm2 = require('api/tnm2');
