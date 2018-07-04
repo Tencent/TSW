@@ -218,12 +218,12 @@ this.getCpuLoadAsync = function() {
             timeout: 5000
         }, function(err, data, errData) {
             if (err) {
-                logger.error(err.stack);
+                logger.error(err);
                 return resolve(null);
             }
 
             if (errData) {
-                logger.error(err.stack);
+                logger.error(errData);
                 return resolve(null);
             }
 
