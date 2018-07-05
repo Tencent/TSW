@@ -309,6 +309,10 @@ module.exports.isTestUser = function(req, res) {
     }).done(function(d) {
     }).fail(function(d) {
         logger.error('h5test proxy fail...');
+        if (res.headersSent) {
+            res.end();
+            return;
+        }
         res.setHeader('Content-Type', 'text/html; charset=UTF-8');
         res.writeHead(500);
         res.end();
