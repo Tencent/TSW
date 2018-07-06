@@ -187,7 +187,6 @@ Ajax.prototype.doRequest = function(opt) {
 
     let tid = null,
         currAgent = false,
-        request,
         key,
         v,
         obj;
@@ -541,7 +540,7 @@ Ajax.prototype.doRequest = function(opt) {
         currAgent = false;
     }
 
-    request = (opt.protocol === 'https:' ? https : http).request({
+    const request = (opt.protocol === 'https:' ? https : http).request({
         agent: currAgent,
         host: opt.proxyIp || opt.ip || opt.host,
         port: opt.proxyPort || opt.port,
@@ -561,7 +560,7 @@ Ajax.prototype.doRequest = function(opt) {
         }
 
         const onError = (err) => {
-            logger.error(logPre + err.stack);
+            logger.error(logPre + 'socket error: ' + err.stack);
             clean();
             this.emit('fail');
         };
@@ -573,9 +572,7 @@ Ajax.prototype.doRequest = function(opt) {
 
         const onLookup = (err, address, family, host) => {
             if (err) {
-                logger.error(logPre + err.stack);
-                clean();
-                this.emit('fail');
+                logger.error(logPre + 'lookup error: ' + err.stack);
                 return;
             }
             this.remoteIp = address;
@@ -597,11 +594,6 @@ Ajax.prototype.doRequest = function(opt) {
 
     defer.always(function() {
         clearTimeout(tid);
-        request.removeAllListeners();
-
-        // request.abort();  长连接不能开
-        // request.destroy(); 长连接不能开
-        request = null;
         tid = null;
     });
 
@@ -614,7 +606,8 @@ Ajax.prototype.doRequest = function(opt) {
     }, opt.timeout);
 
     request.once('error', function(err) {
-        request.emit('fail', err);
+        logger.error(logPre + 'request error: ' + err.stack);
+        this.emit('fail', err);
     });
 
     request.once('fail', function(err) {
@@ -925,6 +918,11 @@ Ajax.prototype.doRequest = function(opt) {
 
         pipe.once('close', function() {
             logger.debug(logPre + 'close');
+            this.emit('done');
+        });
+
+        pipe.once('error', function(err) {
+            logger.debug(logPre + ' decode error: ' + err.stack);
             this.emit('done');
         });
 

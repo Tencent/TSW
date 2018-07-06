@@ -481,7 +481,10 @@ function doRoute(req, res) {
         };
     })(res.writeHead);
 
-    const mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    let mod_act = contextMod.currentContext().mod_act || httpModAct.getModAct(req);
+    if (typeof mod_act !== 'string' || !mod_act) {
+        mod_act = null;
+    }
     contextMod.currentContext().mod_act = mod_act;
 
     if (alpha.isAlpha(req)) {
@@ -606,7 +609,7 @@ function doRoute(req, res) {
 
         dcapi.report({
             key: 'EVENT_TSW_HTTP_IP_BLOCK',
-            toIp: clientIp || '127.0.0.1',
+            toIp: clientIp,
             code: 0,
             isFail: 0,
             delay: 100

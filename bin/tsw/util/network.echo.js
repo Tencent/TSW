@@ -7,12 +7,15 @@
  */
 'use strict';
 
-const processArgs = plug('util/process.args.js');
+const plug = require('plug');
+const network = plug('util/network.js');
 
-let configPath = '../examples/framework/config.js';
-
-if (typeof processArgs.config === 'string') {
-    configPath = processArgs.config;
+if (process.mainModule === module) {
+    setInterval(function() {
+        /* eslint-disable no-console */
+        const info = network.getNetInfo();
+        console.log(info);
+        /* eslint-enable no-console */
+    }, 5000);
 }
 
-module.exports = require(configPath);

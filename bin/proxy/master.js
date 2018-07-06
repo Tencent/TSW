@@ -18,12 +18,11 @@ const { debugOptions } = process.binding('config');
 const methodMap = {};
 const workerMap = {};
 const cpuMap = [];
-const isDeaded = false;
+const tnm2 = require('api/tnm2');
+const network = require('util/network.js');
 
-// 阻止进程因异常而退出
 process.on('uncaughtException', function(e) {
 
-    // Mac和linux权限不足时给予提醒
     if (/\blisten EACCES\b/.test(e.message) && config.httpPort < 1024 && (serverOS.isOSX || serverOS.isLinux)) {
         logger.error('This is OSX/Linux, you may need to use "sudo" prefix to start server.\n');
     }
@@ -35,7 +34,7 @@ process.on('uncaughtException', function(e) {
 process.on('warning', function(warning) {
     const key = String(warning);
     const errStr = warning && warning.stack || String(warning);
-    const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
+    const content = `<p><strong>stack</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
     if (warning.message && warning.message.indexOf('N-API') > -1) {
         logger.warn(warning.message);
@@ -169,10 +168,11 @@ function closeWorker(worker) {
     closeTimeWait = Math.max(closeTimeWait, config.timeout.keepAlive);
     closeTimeWait = Math.min(60000, closeTimeWait) || 10000;
 
-
-    if (worker.hasClose) {
+    if (worker.isClosing) {
         return;
     }
+
+    worker.isClosing = true;
 
     if (workerMap[cpu] === worker) {
         delete workerMap[cpu];
@@ -189,68 +189,58 @@ function closeWorker(worker) {
             try {
                 process.kill(pid, 9);
             } catch (e) {
-                logger.info(`kill worker fail ${e.message}`);
+                logger.info(`kill worker message: ${e.message}`);
             }
 
-            worker.destroy();
-
             closed = true;
+            worker.destroy();
         };
     })(worker);
 
     setTimeout(closeFn, closeTimeWait);
-
-    if (worker.exitedAfterDisconnect) {
-        worker.hasClose = true;
-        return;
-    }
 
     try {
         worker.disconnect(closeFn);
     } catch (e) {
         logger.info(e.stack);
     }
-
 }
 
 // 重启worker
 function restartWorker(worker) {
-    const cpu = getToBindCpu(worker);
-
     if (worker.hasRestart) {
         return;
     }
 
-    logger.info('worker${cpu} pid=${pid} close. restart new worker again.', {
+    worker.hasRestart = true;
+    const cpu = getToBindCpu(worker);
+
+    cpuMap[cpu] = 0;
+
+    logger.info('worker${cpu} pid=${pid} closed. restart new worker again.', {
         pid: worker.process.pid,
         cpu: cpu
     });
 
-    setTimeout(function() {
-        closeWorker(worker);
-    }, 10000);
-
-    cpuMap[cpu] = 0;
-
-    worker.hasRestart = true;
     cluster.fork(process.env).cpuid = cpu;
+
+    closeWorker(worker);
 }
 
-// 定时检测子进程存活，发现15秒没响应的就干掉
+// 定时检测子进程存活，15秒未响应的采取措施
 function checkWorkerAlive() {
+    const checkWorkerAliveTimeout = 5000;
+    let checkWorkerAliveCount = 0;
 
     setInterval(function() {
-
-        let key,
-            worker,
-            cpuid;
-
+        checkWorkerAliveCount += 1;
         const nowDate = new Date();
         const now = nowDate.getTime();
 
+        let key;
         for (key in workerMap) {
-            worker = workerMap[key];
-            cpuid = worker.cpuid;
+            const worker = workerMap[key];
+            const cpuid = worker.cpuid;
 
             worker.lastLiveTime = worker.lastLiveTime || now;
             if (!worker.startTime) {
@@ -258,7 +248,7 @@ function checkWorkerAlive() {
             }
 
             // 无响应进程处理
-            if (now - worker.lastLiveTime > 15000 && cpuMap[cpuid] === 1) {
+            if (now - worker.lastLiveTime > checkWorkerAliveTimeout * 3 && cpuMap[cpuid] === 1) {
 
                 logger.error('worker${cpu} pid=${pid} miss heartBeat, kill it', {
                     pid: worker.process.pid,
@@ -266,6 +256,7 @@ function checkWorkerAlive() {
                 });
 
                 restartWorker(worker);
+                continue;
             }
 
             // 内存超限进程处理
@@ -300,33 +291,53 @@ function checkWorkerAlive() {
             require('api/keyman/runtimeAdd.js').hello();
         }
 
-    }, 5000);
+        // after 1 minute
+        if (checkWorkerAliveCount % 12 === 0) {
+            const info = network.getNetInfo();
+
+            // network report
+            tnm2.Attr_API('SUM_TSW_NET_EXTERNAL_RXBIT', info.external.receive.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_EXTERNAL_RXPCK', info.external.receive.packets);
+            tnm2.Attr_API('SUM_TSW_NET_EXTERNAL_TXBIT', info.external.transmit.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_EXTERNAL_TXPCK', info.external.transmit.packets);
+            tnm2.Attr_API('SUM_TSW_NET_INTERNAL_RXBIT', info.internal.receive.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_INTERNAL_RXPCK', info.internal.receive.packets);
+            tnm2.Attr_API('SUM_TSW_NET_INTERNAL_TXBIT', info.internal.transmit.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_INTERNAL_TXPCK', info.internal.transmit.packets);
+            tnm2.Attr_API('SUM_TSW_NET_LOCAL_RXBIT', info.local.receive.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_LOCAL_RXPCK', info.local.receive.packets);
+            tnm2.Attr_API('SUM_TSW_NET_LOCAL_TXBIT', info.local.transmit.bytes);
+            tnm2.Attr_API('SUM_TSW_NET_LOCAL_TXPCK', info.local.transmit.packets);
+
+            // cpu load report
+            cpuUtil.getCpuLoadAsync().then(function(data) {
+                if (!data) {
+                    return;
+                }
+
+                tnm2.Attr_API_Set('AVG_TSW_CPU_LOAD_1', data.L1);
+                tnm2.Attr_API_Set('AVG_TSW_CPU_LOAD_5', data.L5);
+                tnm2.Attr_API_Set('AVG_TSW_CPU_LOAD_15', data.L15);
+            });
+        }
+
+        tnm2.Attr_API_Set('AVG_TSW_CPU_USED', global.cpuUsed);
+    }, checkWorkerAliveTimeout);
 }
 
 // 获取需要绑定的CPU编号
 function getToBindCpu(worker) {
-
-    let cpu = 0;// 如果只有一个cpu或者都占用了
-    let i;
-
     if (typeof worker.cpuid !== 'undefined') {
-        cpu = worker.cpuid;
-        return cpu;
-    } else {
-
-        for (i = 0; i < cpuMap.length; i++) {
-            const c = cpuMap[i];
-            if (c === 0) {
-                cpu = i;
-                worker.cpuid = cpu;
-                break;
-            }
-        }
+        return worker.cpuid;
     }
 
-    cpuMap[i] = 1;
-
-    return cpu;
+    for (const cpu of cpuMap) {
+        if (cpuMap[cpu] === 0) {
+            worker.cpuid = cpu;
+            cpuMap[cpu] = 1;
+            return cpu;
+        }
+    }
 }
 
 
@@ -392,7 +403,7 @@ function masterEventHandler() {
             return;
         }
 
-        logger.info('worker${cpu} pid=${pid} has disconnected. restart new worker again.', {
+        logger.info('worker${cpu} pid=${pid} disconnect event fired. restart new worker again.', {
             pid: worker.process.pid,
             cpu: cpu
         });
@@ -409,7 +420,7 @@ function masterEventHandler() {
             return;
         }
 
-        logger.info('worker${cpu} pid=${pid} has been killed. restart new worker again.', {
+        logger.info('worker${cpu} pid=${pid} exit event fired. restart new worker again.', {
             pid: worker.process.pid,
             cpu: cpu
         });
@@ -418,52 +429,36 @@ function masterEventHandler() {
     });
 
     process.on('reload', function(GET) {
-
-        let timeout = 1000,
-            cpu = 0,
-            key,
-            worker;
-
-        if (isDeaded) {
-            process.exit(0);
-        }
-
         logger.info('reload');
 
-        for (key in workerMap) {
-            worker = workerMap[key];
-            try {
+        for (const key in workerMap) {
+            const worker = workerMap[key];
+            const cpu = getToBindCpu(worker);
+            let timeout = 1000;
 
-                cpu = getToBindCpu(worker);
-
-                if (config.isTest || config.devMode) {
-                    timeout = (cpu % 8) * 1000;
-                } else {
-                    timeout = (cpu % 8) * 3000;
-                }
-
-                setTimeout((function(worker, cpu) {
-                    return function() {
-                        if (!worker.exitedAfterDisconnect) {
-                            logger.info('cpu${cpu} send restart message', {
-                                cpu: cpu
-                            });
-                            worker.send({ from: 'master', cmd: 'restart' });
-                        }
-                        restartWorker(worker);
-                    };
-                })(worker, cpu), timeout);
-
-                logger.info('cpu${cpu} reload after ${timeout}ms', {
-                    cpu: cpu,
-                    timeout: timeout
-                });
-
-            } catch (e) {
-                logger.error(e.stack);
+            if (config.isTest || config.devMode) {
+                timeout = (cpu % 8) * 1000;
+            } else {
+                timeout = (cpu % 8) * 3000;
             }
-        }
 
+            setTimeout((function(worker, cpu) {
+                return function() {
+                    if (!worker.exitedAfterDisconnect) {
+                        logger.info('cpu${cpu} send restart message', {
+                            cpu: cpu
+                        });
+                        worker.send({ from: 'master', cmd: 'restart' });
+                    }
+                    restartWorker(worker);
+                };
+            })(worker, cpu), timeout);
+
+            logger.info('cpu${cpu} reload after ${timeout}ms', {
+                cpu: cpu,
+                timeout: timeout
+            });
+        }
     });
 
     process.on('sendCmd2workerOnce', function(data) {
@@ -472,10 +467,6 @@ function masterEventHandler() {
             worker;
         const CMD = data.CMD;
         const GET = data.GET;
-
-        if (isDeaded) {
-            process.exit(0);
-        }
 
         logger.info('sendCmd2workerOnce CMD: ${CMD}', {
             CMD

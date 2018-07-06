@@ -50,9 +50,7 @@ this.getCpuUsed = function(cpu) {
     fs.readFile('/proc/stat', function(err, buffer) {
 
         if (err) {
-            /* eslint-disable no-console */
-            console.error(err.stack);
-            /* eslint-enable no-console */
+            logger.error(err.stack);
             return;
         }
 
@@ -212,10 +210,45 @@ this.parseTaskset = function(str) {
     return res;
 };
 
-if (process.mainModule === module) {
-    setInterval(function() {
-        /* eslint-disable no-console */
-        console.log('cpu: ' + module.exports.getCpuUsed());
-        /* eslint-enable no-console */
-    }, 1000);
-}
+this.getCpuLoadAsync = function() {
+    const cpuNum = this.cpus().length;
+    return new Promise((resolve) => {
+        cp.exec('uptime', {
+            encoding: 'utf8',
+            timeout: 5000
+        }, function(err, data, errData) {
+            if (err) {
+                logger.error(err);
+                return resolve(null);
+            }
+
+            if (errData) {
+                logger.error(errData);
+                return resolve(null);
+            }
+
+            if (!data) {
+                logger.error('empty data');
+                return resolve(null);
+            }
+
+            const tmp = /([ 0-9\.]+),([ 0-9\.]+),([ 0-9\.]+)$/m.exec(data);
+
+            if (!tmp) {
+                logger.error('no match data');
+                return resolve(null);
+            }
+
+            const result = {
+                'L1': parseInt(tmp[1] * 100 / cpuNum, 10),
+                'L5': parseInt(tmp[2] * 100 / cpuNum, 10),
+                'L15': parseInt(tmp[3] * 100 / cpuNum, 10)
+            };
+
+            return resolve(result);
+        });
+    });
+};
+
+
+this.getCpuUsed();

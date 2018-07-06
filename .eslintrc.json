@@ -112,9 +112,26 @@
         ],
         "strict": [
             "off"
+        ],
+        "new-cap": [
+            "off"
         ]
     },
     "overrides": [
+        {
+            "files": ["bin/**/*Jce.js"],
+            "rules": {
+                "no-var": [
+                    "off"
+                ],
+                "no-unused-vars": [
+                    "off"
+                ],
+                "no-use-before-define": [
+                    "off"
+                ]
+            }
+        },
         {
             "files": ["bin/tsw/wwwroot/*.js"],
             "env": {
@@ -131,7 +148,7 @@
                 ]
             }
         }, {
-            "files": ["bin/lib/util/mail/tmpl.js", "bin/tsw/util/**/tmpl.js"],
+            "files": ["bin/**/tmpl.js"],
             "rules": {
                 "no-unused-vars": [
                     "error",

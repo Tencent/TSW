@@ -87,7 +87,7 @@ process.on('message', function(message) {
         return;
     }
 
-    logger.info(`cpu: ${serverInfo.cpu} ${message.cmd}`);
+    logger.info(`receive message, cmd: ${message.cmd}`);
     methodMap[message.cmd](message);
 });
 
@@ -251,8 +251,7 @@ function listen(cpu) {
 
         const finish = function() {
 
-            // 开始发送心跳
-            logger.info('start heart beat');
+            logger.info('start heartbeat');
 
             startHeartBeat();
 
@@ -268,11 +267,13 @@ function listen(cpu) {
                     uid: user_00
                 });
             }
+
             websocket.start_listen();
 
             logger.info('cpu: ${cpu}, afterStartup...', serverInfo);
 
             if (typeof config.afterStartup === 'function') {
+                logger.info('cpu: ${cpu}, config.afterStartup fired', serverInfo);
                 config.afterStartup(serverInfo.cpu);
             }
         };
@@ -356,18 +357,16 @@ function heartBeat() {
     }
 
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
+
     if (global.cpuUsed >= 80) {
         global.cpuUsed80 = ~~global.cpuUsed80 + 1;
     } else {
         global.cpuUsed80 = 0;
     }
 
-    const cpuUsed = global.cpuUsed;
-    tnm2.Attr_API_Set('AVG_TSW_CPU_USED', cpuUsed);
-
     // 高负载告警
     if (global.cpuUsed80 === 4 && !config.isTest && !isWin32Like) {
-        afterCpu80(cpuUsed);
+        afterCpu80(global.cpuUsed);
     }
 
     const currMemory = process.memoryUsage();

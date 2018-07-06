@@ -7,12 +7,18 @@
  */
 'use strict';
 
-const processArgs = plug('util/process.args.js');
+const plug = require('plug');
+const cpu = plug('util/cpu.js');
 
-let configPath = '../examples/framework/config.js';
+if (process.mainModule === module) {
+    setInterval(function() {
+        /* eslint-disable no-console */
+        const info = cpu.getCpuUsed();
 
-if (typeof processArgs.config === 'string') {
-    configPath = processArgs.config;
+        cpu.getCpuLoadAsync().then((res) => {
+            console.log(info, res);
+        });
+        /* eslint-enable no-console */
+    }, 3000);
 }
 
-module.exports = require(configPath);
