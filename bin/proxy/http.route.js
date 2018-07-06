@@ -707,6 +707,7 @@ function onerror(req, res, err) {
 
 const errorIgnore = {
     'socket hang up': 'ignore',
+    'Cannot call write after a stream was destroyed': 'ignore',
     'Cannot read property \'asyncReset\' of null': 'ignore',
     'Cannot read property \'resume\' of null': 'ignore',
     'write ECONNRESET': 'ignore',
