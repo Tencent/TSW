@@ -36,11 +36,14 @@ function wsFiller(ws, req) {
     ws.reportIndex = 1;
 
     ws.send = function(message) {
-        logger.debug('server send message : ${message}', {
-            message
-        });
-
-        ws.__tempSend(message);
+        if (ws.readyState == WebSocket.OPEN) {
+            logger.debug('server send message : ${message}', {
+                message
+            });
+            ws.__tempSend(message);
+        } else {
+            logger.warn('send message fail! WebSocket readyState is : ' + ws.readyState);
+        }
     };
 
     ws.logKey = Math.random();
