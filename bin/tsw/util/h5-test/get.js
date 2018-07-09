@@ -37,13 +37,13 @@ module.exports.getTestUser = function() {
 
     // 从内存中读取testTargetMap
     const memcached = isTest.cmem();
-    let keyText = isTest.keyBitmap();
     const defer = Deferred.create();
-    let appid = '';
+    const appid = context.appid || '';
+    const appkey = context.appkey;
+    let keyText = isTest.keyBitmap();
 
-    if (context.appid && context.appkey) {
+    if (appid && appkey) {
         // 开平过来的
-        appid = context.appid;
         keyText = `${keyText}.${appid}`;
     }
 
@@ -55,7 +55,7 @@ module.exports.getTestUser = function() {
 
         if (appid && typeof data === 'string') {
             // 解密
-            data = post.decode(context.appid, context.appkey, data);
+            data = post.decode(appid, appkey, data);
         }
 
         if (err) {
