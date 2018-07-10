@@ -46,7 +46,7 @@ if (isFirstLoad) {
 
 
 if (fs.existsSync('/etc/tsw.config.js')) {
-    cache.config = require('/usr/local/node_modules/config.js');
+    cache.config = require('/etc/tsw.config.js');
 } else if (fs.existsSync('/usr/local/node_modules/config.js')) {
     cache.config = require('/usr/local/node_modules/config.js');
 } else if (fs.existsSync('/data/release/node_modules/config.js')) {
