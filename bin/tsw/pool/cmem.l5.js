@@ -11,6 +11,7 @@
 const logger = require('logger');
 const Queue = require('util/Queue');
 const dcapi = require('api/libdcapi/dcapi.js');
+const tnm2 = require('api/tnm2');
 const L5 = require('api/L5/L5.api.js');
 const { isWin32Like } = require('util/isWindows.js');
 let cache = global[__filename];
@@ -83,7 +84,13 @@ function queueWrap(memcached) {
             const servers = memcached.servers && memcached.servers[0];
             const start = Date.now();
 
+            tnm2.Attr_API('SUM_TSW_CKV_CMD', 1);
+
             queue.queue(function() {
+                const startQueue = Date.now();
+                const costQueue = startQueue - start;
+
+                tnm2.Attr_API_Set('AVG_TSW_CKV_QUEUE_COST', costQueue);
 
                 const fn = (function(queryCompiler) {
                     return function() {
@@ -118,6 +125,8 @@ function queueWrap(memcached) {
                                         logger.debug(err);
                                     }
                                 }
+
+                                tnm2.Attr_API_Set('AVG_TSW_CKV_CMD_COST', Date.now() - startQueue);
 
                                 dcapi.report({
                                     key: 'EVENT_TSW_MEMCACHED',
