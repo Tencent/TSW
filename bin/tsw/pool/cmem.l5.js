@@ -24,9 +24,9 @@ if (!cache) {
 
 module.exports = function(opt) {
     /**
-    * 这里像这样写的目的主要是为了进行测试
-      因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
-    */
+     * 这里像这样写的目的主要是为了进行测试
+     因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
+     */
     return module.exports.getCmem(opt);
 };
 
@@ -57,14 +57,29 @@ module.exports.getCmem = function(opt) {
         return null;
     }
 
+    return fromCache(opt);
+};
+
+const fromCache = (opt) => {
     const key = [opt.modid, opt.cmd, opt.host].join(':');
 
     if (!cache[key]) {
         const Memcached = require('memcached');
-        cache[key] = queueWrap(new Memcached(opt.host, opt));
+        const poolSize = opt.poolSize || 1;
+        const queueWrapList = [];
+        const option = Object.assign({}, opt, {
+            poolSize: 1
+        });
+        for (let i = 0; i < poolSize; i++) {
+            queueWrapList.push(queueWrap(new Memcached(opt.host, option)));
+        }
+        queueWrapList.curr = 0;
+        cache[key] = queueWrapList;
+    } else {
+        cache[key].curr = (cache[key].curr + 1) % cache[key].length;
     }
 
-    return cache[key];
+    return cache[key][cache[key].curr];
 };
 
 
