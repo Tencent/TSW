@@ -368,6 +368,8 @@ function masterEventHandler() {
             cpu: cpu
         });
 
+        tnm2.Attr_API('SUM_TSW_WORKER_FORK', 1);
+
         // 绑定cpu
         cpuUtil.taskset(cpu, currWorker.process.pid);
 
@@ -430,6 +432,7 @@ function masterEventHandler() {
 
     process.on('reload', function(GET) {
         logger.info('reload');
+        tnm2.Attr_API('SUM_TSW_WORKER_RELOAD', 1);
 
         for (const key in workerMap) {
             const worker = workerMap[key];
