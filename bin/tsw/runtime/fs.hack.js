@@ -36,7 +36,7 @@ if (global[__filename]) {
             sum = cache.map[key];
 
             if (sum % TIMES_LIMIT === 0 && !config.devMode) {
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
+                logger.warn('[sync]${name} called ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -56,7 +56,7 @@ if (global[__filename]) {
             sum = cache.map[key];
 
             if (sum % TIMES_LIMIT === 0 && !config.devMode) {
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
+                logger.warn('[sync]${name} called ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -75,8 +75,8 @@ if (global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if (sum > TIMES_LIMIT && !config.devMode) {
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} called ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -96,7 +96,7 @@ if (global[__filename]) {
             sum = cache.map[key];
 
             if (sum % TIMES_LIMIT === 0 && !config.devMode) {
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
+                logger.warn('[sync]${name} called ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -115,8 +115,8 @@ if (global[__filename]) {
             cache.map[key] = ~~cache.map[key] + 1;
             sum = cache.map[key];
 
-            if (sum > TIMES_LIMIT && !config.devMode) {
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
+            if (sum % TIMES_LIMIT === 0 && !config.devMode) {
+                logger.warn('[sync]${name} called ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
@@ -136,7 +136,7 @@ if (global[__filename]) {
             sum = cache.map[key];
 
             if (sum % TIMES_LIMIT === 0 && !config.devMode) {
-                logger.warn('[sync]${name} callee ${sum} times on file: ${file} \n${stack}', {
+                logger.warn('[sync]${name} called ${sum} times on file: ${file} \n${stack}', {
                     name: name,
                     file: file,
                     sum: sum,
