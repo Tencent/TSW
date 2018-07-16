@@ -7,6 +7,8 @@
     "Css404"            : "内联CSS不存在",
     "LargeJs"           : "内联JS过大",
     "Js404"             : "内联JS不存在",
+    "CPU"               : "CPU告警",
     "hello"             : "hello"
+    
 }
 
