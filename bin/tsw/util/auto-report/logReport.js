@@ -291,12 +291,12 @@ module.exports.receiveCloud = function(req, res) {
         return returnJson('get appkey error');
     }
 
-    if (data.logText) {
-        return returnJson('logText is invalid');
+    if (!data.logText) {
+        return returnJson('logText is required');
     }
 
     if (typeof data.logText !== 'string') {
-        return returnJson('logText is not string');
+        return returnJson('logText is not a string');
     }
 
     if (data.logText.length >= 64 * 1024) {
@@ -304,11 +304,11 @@ module.exports.receiveCloud = function(req, res) {
     }
 
     if (!data.logJson) {
-        return returnJson('logJson is invalid');
+        return returnJson('logJson is required');
     }
 
     if (typeof data.logJson !== 'string') {
-        return returnJson('logJson is not string');
+        return returnJson('logJson is not a string');
     }
 
     if (data.logText.length >= 1024 * 1024) {
