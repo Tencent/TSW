@@ -250,7 +250,7 @@ this.check = function (req, res) {
         'to': config.mailTo,
         'cc': config.mailCC,
         'title': title,
-        'content': '<p><strong>IP聚集相关信息，详情请参阅：</strong> <a target="_blank" href="https://tswjs.org/doc/api/ipCCFinder">[TSW] IP聚集文档</a> </p>'
+        'content': '<p><strong>IP聚集相关信息，详情请参阅文档： </strong> https://tswjs.org/doc/api/ipCCFinder </p>'
         +'<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
         + '<p><strong>恶意IP：</strong>' + max.ip + '</p>'
         + '<p><strong>自动拉黑：</strong>' + (config.CCIPLimitAutoBlock ? '是' : '否') + '</p>'
