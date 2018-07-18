@@ -1,28 +1,27 @@
-# Contributing to TSW
-Welcome to [report Issues](https://github.com/Tencent/TSW/issues) or [pull requests](https://github.com/Tencent/TSW/pulls). It's recommended to read the following Contributing Guide first before contributing. 
+# 为TSW做出贡献
+欢迎您 [提出问题](https://github.com/Tencent/TSW/issues) 或 [pull requests](https://github.com/Tencent/TSW/pulls)， 建议您在为TSW做出贡献前先阅读以下TSW贡献指南。 
 
 ## Issues
-We use Github Issues to track public bugs and feature requests.
+我们通过Github Issues来收集问题和功能相关的需求。
 
-### Search Known Issues First
-Please search the existing issues to see if any similar issue or feature request has already been filed. You should make sure your issue isn't redundant.
+### 首先查看已知的问题
+在您准备提出问题以前，请先查看现有的Github Issues是否已有其他人提出过相似的功能或问题，以确保您提出的问题是有效的。
 
-### Reporting New Issues
-If you open an issue, the more information the better. Such as detailed description, code blocks of your problem.
+### 提交问题
+问题的表述应当尽可能的详细，可以包含相关的代码块。
 
 ## Pull Requests
-We strongly welcome your pull request to make TSW better. 
+我们期待您通过PR（Pull Requests）让TSW变的更加完善。
 
-### Branch Management
-There are two main branches here:
+### 分支管理
+仓库一共包含两个分支:
 
-1. `master` branch.
-	1. **Don't submit any PR on `master` branch.**
-2. `dev` branch. 
-	1. It is our stable developing branch. After full testing, `dev` will be merged to `master` branch for the next release.
-	2. **You are recommended to submit bugfix or feature PR on `dev` branch.**
+1. `master` 分支
+	1. **请勿在master分支上提交任何PR。**
+2. `dev` 分支
+	1. `dev`分支作为稳定的开发分支，经过测试后会在下一个版本合并到`master`分支。
+	2. **PR应该在`dev`分支上提交。**
 
-Normal bugfix or feature request should be submitted to `dev` branch. After full testing, we will merge them to `master` branch for the next release. 
 
 ```
 master
@@ -32,18 +31,17 @@ dev
 feature/bugfix PR
 ```  
 
-### Make Pull Requests
-The code team will monitor all pull request, we run some code check and test on it. After all tests passed, we will accecpt this PR. But it won't merge to `master` branch at once, which have some delay.
+### PR流程
+TSW团队会查看所有的PR，我们会运行一些代码检查和测试，一经测试通过，我们会接受这次PR，但不会立即将代码合并到master分支上，会有一点延迟。
 
-Before submitting a pull request, please make sure the followings are done:
+当您准备拉请求，请确保已经完成以下几个步骤:
 
-1. Fork the repo and create your branch from `master`.
-2. Update code or documentation if you have changed APIs.
-3. Add the copyright notice to the top of any new files you've added.
-4. Check your code lints and checkstyles.
-5. Test and test again your code.
-6. Now, you can submit your pull request on `dev`.
+1. 将仓库fork下来并基于`master`分支创建您的开发分支。
+2. 如果您更改了APIs请更新代码及文档。
+3. 在您添加的每一个新文件头部加上版权声明。
+4. 检查您的代码语法及格式。
+5. 反复测试。
+6. 现在，您可以开始在`dev`分支上PR了。
 
-## License
-By contributing to TSW, you agree that your contributions will be licensed
-under its [MIT LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE)
+## 许可证
+通过为TSW做出贡献，代表您同意将其版权归为TSW所有，TSW的开源协议为[MIT LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE)
