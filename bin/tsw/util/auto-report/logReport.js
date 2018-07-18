@@ -311,7 +311,7 @@ module.exports.receiveCloud = function(req, res) {
         return returnJson('logJson is not a string');
     }
 
-    if (data.logText.length >= 1024 * 1024) {
+    if (data.logJson.length >= 1024 * 1024) {
         return returnJson('logJson is large than 1MB');
     }
 
