@@ -407,6 +407,7 @@ function afterCpu80(cpuUsed) {
                 mail.SendMail(key, 'js', 600, {
                     'to': config.mailTo,
                     'cc': config.mailCC,
+                    'runtimeType':'CPU',
                     'msgInfo': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
                     'title': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
                     'content': content,

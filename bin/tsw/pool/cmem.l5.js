@@ -11,6 +11,7 @@
 const logger = require('logger');
 const Queue = require('util/Queue');
 const dcapi = require('api/libdcapi/dcapi.js');
+const tnm2 = require('api/tnm2');
 const L5 = require('api/L5/L5.api.js');
 const { isWin32Like } = require('util/isWindows.js');
 let cache = global[__filename];
@@ -23,9 +24,9 @@ if (!cache) {
 
 module.exports = function(opt) {
     /**
-    * 这里像这样写的目的主要是为了进行测试
-      因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
-    */
+     * 这里像这样写的目的主要是为了进行测试
+     因为在使用sinon.js时， 如果你exports的是一个function，你就无法进行stub，
+     */
     return module.exports.getCmem(opt);
 };
 
@@ -56,14 +57,29 @@ module.exports.getCmem = function(opt) {
         return null;
     }
 
+    return fromCache(opt);
+};
+
+const fromCache = (opt) => {
     const key = [opt.modid, opt.cmd, opt.host].join(':');
 
     if (!cache[key]) {
         const Memcached = require('memcached');
-        cache[key] = queueWrap(new Memcached(opt.host, opt));
+        const poolSize = opt.poolSize || 1;
+        const queueWrapList = [];
+        const option = Object.assign({}, opt, {
+            poolSize: 1
+        });
+        for (let i = 0; i < poolSize; i++) {
+            queueWrapList.push(queueWrap(new Memcached(opt.host, option)));
+        }
+        queueWrapList.curr = 0;
+        cache[key] = queueWrapList;
+    } else {
+        cache[key].curr = (cache[key].curr + 1) % cache[key].length;
     }
 
-    return cache[key];
+    return cache[key][cache[key].curr];
 };
 
 
@@ -83,7 +99,13 @@ function queueWrap(memcached) {
             const servers = memcached.servers && memcached.servers[0];
             const start = Date.now();
 
+            tnm2.Attr_API('SUM_TSW_CKV_CMD', 1);
+
             queue.queue(function() {
+                const startQueue = Date.now();
+                const costQueue = startQueue - start;
+
+                tnm2.Attr_API_Set('AVG_TSW_CKV_QUEUE_COST', costQueue);
 
                 const fn = (function(queryCompiler) {
                     return function() {
@@ -118,6 +140,8 @@ function queueWrap(memcached) {
                                         logger.debug(err);
                                     }
                                 }
+
+                                tnm2.Attr_API_Set('AVG_TSW_CKV_CMD_COST', Date.now() - startQueue);
 
                                 dcapi.report({
                                     key: 'EVENT_TSW_MEMCACHED',

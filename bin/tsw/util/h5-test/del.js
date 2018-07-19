@@ -52,9 +52,10 @@ const returnJson = function(json) {
 module.exports.deleteTestUser = function(uin) {
     logger.debug('deleteTestUser:' + uin);
     const memcached = isTest.cmem();
-    let keyText = isTest.keyBitmap();
     const defer = Deferred.create();
-    let appid = '';
+    const appid = context.appid || '';
+    const appkey = context.appkey;
+    let keyText = isTest.keyBitmap();
 
     if (!uin) {
         return defer.reject();
@@ -66,7 +67,6 @@ module.exports.deleteTestUser = function(uin) {
 
     if (context.appid && context.appkey) {
         // 开平过来的
-        appid = context.appid;
         keyText = `${keyText}.${appid}`;
     }
 
@@ -78,7 +78,7 @@ module.exports.deleteTestUser = function(uin) {
 
         if (appid && typeof data === 'string') {
             // 解密
-            data = post.decode(context.appid, context.appkey, data);
+            data = post.decode(appid, appkey, data);
         }
 
         const expire = 24 * 60 * 60;
@@ -104,7 +104,7 @@ module.exports.deleteTestUser = function(uin) {
 
         if (appid) {
             // 加密
-            text = post.encode(context.appid, context.appkey, text);
+            text = post.encode(appid, appkey, text);
         }
 
         memcached.set(keyText, text, expire, function(err, ret) {

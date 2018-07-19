@@ -9,7 +9,7 @@
 
 
 const serverInfo = require('serverInfo.js');
-const mapping = require('./mapping.json');
+const mapping = require('api/tnm2/mapping.json');
 const url = require('url');
 const Deferred = require('util/Deferred');
 const cluster = require('cluster');
