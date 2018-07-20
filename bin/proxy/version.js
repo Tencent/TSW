@@ -10,13 +10,12 @@
 
 const arr = process.versions.node.split('.');
 
-if (arr[1].length === 1) {
-    arr[1] = '0' + arr[1];
+if (arr[0] < 8) {
+    console.error('The nodejs version you installed is ' + process.versions.node);
+    console.error('Please update the nodejs version to 8.0.0');
+    process.exit(1);
 }
-
-this.nodeVersion = parseFloat([arr[0], arr[1]].join('.'));
-
-if (this.nodeVersion < 8.0 || (this.nodeVersion >= 10.0 && this.nodeVersion <= 10.3)) {
+if (arr[0] == 10 && (arr[1] >= 0 && arr[1] <= 3)) {
     console.error('The nodejs version you installed is ' + process.versions.node);
     console.error('Please update to the nodejs version which greater than 10.4.0');
     process.exit(1);
