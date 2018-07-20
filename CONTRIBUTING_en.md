@@ -33,11 +33,11 @@ feature/bugfix PR
 ```  
 
 ### Make Pull Requests
-The code team will monitor all pull request, we run some code check and test on it. After all tests passed, we will accecpt this PR. But it won't merge to `master` branch at once, which have some delay.
+The code team will monitor all pull request, we run some code check and test on it. After all tests passed, we will accecpt this PR,But it won't merge to `master` branch at once, which have some delay.
 
 Before submitting a pull request, please make sure the followings are done:
 
-1. Fork the repo and create your branch from `master`.
+1. Fork the repo and create your branch from `dev`.
 2. Update code or documentation if you have changed APIs.
 3. Add the copyright notice to the top of any new files you've added.
 4. Check your code lints and checkstyles.
