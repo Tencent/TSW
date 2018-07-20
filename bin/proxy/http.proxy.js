@@ -101,6 +101,11 @@ methodMap.reload = function() {
     process.emit('reload');
 };
 
+// heapdump
+methodMap.heapdump = function(message) {
+    process.emit('heapdump', message.GET);
+};
+
 // profiler
 methodMap.profiler = function(message) {
     process.emit('profiler', message.GET);
@@ -124,6 +129,24 @@ methodMap.listen = function(message) {
 process.on('top100', function(e) {
     global.top100 = [];
 });
+
+
+process.on('heapdump', function(e) {
+    if (isWin32Like) {
+        return;
+    }
+
+    require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot', function(err, filename) {
+        if (err) {
+            logger.error(`dump heap error ${err.message}`);
+            return;
+        }
+        logger.info('dump written to ${filename}', {
+            filename: filename
+        });
+    });
+});
+
 
 process.on('profiler', function(data = {}) {
     logger.info('profiler time: ${time}', data);
@@ -407,7 +430,7 @@ function afterCpu80(cpuUsed) {
                 mail.SendMail(key, 'js', 600, {
                     'to': config.mailTo,
                     'cc': config.mailCC,
-                    'runtimeType':'CPU',
+                    'runtimeType': 'CPU',
                     'msgInfo': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
                     'title': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
                     'content': content,

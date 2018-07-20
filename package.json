@@ -8,7 +8,7 @@
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "test": "mocha --recursive test/bin",
     "coverage": "nyc --reporter=lcov  --reporter=text npm test && codecov",
-    "optional": "npm i v8-profiler"
+    "optional": "npm i heapdump && npm i v8-profiler"
   },
   "repository": {
     "type": "git",
