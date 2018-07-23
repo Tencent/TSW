@@ -82,13 +82,13 @@ module.exports = function(req, res) {
                 d.remove(res);
 
                 if (d.currentContext) {
-                    d.currentContext.window.request = null;
-                    d.currentContext.window.response = null;
-                    d.currentContext.window.onerror = null;
-                    d.currentContext.window = null;
-                }
+                    if (d.currentContext.window) {
+                        d.currentContext.window.request = null;
+                        d.currentContext.window.response = null;
+                        d.currentContext.window.onerror = null;
+                        d.currentContext.window = null;
+                    }
 
-                if (d.currentContext) {
                     d.currentContext.log = null;
                     d.currentContext = null;
                 }

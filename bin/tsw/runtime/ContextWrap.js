@@ -66,8 +66,23 @@ class ContextWrap extends EventEmitter {
     }
 
     destroy() {
-        this._domain.remove(this._req);
-        this._domain.remove(this._rsp);
+
+        const d = this._domain;
+
+        d.remove(this._req);
+        d.remove(this._rsp);
+
+        if (d.currentContext) {
+            if (d.currentContext.window) {
+                d.currentContext.window.request = null;
+                d.currentContext.window.response = null;
+                d.currentContext.window.onerror = null;
+                d.currentContext.window = null;
+            }
+
+            d.currentContext.log = null;
+            d.currentContext = null;
+        }
 
         this._domain = null;
         this._req = null;
