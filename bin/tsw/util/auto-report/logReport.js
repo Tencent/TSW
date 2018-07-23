@@ -534,13 +534,13 @@ function reportLog() {
     const isWebSocket = !!window.websocket;
     const req = window.request;
     const res = window.response;
+    const logJson = logger.getJson(isWebSocket) || {};
 
     let log = logger.getLog(),
         type = '',
         typeKey = '',
         arrtKey = '',
         code = 0,
-        logJson = logger.getJson(),
         key;
 
 
@@ -700,7 +700,6 @@ function reportLog() {
                 res._body = Buffer.from(format.formatBuffer(res._body));
             }
 
-            logJson = logJson || logger.getJson(isWebSocket) || {};
             logJson.curr = {
                 protocol: 'HTTP',
                 host: req.headers.host,
