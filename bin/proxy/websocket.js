@@ -9,7 +9,7 @@
 
 
 const WebSocket = require('ws');
-const WSServer = WebSocket.Server;
+const WSServer = require('./webSocketServer');
 const logger = require('logger');
 const domain = require('domain');
 const Context = require('runtime/Context');
@@ -46,7 +46,7 @@ function wsFiller(ws, req) {
         }
     };
 
-    ws.logKey = Math.random();
+    ws.logKey = req.headers['sec-websocket-key'] || Math.random();
 }
 
 function reportWebSocketLog(ws, isEnd) {
