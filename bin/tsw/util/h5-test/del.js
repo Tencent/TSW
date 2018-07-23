@@ -47,7 +47,7 @@ const returnJson = json => {
 };
 
 module.exports.deleteTestUser = uin => {
-    return module.exports.deleteTestUsers(uin.split(','));
+    return module.exports.deleteTestUsers(String(uin).split(','));
 };
 
 /**
