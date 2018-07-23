@@ -47,8 +47,7 @@ const returnJson = json => {
 };
 
 module.exports.deleteTestUser = uin => {
-    uin = Array.isArray(uin) ? uin : [uin];
-    return module.exports.deleteTestUsers([uin]);
+    return module.exports.deleteTestUsers(String(uin).split(','));
 };
 
 /**
