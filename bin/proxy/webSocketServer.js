@@ -29,7 +29,7 @@ class webSocketServer extends WebSocket.Server {
                             return;
                         }
                     } else if (typeof v === 'object') {
-                        if (!v.test || (v.test && !v.test(host))) {
+                        if (!v.test || (v.test && !v.test(obj.host))) {
                             abortConnection(socket, 403);
                             return;
                         }
