@@ -17,28 +17,26 @@ const gzipHttp = require('util/gzipHttp.js');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 
 
-module.exports = function(request, response) {
-    OALogin.checkLoginForTSW(request, response, function() {
+module.exports = (request, response) => {
+    OALogin.checkLoginForTSW(request, response, () => {
         module.exports.go(request, response);
     });
 };
 
-module.exports.go = async function(request, response) {
+module.exports.go = async request => {
 
     const uin = request.param('uin');
 
     const data = await module.exports.deleteTestUser(
         uin
-    ).toES6Promise().catch(function() {
-        return null;
-    });
+    ).toES6Promise().catch(() => null);
 
     const result = { code: 0, data: data };
 
     returnJson(result);
 };
 
-const returnJson = function(json) {
+const returnJson = json => {
     const gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
@@ -48,20 +46,25 @@ const returnJson = function(json) {
     gzip.end();
 };
 
+module.exports.deleteTestUser = uin => {
+    uin = Array.isArray(uin) ? uin : [uin];
+    return module.exports.deleteTestUsers([uin]);
+};
 
-module.exports.deleteTestUser = function(uin) {
-    logger.debug('deleteTestUser:' + uin);
+/**
+ * 批量删除测试环境
+ * @param uins
+ * @returns {void | * | Promise<any> | Promise<never>}
+ */
+module.exports.deleteTestUsers = uins => {
+    logger.debug('deleteTestUser:' + uins);
     const memcached = isTest.cmem();
     const defer = Deferred.create();
     const appid = context.appid || '';
     const appkey = context.appkey;
     let keyText = isTest.keyBitmap();
 
-    if (!uin) {
-        return defer.reject();
-    }
-
-    if (!canIuse.test(uin)) {
+    if (!uins || uins.length === 0) {
         return defer.reject();
     }
 
@@ -74,7 +77,13 @@ module.exports.deleteTestUser = function(uin) {
         return defer.reject('memcached not exists');
     }
 
-    memcached.get(keyText, function(err, data) {
+    for (let i = 0; i < uins.length; i++) {
+        if (!uins[i] || !canIuse.test(uins[i])) {
+            return defer.reject();
+        }
+    }
+
+    memcached.get(keyText, (err, data) => {
 
         if (appid && typeof data === 'string') {
             // 解密
@@ -96,18 +105,20 @@ module.exports.deleteTestUser = function(uin) {
             return defer.resolve();
         }
 
-        if (text[uin]) {
-            delete text[uin];
+        for (let i = 0; i < uins.length; i++) {
+            const uin = uins[i];
+            if (text[uin]) {
+                delete text[uin];
+            }
+            logger.debug('deleteKeyText:' + uin);
         }
-
-        logger.debug('deleteKeyText:' + uin);
 
         if (appid) {
             // 加密
             text = post.encode(appid, appkey, text);
         }
 
-        memcached.set(keyText, text, expire, function(err, ret) {
+        memcached.set(keyText, text, expire, err => {
             if (err) {
                 defer.reject('memcache del data error');
             } else {

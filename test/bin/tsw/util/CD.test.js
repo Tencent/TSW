@@ -21,8 +21,9 @@ describe('test CD module', () => {
     describe('test 发送openapiCD', async () => {
         const CHECK_INTERVAL = 200;
         const DEFAULT_CHECK_KEY = '1234';
-
+        let _appid;
         beforeEach(() => {
+            _appid = config.appid;
             config.appid = 123;
             config.appkey = 123;
 
@@ -36,8 +37,7 @@ describe('test CD module', () => {
             });
         });
         afterEach(() => {
-            delete config.appid;
-            delete config.appkey;
+            config.appid = _appid;
             ajax.request.restore();
         });
         it('beforeOpenapi', async () => {
@@ -71,10 +71,12 @@ describe('test CD module', () => {
                     return '123';
                 }
             };
+            const _appid = context.appid;
             context.appid = 'tsw123';
             await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appid错误');
+            context.appid = _appid;
         });
 
         it('上下文不存在appid', async () => {
@@ -83,11 +85,12 @@ describe('test CD module', () => {
                     return '';
                 }
             };
+            const _appid = context.appid;
             context.appid = '';
             await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appid is required');
-
+            context.appid = _appid;
         });
 
         it('上下文不存在appkey', async () => {
@@ -96,10 +99,12 @@ describe('test CD module', () => {
                     return 'tsw123';
                 }
             };
+            const _appid = context.appid;
             context.appid = 'tsw123';
             await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appkey is required');
+            context.appid = _appid;
         });
 
         it('appid不符合规范', async () => {
@@ -108,11 +113,13 @@ describe('test CD module', () => {
                     return 'tsw123，';
                 }
             };
+            const _appid = context.appid;
             context.appid = 'tsw123，';
             context.appkey = 'tsw123，';
             await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(-2);
             expect(returnJson['message']).to.equal('appid is required');
+            context.appid = _appid;
         });
 
         it('checkByCmem', async () => {
@@ -129,10 +136,12 @@ describe('test CD module', () => {
                     return 'tsw123';
                 }
             };
+            const _appid = context.appid;
             context.appid = 'tsw123';
             context.appkey = 'tsw123';
             await CD.openapi(req, {});
             expect(returnJson['code']).to.equal(0);
+            context.appid = _appid;
         });
 
     });
