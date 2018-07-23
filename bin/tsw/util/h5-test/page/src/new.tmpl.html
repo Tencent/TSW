@@ -170,7 +170,7 @@
         $('#remove-submit2').click(function(e){
             var val = $('#join-textarea').val();
             api.delTestUser({
-                uin : handlerNums(val)
+                uin : handlerNums(val).join(',')
             }).done(function(){
                 alert("H5测试环境删除成功");
             }).fail(function(errMsg){
