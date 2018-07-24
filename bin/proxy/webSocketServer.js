@@ -13,7 +13,7 @@ class webSocketServer extends WebSocket.Server {
             if (obj.host !== host) {
                 const allowWebSocketOriginHost = config.allowWebSocketOriginHost || [];
                 if (allowWebSocketOriginHost.length === 0) {
-                    abortConnection(socket, 403);
+                    super.handleUpgrade(req, socket, head, cb);
                     return;
                 }
 
