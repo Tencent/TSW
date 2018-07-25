@@ -50,7 +50,7 @@ function wsFiller(ws, req) {
     ws.logKey = req.headers['sec-websocket-key'] || Math.random();
 }
 
-function emitReportLig(ws, type) {
+function emitReportLog(ws, type) {
     ws.upgradeReq.emit(type);
     ws.messageTriggerCount = 0;
 }
@@ -61,15 +61,15 @@ function reportWebSocketLog(ws, isEnd) {
     // 每次上报log时，先看下Log多不多，不多的话，延迟上报下
     clearTimeout(ws.logReportTimer);
     if (isEnd) {
-        emitReportLig('reportLog');
+        emitReportLog('reportLog');
     } else if (logLength > 30) {
         // 立即上报
-        emitReportLig('reportLogStream');
+        emitReportLog('reportLogStream');
     } else if (ws.messageTriggerCount > 9) {
-        emitReportLig('reportLogStream');
+        emitReportLog('reportLogStream');
     } else {
         ws.logReportTimer = setTimeout(function() {
-            emitReportLig('reportLogStream');
+            emitReportLog('reportLogStream');
         }, 5000);
     }
 }

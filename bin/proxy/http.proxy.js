@@ -200,10 +200,6 @@ function requestHandler(req, res) {
         // 发者模式清除缓存
         cleanCache();
     }
-    if (req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {
-        // websocket
-        return;
-    }
     res.flush = res.flush || empty;
     parseGet(req);  // 解析get参数
     doRoute(req, res); // HTTP路由
