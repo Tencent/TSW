@@ -195,8 +195,8 @@ function bind_listen(server) {
 
             ws.on('message', function(message) {
                 ws.messageTriggerCount++;
-                logger.debug('server get message : ${message}', {
-                    message
+                logger.debug('server get message size : ${size}', {
+                    size: message.length
                 });
                 tnm2.Attr_API('SUM_TSW_WEBSOCKET_MESSAGE', 1);
 
