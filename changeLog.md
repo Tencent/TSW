@@ -1,5 +1,16 @@
 # ChangeLog
 
+## [2018-07-26, Version  v1.2.1](https://github.com/Tencent/TSW/releases/tag/v1.2.1)
+
+
+
+### Features
+
+ - [[```34a01ec```](https://github.com/Tencent/TSW/commit/34a01ec)] __-__ __npm__: support npm and npx (youkunhuang)
+
+
+
+
 ## [2018-07-26, Version  v1.2.0](https://github.com/Tencent/TSW/releases/tag/v1.2.0)
 
 
@@ -52,6 +63,7 @@
 
 ### Other commits
 
+ - [[```48ad461```](https://github.com/Tencent/TSW/commit/48ad461)] __-__ __docs(changelog)__ : add release log (RobinzZH)
  - [[```3544e4f```](https://github.com/Tencent/TSW/commit/3544e4f)] __-__ __test(cd)__ : reset appid after test cases (RobinzZH)
  - [[```2b4e656```](https://github.com/Tencent/TSW/commit/2b4e656)] __-__ __docs(contributing)__ : add contributing_en.md (muyan)
  - [[```2079362```](https://github.com/Tencent/TSW/commit/2079362)] __-__ __docs(contributing)__ : add contributing.md (muyan)
