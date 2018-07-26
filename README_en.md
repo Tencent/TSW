@@ -69,7 +69,7 @@ docker run -v configure_dir:/data/release/node_modules -p 8080:80 tsw
 
 Find a bug or have a feature request? Please read the [issues](https://github.com/Tencent/TSW/issues) guidelines and search for existing and closed issues.
 
-If your problem or idea is not addressed yet, please read through our [contributing guidelines](./CONTRIBUTING.md) and open a new [issues](https://github.com/Tencent/TSW/issues).
+If your problem or idea is not addressed yet, please read through our [contributing guidelines](./CONTRIBUTING_en.md) and open a new [issues](https://github.com/Tencent/TSW/issues).
 
 ## License
 

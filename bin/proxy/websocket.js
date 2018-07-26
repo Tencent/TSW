@@ -9,7 +9,7 @@
 
 
 const WebSocket = require('ws');
-const WSServer = WebSocket.Server;
+const WSServer = require('./webSocketServer');
 const logger = require('logger');
 const domain = require('domain');
 const Context = require('runtime/Context');
@@ -34,6 +34,7 @@ function wsFiller(ws, req) {
     ws.logReportTimer = null;
     ws.__tempSend = ws.send;
     ws.reportIndex = 1;
+    ws.messageTriggerCount = 0;
 
     ws.send = function(message) {
         if (ws.readyState == WebSocket.OPEN) {
@@ -46,7 +47,12 @@ function wsFiller(ws, req) {
         }
     };
 
-    ws.logKey = Math.random();
+    ws.logKey = req.headers['sec-websocket-key'] || Math.random();
+}
+
+function emitReportLog(ws, type) {
+    ws.upgradeReq.emit(type);
+    ws.messageTriggerCount = 0;
 }
 
 function reportWebSocketLog(ws, isEnd) {
@@ -55,13 +61,15 @@ function reportWebSocketLog(ws, isEnd) {
     // 每次上报log时，先看下Log多不多，不多的话，延迟上报下
     clearTimeout(ws.logReportTimer);
     if (isEnd) {
-        ws.upgradeReq.emit('reportLog');
+        emitReportLog('reportLog');
     } else if (logLength > 30) {
         // 立即上报
-        ws.upgradeReq.emit('reportLogStream');
+        emitReportLog('reportLogStream');
+    } else if (ws.messageTriggerCount > 9) {
+        emitReportLog('reportLogStream');
     } else {
         ws.logReportTimer = setTimeout(function() {
-            ws.upgradeReq.emit('reportLogStream');
+            emitReportLog('reportLogStream');
         }, 5000);
     }
 }
@@ -186,6 +194,7 @@ function bind_listen(server) {
             };
 
             ws.on('message', function(message) {
+                ws.messageTriggerCount++;
                 logger.debug('server get message : ${message}', {
                     message
                 });

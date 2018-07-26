@@ -16,27 +16,31 @@ const OALogin = require('util/oa-login/index.js');
 const gzipHttp = require('util/gzipHttp.js');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 
-module.exports = function(request, response) {
-    OALogin.checkLoginForTSW(request, response, function() {
+module.exports = (request, response) => {
+    OALogin.checkLoginForTSW(request, response, () => {
         module.exports.go(request, response);
     });
 };
 
-module.exports.go = async function(request, response) {
+module.exports.go = async (request) => {
 
     const uin = request.param('uin');
     const val = request.param('val');
+    const map = request.param('uinval');
+    let data;
 
-    const data = await module.exports.addTestUser(uin, val).toES6Promise().catch(function() {
-        return null;
-    });
+    if (map && typeof map === 'object') {
+        data = await module.exports.addTestUsers(map).toES6Promise().catch(() => null);
+    } else {
+        data = await module.exports.addTestUser(uin, val).toES6Promise().catch(() => null);
+    }
 
     const result = { code: 0, data: data };
 
     returnJson(result);
 };
 
-const returnJson = function(json) {
+const returnJson = json => {
     const gzip = gzipHttp.create({
         contentType: 'application/json; charset=UTF-8',
         code: 200
@@ -46,41 +50,63 @@ const returnJson = function(json) {
     gzip.end();
 };
 
-module.exports.addTestUser = function(uin, val) {
-    logger.debug('addTestUser:' + uin);
-    val = val || true;
-    const memcached = isTest.cmem();
-    let keyText = isTest.keyBitmap();
+/**
+ * 设置测试环境
+ * @param uin
+ * @param val
+ * @returns {void | * | Promise<any> | Promise<never>}
+ */
+module.exports.addTestUser = (uin, val) => {
+    if (!uin) return Deferred.create().reject();
+    const users = {};
+    users[uin] = val;
+    return module.exports.addTestUsers(users);
+};
+
+/**
+ * 批量设置测试环境
+ * @param map 批量设置列表 key 是 uin，map[key] 是环境
+ * @returns {void | * | Promise<any> | Promise<never>}
+ */
+module.exports.addTestUsers = (map) => {
+    const uins = Object.keys(map);
+    logger.debug('addTestUsers:' + uins);
     const defer = Deferred.create();
-    let appid = '';
 
-    if (context.appid && context.appkey) {
-        // 开平过来的
-        appid = context.appid;
-        keyText = `${keyText}.${appid}`;
-    }
-
-    if (!uin) {
-        return defer.reject();
-    }
-
-    if (!canIuse.test(uin)) {
-        return defer.reject();
-    }
-
-    if (!val) {
-        return defer.reject();
-    }
+    const memcached = isTest.cmem();
 
     if (!memcached) {
         return defer.reject('memcached not exists');
     }
 
-    memcached.get(keyText, function(err, data) {
+    const appid = context.appid || '';
+    const appkey = context.appkey;
+    let keyText = isTest.keyBitmap();
+
+    if (appid && appkey) {
+        // 开平过来的
+        keyText = `${keyText}.${appid}`;
+    }
+
+    if (!uins.length) {
+        return defer.reject();
+    }
+
+    for (let i = 0; i < uins.length; i++) {
+        if (!canIuse.test(uins[i])) {
+            return defer.reject();
+        }
+
+        if (!map[uins[i]]) {
+            return defer.reject();
+        }
+    }
+
+    memcached.get(keyText, (err, data) => {
 
         if (appid && typeof data === 'string') {
             // 解密
-            data = post.decode(context.appid, context.appkey, data);
+            data = post.decode(appid, appkey, data);
         }
 
         const expire = 24 * 60 * 60;
@@ -98,16 +124,20 @@ module.exports.addTestUser = function(uin, val) {
             text = {};
         }
 
-        text[uin] = val;
+        for (let i = 0; i < uins.length; i++) {
+            const uin = uins[i];
+            const val = map[uin];
+            text[uin] = val;
 
-        logger.debug(`setKeyText: ${uin}; value: ${val}`);
+            logger.debug(`setKeyText: ${uin}; value: ${val}`);
+        }
 
         if (appid) {
             // 加密
-            text = post.encode(context.appid, context.appkey, text);
+            text = post.encode(appid, appkey, text);
         }
 
-        memcached.set(keyText, text, expire, function(err, ret) {
+        memcached.set(keyText, text, expire, (err) => {
             if (err) {
                 defer.reject('memcache set data error');
             } else {
@@ -115,8 +145,8 @@ module.exports.addTestUser = function(uin, val) {
                 defer.resolve();
             }
         });
-
     });
+
     return defer;
 };
 

@@ -8,10 +8,7 @@
 'use strict';
 
 
-const config = require('config');
-const logger = require('logger');
 const { isWin32Like } = require('util/isWindows');
-const TSW = require('api/keyman');
 
 if (!global[__filename]) {
     global[__filename] = {};
@@ -26,6 +23,10 @@ this.add = function(uin) {
 };
 
 this.isAlpha = function(req) {
+
+    const TSW = require('api/keyman');
+    const logger = require('logger');
+    const config = require('config');
 
     let uin;
 
@@ -63,6 +64,7 @@ this.isAlpha = function(req) {
 };
 
 this.getUin = function(req) {
+    const config = require('config');
 
     let uin;
     const window = context.window || {};

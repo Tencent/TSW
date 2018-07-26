@@ -101,6 +101,11 @@ methodMap.reload = function() {
     process.emit('reload');
 };
 
+// heapdump
+methodMap.heapdump = function(message) {
+    process.emit('heapdump', message.GET);
+};
+
 // profiler
 methodMap.profiler = function(message) {
     process.emit('profiler', message.GET);
@@ -124,6 +129,24 @@ methodMap.listen = function(message) {
 process.on('top100', function(e) {
     global.top100 = [];
 });
+
+
+process.on('heapdump', function(e) {
+    if (isWin32Like) {
+        return;
+    }
+
+    require('heapdump').writeSnapshot(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.heapsnapshot', function(err, filename) {
+        if (err) {
+            logger.error(`dump heap error ${err.message}`);
+            return;
+        }
+        logger.info('dump written to ${filename}', {
+            filename: filename
+        });
+    });
+});
+
 
 process.on('profiler', function(data = {}) {
     logger.info('profiler time: ${time}', data);
@@ -177,10 +200,6 @@ function requestHandler(req, res) {
         // 发者模式清除缓存
         cleanCache();
     }
-    if (req.headers.connection === 'upgrade' && req.headers.upgrade === 'websocket') {
-        // websocket
-        return;
-    }
     res.flush = res.flush || empty;
     parseGet(req);  // 解析get参数
     doRoute(req, res); // HTTP路由
@@ -212,7 +231,7 @@ function cleanCache() {
 }
 
 function listen(cpu) {
-    const user_00 = config.workerUid || 'user_00';
+    const wokerUid = config.workerUid || 'user_00';
     serverInfo.cpu = cpu || 0;
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
@@ -257,14 +276,14 @@ function listen(cpu) {
 
             if (!isWin32Like) {
                 try {
-                    process.setuid(user_00);
+                    process.setuid(wokerUid);
                 } catch (err) {
-                    logger.error(`switch to uid: ${user_00} fail!`);
+                    logger.error(`switch to uid: ${wokerUid} fail!`);
                     logger.error(err.stack);
                 }
 
                 logger.info('switch to uid: ${uid}', {
-                    uid: user_00
+                    uid: wokerUid
                 });
             }
 
@@ -407,6 +426,7 @@ function afterCpu80(cpuUsed) {
                 mail.SendMail(key, 'js', 600, {
                     'to': config.mailTo,
                     'cc': config.mailCC,
+                    'runtimeType': 'CPU',
                     'msgInfo': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
                     'title': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
                     'content': content,

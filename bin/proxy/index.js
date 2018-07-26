@@ -10,6 +10,8 @@
 
 const plug = require('../tsw/plug.js');
 
+require('./version.js');
+
 plug('runtime/Console.hack.js');
 plug('runtime/fs.hack.js');
 plug('runtime/Dns.hack.js');
