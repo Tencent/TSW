@@ -42,12 +42,19 @@ TSW 支持用户维度的抓包
 - 操作系统: Windows/Mac/Linux
 - Node.js: 8.0.0+
 
-## 开始
+## npm
+
+1. 需先安装[Node.js](https://nodejs.org/en/download/)，并且Node.js的版本需不低于8.0.0。
+1. npm i @tswjs/tsw
+1. npx --node-arg=--inspect tsw
+1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
+
+## git
 
 1. 需先安装[Node.js](https://nodejs.org/en/download/)，并且Node.js的版本需不低于8.0.0。
 1. 安装 -- `git clone https://github.com/Tencent/TSW.git`
 1. 切换工作目录 -- `cd TSW`
-1. 补全依赖 -- `npm install --no-optional`
+1. 补全依赖 -- `npm install`
 1. 启动 --  `node --inspect index.js`
 1. 预览 -- 打开浏览器，访问 `http://127.0.0.1/` 即可
 
