@@ -8,17 +8,15 @@
 'use strict';
 
 
-define(function(require, exports, module) {
+const arr = process.versions.node.split('.');
 
-    return {
-
-        tmpl: {
-            create: true
-        },
-        all: {
-            create: false
-        }
-
-    };
-
-});
+if (arr[0] < 8) {
+    console.error('The nodejs version you installed is ' + process.versions.node);
+    console.error('Please update the nodejs version to 8.0.0');
+    process.exit(1);
+}
+if (arr[0] == 10 && (arr[1] >= 0 && arr[1] <= 3)) {
+    console.error('The nodejs version you installed is ' + process.versions.node);
+    console.error('Please update to the nodejs version which greater than 10.4.0');
+    process.exit(1);
+}

@@ -14,12 +14,14 @@ const cluster = require('cluster');
 const cpuUtil = require('util/cpu.js');
 const fs = require('fs');
 const serverOS = require('util/isWindows.js');
+const mail = require('util/mail/mail.js');
 const { debugOptions } = process.binding('config');
 const methodMap = {};
 const workerMap = {};
 const cpuMap = [];
 const tnm2 = require('api/tnm2');
 const network = require('util/network.js');
+const serverInfo = require('serverInfo.js');
 
 process.on('uncaughtException', function(e) {
 
@@ -262,11 +264,9 @@ function checkWorkerAlive() {
             // 内存超限进程处理
             if (worker.lastMessage) {
                 const currMemory = worker.lastMessage.memoryUsage;
-
-                // logger.debug(currMemory);
+                const key = `memoryLimit.v1:${serverInfo.intranetIp}`;
 
                 if (currMemory && currMemory.rss > config.memoryLimit) {
-
                     logger.error('worker${cpu} pid=${pid} memoryUsage ${memoryUsage}, hit memoryLimit: ${memoryLimit}, kill it', {
                         memoryUsage: currMemory.rss,
                         memoryLimit: config.memoryLimit,
@@ -276,6 +276,15 @@ function checkWorkerAlive() {
 
                     logger.error(worker.lastMessage);
 
+                    mail.SendMail(key, 'js', 600, {
+                        'to': config.mailTo,
+                        'cc': config.mailCC,
+                        'runtimeType':'Memory',
+                        'msgInfo': `${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露`,
+                        'title': `${serverInfo.intranetIp} 内存超限告警`,
+                        'content': `<p><strong>${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露</strong></p>`
+                    });
+                    
                     restartWorker(worker);
                 }
             }
@@ -368,6 +377,8 @@ function masterEventHandler() {
             cpu: cpu
         });
 
+        tnm2.Attr_API('SUM_TSW_WORKER_FORK', 1);
+
         // 绑定cpu
         cpuUtil.taskset(cpu, currWorker.process.pid);
 
@@ -430,6 +441,7 @@ function masterEventHandler() {
 
     process.on('reload', function(GET) {
         logger.info('reload');
+        tnm2.Attr_API('SUM_TSW_WORKER_RELOAD', 1);
 
         for (const key in workerMap) {
             const worker = workerMap[key];

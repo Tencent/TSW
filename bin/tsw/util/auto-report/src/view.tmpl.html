@@ -74,7 +74,6 @@ var XSS = plug('util/xss.js');
 </head>
 <body>
     <div class="view-title">
-        <a class="button" href="<%=window && window.request && window.request.REQUEST && window.request.REQUEST.pathname && window.request.REQUEST.pathname.replace('/log/view/','/log/download/')%>" target="_blank">下载全部抓包</a>
         <a class="button r" href="https://www.telerik.com/fiddler" target="_blank">Fiddler下载</a>
         <a class="button r" href="https://github.com/avwo/whistle" target="_blank">Whistle下载(mac推荐)</a>
         <label class="button label" style="cursor:pointer;" id="showErrorLogItem"><input type="checkbox" id="showErrorLogItemChk" value="showErrorLogItem">仅显示有错误的</label>
@@ -82,6 +81,9 @@ var XSS = plug('util/xss.js');
         <%if(appid){%>
             <a class="button" href="/app/status" target="_blank">实时监控</a>
             <a class="button" href="/h5test/page" target="_blank">测试环境</a>
+            <a class="button" href="/profile" target="_blank">个人主页</a>
+            <a class="button" href="/runtime/report" target="_blank">runtime</a>
+            <a class="button" href="/project" target="_blank">应用详情</a>
         <%}else{%>
             <a class="button" href="/h5test/page/alpha" target="_blank">临时染色</a>
         <%}%>

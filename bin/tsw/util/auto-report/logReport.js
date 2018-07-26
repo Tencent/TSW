@@ -291,6 +291,30 @@ module.exports.receiveCloud = function(req, res) {
         return returnJson('get appkey error');
     }
 
+    if (!data.logText) {
+        return returnJson('logText is required');
+    }
+
+    if (typeof data.logText !== 'string') {
+        return returnJson('logText is not a string');
+    }
+
+    if (data.logText.length >= 64 * 1024) {
+        return returnJson('logText is large than 64KB');
+    }
+
+    if (!data.logJson) {
+        return returnJson('logJson is required');
+    }
+
+    if (typeof data.logJson !== 'string') {
+        return returnJson('logJson is not a string');
+    }
+
+    if (data.logJson.length >= 1024 * 1024) {
+        return returnJson('logJson is large than 1MB');
+    }
+
     const appid = context.appid;
     const appkey = context.appkey;
     const reportKey = [appid, data.key].join('/');
@@ -510,13 +534,13 @@ function reportLog() {
     const isWebSocket = !!window.websocket;
     const req = window.request;
     const res = window.response;
+    const logJson = logger.getJson(isWebSocket) || {};
 
     let log = logger.getLog(),
         type = '',
         typeKey = '',
         arrtKey = '',
         code = 0,
-        logJson = logger.getJson(),
         key;
 
 
@@ -676,7 +700,6 @@ function reportLog() {
                 res._body = Buffer.from(format.formatBuffer(res._body));
             }
 
-            logJson = logJson || logger.getJson() || {};
             logJson.curr = {
                 protocol: 'HTTP',
                 host: req.headers.host,

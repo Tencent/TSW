@@ -57,6 +57,30 @@
 
                 return defer;
             };
+            _api.addTestUsers = function(params){
+                var defer =$.Deferred();
+                $.ajax({
+                    url: '/api/h5test/add',
+                    type: 'POST',
+                    contentType : "application/json",
+                    dataType : "json",
+                    data: JSON.stringify($.extend({},commomData,{
+                        uinval: params
+                    })),
+                    success: function(data){
+                        if(data && data.code === 0 ) {
+                            defer.resolve(data);
+                        }else {
+                            defer.reject( data && data.msg || "系统繁忙，请稍后再试");
+                        }
+                    },
+                    fail: function(err){
+                        defer.reject( err && err.msg || "系统繁忙，请稍后再试");
+                    }
+                });
+
+                return defer;
+            };
 
             /*
              * 删除白名单
@@ -122,57 +146,35 @@
     <script type="text/javascript">
     (function() {
         var handlerNums = function(val){
-            return val.split(/(\b[0-9a-zA-Z_\-]{1,64}\b)/g);
-        }
+            var arr = [];
+            val.replace(/(\b[0-9a-zA-Z_\-]{1,64}\b)/g, function(uin){arr.push(uin); return uin;});
+            return arr;
+        };
         //批量加入
-        $('#join-submit2').click(function(event){
-            var deferArr = [];
+        $('#join-submit2').click(function(e){
             var val = $('#join-textarea').val();
-            // var arr = val.split(/(\b[0-9A-Za-z]+\b)/g);
             var arr = handlerNums(val);
+            var param = {};
             var selectVal = $('.selected')[0].value;
-            for(var i = 1; i < arr.length; i++) {
-                (function(uin){
-                    var request = api.addTestUser({
-                        uin : uin,
-                        val : selectVal
-                    });
-                    deferArr.push(request);
-                }(arr[i]));
-                i++;
+            for(var i = 0; i < arr.length; i++) {
+                param[arr[i]] = selectVal;
             }
-            $.when.apply(this, deferArr).done(function(){
+            api.addTestUsers(param).done(function(){
                 alert("你的号码，现已加入H5测试环境");
             }).fail(function(errMsg){
-                errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
-                alert(errMsg);
-            }).always(function () {
-                //$('#number-get').trigger('click');
+                alert(errMsg || "出了点小问题，请联系系统管理员处理");
             });
             return false;
         });
         //移除
-        $('#remove-submit2').click(function(event){
-            var deferArr = [];
+        $('#remove-submit2').click(function(e){
             var val = $('#join-textarea').val();
-            var arr = handlerNums(val);
-
-            for(var i = 1; i < arr.length; i++) {
-
-                var request = api.delTestUser({
-                    uin : arr[i]
-                });
-                deferArr.push(request);
-
-                i++;
-            }
-            $.when.apply(this, deferArr).done(function(){
+            api.delTestUser({
+                uin : handlerNums(val).join(',')
+            }).done(function(){
                 alert("H5测试环境删除成功");
             }).fail(function(errMsg){
-                errMsg = errMsg || "出了点小问题，请联系系统管理员处理";
-                alert(errMsg);
-            }).always(function () {
-                //$('#number-get').trigger('click');
+                alert(errMsg || "出了点小问题，请联系系统管理员处理");
             });
             return false;
         });

@@ -80,7 +80,7 @@ Logger.prototype = {
         contextMod.currentContext().log = null;
     },
 
-    getJson: function() {
+    getJson: function(cleared) {
         const log = this.getLog();
         let json = {
             curr: {},
@@ -95,6 +95,10 @@ Logger.prototype = {
             json = log.json;
         } else {
             log.json = json;
+        }
+
+        if (cleared) {
+            log.json = null;
         }
 
         return json;
