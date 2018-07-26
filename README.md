@@ -1,19 +1,19 @@
 # [Tencent Server Web](https://tswjs.org)
 
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](./LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg) [![Build Status](https://travis-ci.org/Tencent/TSW.svg?branch=master)](https://travis-ci.org/Tencent/TSW)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg) [![Build Status](https://travis-ci.org/Tencent/TSW.svg?branch=master)](https://travis-ci.org/Tencent/TSW)
 
 ---
 
 
-[English Version](./README_en.md) 
+[English Version](https://github.com/Tencent/TSW/blob/master/README_en.md) 
 
 
 ## 简介
 
 Tencent Server Web(TSW)，是一套面向WEB前端开发者，以提升问题定位效率为初衷，提供染色抓包、全息日志和异常发现的Node.js基础设施。TSW关注业务的运维监控能力，适用于http、websocket协议的业务场景，可无缝与即有项目进行整合。支持公有云、私有云和本地部署。
 
-![tsw](./static/resource/structure.png)
+![tsw](https://raw.githubusercontent.com/Tencent/TSW/master/static/resource/structure.png)
 
 #### 染色抓包
 
@@ -73,11 +73,11 @@ docker run -v configure_dir:/data/release/node_modules -p 8080:80 tsw
 
 如果您使用过程中发现Bug，请通过 [https://github.com/Tencent/TSW/issues](https://github.com/Tencent/TSW/issues) 来提交并描述相关的问题，您也可以在这里查看其它的issue，通过解决这些issue来贡献代码。
 
-如果您是第一次贡献代码，请阅读 [CONTRIBUTING](./CONTRIBUTING.md) 了解我们的贡献流程，并提交 pull request 给我们。
+如果您是第一次贡献代码，请阅读 [CONTRIBUTING](https://github.com/Tencent/TSW/blob/master/CONTRIBUTING.md) 了解我们的贡献流程，并提交 pull request 给我们。
 
 ## 许可证
 
-Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](./LICENSE) 。
+Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE) 。
 
 ## 联系方式
 
