@@ -124,9 +124,14 @@ function startServer() {
         checkWorkerAlive();
         startAdmin();
 
+        Object.defineProperty(process, 'title', Object.assign(Object.create(null), {
+            value: 'TSW',
+            enumerable: true,
+            writable: false,
+            configurable: false
+        }));
     } else {
 
-        // 子进程直接引入proxy文件,注意此处else作用域属于子进程作用域，非本程序作用域
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
         require('./http.proxy.js');
@@ -279,12 +284,12 @@ function checkWorkerAlive() {
                     mail.SendMail(key, 'js', 600, {
                         'to': config.mailTo,
                         'cc': config.mailCC,
-                        'runtimeType':'Memory',
+                        'runtimeType': 'Memory',
                         'msgInfo': `${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露`,
                         'title': `${serverInfo.intranetIp} 内存超限告警`,
                         'content': `<p><strong>${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露</strong></p>`
                     });
-                    
+
                     restartWorker(worker);
                 }
             }
