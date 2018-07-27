@@ -61,15 +61,15 @@ function reportWebSocketLog(ws, isEnd) {
     // 每次上报log时，先看下Log多不多，不多的话，延迟上报下
     clearTimeout(ws.logReportTimer);
     if (isEnd) {
-        emitReportLog('reportLog');
+        emitReportLog(ws, 'reportLog');
     } else if (logLength > 30) {
         // 立即上报
-        emitReportLog('reportLogStream');
+        emitReportLog(ws, 'reportLogStream');
     } else if (ws.messageTriggerCount > 9) {
-        emitReportLog('reportLogStream');
+        emitReportLog(ws, 'reportLogStream');
     } else {
         ws.logReportTimer = setTimeout(function() {
-            emitReportLog('reportLogStream');
+            emitReportLog(ws, 'reportLogStream');
         }, 5000);
     }
 }
