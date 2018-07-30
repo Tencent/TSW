@@ -233,6 +233,7 @@ function bind_listen(server) {
                     req.removeAllListeners('reportLog');
 
                     if (d.currentContext) {
+                        d.currentContext.beforeLogClean = null;
                         d.currentContext.window.websocket = null;
                         d.currentContext.window = null;
                         d.currentContext.log = null;
