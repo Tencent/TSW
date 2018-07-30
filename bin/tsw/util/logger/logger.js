@@ -255,14 +255,14 @@ Logger.prototype = {
                 }
             }
 
-            if (log.arr.length > 1000 || (log.json && log.json.ajax && log.json.ajax.length > 30)) {
-                if (!contextMod.currentContext().emitLogFilled) {
-                    contextMod.currentContext().emitLogFilled = true;
-                    window && window.request && window.request.emit('logFilled');
-                    setTimeout(function() {
-                        contextMod.currentContext().emitLogFilled = false;
-                    }, 1000);
+            if (log.arr.length % 512 === 0 || (log.json && log.json.ajax && log.json.ajax.length % 10 === 0)) {
+                const beforeLogClean = contextMod.currentContext().beforeLogClean;
+                if (typeof beforeLogClean === 'function') {
+                    beforeLogClean();
                 }
+            } else if (log.arr.length % 1024 === 0 || (log.json && log.json.ajax && log.json.ajax.length % 20 === 0)) {
+                process.emit('warning', new Error('too many log'));
+                this.clean();
             }
         }
     },
