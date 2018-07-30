@@ -80,6 +80,17 @@ Logger.prototype = {
         contextMod.currentContext().log = null;
     },
 
+    clean: function() {
+        let log = this.getLog();
+        log.arr = null;
+        if (log.json) {
+            log.json.curr = null;
+            log.json.ajax = null;
+            log.json = null;
+        }
+        log = null;
+    },
+
     getJson: function(cleared) {
         const log = this.getLog();
         let json = {
@@ -241,6 +252,16 @@ Logger.prototype = {
                     log[type]++;
                 } else {
                     log[type] = 1;
+                }
+            }
+
+            if (log.arr.length > 1000 || (log.json && log.json.ajax && log.json.ajax.length > 30)) {
+                if (!contextMod.currentContext().emitLogFilled) {
+                    contextMod.currentContext().emitLogFilled = true;
+                    window && window.request && window.request.emit('logFilled');
+                    setTimeout(function() {
+                        contextMod.currentContext().emitLogFilled = false;
+                    }, 1000);
                 }
             }
         }

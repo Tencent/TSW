@@ -232,6 +232,7 @@ function bind_listen(server) {
 
                     req.removeAllListeners('fail');
                     req.removeAllListeners('reportLog');
+                    req.removeAllListeners('logFilled');
 
                     if (d.currentContext) {
                         d.currentContext.window.websocket = null;
@@ -264,6 +265,11 @@ function bind_listen(server) {
 
             logReport();
             reportWebSocketLog(ws);
+
+            req.on('logFilled', function() {
+                logReport.reportLog();
+                logger.clean();
+            });
         });
     });
 }
