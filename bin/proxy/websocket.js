@@ -34,7 +34,6 @@ function wsFiller(ws, req) {
     ws.logReportTimer = null;
     ws.__tempSend = ws.send;
     ws.reportIndex = 1;
-    ws.messageTriggerCount = 0;
 
     ws.send = function(message) {
         if (ws.readyState == WebSocket.OPEN) {
@@ -52,7 +51,6 @@ function wsFiller(ws, req) {
 
 function emitReportLog(ws, type) {
     ws.upgradeReq.emit(type);
-    ws.messageTriggerCount = 0;
 }
 
 function reportWebSocketLog(ws, isEnd) {
@@ -64,8 +62,6 @@ function reportWebSocketLog(ws, isEnd) {
         emitReportLog(ws, 'reportLog');
     } else if (logLength > 30) {
         // 立即上报
-        emitReportLog(ws, 'reportLogStream');
-    } else if (ws.messageTriggerCount > 9) {
         emitReportLog(ws, 'reportLogStream');
     } else {
         ws.logReportTimer = setTimeout(function() {
@@ -90,6 +86,10 @@ function bind_listen(server) {
         d.currentContext.window.websocket = ws;
         d.currentContext.window.response = {};
         d.currentContext.isWebsocket = true;
+        d.currentContext.beforeLogClean = function() {
+            logReport.reportLog();
+            logger.clean();
+        };
 
         if (config.enableWindow) {
             d.currentContext.window.enable();
@@ -194,9 +194,9 @@ function bind_listen(server) {
             };
 
             ws.on('message', function(message) {
-                ws.messageTriggerCount++;
                 logger.debug('server get message size : ${size}', {
                     size: message.length
+
                 });
                 tnm2.Attr_API('SUM_TSW_WEBSOCKET_MESSAGE', 1);
 
@@ -234,6 +234,7 @@ function bind_listen(server) {
                     req.removeAllListeners('reportLog');
 
                     if (d.currentContext) {
+                        d.currentContext.beforeLogClean = null;
                         d.currentContext.window.websocket = null;
                         d.currentContext.window = null;
                         d.currentContext.log = null;
