@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-CUR_DIR=$(cd $(dirname $0); pwd) 
+CUR_DIR=$(cd $(dirname $0); pwd)
 
 cd ${CUR_DIR}/../
 pwd
@@ -12,7 +12,7 @@ echo "strat kill"
 echo "ps -fC TSW"
 ps -fC TSW
 
-PIDS=$(ps -fC TSW|grep TSW|grep /proxy|gawk '$0 !~/grep/ {print $2}' |tr -s '\n' ' ')
+PIDS=$(ps -fC TSW|grep TSW|gawk '$0 !~/grep/ {print $2}' |tr -s '\n' ' ')
 
 if [ "$PIDS" ]
 then
