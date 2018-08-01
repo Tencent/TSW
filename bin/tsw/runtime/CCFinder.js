@@ -81,14 +81,14 @@ this.checkHost = function (req, res) {
 };
 
 // 计算标准方差
-this.StdX10 = function (ipCache) {
+this.StdX10 = function(ipCache) {
 
     let res = 0;
     let sum = 0;
     let avg = 0;
     const arr = Object.keys(ipCache).filter(function (item) {
         const tmp = ipCache[item];
-        if (typeof tmp === 'object' && tmp.list) {
+        if (tmp && typeof tmp === 'object' && tmp.list) {
             sum += tmp.list.length;
             return true;
         }
@@ -210,41 +210,28 @@ this.check = function (req, res) {
     cache.ipCacheLast.hasSendMail = true;
 
     // 发现目标，发邮件
-    let content = '';
-    const max = {
-        num: 0,
-        ip: ''
-    };
+    const content = formatIP(cache.ipCacheLast);
+    const maxArr = findAllMaxIP(cache.ipCacheLast);
+    const blackIPList = [];
+    let blackIPListText = '';
 
-    Object.keys(cache.ipCacheLast).forEach(function (ip, i) {
 
-        let num = '';
-        let tmp = '';
-
-        if (
-            cache.ipCacheLast[ip]
-            && cache.ipCacheLast[ip].list
-            && cache.ipCacheLast[ip].list.length > 1
-        ) {
-            num = cache.ipCacheLast[ip].list.length;
-            tmp = (num + '--------').slice(0, 8);
-            content += `<div style="font-size:12px;">${tmp}${ip}</div>`;
-
-            if (num > max.num) {
-                max.num = num;
-                max.ip = ip;
-            }
-        }
+    maxArr.forEach((max, i) => {
+        blackIPListText += `<pre>[${max.StdX10}%]${max.ip} [${i + 1}/${max.count}]</pre>`;
+        blackIPList.push(max.ip);
     });
 
-    const key = `[AVG_TSW_IP_STD_X10]:${max.ip}`;
+    const key = `v6.AVG_TSW_IP_STD_X10.${serverInfo.intranetIp}`;
     let title = '';
 
     if (config.CCIPLimitAutoBlock) {
-        title = `[${lang.__('mail.IPAggregationNotice')}][${cache.ipCacheLast.StdX10}%]${max.ip}`;
-        this.addBlackList(max.ip);
+        title = `[${lang.__('mail.IPAggregationNotice')}][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`;
+        blackIPList.forEach((ip) => {
+            logger.info(`addBlackList: ${ip}`);
+            this.addBlackList(ip);
+        });
     } else {
-        title = `[${lang.__('mail.IPAggregationWarning')}][${cache.ipCacheLast.StdX10}%]${max.ip}`;
+        title = `[${lang.__('mail.IPAggregationWarning')}][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`;
     }
 
     mail.SendMail(key, 'TSW', 3600, {
@@ -253,7 +240,8 @@ this.check = function (req, res) {
         'title': title,
         'content': `<p><strong>${lang.__('mail.viewDocsForIPAggregation')}： </strong> https://tswjs.org/doc/api/ipCCFinder </p>`
         + `<p><strong>${lang.__('mail.serverIP')}：</strong>${serverInfo.intranetIp}</p>`
-        + `<p><strong>${lang.__('mail.maliciousIP')}：</strong>${max.ip}</p>`
+        + `<p><strong>${lang.__('mail.maliciousIP')}：</p>`
+        + blackIPListText
         + `<p><strong>${lang.__('mail.autoIntoBlackList')}：</strong>` + (config.CCIPLimitAutoBlock ? `${'mail.yes'}` : `${'mail.no'}`) + '</p>'
         + `<p><strong>${lang.__('mail.IPAggregationDegree')}：</strong>${cache.ipCacheLast.StdX10}%</p>`
         + `<p><strong>${lang.__('mail.warningThreshold')}：</strong>${CCIPLimit}</p>`
@@ -277,3 +265,75 @@ this.getIpSize = function () {
     return CCIPSize;
 };
 
+
+const findAllMaxIP = function(ipCache, last) {
+    const result = last || [];
+    const max = findMaxIPOnce(ipCache);
+    const ipCacheNext = Object.assign({}, ipCache);
+
+    ipCacheNext[max.ip] = null;
+    max.StdX10 = module.exports.StdX10(ipCacheNext);
+    result.push(max);
+
+    if (result.length >= max.count - 1) {
+        return result;
+    }
+
+    if (max.StdX10 < CCIPLimit) {
+        return result;
+    }
+
+    return findAllMaxIP(ipCacheNext, result);
+};
+
+const findMaxIPOnce = function(ipCache) {
+    const max = {
+        num: 0,
+        count: 0,
+        ip: ''
+    };
+
+    Object.keys(ipCache).forEach(function (ip, i) {
+        if (ipCache[ip] && ipCache[ip].list && ipCache[ip].list.length > 1) {
+            const num = ipCache[ip].list.length;
+            max.count += 1;
+            if (num > max.num) {
+                max.num = num;
+                max.ip = ip;
+            }
+        }
+    });
+
+    return max;
+};
+
+
+const formatIP = function(ipCache) {
+    let content = '';
+    const arr = [];
+
+    Object.keys(ipCache).forEach(function (ip, i) {
+        if (ipCache[ip] && ipCache[ip].list && ipCache[ip].list.length > 1) {
+            const num = ipCache[ip].list.length;
+            arr.push({
+                num: num,
+                ip: ip
+            });
+        }
+    });
+
+    arr.sort(function(a, b) {
+        return b.num - a.num;
+    });
+
+    arr.forEach(function(info) {
+        const tmp = (info.num + '--------').slice(0, 8);
+        if (tmp.isMax) {
+            content += `<pre>${tmp}${info.ip}</pre>`;
+        } else {
+            content += `<pre>${tmp}${info.ip}</pre>`;
+        }
+    });
+
+    return content;
+};
