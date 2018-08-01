@@ -83,7 +83,10 @@ const cacheOrReport = function(attr, iValue) {
     cache.curr = {};
     cache.time = now;
 
-    reportOpenapi(last);
+    // keep async
+    process.nextTick(function() {
+        reportOpenapi(last);
+    });
 };
 
 
@@ -93,15 +96,13 @@ const reportOpenapi = function(last) {
     const openapi = require('util/openapi');
     const logger = require('logger');
     const config = require('config');
-    let retCall;
 
     if (typeof config.beforeReportApp === 'function') {
-        retCall = config.beforeReportApp(last);
-    }
-
-    // 阻止默认上报
-    if (retCall === false) {
-        return defer.resolve();
+        const retCall = config.beforeReportApp(last);
+        if (retCall === false) {
+            // 阻止默认上报
+            return defer.resolve();
+        }
     }
 
     if (config.isTest) {
@@ -142,36 +143,33 @@ const reportOpenapi = function(last) {
 
     postData.sig = sig;
 
-    // keep async
-    process.nextTick(function() {
-        require('ajax').request({
-            url: config.appReportUrl,
-            type: 'POST',
-            l5api: config.tswL5api['openapi.tswjs.org'],
-            dcapi: {
-                key: 'EVENT_TSW_OPENAPI_APP_REPORT'
-            },
-            data: postData,
-            keepAlive: true,
-            autoToken: false,
-            dataType: 'json'
-        }).fail(function() {
-            logger.error('app report fail.');
-            defer.reject();
-        }).done(function(d) {
-            if (d.result) {
-                if (d.result.code === 0) {
-                    logger.debug('app report success.');
-                    return defer.resolve();
-                } else {
-                    logger.debug('app report fail.');
-                    return defer.reject(d.result.code);
-                }
+    require('ajax').request({
+        url: config.appReportUrl,
+        type: 'POST',
+        l5api: config.tswL5api['openapi.tswjs.org'],
+        dcapi: {
+            key: 'EVENT_TSW_OPENAPI_APP_REPORT'
+        },
+        data: postData,
+        keepAlive: true,
+        autoToken: false,
+        dataType: 'json'
+    }).fail(function() {
+        logger.error('app report fail.');
+        defer.reject();
+    }).done(function(d) {
+        if (d.result) {
+            if (d.result.code === 0) {
+                logger.debug('app report success.');
+                return defer.resolve();
+            } else {
+                logger.debug('app report fail.');
+                return defer.reject(d.result.code);
             }
+        }
 
-            logger.debug('app report fail.');
-            return defer.reject();
-        });
+        logger.debug('app report fail.');
+        return defer.reject();
     });
 
     return defer;
