@@ -275,7 +275,7 @@ const findAllMaxIP = function(ipCache, last) {
     max.StdX10 = module.exports.StdX10(ipCacheNext);
     result.push(max);
 
-    if (result.length >= max.count - 1) {
+    if (result.length >= max.count * 3 - 1) {
         return result;
     }
 
