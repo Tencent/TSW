@@ -82,13 +82,15 @@ Logger.prototype = {
 
     clean: function() {
         let log = this.getLog();
-        log.arr = null;
-        if (log.json) {
-            log.json.curr = null;
-            log.json.ajax = null;
-            log.json = null;
+        if (log) {
+            log.arr = null;
+            if (log.json) {
+                log.json.curr = null;
+                log.json.ajax = null;
+                log.json = null;
+            }
+            log = null;
         }
-        log = null;
     },
 
     getJson: function(cleared) {
