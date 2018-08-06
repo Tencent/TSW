@@ -9,6 +9,7 @@
 
 
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const config = require('./config.js');
 const cluster = require('cluster');
 const cpuUtil = require('util/cpu.js');
@@ -57,7 +58,7 @@ process.on('warning', function(warning) {
 process.on('unhandledRejection', (errorOrReason, currPromise) => {
     const errStr = String(errorOrReason && errorOrReason.stack || JSON.stringify(errorOrReason));
     const key = String(errorOrReason && errorOrReason.message);
-    const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
+    const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
     // 恢复上下文
     if (currPromise && currPromise.domain) {
@@ -285,9 +286,9 @@ function checkWorkerAlive() {
                         'to': config.mailTo,
                         'cc': config.mailCC,
                         'runtimeType': 'Memory',
-                        'msgInfo': `${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露`,
-                        'title': `${serverInfo.intranetIp} 内存超限告警`,
-                        'content': `<p><strong>${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露</strong></p>`
+                        'msgInfo': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}`,
+                        'title': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingWaring')}`,
+                        'content': `<p><strong>${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}</strong></p>`
                     });
 
                     restartWorker(worker);
