@@ -213,6 +213,15 @@ this.parseTaskset = function(str) {
 this.getCpuLoadAsync = function() {
     const cpuNum = this.cpus().length;
     return new Promise((resolve) => {
+
+        if (isWin32Like) {
+            return resolve({
+                L1: 0,
+                L5: 0,
+                L15: 0
+            });
+        }
+
         cp.exec('uptime', {
             encoding: 'utf8',
             timeout: 5000
