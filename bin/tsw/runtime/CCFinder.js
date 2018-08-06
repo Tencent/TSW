@@ -10,6 +10,7 @@
 
 const config = require('config');
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const httpUtil = require('util/http');
 const serverInfo = require('serverInfo.js');
 const isTST = require('util/isTST.js');
@@ -240,25 +241,25 @@ this.check = function (req, res) {
     let title = '';
 
     if (config.CCIPLimitAutoBlock) {
-        title = `[IP聚集自动拉黑周知][${cache.ipCacheLast.StdX10}%]${max.ip}`;
+        title = `[${lang.__('mail.IPAggregationNotice')}][${cache.ipCacheLast.StdX10}%]${max.ip}`;
         this.addBlackList(max.ip);
     } else {
-        title = `[IP聚集告警][${cache.ipCacheLast.StdX10}%]${max.ip}`;
+        title = `[${lang.__('mail.IPAggregationWarning')}][${cache.ipCacheLast.StdX10}%]${max.ip}`;
     }
 
     mail.SendMail(key, 'TSW', 3600, {
         'to': config.mailTo,
         'cc': config.mailCC,
         'title': title,
-        'content': '<p><strong>IP聚集相关信息，详情请参阅文档： </strong> https://tswjs.org/doc/api/ipCCFinder </p>'
-        +'<p><strong>服务器IP：</strong>' + serverInfo.intranetIp + '</p>'
-        + '<p><strong>恶意IP：</strong>' + max.ip + '</p>'
-        + '<p><strong>自动拉黑：</strong>' + (config.CCIPLimitAutoBlock ? '是' : '否') + '</p>'
-        + '<p><strong>IP聚集度：</strong>' + cache.ipCacheLast.StdX10 + '%</p>'
-        + '<p><strong>告警阈值：</strong>' + CCIPLimit + '</p>'
-        + '<p><strong>正常值：</strong>5-50</p>'
-        + '<p><strong>检测耗时：</strong>' + parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10) + 's</p>'
-        + '<p><strong>证据列表：</strong></p>'
+        'content': `<p><strong>${lang.__('mail.viewDocsForIPAggregation')}： </strong> https://tswjs.org/doc/api/ipCCFinder </p>`
+        + `<p><strong>${lang.__('mail.serverIP')}：</strong>${serverInfo.intranetIp}</p>`
+        + `<p><strong>${lang.__('mail.maliciousIP')}：</strong>${max.ip}</p>`
+        + `<p><strong>${lang.__('mail.autoIntoBlackList')}：</strong>` + (config.CCIPLimitAutoBlock ? `${'mail.yes'}` : `${'mail.no'}`) + '</p>'
+        + `<p><strong>${lang.__('mail.IPAggregationDegree')}：</strong>${cache.ipCacheLast.StdX10}%</p>`
+        + `<p><strong>${lang.__('mail.warningThreshold')}：</strong>${CCIPLimit}</p>`
+        + `<p><strong>${lang.__('mail.normalValue')}：</strong>5-50</p>`
+        + `<p><strong>${lang.__('mail.testingTimeConsuming')}：</strong>${parseInt((cache.ipCacheLast.end - cache.ipCacheLast.start) / 1000, 10)}s</p>`
+        + `<p><strong>${lang.__('mail.evidenceList')}：</strong></p>`
         + content
     });
 
