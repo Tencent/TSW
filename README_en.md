@@ -31,7 +31,14 @@ The full content of the request can be seen through the log.
 - OS: Windows/Mac/Linux
 - Node.js: 8.0.0+
 
-## Getting started
+## npm
+
+- Before installing, [download and install Node.js](https://nodejs.org/en/download/). Node.js 8.0.0 or higher is required.
+- npm i @tswjs/tsw
+- npx --node-arg=--inspect tsw
+- Open `http://127.0.0.1/` in your browser.
+
+## git
 
 - Before installing, [download and install Node.js](https://nodejs.org/en/download/). Node.js 8.0.0 or higher is required.
 
@@ -39,7 +46,7 @@ The full content of the request can be seen through the log.
 
 - Enter the TSW: `cd TSW`
 
-- NPM : `npm install --no-optional`
+- NPM : `npm install`
 
 - Run `node --inspect index.js` to start Node.js server
 

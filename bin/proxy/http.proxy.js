@@ -231,7 +231,7 @@ function cleanCache() {
 }
 
 function listen(cpu) {
-    const user_00 = config.workerUid || 'user_00';
+    const wokerUid = config.workerUid || 'user_00';
     serverInfo.cpu = cpu || 0;
     global.cpuUsed = cpuUtil.getCpuUsed(serverInfo.cpu);
 
@@ -276,14 +276,14 @@ function listen(cpu) {
 
             if (!isWin32Like) {
                 try {
-                    process.setuid(user_00);
+                    process.setuid(wokerUid);
                 } catch (err) {
-                    logger.error(`switch to uid: ${user_00} fail!`);
+                    logger.error(`switch to uid: ${wokerUid} fail!`);
                     logger.error(err.stack);
                 }
 
                 logger.info('switch to uid: ${uid}', {
-                    uid: user_00
+                    uid: wokerUid
                 });
             }
 

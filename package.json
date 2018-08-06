@@ -1,6 +1,6 @@
 {
-  "name": "TSW",
-  "version": "1.1.6",
+  "name": "@tswjs/tsw",
+  "version": "1.2.1",
   "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
   "scripts": {
     "lint": "eslint examples bin test --fix",
@@ -9,6 +9,9 @@
     "test": "mocha --recursive test/bin",
     "coverage": "nyc --reporter=lcov  --reporter=text npm test && codecov",
     "optional": "npm i heapdump && npm i v8-profiler"
+  },
+  "bin": {
+    "tsw": "./index.js"
   },
   "repository": {
     "type": "git",
@@ -39,9 +42,6 @@
   },
   "keywords": [
     "TSW"
-  ],
-  "files": [
-    "bin"
   ],
   "license": "MIT",
   "engines": {
