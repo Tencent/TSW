@@ -25,7 +25,7 @@ then
 	echo "exit"
 	exit 0
 else
-	echo "do nothing, there is no pids"
+	echo "there is no pids of TSW"
 fi
 
 CUR_ARGS=""
@@ -48,6 +48,11 @@ then
     ./TSW --expose_internals --no-deprecation $CUR_ARGS ./proxy >> ../log/run.log.0 2>&1
 else
     ./TSW --expose_internals --no-deprecation $CUR_ARGS ./proxy >> ../log/run.log.0 2>&1 &
+    sleep 0.5s
+    echo "sleep 0.5s"
+
+    echo "ps -fC TSW"
+    ps -fC TSW
     echo start down
 fi
 
