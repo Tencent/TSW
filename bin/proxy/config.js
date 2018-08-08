@@ -13,7 +13,9 @@ const path = require('path');
 const plug = require('plug');
 const Deferred = plug('util/Deferred');
 const defaultValue = plug('default/config.default.js');
-
+const processArgs = plug('util/process.args.js');
+const cwd = process.cwd();
+const currConfig = path.join(cwd, 'tsw.config.js');
 let isFirstLoad = false;
 let cache = {
     config: null
@@ -45,7 +47,11 @@ if (isFirstLoad) {
 }
 
 
-if (fs.existsSync('/etc/tsw.config.js')) {
+if (typeof processArgs.config === 'string') {
+    cache.config = path.join(cwd, processArgs.config);
+} else if (fs.existsSync(currConfig)) {
+    cache.config = require(currConfig);
+} else if (fs.existsSync('/etc/tsw.config.js')) {
     cache.config = require('/etc/tsw.config.js');
 } else if (fs.existsSync('/usr/local/node_modules/config.js')) {
     cache.config = require('/usr/local/node_modules/config.js');
