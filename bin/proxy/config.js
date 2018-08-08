@@ -43,9 +43,9 @@ if (isFirstLoad) {
         };
     })(process.dlopen);
 }
-
-
-if (fs.existsSync('/etc/tsw.config.js')) {
+if (fs.existsSync(path.join(process.cwd(), 'tsw.config.js'))) {
+    cache.config = require(path.join(process.cwd(), 'tsw.config.js'));
+} else if (fs.existsSync('/etc/tsw.config.js')) {
     cache.config = require('/etc/tsw.config.js');
 } else if (fs.existsSync('/usr/local/node_modules/config.js')) {
     cache.config = require('/usr/local/node_modules/config.js');
