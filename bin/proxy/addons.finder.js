@@ -30,7 +30,7 @@ if (isFirstLoad) {
             if (/\.node$/i.test(curr) && curr.indexOf(parent) !== 0) {
                 // 发现私有node扩展
                 setTimeout(function() {
-                    require('runtime/md5.check.js').findNodeCpp(curr);
+                    require('runtime/md5.checker.js').findNodeCpp(curr);
                 }, 3000);
             }
             return fn.apply(this, arguments);

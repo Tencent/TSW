@@ -10,7 +10,7 @@
 
 const plug = require('../tsw/plug.js');
 
-require('./version.js');
+require('./version.checker.js');
 require('./addons.finder.js');
 
 plug('runtime/Console.hack.js');
