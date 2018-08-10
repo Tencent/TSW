@@ -44,6 +44,11 @@ process.on('warning', function(warning) {
         return;
     }
 
+    if (warning.message && warning.message.indexOf('http2') > -1) {
+        logger.warn(warning.message);
+        return;
+    }
+
     logger.warn(errStr);
 
     setImmediate(function() {
