@@ -44,6 +44,11 @@ process.on('warning', function(warning) {
         return;
     }
 
+    if (warning.message && warning.message.indexOf('http2') > -1) {
+        logger.warn(warning.message);
+        return;
+    }
+
     logger.warn(errStr);
 
     setImmediate(function() {
@@ -136,12 +141,12 @@ function startServer() {
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
         require('./http.proxy.js');
-        require('runtime/JankWatcher.js');
+        require('runtime/jank.watcher.js');
 
         // 30分钟后开始算
         !config.isTest && !config.devMode &&
         setTimeout(function() {
-            require('runtime/md5.check.js').check();
+            require('runtime/md5.checker.js').check();
         }, 30 * 60000);
 
         if (cluster.isMaster && debugOptions.inspectorEnabled) {
