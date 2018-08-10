@@ -7,12 +7,4 @@
  */
 'use strict';
 
-const processArgs = plug('util/process.args.js');
-
-let configPath = '../examples/framework/config.js';
-
-if (typeof processArgs.config === 'string') {
-    configPath = processArgs.config;
-}
-
-module.exports = require(configPath);
+module.exports = require('../examples/framework/config.js');
