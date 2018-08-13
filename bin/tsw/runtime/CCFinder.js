@@ -240,7 +240,7 @@ this.check = function (req, res) {
         'title': title,
         'content': `<p><strong>${lang.__('mail.viewDocsForIPAggregation')}： </strong> https://tswjs.org/doc/api/ipCCFinder </p>`
         + `<p><strong>${lang.__('mail.serverIP')}：</strong>${serverInfo.intranetIp}</p>`
-        + `<p><strong>${lang.__('mail.maliciousIP')}：</p>`
+        + `<p><strong>${lang.__('mail.maliciousIP')}：</strong></p>`
         + blackIPListText
         + `<p><strong>${lang.__('mail.autoIntoBlackList')}：</strong>` + (config.CCIPLimitAutoBlock ? `${'mail.yes'}` : `${'mail.no'}`) + '</p>'
         + `<p><strong>${lang.__('mail.IPAggregationDegree')}：</strong>${cache.ipCacheLast.StdX10}%</p>`
