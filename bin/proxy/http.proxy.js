@@ -407,7 +407,7 @@ function afterCpu80(cpuUsed) {
         timeout: 5000
     }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
         const key = `cpu80.v4:${serverInfo.intranetIp}`;
-        let content = `<strong>${lang.__('mail.singleCoreCpu')}${serverInfo.cpu}，${lang.__('mail.CPUUsageRate')}：${cpuUsed}，${lang.__('mail.UsageRateGreaterThan80')}，${lang.__('mail.fiveSecondsCpuProfiler')}</strong>`;
+        let content = `<strong>${lang.__('mail.singleCoreCpu')}${serverInfo.cpu}，${lang.__('mail.CPUUsageRate')}：${cpuUsed}，${lang.__('mail.UsageRateGreaterThan80%')}，${lang.__('mail.fiveSecondsCpuProfiler')}</strong>`;
         let str = '';
 
         if (data) {
