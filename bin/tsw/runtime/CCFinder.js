@@ -242,7 +242,7 @@ this.check = function (req, res) {
         + `<p><strong>${lang.__('mail.serverIP')}：</strong>${serverInfo.intranetIp}</p>`
         + `<p><strong>${lang.__('mail.maliciousIP')}：</strong></p>`
         + blackIPListText
-        + `<p><strong>${lang.__('mail.autoIntoBlackList')}：</strong>` + (config.CCIPLimitAutoBlock ? `${'mail.yes'}` : `${'mail.no'}`) + '</p>'
+        + `<p><strong>${lang.__('mail.autoIntoBlackList')}：</strong>` + (config.CCIPLimitAutoBlock ? `${lang.__('mail.yes')}` : `${lang.__('mail.no')}`) + '</p>'
         + `<p><strong>${lang.__('mail.IPAggregationDegree')}：</strong>${cache.ipCacheLast.StdX10}%</p>`
         + `<p><strong>${lang.__('mail.warningThreshold')}：</strong>${CCIPLimit}</p>`
         + `<p><strong>${lang.__('mail.normalValue')}：</strong>5-50</p>`
