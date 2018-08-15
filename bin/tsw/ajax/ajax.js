@@ -1103,7 +1103,7 @@ Ajax.prototype.doRequest = function(opt) {
                             times: times
                         });
 
-                        const key = [window.request.headers.host, context.mod_act, parseErr.message].join(':');
+                        const key = [window.request && window.request.headers.host, context.mod_act, parseErr.message].join(':');
                         const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${parseErr.stack}</code></pre></p>`;
 
                         require('util/mail/mail.js').SendMail(key, 'js data', 1800, {
