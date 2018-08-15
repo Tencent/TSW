@@ -440,6 +440,11 @@ this.getUserIp = function(request) {
 
     }
 
+    // ipv4 in ipv6
+    if (userIp.startsWith('::ffff:')) {
+        userIp = userIp.substr(7);
+    }
+
     request.userIp = userIp;
 
     return userIp;
