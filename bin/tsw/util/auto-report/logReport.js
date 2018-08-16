@@ -62,10 +62,10 @@ module.exports = function(req, res) {
 
     req.removeAllListeners('reportLog');
     req.once('reportLog', function() {
-        reportLog();
-        this.removeAllListeners('reportLogStream', reportLog);
+        module.exports.reportLog();
+        this.removeAllListeners('reportLogStream', module.exports.reportLog);
     });
-    req.on('reportLogStream', reportLog);
+    req.on('reportLogStream', module.exports.reportLog);
 };
 
 module.exports.fingureCroup = function(opts) {
@@ -529,7 +529,7 @@ module.exports.top100 = function(req, res) {
 
 };
 
-function reportLog() {
+module.exports.reportLog = function() {
     const window = context.window || {};
     const isWebSocket = !!window.websocket;
     const req = window.request;

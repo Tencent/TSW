@@ -83,7 +83,10 @@ const cacheOrReport = function(attr, iValue) {
     cache.curr = {};
     cache.time = now;
 
-    reportOpenapi(last);
+    // keep async
+    process.nextTick(function() {
+        reportOpenapi(last);
+    });
 };
 
 
@@ -93,15 +96,13 @@ const reportOpenapi = function(last) {
     const openapi = require('util/openapi');
     const logger = require('logger');
     const config = require('config');
-    let retCall;
 
     if (typeof config.beforeReportApp === 'function') {
-        retCall = config.beforeReportApp(last);
-    }
-
-    // 阻止默认上报
-    if (retCall === false) {
-        return defer.resolve();
+        const retCall = config.beforeReportApp(last);
+        if (retCall === false) {
+            // 阻止默认上报
+            return defer.resolve();
+        }
     }
 
     if (config.isTest) {

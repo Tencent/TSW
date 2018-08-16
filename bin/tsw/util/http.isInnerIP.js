@@ -40,6 +40,11 @@ this.isInnerIP = (function() {
             return false;
         }
 
+        // ipv4 in ipv6
+        if (ipAddress.startsWith('::ffff:')) {
+            ipAddress = ipAddress.substr(7);
+        }
+
         if (!net.isIPv4(ipAddress)) {
             return false;
         }

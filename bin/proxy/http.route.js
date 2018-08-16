@@ -9,6 +9,7 @@
 
 
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const domain = require('domain');
 const serverInfo = require('serverInfo.js');
 const config = require('./config.js');
@@ -225,7 +226,7 @@ module.exports = function(req, res) {
             }
 
             const key = err.message;
-            const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
+            const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
             mail.SendMail(key, 'js', 600, {
                 'title': key,
                 'runtimeType': 'Error',

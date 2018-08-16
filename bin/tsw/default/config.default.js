@@ -104,7 +104,7 @@ this.cpuLimit = 85;
 this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 2 : 1);
 
 // 限制
-this.CCIPLimit = 500;
+this.CCIPLimit = 200;
 
 // 超限后自动拉黑
 this.CCIPLimitAutoBlock = false;

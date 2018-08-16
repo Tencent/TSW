@@ -11,6 +11,7 @@
 const WebSocket = require('ws');
 const WSServer = require('./webSocketServer');
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const domain = require('domain');
 const Context = require('runtime/Context');
 const contextMod = require('context.js');
@@ -34,7 +35,6 @@ function wsFiller(ws, req) {
     ws.logReportTimer = null;
     ws.__tempSend = ws.send;
     ws.reportIndex = 1;
-    ws.messageTriggerCount = 0;
 
     ws.send = function(message) {
         if (ws.readyState == WebSocket.OPEN) {
@@ -52,7 +52,6 @@ function wsFiller(ws, req) {
 
 function emitReportLog(ws, type) {
     ws.upgradeReq.emit(type);
-    ws.messageTriggerCount = 0;
 }
 
 function reportWebSocketLog(ws, isEnd) {
@@ -61,15 +60,13 @@ function reportWebSocketLog(ws, isEnd) {
     // 每次上报log时，先看下Log多不多，不多的话，延迟上报下
     clearTimeout(ws.logReportTimer);
     if (isEnd) {
-        emitReportLog('reportLog');
+        emitReportLog(ws, 'reportLog');
     } else if (logLength > 30) {
         // 立即上报
-        emitReportLog('reportLogStream');
-    } else if (ws.messageTriggerCount > 9) {
-        emitReportLog('reportLogStream');
+        emitReportLog(ws, 'reportLogStream');
     } else {
         ws.logReportTimer = setTimeout(function() {
-            emitReportLog('reportLogStream');
+            emitReportLog(ws, 'reportLogStream');
         }, 5000);
     }
 }
@@ -90,6 +87,10 @@ function bind_listen(server) {
         d.currentContext.window.websocket = ws;
         d.currentContext.window.response = {};
         d.currentContext.isWebsocket = true;
+        d.currentContext.beforeLogClean = function() {
+            logReport.reportLog();
+            logger.clean();
+        };
 
         if (config.enableWindow) {
             d.currentContext.window.enable();
@@ -111,7 +112,7 @@ function bind_listen(server) {
 
             if (err && err.stack && err.message) {
                 const key = err.message;
-                const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
+                const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
                 mail.SendMail(key, 'js', 600, {
                     'title': key,
                     'runtimeType': 'Error',
@@ -194,9 +195,9 @@ function bind_listen(server) {
             };
 
             ws.on('message', function(message) {
-                ws.messageTriggerCount++;
-                logger.debug('server get message : ${message}', {
-                    message
+                logger.debug('server get message size : ${size}', {
+                    size: message.length
+
                 });
                 tnm2.Attr_API('SUM_TSW_WEBSOCKET_MESSAGE', 1);
 
@@ -234,6 +235,7 @@ function bind_listen(server) {
                     req.removeAllListeners('reportLog');
 
                     if (d.currentContext) {
+                        d.currentContext.beforeLogClean = null;
                         d.currentContext.window.websocket = null;
                         d.currentContext.window = null;
                         d.currentContext.log = null;

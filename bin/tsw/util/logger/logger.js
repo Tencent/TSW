@@ -80,6 +80,19 @@ Logger.prototype = {
         contextMod.currentContext().log = null;
     },
 
+    clean: function() {
+        let log = this.getLog();
+        if (log) {
+            log.arr = null;
+            if (log.json) {
+                log.json.curr = null;
+                log.json.ajax = null;
+                log.json = null;
+            }
+            log = null;
+        }
+    },
+
     getJson: function(cleared) {
         const log = this.getLog();
         let json = {
@@ -242,6 +255,16 @@ Logger.prototype = {
                 } else {
                     log[type] = 1;
                 }
+            }
+
+            if (log.arr.length % 512 === 0 || (log.json && log.json.ajax && log.json.ajax.length % 10 === 0)) {
+                const beforeLogClean = contextMod.currentContext().beforeLogClean;
+                if (typeof beforeLogClean === 'function') {
+                    beforeLogClean();
+                }
+            } else if (log.arr.length % 1024 === 0 || (log.json && log.json.ajax && log.json.ajax.length % 20 === 0)) {
+                process.emit('warning', new Error('too many log'));
+                this.clean();
             }
         }
     },
@@ -463,8 +486,7 @@ Logger.prototype = {
             str = fn;
         }
 
-        process.stdout.write(str);
-        process.stdout.write('\n');
+        process.stdout.write(str + '\n');
     },
 
     format: function(d) {

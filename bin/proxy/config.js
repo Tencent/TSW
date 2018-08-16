@@ -13,39 +13,24 @@ const path = require('path');
 const plug = require('plug');
 const Deferred = plug('util/Deferred');
 const defaultValue = plug('default/config.default.js');
-
-let isFirstLoad = false;
+const processArgs = plug('util/process.args.js');
+const cwd = process.cwd();
+const currConfig = path.join(cwd, 'tsw.config.js');
 let cache = {
     config: null
 };
-
 
 if (global[__filename]) {
     cache = global[__filename];
 } else {
     global[__filename] = cache;
-    isFirstLoad = true;
 }
 
-if (isFirstLoad) {
-    process.dlopen = (function(fn) {
-        const parent = path.join(__dirname, '..');
-
-        return function(module, curr) {
-            // 检查node私有文件
-            if (/\.node$/i.test(curr) && curr.indexOf(parent) !== 0) {
-                // 发现私有node扩展
-                setTimeout(function() {
-                    require('runtime/md5.check.js').findNodeCpp(curr);
-                }, 3000);
-            }
-            return fn.apply(this, arguments);
-        };
-    })(process.dlopen);
-}
-
-
-if (fs.existsSync('/etc/tsw.config.js')) {
+if (typeof processArgs.config === 'string') {
+    cache.config = require(path.resolve(cwd, processArgs.config));
+} else if (fs.existsSync(currConfig)) {
+    cache.config = require(currConfig);
+} else if (fs.existsSync('/etc/tsw.config.js')) {
     cache.config = require('/etc/tsw.config.js');
 } else if (fs.existsSync('/usr/local/node_modules/config.js')) {
     cache.config = require('/usr/local/node_modules/config.js');

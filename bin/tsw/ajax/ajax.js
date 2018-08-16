@@ -9,6 +9,7 @@
 
 
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const Deferred = require('util/Deferred');
 const http = require('http');
 const https = require('https');
@@ -1102,13 +1103,13 @@ Ajax.prototype.doRequest = function(opt) {
                             times: times
                         });
 
-                        const key = [window.request.headers.host, context.mod_act, parseErr.message].join(':');
-                        const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${parseErr.stack}</code></pre></p>`;
+                        const key = [window.request && window.request.headers.host, context.mod_act, parseErr.message].join(':');
+                        const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${parseErr.stack}</code></pre></p>`;
 
                         require('util/mail/mail.js').SendMail(key, 'js data', 1800, {
                             'title': key,
                             'content': content,
-                            'msgInfo': '错误堆栈:\n' + parseErr.stack
+                            'msgInfo': `${lang.__('mail.errorStack')}:\n` + parseErr.stack
                         });
 
                         return;
