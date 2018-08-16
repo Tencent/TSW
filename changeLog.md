@@ -1,5 +1,64 @@
 # ChangeLog
 
+## [2018-08-16, Version  v1.2.2](https://github.com/Tencent/TSW/releases/tag/v1.2.2)
+
+
+### Bug fixes
+	
+ - [[```88f35c4```](https://github.com/Tencent/TSW/commit/88f35c4)] __-__ __config__: use resolve support absolute path &amp; fix require (neilcui)
+ - [[```2a426a6```](https://github.com/Tencent/TSW/commit/2a426a6)] __-__ __ajax__: assert null of request before use (youkunhuang)
+ - [[```94d8039```](https://github.com/Tencent/TSW/commit/94d8039)] __-__ __ccfinder__: solve conflict (sunYanxl)
+ - [[```0d78574```](https://github.com/Tencent/TSW/commit/0d78574)] __-__ __lang__: fix translate error (sunYanxl)
+ - [[```35754f6```](https://github.com/Tencent/TSW/commit/35754f6)] __-__ __ccfinder__: fix bug for miss end tag (youkunhuang)
+ - [[```f868ab3```](https://github.com/Tencent/TSW/commit/f868ab3)] __-__ __cpu__: ignore support for windows (youkunhuang)
+ - [[```cbd16ca```](https://github.com/Tencent/TSW/commit/cbd16ca)] __-__ __logger__: fix log is null (tarotlwei)
+ - [[```ceaa05e```](https://github.com/Tencent/TSW/commit/ceaa05e)] __-__ __logreport__: log filled report (tarotlwei)
+ - [[```8379998```](https://github.com/Tencent/TSW/commit/8379998)] __-__ __websocket__: bugfix (tarotlwei)
+ - [[```84449e5```](https://github.com/Tencent/TSW/commit/84449e5)] __-__ __runtime__: let url string instead of Tag a (wikibady)
+ - [[```d4f72e6```](https://github.com/Tencent/TSW/commit/d4f72e6)] __-__ __runtime__: let url string instead of Tag a (wikibady)
+ - [[```6bb5be8```](https://github.com/Tencent/TSW/commit/6bb5be8)] __-__ __websocket__: log message length instead of message body (neilcui)
+
+
+### Features
+
+ - [[```c5d2ff7```](https://github.com/Tencent/TSW/commit/c5d2ff7)] __-__ __http__: support ipv6 (youkunhuang)
+ - [[```3ff1e38```](https://github.com/Tencent/TSW/commit/3ff1e38)] __-__ __config__: add search path of config file (sunYanxl)
+ - [[```a5f8819```](https://github.com/Tencent/TSW/commit/a5f8819)] __-__ __config__: add search path of config.js (sunYanxl)
+ - [[```ab923d5```](https://github.com/Tencent/TSW/commit/ab923d5)] __-__ __package.json__: start 1.2.1 development (RobinzZH)
+ - [[```275f110```](https://github.com/Tencent/TSW/commit/275f110)] __-__ __i18n__: support i18n (sunYanxl)
+
+
+### Code Refactoring
+
+ - [[```8e0860f```](https://github.com/Tencent/TSW/commit/8e0860f)] __-__ __ccfinder__: list hostname and pathname for black ip (youkunhuang)
+ - [[```2792e69```](https://github.com/Tencent/TSW/commit/2792e69)] __-__ __all__: refactor filename (youkunhuang)
+ - [[```a17851d```](https://github.com/Tencent/TSW/commit/a17851d)] __-__ __config__: refactor config (youkunhuang)
+ - [[```107cdee```](https://github.com/Tencent/TSW/commit/107cdee)] __-__ __http2__: ignore http2 ExperimentalWarning (youkunhuang)
+ - [[```bedc824```](https://github.com/Tencent/TSW/commit/bedc824)] __-__ __startup__: add log in startup.sh (youkunhuang)
+ - [[```54b79bc```](https://github.com/Tencent/TSW/commit/54b79bc)] __-__ __cclint__: use 3x instead of 1x (youkunhuang)
+ - [[```eb551a1```](https://github.com/Tencent/TSW/commit/eb551a1)] __-__ __cciplimit__: update default value to 200 on config.CCIPLimit (youkunhuang)
+ - [[```cb7a92f```](https://github.com/Tencent/TSW/commit/cb7a92f)] __-__ __ccfinder__: refactor ccfinder (youkunhuang)
+ - [[```1883db1```](https://github.com/Tencent/TSW/commit/1883db1)] __-__ __tnm2__: keep report async (youkunhuang)
+ - [[```3405e92```](https://github.com/Tencent/TSW/commit/3405e92)] __-__ __logger__: write once (youkunhuang)
+ - [[```3a0f390```](https://github.com/Tencent/TSW/commit/3a0f390)] __-__ __websocket__: clean beforelogclean callback (tarotlwei)
+ - [[```89f958e```](https://github.com/Tencent/TSW/commit/89f958e)] __-__ __logger__: add before log report callback (tarotlwei)
+ - [[```c77dbd6```](https://github.com/Tencent/TSW/commit/c77dbd6)] __-__ __tnm2__: async while reporting (youkunhuang)
+ - [[```247bc3a```](https://github.com/Tencent/TSW/commit/247bc3a)] __-__ __master__: keep process.title as TSW (youkunhuang)
+ - [[```3bda872```](https://github.com/Tencent/TSW/commit/3bda872)] __-__ __runtime__: add Memory over load alert (wikibady)
+ - [[```2ece276```](https://github.com/Tencent/TSW/commit/2ece276)] __-__ __runtime__: add new runtime type &#39;CPU alert&#39; (wikibady)
+ - [[```a0a3c0b```](https://github.com/Tencent/TSW/commit/a0a3c0b)] __-__ __runtime__: add a doc link in CCFinder mail (wikibady)
+ - [[```fc7e1e2```](https://github.com/Tencent/TSW/commit/fc7e1e2)] __-__ __runtime__: add Memory over load alert (wikibady)
+ - [[```040fe54```](https://github.com/Tencent/TSW/commit/040fe54)] __-__ __runtime__: add new runtime type &#39;CPU alert&#39; (wikibady)
+ - [[```b633d26```](https://github.com/Tencent/TSW/commit/b633d26)] __-__ __runtime__: add a doc link in CCFinder mail (wikibady)
+
+
+### Other commits
+
+ - [[```8d2387e```](https://github.com/Tencent/TSW/commit/8d2387e)] __-__ __docs(changelog)__ : update change log (RobinzZH)
+
+
+
+
 ## [2018-07-26, Version  v1.2.1](https://github.com/Tencent/TSW/releases/tag/v1.2.1)
 
 
