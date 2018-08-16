@@ -27,7 +27,7 @@ if (global[__filename]) {
 }
 
 if (typeof processArgs.config === 'string') {
-    cache.config = path.join(cwd, processArgs.config);
+    cache.config = require(path.resolve(cwd, processArgs.config));
 } else if (fs.existsSync(currConfig)) {
     cache.config = require(currConfig);
 } else if (fs.existsSync('/etc/tsw.config.js')) {
