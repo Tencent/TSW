@@ -218,6 +218,8 @@ this.check = function (req, res) {
 
     maxArr.forEach((max, i) => {
         blackIPListText += `<pre>[${max.StdX10}%]${max.ip} [${i + 1}/${max.count}]</pre>`;
+        blackIPListText += formatCacheList(max.list);
+
         blackIPList.push(max.ip);
     });
 
@@ -290,7 +292,8 @@ const findMaxIPOnce = function(ipCache) {
     const max = {
         num: 0,
         count: 0,
-        ip: ''
+        ip: '',
+        list: []
     };
 
     Object.keys(ipCache).forEach(function (ip, i) {
@@ -300,6 +303,7 @@ const findMaxIPOnce = function(ipCache) {
             if (num > max.num) {
                 max.num = num;
                 max.ip = ip;
+                max.list = ipCache[ip].list;
             }
         }
     });
@@ -333,6 +337,24 @@ const formatIP = function(ipCache) {
         } else {
             content += `<pre>${tmp}${info.ip}</pre>`;
         }
+    });
+
+    return content;
+};
+
+
+const formatCacheList = function(list) {
+    const map = {};
+    let content = '';
+
+    list.forEach((info, i) => {
+        const key = encodeURI(info.hostname) + encodeURI(info.pathname);
+        map[key] = ~~map[key] + 1;
+    });
+
+    Object.keys(map).forEach((key, i) => {
+        const num = (map[key] + '--------').slice(0, 8);
+        content += `<pre>　　${num}${key}</pre>`;
     });
 
     return content;
