@@ -22,7 +22,7 @@ this.isTest = false;
 this.allowArrayInUrl = false;
 
 // http监听地址
-this.httpAddress = '0.0.0.0';
+this.httpAddress = null; // ipv6 --> ipv4
 
 // http监听端口
 this.httpPort = 80;
