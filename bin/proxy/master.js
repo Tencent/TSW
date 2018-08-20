@@ -9,6 +9,7 @@
 
 
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const config = require('./config.js');
 const cluster = require('cluster');
 const cpuUtil = require('util/cpu.js');
@@ -43,6 +44,11 @@ process.on('warning', function(warning) {
         return;
     }
 
+    if (warning.message && warning.message.indexOf('http2') > -1) {
+        logger.warn(warning.message);
+        return;
+    }
+
     logger.warn(errStr);
 
     setImmediate(function() {
@@ -57,7 +63,7 @@ process.on('warning', function(warning) {
 process.on('unhandledRejection', (errorOrReason, currPromise) => {
     const errStr = String(errorOrReason && errorOrReason.stack || JSON.stringify(errorOrReason));
     const key = String(errorOrReason && errorOrReason.message);
-    const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${errStr}</code></pre></p>`;
+    const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${errStr}</code></pre></p>`;
 
     // 恢复上下文
     if (currPromise && currPromise.domain) {
@@ -135,12 +141,12 @@ function startServer() {
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
         require('./http.proxy.js');
-        require('runtime/JankWatcher.js');
+        require('runtime/jank.watcher.js');
 
         // 30分钟后开始算
         !config.isTest && !config.devMode &&
         setTimeout(function() {
-            require('runtime/md5.check.js').check();
+            require('runtime/md5.checker.js').check();
         }, 30 * 60000);
 
         if (cluster.isMaster && debugOptions.inspectorEnabled) {
@@ -285,9 +291,9 @@ function checkWorkerAlive() {
                         'to': config.mailTo,
                         'cc': config.mailCC,
                         'runtimeType': 'Memory',
-                        'msgInfo': `${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露`,
-                        'title': `${serverInfo.intranetIp} 内存超限告警`,
-                        'content': `<p><strong>${serverInfo.intranetIp} 内存超限，服务已重启。请开发人员关注是否存在内存泄露</strong></p>`
+                        'msgInfo': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}`,
+                        'title': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingWaring')}`,
+                        'content': `<p><strong>${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}</strong></p>`
                     });
 
                     restartWorker(worker);

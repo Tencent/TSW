@@ -11,6 +11,7 @@
 const WebSocket = require('ws');
 const WSServer = require('./webSocketServer');
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const domain = require('domain');
 const Context = require('runtime/Context');
 const contextMod = require('context.js');
@@ -111,7 +112,7 @@ function bind_listen(server) {
 
             if (err && err.stack && err.message) {
                 const key = err.message;
-                const content = `<p><strong>错误堆栈</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
+                const content = `<p><strong>${lang.__('mail.errorStack')}</strong></p><p><pre><code>${err.stack}</code></pre></p>`;
                 mail.SendMail(key, 'js', 600, {
                     'title': key,
                     'runtimeType': 'Error',

@@ -1,0 +1,25 @@
+{
+	"mail": {
+		"errorStack": "错误堆栈",
+		"memoryExceedingWaring": " 内存超限告警",
+		"memoryExceedingTips": "内存超限，服务已重启,请开发人员关注是否存在内存泄露。",
+		"singleCoreCpu": "单核CPU",
+		"CPUUsageRate": "CPU使用率",
+		"UsageRateGreaterThan80%": "使用率超过80%",
+		"fiveSecondsCpuProfiler": "最近5秒钟CPU Profiler见附件",
+		"processSnapshot": "进程快照",
+		"IPAggregationNotice": "IP聚集自动拉黑周知",
+		"IPAggregationWarning": "IP聚集告警",
+		"viewDocsForIPAggregation": "IP聚集相关信息，详情请参阅文档",
+		"serverIP": "服务器IP",
+		"maliciousIP": "恶意IP",
+		"autoIntoBlackList":"自动拉黑",
+		"IPAggregationDegree":"IP聚集度",
+		"warningThreshold":"告警阈值",
+		"normalValue": "正常值",
+		"testingTimeConsuming":"检测耗时",
+		"evidenceList": "证据列表",
+		"yes": "是",
+		"no": "否"
+	}
+}

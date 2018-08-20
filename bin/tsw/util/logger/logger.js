@@ -486,8 +486,7 @@ Logger.prototype = {
             str = fn;
         }
 
-        process.stdout.write(str);
-        process.stdout.write('\n');
+        process.stdout.write(str + '\n');
     },
 
     format: function(d) {

@@ -14,6 +14,7 @@ process.on('uncaughtException', function(e) {
 
 
 const logger = require('logger');
+const lang = require('i18n/lang.js');
 const http = require('http');
 const https = require('https');
 const util = require('util');
@@ -406,7 +407,7 @@ function afterCpu80(cpuUsed) {
         timeout: 5000
     }, function(err, data, errData) {   // eslint-disable-line handle-callback-err
         const key = `cpu80.v4:${serverInfo.intranetIp}`;
-        let content = `<strong>单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%, 最近5秒钟CPU Profiler见附件</strong>`;
+        let content = `<strong>${lang.__('mail.singleCoreCpu')}${serverInfo.cpu}，${lang.__('mail.CPUUsageRate')}：${cpuUsed}，${lang.__('mail.UsageRateGreaterThan80%')}，${lang.__('mail.fiveSecondsCpuProfiler')}</strong>`;
         let str = '';
 
         if (data) {
@@ -414,7 +415,7 @@ function afterCpu80(cpuUsed) {
             str = str.replace(/</g, '&gt;');
             str = str.replace(/\r\n|\r|\n/g, '<br>');
 
-            content += '<p><strong>进程快照：</strong></p><pre style="font-size:12px">' + str + '</pre>';
+            content += `<p><strong>${lang.__('mail.processSnapshot')}：</strong></p><pre style="font-size:12px">${str}</pre>`;
         }
 
 
@@ -427,8 +428,8 @@ function afterCpu80(cpuUsed) {
                     'to': config.mailTo,
                     'cc': config.mailCC,
                     'runtimeType': 'CPU',
-                    'msgInfo': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
-                    'title': `${business.module}[CPU]${serverInfo.intranetIp}单核CPU${serverInfo.cpu}使用率为：${cpuUsed}，超过80%`,
+                    'msgInfo': `${business.module}[CPU]${serverInfo.intranetIp}${lang.__('mail.singleCoreCpu')}${serverInfo.cpu}，${lang.__('mail.CPUUsageRate')}：${cpuUsed}，${lang.__('mail.UsageRateGreaterThan80%')}`,
+                    'title': `${business.module}[CPU]${serverInfo.intranetIp}${lang.__('mail.singleCoreCpu')}${serverInfo.cpu}，${lang.__('mail.CPUUsageRate')}：${cpuUsed}，${lang.__('mail.UsageRateGreaterThan80%')}`,
                     'content': content,
                     'attachment': result ? {
                         fileType: true,

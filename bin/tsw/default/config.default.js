@@ -22,7 +22,7 @@ this.isTest = false;
 this.allowArrayInUrl = false;
 
 // http监听地址
-this.httpAddress = '0.0.0.0';
+this.httpAddress = null; // ipv6 --> ipv4
 
 // http监听端口
 this.httpPort = 80;
@@ -104,7 +104,7 @@ this.cpuLimit = 85;
 this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 2 : 1);
 
 // 限制
-this.CCIPLimit = 500;
+this.CCIPLimit = 200;
 
 // 超限后自动拉黑
 this.CCIPLimitAutoBlock = false;
