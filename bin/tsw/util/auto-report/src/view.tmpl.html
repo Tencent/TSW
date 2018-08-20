@@ -152,6 +152,11 @@ var XSS = plug('util/xss.js');
                 <a class="btn" href="<%=window.request.REQUEST.pathname.replace('/log/view/','/log/download/')%>?index=<%=parseInt(logArr.keys[i], 10)%>&SNKey=<%=logArr.SNKeys[i]%>&fileFormat=har"
                    target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.har</a>
 
+                <%if(appid){%>
+                    <a class="btn" href="<%=window.request.REQUEST.pathname.replace('/log/view/','/whistle/viewer/')%>?index=<%=parseInt(logArr.keys[i], 10)%>&SNKey=<%=logArr.SNKeys[i]%>"
+                   target="_blank" title="99%的人都点了这个按钮！">在线查看 云抓包&#8482;</a>
+                <%}%>
+
                 <span style="display:none">&nbsp;<span class="log_pass_time"></span>前</span>
                 <p style="display: none;" class="firstReq">
                     <label class="button label expand" style="cursor:pointer;" data-j="expand<%=i%>"><input type="checkbox" class="expandChk">展开</label>

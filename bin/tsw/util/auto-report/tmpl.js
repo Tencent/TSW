@@ -379,7 +379,16 @@ define(function(require, exports, module) {
                 _p(parseInt(logArr.keys[i], 10));
                 __p.push('&SNKey=');
                 _p(logArr.SNKeys[i]);
-                __p.push('&fileFormat=har"\n                   target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.har</a>\n\n                <span style="display:none">&nbsp;<span class="log_pass_time"></span>前</span>\n                <p style="display: none;" class="firstReq">\n                    <label class="button label expand" style="cursor:pointer;" data-j="expand');
+                __p.push('&fileFormat=har"\n                   target="_blank" title="99%的人都点了这个按钮！">点击下载 云抓包&#8482;.har</a>');
+                if (appid) {
+                    __p.push('                    <a class="btn" href="');
+                    _p(window.request.REQUEST.pathname.replace('/log/view/', '/whistle/viewer/'));
+                    __p.push('?index=');
+                    _p(parseInt(logArr.keys[i], 10));
+                    __p.push('&SNKey=');
+                    _p(logArr.SNKeys[i]);
+                    __p.push('"\n                   target="_blank" title="99%的人都点了这个按钮！">在线查看 云抓包&#8482;</a>');
+                }__p.push('\n                <span style="display:none">&nbsp;<span class="log_pass_time"></span>前</span>\n                <p style="display: none;" class="firstReq">\n                    <label class="button label expand" style="cursor:pointer;" data-j="expand');
                 _p(i);
                 __p.push('"><input type="checkbox" class="expandChk">展开</label>');
 
