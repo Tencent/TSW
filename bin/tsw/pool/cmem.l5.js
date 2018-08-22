@@ -14,6 +14,7 @@ const dcapi = require('api/libdcapi/dcapi.js');
 const tnm2 = require('api/tnm2');
 const L5 = require('api/L5/L5.api.js');
 const { isWin32Like } = require('util/isWindows.js');
+const Memcached = require('memcached');
 let cache = global[__filename];
 
 if (!cache) {
@@ -62,14 +63,14 @@ module.exports.getCmem = function(opt) {
 
 const fromCache = (opt) => {
     const key = [opt.modid, opt.cmd, opt.host].join(':');
+    const poolSize = opt.poolSize || 1;
+    const option = Object.assign({}, opt, {
+        poolSize: 1
+    });
 
     if (!cache[key]) {
-        const Memcached = require('memcached');
-        const poolSize = opt.poolSize || 1;
         const queueWrapList = [];
-        const option = Object.assign({}, opt, {
-            poolSize: 1
-        });
+
         for (let i = 0; i < poolSize; i++) {
             queueWrapList.push(queueWrap(new Memcached(opt.host, option)));
         }
@@ -77,6 +78,15 @@ const fromCache = (opt) => {
         cache[key] = queueWrapList;
     } else {
         cache[key].curr = (cache[key].curr + 1) % cache[key].length;
+
+        let currentClient = cache[key][cache[key].curr];
+        // if this socket was unusable, make a new
+        if (!currentClient.connections[opt.host]
+            || !currentClient.connections[opt.host].isAvailable()) {
+            logger.debug('memcached socket is unusable, make a new one');
+
+            currentClient = queueWrap(new Memcached(opt.host, option));
+        }
     }
 
     return cache[key][cache[key].curr];
