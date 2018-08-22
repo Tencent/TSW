@@ -30,7 +30,7 @@ cluster.isMaster && process.nextTick(function() {
             RoundRobinHandle.prototype.distribute = function(err, handle) {
                 if (global.cpuUsed > cpuLimit) {
                     const rejectRate = Math.pow((global.cpuUsed - cpuLimit) / (100 - cpuLimit), 1.5);
-                    if (Math.random() > rejectRate) {
+                    if (Math.random() < rejectRate) {
                         handle.close();
                         tnm2.Attr_API('SUM_TSW_OVERLOAD_REJECT', 1);
                         return;
