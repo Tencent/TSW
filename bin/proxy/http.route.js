@@ -31,6 +31,7 @@ const CCFinder = require('runtime/CCFinder.js');
 const parseBody = require('util/http/parseBody.js');
 const TSW = require('api/keyman');
 const tnm2 = require('api/tnm2');
+const originCheck = require('./http.origin.js');
 
 
 module.exports = function(req, res) {
@@ -526,6 +527,12 @@ function doRoute(req, res) {
 
     // +1
     req.headers['tsw-trace-steps'] = steps + 1;
+
+    originCheck(req, res);
+
+    if (res.headersSent || res.finished) {
+        return;
+    }
 
     let modulePath = httpModMap.find(mod_act, req, res);
 
