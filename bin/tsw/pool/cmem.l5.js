@@ -67,7 +67,12 @@ const fromCache = (opt) => {
         const Memcached = require('memcached');
         const poolSize = opt.poolSize || 1;
         const queueWrapList = [];
-        const option = Object.assign({}, opt, {
+        const option = Object.assign({
+            retries: 5,
+            retry: 0,
+            failures: 100000,
+            reconnect: 1000
+        }, opt, {
             poolSize: 1
         });
         for (let i = 0; i < poolSize; i++) {
