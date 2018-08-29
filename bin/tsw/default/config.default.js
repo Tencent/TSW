@@ -42,6 +42,9 @@ this.pduServerPort = 19000;
 // http管理端口
 this.httpAdminPort = 12701;
 
+// http管理监听地址
+this.httpAdminAddress = '127.0.0.1';
+
 // webso目标端口
 this.websoDstPort = this.httpPort;
 
