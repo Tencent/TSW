@@ -253,7 +253,8 @@ const initRequestHar = function (request) {
     const responseHeader = unpackRaw((Buffer.from(request.responseHeader || '')).toString('utf8'));
 
 
-    requestHaz.startedDateTime = request.timestamps.ClientConnected;
+    requestHaz.startedDateTime = (request.timestamps) ? ((request.timestamps && request.timestamps.ClientConnected) || Date.now()) : Date.now();
+
     requestHaz.time = 3000;
 
     requestHaz.request = {
@@ -354,19 +355,19 @@ const downloadHaz = function (request, response, opt) {
     };
 
     if (data.length <= 0) {
-        failRet(request, response, 'not find log');
+        failRet(request, response, JSON.stringify({ data: 'not find log' }));
 
         return;
     }
 
     if (SNKey && data.SNKeys && data.SNKeys[0] != SNKey) {
-        failRet(request, response, '该log已经过期,请联系用户慢点刷log~');
+        failRet(request, response, JSON.stringify({ data: '该log已经过期,请联系用户慢点刷log~' }));
 
         return;
     }
 
     if (typeof data === 'string') {
-        failRet(request, response, 'key类型不对');
+        failRet(request, response, JSON.stringify({ data: 'key类型不对' }));
 
         return;
     }
@@ -599,11 +600,16 @@ const failRet = function(request, response, msg) {
 // chunked decode  buffer ， 格式 ：size +\r\n + rawText +\r\n  + 0|r\n ,  \r\n ====》 13,10, 中间的即为rawText
 
 const decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
-    const rawText = [];
+    let rawText = [];
     let startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
     while (startOfTheRawText !== -1 && startOfTheRawText !== 0) {
-        const rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
+        const rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText); //  这里取到的应该是 当前chunked size
         const rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
+        if (Number.isNaN(rawTextSizeUint8ArrayInt)) {
+            rawText.length = 0;
+            rawText = [];
+            break;
+        }
         if (rawTextSizeUint8ArrayInt === 0) {
             break;
         }
