@@ -65,7 +65,7 @@ Ajax.prototype.proxy = function(req, res) {
 
 Ajax.prototype.request = function(opt) {
 
-    if (config.devMode && isWin32Like && config.httpProxy && config.httpProxy.enable && !opt.ip && !opt.devIp) {
+    if (config.httpProxy && config.httpProxy.enable && !opt.ip && !opt.devIp) {
         opt.proxyIp = config.httpProxy.ip;
         opt.proxyPort = config.httpProxy.port;
     }
