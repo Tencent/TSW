@@ -182,6 +182,9 @@ function bind_listen(server) {
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.send('TSW_Websocket_proxy_client_error');
                     }
+                    logger.debug('websocket client error : ${error}', {
+                        error
+                    });
                 });
             } else {
                 wsRoute.doRoute(ws, 'connection');
@@ -254,9 +257,9 @@ function bind_listen(server) {
                     if (wsClient.readyState === WebSocket.OPEN) {
                         wsClient.send('TSW_Websocket_proxy_server_error');
                     }
-                    return;
+                } else {
+                    wsRoute.doRoute(ws, 'error', error);
                 }
-                wsRoute.doRoute(ws, 'error', error);
                 logger.debug('websocket server error : ${error}', {
                     error
                 });
