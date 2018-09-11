@@ -181,11 +181,10 @@ function closeWorker(worker) {
     closeTimeWait = Math.max(closeTimeWait, config.timeout.keepAlive);
     closeTimeWait = Math.min(60000, closeTimeWait) || 10000;
 
-    if (worker.isClosing) {
+    if (worker.exitedAfterDisconnect) {
+        logger.info('worker.exitedAfterDisconnect is true');
         return;
     }
-
-    worker.isClosing = true;
 
     if (workerMap[cpu] === worker) {
         delete workerMap[cpu];
@@ -193,16 +192,16 @@ function closeWorker(worker) {
 
     const closeFn = (function(worker) {
         let closed = false;
-        const pid = worker.process.pid;
 
         return function() {
             if (closed) {
                 return;
             }
             try {
-                process.kill(pid, 9);
+                worker.kill(9);
+                logger.info(`worker/${worker.cpuid} ${worker.process.pid} has killed`);
             } catch (e) {
-                logger.info(`kill worker message: ${e.message}`);
+                logger.info(`worker/${worker.cpuid} kill message: ${e.message}`);
             }
 
             closed = true;
@@ -215,7 +214,7 @@ function closeWorker(worker) {
     try {
         worker.disconnect(closeFn);
     } catch (e) {
-        logger.info(e.stack);
+        logger.info(`worker disconnect message: ${e.message}`);
     }
 }
 
@@ -225,19 +224,16 @@ function restartWorker(worker) {
         return;
     }
 
-    worker.hasRestart = true;
     const cpu = getToBindCpu(worker);
-
-    cpuMap[cpu] = 0;
-
     logger.info('worker${cpu} pid=${pid} closed. restart new worker again.', {
         pid: worker.process.pid,
         cpu: cpu
     });
 
     cluster.fork(process.env).cpuid = cpu;
-
     closeWorker(worker);
+
+    worker.hasRestart = true;
 }
 
 // 定时检测子进程存活，15秒未响应的采取措施
@@ -261,7 +257,7 @@ function checkWorkerAlive() {
             }
 
             // 无响应进程处理
-            if (now - worker.lastLiveTime > checkWorkerAliveTimeout * 3 && cpuMap[cpuid] === 1) {
+            if (now - worker.lastLiveTime > checkWorkerAliveTimeout * 3) {
 
                 logger.error('worker${cpu} pid=${pid} miss heartBeat, kill it', {
                     pid: worker.process.pid,
@@ -398,7 +394,6 @@ function masterEventHandler() {
         }
 
         workerMap[cpu] = currWorker;
-        cpuMap[cpu] = 1;
 
         // 监听子进程发来的消息并处理
         currWorker.on('message', function(...args) {
@@ -421,11 +416,7 @@ function masterEventHandler() {
     cluster.on('disconnect', function(worker) {
         const cpu = getToBindCpu(worker);
 
-        if (worker.hasRestart) {
-            return;
-        }
-
-        logger.info('worker${cpu} pid=${pid} disconnect event fired. restart new worker again.', {
+        logger.info('worker${cpu} pid=${pid} disconnect event fired.', {
             pid: worker.process.pid,
             cpu: cpu
         });
@@ -438,11 +429,7 @@ function masterEventHandler() {
 
         const cpu = getToBindCpu(worker);
 
-        if (worker.hasRestart) {
-            return;
-        }
-
-        logger.info('worker${cpu} pid=${pid} exit event fired. restart new worker again.', {
+        logger.info('worker${cpu} pid=${pid} exit event fired.', {
             pid: worker.process.pid,
             cpu: cpu
         });
@@ -451,7 +438,7 @@ function masterEventHandler() {
     });
 
     process.on('reload', function(GET) {
-        logger.info('reload');
+        logger.info('reload event fired.');
         tnm2.Attr_API('SUM_TSW_WORKER_RELOAD', 1);
 
         for (const key in workerMap) {
@@ -471,8 +458,15 @@ function masterEventHandler() {
                         logger.info('cpu${cpu} send restart message', {
                             cpu: cpu
                         });
-                        worker.send({ from: 'master', cmd: 'restart' });
+                        try {
+                            worker.send({ from: 'master', cmd: 'restart' });
+                        } catch (e) {
+                            logger.info('cpu${cpu} send restart to worker, error message: ${e.message} while', {
+                                cpu: cpu
+                            });
+                        }
                     }
+
                     restartWorker(worker);
                 };
             })(worker, cpu), timeout);
