@@ -133,6 +133,7 @@ function queueWrap(memcached) {
                                 let isFail = 0;
                                 const delay = Date.now() - start;
                                 const toIp = servers.split(':')[0];
+                                let message;
 
                                 if (err && err.message !== 'Item is not stored') {
                                     if (err.stack) {
@@ -143,6 +144,11 @@ function queueWrap(memcached) {
                                         isFail = 1;
                                     } else {
                                         logger.debug(err);
+                                    }
+
+                                    message = (((memcached || {}).issues || [])[servers] || {}).messages;
+                                    if (message) {
+                                        logger.error(message);
                                     }
                                 }
 
