@@ -202,12 +202,6 @@ process.nextTick(function() {
                 // response.on('data', data);
                 httpUtil.captureStream(response, data);
 
-                response.once('close', function() {
-                    logger.debug(logPre + 'close');
-
-                    done.call(this);
-                });
-
                 response.once('end', function() {
                     const cost = Date.now() - timeStart;
 
