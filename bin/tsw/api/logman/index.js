@@ -21,13 +21,17 @@ const runlogPath = path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
 // 判断logDir目录是否存在
 fs.exists(logDir, function(exists) {
     if (!exists) {
-        fs.mkdirSync(logDir, 0o777);
+        fs.mkdir(logDir, 0o777, (err) => {
+            logger.error(err);
+        });
     }
 
     // 判断backup目录是否存在
     fs.exists(backupDir, function(exists) {
         if (!exists) {
-            fs.mkdirSync(backupDir, 0o777);
+            fs.mkdir(backupDir, 0o777, (err) => {
+                logger.error(err);
+            });
         }
     });
 });
@@ -59,43 +63,108 @@ const LogMan = {
     /**
      * 备份log
      */
-    backLog: function() {
+    backLog: async function() {
         logger.info('start backup log');
         const self = this;
         const curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date(), 'YYYY-MM-DD'));
-        fs.exists(curBackupDir, function(exists) {
-            if (!exists) {
-                fs.mkdirSync(curBackupDir);
-            }
-            let logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date(), self.delayType + self.delayType) + '.log');
-            let cmdCat = 'cat ' + runlogPath + ' >> ' + logFilePath;
-            let cmdClear = 'cat /dev/null > ' + runlogPath;
-
-            // 兼容windows
-            if (isWin32Like) {
-                logFilePath = logFilePath.replace(/\\/g, '\\\\');
-                cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
-                cmdClear = 'type NUL > ' + runlogPath;
-            }
-
-            // backup
-            logger.info('backup: ' + cmdCat);
-
-            cp.exec(cmdCat, function(error, stdout, stderr) {
-                if (error !== null) {
-                    logger.error('cat error, ' + error);
+        const curBackupDirExists = await new Promise((resolve, reject) => {
+            fs.stat(curBackupDir, function(stats, err) {
+                if (err) {
+                    return resolve(false);
                 }
 
-                // clear
-                logger.info('clear: ' + cmdClear);
-
-                cp.exec(cmdClear, function(error, stdout, stderr) {
-                    if (error !== null) {
-                        logger.error('clear error, ' + error);
-                    }
-                });
+                if (stats.isDirectory()) {
+                    return resolve(true);
+                } else {
+                    return reject(new Error('not a directory'));
+                }
             });
+        }).catch((err) => {
+            logger.error(err);
+            return err;
         });
+
+        if (curBackupDirExists instanceof Error) {
+            return;
+        }
+
+        if (curBackupDirExists === false) {
+            const result = await new Promise((resolve, reject) => {
+                fs.mkdir(curBackupDir, 0o777, function(stats, err) {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    return resolve(true);
+                });
+            }).catch((err) => {
+                logger.error(err);
+                return err;
+            });
+
+            if (result instanceof Error) {
+                return;
+            }
+        }
+
+        let logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date(), self.delayType + self.delayType) + '.log');
+        let cmdCat = `cp ${runlogPath} ${logFilePath}`;
+        let cmdClear = 'cat /dev/null > ' + runlogPath;
+
+        // 兼容windows
+        if (isWin32Like) {
+            logFilePath = logFilePath.replace(/\\/g, '\\\\');
+            cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
+            cmdClear = 'type NUL > ' + runlogPath;
+        }
+
+        if (cmdCat) {
+            // backup
+            logger.info('backup: ' + cmdCat);
+            const result = await new Promise((resolve, reject) => {
+                cp.exec(cmdCat, {
+                    timeout: 60000,
+                    killSignal: 9
+                }, function(error, stdout, stderr) {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    return resolve();
+                });
+            }).catch((err) => {
+                logger.error(err);
+                return err;
+            });
+
+            if (result instanceof Error) {
+                return;
+            }
+        }
+
+        if (cmdClear) {
+            // clear
+            logger.info('clear: ' + cmdClear);
+            const result = await new Promise((resolve, reject) => {
+                cp.exec(cmdClear, {
+                    timeout: 5000,
+                    killSignal: 9
+                }, function(error, stdout, stderr) {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    return resolve();
+                });
+            }).catch((err) => {
+                logger.error(err);
+                return err;
+            });
+
+            if (result instanceof Error) {
+                return;
+            }
+        }
     }
 
 };
