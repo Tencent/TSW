@@ -104,7 +104,7 @@ this.logger = {
 this.cpuLimit = 85;
 
 // 内存限制
-this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 2 : 1);
+this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 1.5 : 1);
 
 // 限制
 this.CCIPLimit = 200;
