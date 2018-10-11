@@ -332,11 +332,7 @@ const formatIP = function(ipCache) {
 
     arr.forEach(function(info) {
         const tmp = (info.num + '--------').slice(0, 8);
-        if (tmp.isMax) {
-            content += `<pre>${tmp}${info.ip}</pre>`;
-        } else {
-            content += `<pre>${tmp}${info.ip}</pre>`;
-        }
+        content += `<pre>${tmp}${info.ip}</pre>`;
     });
 
     return content;
