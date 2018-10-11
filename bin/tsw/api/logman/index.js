@@ -14,27 +14,36 @@ const path = require('path');
 const logger = require('logger');
 const dateApi = require('api/date.js');
 const { isWin32Like } = require('util/isWindows.js');
-const logDir = path.resolve(__dirname, '../../../../log/').replace(/\\/g, '/');
-const backupDir = path.resolve(logDir, './backup/').replace(/\\/g, '/');
-const runlogPath = path.resolve(logDir, './run.log.0').replace(/\\/g, '/');
+let logDir = path.normalize(`${__dirname}/../../../../log/`);
+let backupDir;
+let runlogPath;
 
-// 判断logDir目录是否存在
-fs.exists(logDir, function(exists) {
-    if (!exists) {
-        fs.mkdir(logDir, 0o777, (err) => {
-            logger.error(err);
-        });
-    }
+function init() {
+    backupDir = path.normalize(`${logDir}/backup/`);
+    runlogPath = path.normalize(`${logDir}/run.log.0`);
 
-    // 判断backup目录是否存在
-    fs.exists(backupDir, function(exists) {
+    logger.info(`logDir: ${logDir}`);
+    logger.info(`backupDir: ${backupDir}`);
+    logger.info(`runlogPath: ${runlogPath}`);
+
+    // 判断logDir目录是否存在
+    fs.exists(logDir, function(exists) {
         if (!exists) {
-            fs.mkdir(backupDir, 0o777, (err) => {
+            fs.mkdir(logDir, 0o777, (err) => {
                 logger.error(err);
             });
         }
+
+        // 判断backup目录是否存在
+        fs.exists(backupDir, function(exists) {
+            if (!exists) {
+                fs.mkdir(backupDir, 0o777, (err) => {
+                    logger.error(err);
+                });
+            }
+        });
     });
-});
+}
 
 const LogMan = {
 
@@ -52,6 +61,13 @@ const LogMan = {
      */
     start: function(config) {
         logger.info('start log manager');
+
+        if (config.logDir) {
+            logDir = config.logDir;
+        }
+
+        init();
+
         const self = this;
         this.delayType = config.delay || 'D';
         this.delay = this.delayMap[this.delayType];
@@ -66,7 +82,8 @@ const LogMan = {
     backLog: async function() {
         logger.info('start backup log');
         const self = this;
-        const curBackupDir = path.resolve(backupDir, './' + dateApi.format(new Date(), 'YYYY-MM-DD'));
+        const curDate = dateApi.format(new Date(), 'YYYY-MM-DD');
+        const curBackupDir = path.normalize(`${backupDir}/${curDate}/`);
         const curBackupDirExists = await new Promise((resolve, reject) => {
             fs.stat(curBackupDir, function(stats, err) {
                 if (err) {
@@ -107,15 +124,17 @@ const LogMan = {
             }
         }
 
-        let logFilePath = path.resolve(curBackupDir, './' + dateApi.format(new Date(), self.delayType + self.delayType) + '.log');
-        let cmdCat = `cp ${runlogPath} ${logFilePath}`;
-        let cmdClear = 'cat /dev/null > ' + runlogPath;
+        const curFilename = dateApi.format(new Date(), self.delayType + self.delayType) + '.log';
+        const logFilePath = path.normalize(`${curBackupDir}/${curFilename}`);
+        let cmdCat;
+        let cmdClear;
 
-        // 兼容windows
         if (isWin32Like) {
-            logFilePath = logFilePath.replace(/\\/g, '\\\\');
-            cmdCat = 'type ' + runlogPath + ' > ' + logFilePath;
-            cmdClear = 'type NUL > ' + runlogPath;
+            cmdCat = `type ${JSON.stringify(runlogPath)} > ${JSON.stringify(logFilePath)}`;
+            cmdClear = `type NUL > ${JSON.stringify(runlogPath)}`;
+        } else {
+            cmdCat = `cp ${JSON.stringify(runlogPath)} ${JSON.stringify(logFilePath)}`;
+            cmdClear = `cat /dev/null > ${JSON.stringify(runlogPath)}`;
         }
 
         if (cmdCat) {
