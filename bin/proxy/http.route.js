@@ -245,7 +245,7 @@ module.exports = function(req, res) {
         res.__hasClosed = true;
         logger.debug('response has close');
 
-        this.emit('done');//  let it going
+        // this.emit('done');//  let it going
     });
 
     res.once('done', function() {
