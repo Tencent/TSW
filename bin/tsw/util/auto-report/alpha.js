@@ -63,6 +63,25 @@ this.isAlpha = function(req) {
     return uinMap[uin] || TSW.getAlphaUinMapSync()[uin];
 };
 
+this.isAlphaUin = function (uin) {
+    if(!uin){
+        return false;
+    }
+    const TSW = require('api/keyman');
+    const config = require('config');
+
+    if (uin && isWin32Like) {
+        // windows 抓包用
+        if (config.skyMode) {
+            return true;
+        }
+    }
+
+    const uinMap = global[__filename] || {};
+
+    return uinMap[uin] || TSW.getAlphaUinMapSync()[uin];
+};
+
 this.getUin = function(req) {
     const config = require('config');
 
