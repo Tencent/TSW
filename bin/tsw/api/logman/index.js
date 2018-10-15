@@ -84,8 +84,9 @@ const LogMan = {
         const self = this;
         const curDate = dateApi.format(new Date(), 'YYYY-MM-DD');
         const curBackupDir = path.normalize(`${backupDir}/${curDate}/`);
+        logger.info(`backup dir ${curBackupDir}`);
         const curBackupDirExists = await new Promise((resolve, reject) => {
-            fs.stat(curBackupDir, function(stats, err) {
+            fs.stat(curBackupDir, function(err, stats) {
                 if (err) {
                     return resolve(false);
                 }
