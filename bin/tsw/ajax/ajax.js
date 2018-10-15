@@ -267,8 +267,7 @@ Ajax.prototype.doRequest = function(opt) {
             },
             this._proxyRequest.headers,
             {
-                'x-forwarded-for': httpUtil.getUserIp(this._proxyRequest),
-                'user-agent': 'User-Agent, TSW/ajax'
+                'x-forwarded-for': httpUtil.getUserIp(this._proxyRequest)
             },
             opt.headers
         );
