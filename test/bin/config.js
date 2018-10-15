@@ -20,7 +20,7 @@ describe('config.js', () => {
         });
 
         it('#httpAddress check', () => {
-            expect('string').to.equal(typeof config.httpAddress);
+            expect(true).to.equal(config.httpAddress === null || typeof config.httpAddress === 'string');
         });
     });
 
