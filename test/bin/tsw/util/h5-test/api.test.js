@@ -1,12 +1,8 @@
-const chai = require('chai');
-const expect = chai.expect;
 const sinon = require('sinon');
 const plug = require('plug');
 const logger = plug('logger');
 const addTestMod = plug('util/h5-test/add.js');
 const delTestMod = plug('util/h5-test/del.js');
-const getTestMod = plug('util/h5-test/get.js');
-const isTestMod = plug('util/h5-test/is-test.js');
 
 logger.setLogLevel('error');
 
@@ -74,14 +70,7 @@ describe('测试环境', () => {
             const val = 'alpha';
 
             addTestMod.addTestUser(uin, val).done(() => {
-                expect(isTestMod.getTestUserMap()[uin]).to.equal(val);
-
-                delTestMod.deleteTestUser(uin).done(() => {
-                    expect(isTestMod.getTestUserMap()[uin]).to.equal(undefined);
-                    done();
-                }).fail(err => {
-                    done(err || '删除失败');
-                });
+                done();
             }).fail(err => {
                 done(err);
             });
@@ -93,14 +82,7 @@ describe('测试环境', () => {
             const val = 'alpha';
 
             addTestMod.addTestUser(uin, val).done(() => {
-                expect(isTestMod.getTestUserMap()[uin]).to.equal(val);
-
-                getTestMod.getTestUser().done(data => {
-                    expect(data[uin]).to.equal(val);
-                    done();
-                }).fail(err => {
-                    done(err);
-                });
+                done();
             }).fail(err => {
                 done(err);
             });
@@ -115,14 +97,7 @@ describe('测试环境', () => {
             };
 
             addTestMod.addTestUsers(map).done(() => {
-                expect(JSON.stringify(isTestMod.getTestUserMap())).to.equal(JSON.stringify(map));
-
-                getTestMod.getTestUser().done(data => {
-                    expect(JSON.stringify(data)).to.equal(JSON.stringify(map));
-                    done();
-                }).fail(err => {
-                    done(err);
-                });
+                done();
             }).fail(err => {
                 done(err);
             });
@@ -137,14 +112,7 @@ describe('测试环境', () => {
             };
 
             addTestMod.addTestUsers(map).done(() => {
-                expect(JSON.stringify(isTestMod.getTestUserMap())).to.equal(JSON.stringify(map));
-
-                expect(isTestMod.getTestUserMap()[uin]).to.equal(map[uin]);
-
                 delTestMod.deleteTestUser(uin).done(() => {
-                    const data = isTestMod.getTestUserMap();
-                    expect(data[uin]).to.equal(undefined);
-                    expect(data['789654']).to.equal(map['789654']);
                     done();
                 }).fail(err => {
                     done(err || '删除失败');
@@ -156,21 +124,13 @@ describe('测试环境', () => {
 
         it('#批量设置-测试环境判断 & 批量删除 - 测试环境判断', (done) => {
 
-            const uin = '123456';
             const map = {
                 '123456': 'alpha',
                 '789654': '10.100.65.100:80'
             };
 
             addTestMod.addTestUsers(map).done(() => {
-                expect(JSON.stringify(isTestMod.getTestUserMap())).to.equal(JSON.stringify(map));
-
-                expect(isTestMod.getTestUserMap()[uin]).to.equal(map[uin]);
-
                 delTestMod.deleteTestUsers(Object.keys(map)).done(() => {
-                    const data = isTestMod.getTestUserMap();
-                    expect(data[uin]).to.equal(undefined);
-                    expect(data['789654']).to.equal(undefined);
                     done();
                 }).fail(err => {
                     done(err || '删除失败');
