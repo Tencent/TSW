@@ -52,6 +52,26 @@ describe('test tsw/util/alpha', () => {
         });
     });
 
+    describe('#isAlphaUin', () => {
+
+        it('#without uin', () => {
+            expect(alpha.isAlphaUin()).to.be.equal(false);
+        });
+
+        it('#check a num not skymode', () => {
+            config.skyMode = false;
+            const uid = 1;
+            expect(alpha.isAlphaUin(uid)).to.be.equal(undefined);
+        });
+
+        it('#update', () => {
+            alpha.update({ 1: true });
+            const uid = 1;
+            expect(alpha.isAlphaUin(uid)).to.be.equal(true);
+        });
+    });
+
+
     describe('#getUin', () => {
         it('#without req', () => {
             expect(alpha.getUin()).to.be.equal(undefined);
