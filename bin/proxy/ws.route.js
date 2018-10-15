@@ -12,7 +12,7 @@ exports.getModAct = function (ws) {
     return wsModAct.getModAct(ws);
 };
 
-exports.doRoute = function(ws, type, d1, d2) {
+exports.doRoute = function(ws, type, opts) {
     const wsModMap = require('./ws.mod.map');
     const logger = require('logger');
     const contextMod = require('context.js');
@@ -49,13 +49,13 @@ exports.doRoute = function(ws, type, d1, d2) {
         };
     }
     if (type === 'connection') {
-        moduleObj.onConnection(ws);
+        moduleObj.onConnection(ws, opts.wsServer);
     } else if (type === 'message') {
         contextMod.currentContext().mod_act = mod_act;
-        moduleObj.onMessage(ws, d1);
+        moduleObj.onMessage(ws, opts.message, opts.wsServer);
     } else if (type === 'close') {
-        moduleObj.onClose(ws, d1, d2);
+        moduleObj.onClose(ws, opts.code, opts.reason, opts.wsServer);
     } else if (type === 'error') {
-        moduleObj.onError(ws, d1);
+        moduleObj.onError(ws, opts.error, opts.wsServer);
     }
 };
