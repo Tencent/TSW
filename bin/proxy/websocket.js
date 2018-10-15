@@ -277,14 +277,12 @@ exports.start_listen = function() {
     const ws = new WSServer({
         server: global.TSW_HTTP_SERVER
     });
-    global.TSW_WS_SERVER = ws;
     bind_listen(ws);
 
     if (global.TSW_HTTPS_SERVER) {
         const wss = new WSServer({
             server: global.TSW_HTTPS_SERVER
         });
-        global.TSW_WSS_SERVER = ws;
         bind_listen(wss);
     }
 };
