@@ -187,7 +187,7 @@ function bind_listen(server) {
                     });
                 });
             } else {
-                wsRoute.doRoute(ws, 'connection');
+                wsRoute.doRoute(ws, 'connection', { wsServer: server });
             }
 
             // 兼容以前的websocket逻辑，假的reponse事件，出现error方便打堆栈
@@ -212,7 +212,7 @@ function bind_listen(server) {
                     return;
                 }
 
-                wsRoute.doRoute(ws, 'message', message);
+                wsRoute.doRoute(ws, 'message', { message: message, wsServer: server } );
                 reportWebSocketLog(ws);
             });
             ws.on('close', function(code, reason) {
@@ -221,7 +221,7 @@ function bind_listen(server) {
                     wsClient.close();
                     return;
                 }
-                wsRoute.doRoute(ws, 'close', code, reason);
+                wsRoute.doRoute(ws, 'close', { code: code, reason: reason, wsServer: server } );
                 logger.debug('websocket server close, code : ${code}, reason : ${reason}', {
                     code,
                     reason
@@ -258,7 +258,7 @@ function bind_listen(server) {
                         wsClient.send('TSW_Websocket_proxy_server_error');
                     }
                 } else {
-                    wsRoute.doRoute(ws, 'error', error);
+                    wsRoute.doRoute(ws, 'error', { error: error, wsServer: server } );
                 }
                 logger.debug('websocket server error : ${error}', {
                     error
