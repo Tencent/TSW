@@ -291,8 +291,8 @@ const initRequestHar = function (request) {
     requestHaz.pageref = request.sid;
     requestHaz.timings = {
         'blocked': 0,
-        'dns': request.timestamps.dns,
-        'connect': request.timestamps.TCPConnectTime,
+        'dns': (request.timestamps && request.timestamps.dns) || -1,
+        'connect': (request.timestamps && request.timestamps.TCPConnectTime) || -1,
         'send': 20,
         'wait': 38,
         'receive': 12,
