@@ -17,6 +17,7 @@ const isTST = require('util/isTST.js');
 const mail = require('util/mail/mail.js');
 const tnm2 = require('api/tnm2');
 const CCIPSize = 1000;                        // 统计周期
+const CCMinSum = 500;                        // 最小样本数
 const CCIPLimit = config.CCIPLimit;            // 限制
 let ipConut = CCIPSize;
 let cache = {
@@ -99,6 +100,10 @@ this.StdX10 = function(ipCache) {
         return 0;
     }
 
+    if (sum <= CCMinSum) {
+        return 0;
+    }
+
     avg = sum / arr.length;
 
     const sumXsum = arr.reduce(function (pre, key) {
@@ -127,6 +132,7 @@ this.check = function (req, res) {
     if (cache.blackList[userIp]) {
         tnm2.Attr_API('SUM_TSW_CC_LIMIT', 1);
         logger.report();
+        logger.debug('hit CC_LIMIT');
         res.writeHead(403, { 'Content-Type': 'text/plain; charset=UTF-8' });
         res.end();
         return false;
