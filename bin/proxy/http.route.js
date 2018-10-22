@@ -374,11 +374,12 @@ module.exports = function(req, res) {
                 try {
                     res.writeHead(202);
                 } catch (e) {
-                    logger.info(`response 202 fail ${e.message}`);
+                    logger.debug(`response 202 fail ${e.message}`);
                 } finally {
                     res.end();
                 }
                 res.emit('done');
+                return;
             } else if (res.finished) {
                 res.end();
                 res.emit('done');
@@ -478,6 +479,10 @@ function doRoute(req, res) {
             logger.debug('response ${statusCode}', {
                 statusCode: args[0]
             });
+
+            if (this.__hasClosed) {
+                this.emit('done');
+            }
 
             return fn.apply(this, args);
         };
