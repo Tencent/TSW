@@ -12,7 +12,15 @@ BIN_DIR=$(pwd)
 echo "BIN_DIR: ${BIN_DIR}"
 
 NODE_PATH=$(node -p process.execPath)
-echo "use node:$NODE_PATH"
+
+if [ -e "${NODE_PATH}" ]
+then
+    echo "use node:${NODE_PATH}"
+else
+    echo "node cmd is not found"
+    exit 1
+fi
+
 ln -sf $NODE_PATH ./TSW
 chmod +x ./TSW
 
