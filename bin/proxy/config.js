@@ -28,6 +28,8 @@ if (global[__filename]) {
 
 if (typeof processArgs.config === 'string') {
     cache.config = require(path.resolve(cwd, processArgs.config));
+} else if (typeof process.env.TSW_CONFIG_PATH === 'string') {
+    cache.config = require(process.env.TSW_CONFIG_PATH);
 } else if (fs.existsSync(currConfig)) {
     cache.config = require(currConfig);
 } else if (fs.existsSync('/etc/tsw.config.js')) {
