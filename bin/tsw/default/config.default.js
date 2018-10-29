@@ -22,7 +22,7 @@ this.isTest = false;
 this.allowArrayInUrl = false;
 
 // http监听地址
-this.httpAddress = '0.0.0.0';
+this.httpAddress = null; // ipv6 --> ipv4
 
 // http监听端口
 this.httpPort = 80;
@@ -41,6 +41,9 @@ this.pduServerPort = 19000;
 
 // http管理端口
 this.httpAdminPort = 12701;
+
+// http管理监听地址
+this.httpAdminAddress = '127.0.0.1';
 
 // webso目标端口
 this.websoDstPort = this.httpPort;
@@ -101,7 +104,7 @@ this.logger = {
 this.cpuLimit = 85;
 
 // 内存限制
-this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 2 : 1);
+this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 1.5 : 1);
 
 // 限制
 this.CCIPLimit = 200;

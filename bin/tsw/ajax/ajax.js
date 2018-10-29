@@ -65,7 +65,7 @@ Ajax.prototype.proxy = function(req, res) {
 
 Ajax.prototype.request = function(opt) {
 
-    if (config.devMode && isWin32Like && config.httpProxy && config.httpProxy.enable && !opt.ip && !opt.devIp) {
+    if (isWin32Like && config.httpProxy && config.httpProxy.enable && !opt.ip && !opt.devIp) {
         opt.proxyIp = config.httpProxy.ip;
         opt.proxyPort = config.httpProxy.port;
     }
@@ -917,11 +917,6 @@ Ajax.prototype.doRequest = function(opt) {
             }
         });
 
-        pipe.once('close', function() {
-            logger.debug(logPre + 'close');
-            this.emit('done');
-        });
-
         pipe.once('error', function(err) {
             logger.debug(logPre + ' decode error: ' + err.stack);
             this.emit('done');
@@ -946,7 +941,6 @@ Ajax.prototype.doRequest = function(opt) {
                 buffer,
                 code;
 
-            this.removeAllListeners('close');
             this.removeAllListeners('end');
             this.removeAllListeners('data');
             this.removeAllListeners('done');

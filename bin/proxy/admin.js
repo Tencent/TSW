@@ -31,7 +31,7 @@ this.start = function () {
 
     logger.info('start admin...');
 
-    server.listen(config.httpAdminPort, '127.0.0.1', function (err) {
+    server.listen(config.httpAdminPort, config.httpAdminAddress, function (err) {
         if (err) {
             logger.info('admin listen error ${address}:${port}', {
                 address: '127.0.0.1',
