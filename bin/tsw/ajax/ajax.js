@@ -917,6 +917,11 @@ Ajax.prototype.doRequest = function(opt) {
             }
         });
 
+        pipe.once('close', function() {
+            logger.debug(logPre + 'close');
+            this.emit('done');
+        });
+
         pipe.once('error', function(err) {
             logger.debug(logPre + ' decode error: ' + err.stack);
             this.emit('done');
@@ -941,6 +946,7 @@ Ajax.prototype.doRequest = function(opt) {
                 buffer,
                 code;
 
+            this.removeAllListeners('close');
             this.removeAllListeners('end');
             this.removeAllListeners('data');
             this.removeAllListeners('done');

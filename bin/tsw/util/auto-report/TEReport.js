@@ -123,9 +123,9 @@ this.list = function(group) {
             if (group && v.group !== group) {
                 return;
             }
-
-            if (!map[v.ip]) {
-                map[v.ip] = true;
+            const ipPort = v.ip + (v.port || '');
+            if (!map[ipPort]) {
+                map[ipPort] = true;
                 res.push(v);
             }
         });
