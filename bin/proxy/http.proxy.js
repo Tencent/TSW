@@ -385,8 +385,10 @@ function heartBeat() {
     }
 
     // 高负载告警
-    if (global.cpuUsed80 === 4 && !config.isTest && !isWin32Like) {
-        afterCpu80(global.cpuUsed);
+    if (global.cpuUsed80 === 5 && !config.isTest && !isWin32Like) {
+        if (global.cpuUsed >= config.cpuLimit) {
+            afterCpu80(global.cpuUsed);
+        }
     }
 
     const currMemory = process.memoryUsage();

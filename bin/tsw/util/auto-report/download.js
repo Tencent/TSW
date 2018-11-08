@@ -229,6 +229,7 @@ const initRequestHar = function (request) {
 
         return request;
     };
+
     const getUrl = function (curr) {
         let url;
         let host;
@@ -243,12 +244,17 @@ const initRequestHar = function (request) {
         return url;
     };
 
+    const getHeaderValue = (headers = {}, key = '', defaultValue) => {
+        return headers[key] || headers[key.toLowerCase()] || defaultValue;
+    };
+
     const requestHaz = {};
     const requestHeader = unpackRaw((Buffer.from(request.requestRaw || '')).toString('utf8'));
     const responseHeader = unpackRaw((Buffer.from(request.responseHeader || '')).toString('utf8'));
 
 
-    requestHaz.startedDateTime = request.timestamps.ClientConnected;
+    requestHaz.startedDateTime = (request.timestamps) ? ((request.timestamps && request.timestamps.ClientConnected) || Date.now()) : Date.now();
+
     requestHaz.time = 3000;
 
     requestHaz.request = {
@@ -260,22 +266,10 @@ const initRequestHar = function (request) {
         'queryString': requestHeader.queryString,
         'postData': requestHeader.postData,
         'headersSize': request.requestRaw.replace(/\n/g, '').length,
-        'bodySize': requestHeader['Content-Length'] || 0,
+        'bodySize': getHeaderValue(requestHeader, 'Content-Length', 0)
     };
 
-    // console.error(request.responseBody,'request.responseBody');
-    // 处理responseBody 的格式，由base64 转到 utf-8 ;
-    // var requestResponseBodyBase64  = request.responseBody || 0;
-    // if(response.headers['content-encoding'] === 'gzip'){
-    //
-    // }
-    // zlib.unzip(requestResponseBodyBase64, function(err, buffer) {
-    //     console.log(buffer.toString())
-    // });
-
-    const mimeTypeTemp = responseHeader['Content-Type'];
-    let mimeType = (typeof mimeTypeTemp === 'undefined') ? responseHeader['content-type'] : mimeTypeTemp;
-    mimeType = (typeof mimeType === 'undefined') ? mimeType : mimeType.trim();
+    const mimeType = getHeaderValue(responseHeader, 'Content-Type', '').trim();
 
     requestHaz.response = {
         'Content-Type': 'text/html; charset=UTF-8',
@@ -285,15 +279,11 @@ const initRequestHar = function (request) {
         'cookies': responseHeader.cookieArray,
         'headers': responseHeader.headers,
         'redirectURL': '',
-        'headersSize': requestHeader['Content-Length'] || 0,
+        'headersSize': getHeaderValue(requestHeader, 'Content-Length', 0),
         'bodySize': request.contentLength || 0,
         'comment': '',
         'content': {
-            'mimeType': mimeType,
-            // "compression":request.responseBody.length - (request.contentLength || 0),
-            // "text":request.responseBody,
-            // "text": (Buffer.from(request.responseBody || '', 'base64')).toString('utf8'),
-            // "encoding":'base64',
+            'mimeType': mimeType
         }
     };
 
@@ -301,8 +291,8 @@ const initRequestHar = function (request) {
     requestHaz.pageref = request.sid;
     requestHaz.timings = {
         'blocked': 0,
-        'dns': request.timestamps.dns,
-        'connect': request.timestamps.TCPConnectTime,
+        'dns': (request.timestamps && request.timestamps.dns) || -1,
+        'connect': (request.timestamps && request.timestamps.TCPConnectTime) || -1,
         'send': 20,
         'wait': 38,
         'receive': 12,
@@ -315,18 +305,16 @@ const initRequestHar = function (request) {
         let requestResponseBodyBaseBuffer = (Buffer.from(request.responseBody || '', 'base64'));
 
         //  chunked decode
-        if (typeof responseHeader['Transfer-Encoding'] !== 'undefined' && responseHeader['Transfer-Encoding'] === 'chunked') {
+        if (getHeaderValue(responseHeader, 'Transfer-Encoding') === 'chunked') {
             requestResponseBodyBaseBuffer = decodeChunkedUint8Array(requestResponseBodyBaseBuffer);
         }
 
-        // console.error(requestResponseBodyBaseBuffer.length,'requestResponseBodyBaseBuffer');
-
-        if (typeof responseHeader['Content-Encoding'] !== 'undefined' && responseHeader['Content-Encoding'] === 'gzip') {
+        if (getHeaderValue(responseHeader, 'Content-Encoding') === 'gzip') {
             try {
                 const ungziprawText = zlib.gunzipSync(requestResponseBodyBaseBuffer);
-                requestHaz.response.content.text = ungziprawText.toString('utf8');// 暂时文件
+                requestHaz.response.content.text = ungziprawText.toString('utf8');
             } catch (e) {
-                requestHaz.response.content.text = requestResponseBodyBaseBuffer;// 暂时文件
+                requestHaz.response.content.text = requestResponseBodyBaseBuffer.toString('base64');
             }
 
             return requestHaz;
@@ -339,6 +327,7 @@ const initRequestHar = function (request) {
     } else {
         requestHaz.response.content.size = 0;
         requestHaz.response.content.text = '';
+
         return requestHaz;
     }
 
@@ -366,19 +355,19 @@ const downloadHaz = function (request, response, opt) {
     };
 
     if (data.length <= 0) {
-        failRet(request, response, 'not find log');
+        failRet(request, response, JSON.stringify({ data: 'not find log' }));
 
         return;
     }
 
     if (SNKey && data.SNKeys && data.SNKeys[0] != SNKey) {
-        failRet(request, response, '该log已经过期,请联系用户慢点刷log~');
+        failRet(request, response, JSON.stringify({ data: '该log已经过期,请联系用户慢点刷log~' }));
 
         return;
     }
 
     if (typeof data === 'string') {
-        failRet(request, response, 'key类型不对');
+        failRet(request, response, JSON.stringify({ data: 'key类型不对' }));
 
         return;
     }
@@ -611,11 +600,16 @@ const failRet = function(request, response, msg) {
 // chunked decode  buffer ， 格式 ：size +\r\n + rawText +\r\n  + 0|r\n ,  \r\n ====》 13,10, 中间的即为rawText
 
 const decodeChunkedUint8Array = function (Uint8ArrayBuffer) {
-    const rawText = [];
+    let rawText = [];
     let startOfTheRawText = Uint8ArrayBuffer.indexOf(13);
     while (startOfTheRawText !== -1 && startOfTheRawText !== 0) {
-        const rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText);
+        const rawTextSizeUint8ArrayBuffer = Uint8ArrayBuffer.slice(0, startOfTheRawText); //  这里取到的应该是 当前chunked size
         const rawTextSizeUint8ArrayInt = parseInt(Buffer.from(rawTextSizeUint8ArrayBuffer), 16);
+        if (Number.isNaN(rawTextSizeUint8ArrayInt)) {
+            rawText.length = 0;
+            rawText = [];
+            break;
+        }
         if (rawTextSizeUint8ArrayInt === 0) {
             break;
         }

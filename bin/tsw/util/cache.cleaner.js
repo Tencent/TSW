@@ -27,18 +27,34 @@ this.clear = function(dir, showLog) {
     });
 
     for (key in require.cache) {
-        require.cache[key].children = [];
-        require.cache[key].resolveFilenameCache = {};
+        
+        if (key.indexOf(dir) >= 0) {
 
-        if (key.indexOf(dir) >= 0 && !/\.node$/i.test(key)) {
-            delete require.cache[key].parent;
-            delete require.cache[key];
-            if (showLog) {
-                logger.debug('clear: ${key}', {
-                    key: key.slice(dir.length)
-                });
+            let mod = require.cache[key];
+
+            if(!/\.node$/i.test(key)){
+
+                let parentChildren = mod.parent && mod.parent.children;
+                if(parentChildren){
+                    let idx = parentChildren.indexOf(mod);
+                    if (idx >= 0){
+                        parentChildren.splice(idx, 1)
+                    }
+                }
+                delete require.cache[key];
+
+                if (showLog) {
+                    logger.debug('clear: ${key}', {
+                        key: key.slice(dir.length)
+                    });
+                }
+
+            }else{
+                mod.resolveFilenameCache = {};
+                require.cache[key].parent = null;
             }
         }
     }
+
 };
 

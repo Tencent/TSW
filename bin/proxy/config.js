@@ -27,17 +27,25 @@ if (global[__filename]) {
 }
 
 if (typeof processArgs.config === 'string') {
-    cache.config = require(path.resolve(cwd, processArgs.config));
+    cache.config = loadConfig(path.resolve(cwd, processArgs.config));
+} else if (typeof process.env.TSW_CONFIG_PATH === 'string') {
+    cache.config = loadConfig(process.env.TSW_CONFIG_PATH);
 } else if (fs.existsSync(currConfig)) {
-    cache.config = require(currConfig);
+    cache.config = loadConfig(currConfig);
 } else if (fs.existsSync('/etc/tsw.config.js')) {
-    cache.config = require('/etc/tsw.config.js');
+    cache.config = loadConfig('/etc/tsw.config.js');
 } else if (fs.existsSync('/usr/local/node_modules/config.js')) {
-    cache.config = require('/usr/local/node_modules/config.js');
+    cache.config = loadConfig('/usr/local/node_modules/config.js');
 } else if (fs.existsSync('/data/release/node_modules/config.js')) {
-    cache.config = require('/data/release/node_modules/config.js');
+    cache.config = loadConfig('/data/release/node_modules/config.js');
 } else if (fs.existsSync(__dirname + '/../../conf/config.js')) {
-    cache.config = require('../../conf/config.js');
+    cache.config = loadConfig(__dirname + '/../../conf/config.js');
+}
+
+function loadConfig(configFrom) {
+    const config = require(configFrom);
+    config.configFrom = configFrom;
+    return config;
 }
 
 

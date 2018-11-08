@@ -31,6 +31,7 @@ const CCFinder = require('runtime/CCFinder.js');
 const parseBody = require('util/http/parseBody.js');
 const TSW = require('api/keyman');
 const tnm2 = require('api/tnm2');
+const originCheck = require('./http.origin.js');
 
 
 module.exports = function(req, res) {
@@ -244,7 +245,7 @@ module.exports = function(req, res) {
         res.__hasClosed = true;
         logger.debug('response has close');
 
-        this.emit('done');//  let it going
+        // this.emit('done');//  let it going
     });
 
     res.once('done', function() {
@@ -373,11 +374,12 @@ module.exports = function(req, res) {
                 try {
                     res.writeHead(202);
                 } catch (e) {
-                    logger.info(`response 202 fail ${e.message}`);
+                    logger.debug(`response 202 fail ${e.message}`);
                 } finally {
                     res.end();
                 }
                 res.emit('done');
+                return;
             } else if (res.finished) {
                 res.end();
                 res.emit('done');
@@ -478,6 +480,10 @@ function doRoute(req, res) {
                 statusCode: args[0]
             });
 
+            if (this.__hasClosed) {
+                this.emit('done');
+            }
+
             return fn.apply(this, args);
         };
     })(res.writeHead);
@@ -526,6 +532,12 @@ function doRoute(req, res) {
 
     // +1
     req.headers['tsw-trace-steps'] = steps + 1;
+
+    originCheck(req, res);
+
+    if (res.headersSent || res.finished) {
+        return;
+    }
 
     let modulePath = httpModMap.find(mod_act, req, res);
 

@@ -67,7 +67,12 @@ const fromCache = (opt) => {
         const Memcached = require('memcached');
         const poolSize = opt.poolSize || 1;
         const queueWrapList = [];
-        const option = Object.assign({}, opt, {
+        const option = Object.assign({
+            retries: 5,
+            retry: 0,
+            failures: 100000,
+            reconnect: 1000
+        }, opt, {
             poolSize: 1
         });
         for (let i = 0; i < poolSize; i++) {
@@ -128,6 +133,7 @@ function queueWrap(memcached) {
                                 let isFail = 0;
                                 const delay = Date.now() - start;
                                 const toIp = servers.split(':')[0];
+                                let message;
 
                                 if (err && err.message !== 'Item is not stored') {
                                     if (err.stack) {
@@ -138,6 +144,11 @@ function queueWrap(memcached) {
                                         isFail = 1;
                                     } else {
                                         logger.debug(err);
+                                    }
+
+                                    message = (((memcached || {}).issues || [])[servers] || {}).messages;
+                                    if (message) {
+                                        logger.error(message);
                                     }
                                 }
 
