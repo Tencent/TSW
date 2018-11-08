@@ -106,6 +106,7 @@ function startServer() {
         }, 3000);
 
         logger.info('start master....');
+        logger.info(`config from: ${config.configFrom}`);
         logger.info('version node: ${node}, modules: ${modules}', process.versions);
 
         if (serverOS.isLinux) {
@@ -140,6 +141,7 @@ function startServer() {
 
         process.title = 'TSW/worker/node';
         logger.info('start worker....');
+        logger.info(`config from: ${config.configFrom}`);
         require('./http.proxy.js');
         require('runtime/jank.watcher.js');
 
