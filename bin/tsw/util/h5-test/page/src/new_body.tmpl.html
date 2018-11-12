@@ -21,7 +21,6 @@
     font-size: 50%;
 }
 .group-menu .group-item.cur{
-
     background: #21BA45 !important;
     color: white !important;
 }
@@ -38,9 +37,31 @@
     max-height: 400px;
     overflow-y: auto;
 }
-#join-submit2{
+.action-buttons button{
     margin-right: 1em;
 }
+.expire-selector-con {
+    display: inline-block;
+    height: 40px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #ccc;
+    position: relative;
+}
+.expire-selector {
+    border: none;
+    outline: none;
+    width: auto;
+    height: 40px;
+    line-height: 40px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 0 20px; 
+}
+.expire-selector option {
+    text-align: center;
+}
+
 </style>
 <div class="ui grid container">
     <% if(!data.project) { %>
@@ -126,9 +147,19 @@
                 <a class="ui blue ribbon label">#2 输入用户id（支持批量，换行即可）</a>
                 <p class="ui">
                     <textarea style="width:100%;height:80px;" id="join-textarea" ></textarea>
-                <p class="ui">
+                <p class="ui action-buttons">
                     <button id="join-submit2" class="ui button large primary">添加</button>
                     <button id="remove-submit2" class="ui button primary large">删除</button>
+                    <span class="expire-selector-con">
+                        <select name="expiresData" id="update-submit2" class="expire-selector">
+                            <option value="1" <%= (window.request.cookies['_expiresTest'] || 1) == 1 ? 'selected':''%>>1天有效期</option>
+                            <option value="2" <%= (window.request.cookies['_expiresTest'] || 1) == 2 ? 'selected':''%>>2天有效期</option>
+                            <option value="3" <%= (window.request.cookies['_expiresTest'] || 1) == 3 ? 'selected':''%>>3天有效期</option>
+                            <option value="7" <%= (window.request.cookies['_expiresTest'] || 1) == 7 ? 'selected':''%>>7天有效期</option>
+                            <option value="30" <%= (window.request.cookies['_expiresTest'] || 1) == 30 ? 'selected':''%>>30天有效期</option>
+                            <option value="365" <%= (window.request.cookies['_expiresTest'] || 1) == 365 ? 'selected':''%>>1年有效期</option>
+                        </select>
+                    </span>                    
                 </p>
             </div>
         </div>
@@ -139,7 +170,7 @@
                 <button id="number-get" class="ui button primary large">查看H5测试号码列表</button>
                 <div class="ui divider"></div>
                 <div id="number-list" class="row">
-                    <p>注意：每天0点将清空号码</p>
+                    <p></p>
                 </div>
             </div>
         </div>

@@ -178,7 +178,11 @@
             });
             return false;
         });
-
+        // 更改默认时间
+        $('#update-submit2').on('change', function(e){
+            var val = $(this).find('option:selected').val();
+            document.cookie = '_expiresTest=' + (val || 1) + '; path=/';
+        });
         //查看所有
         $('#number-get').click(function(event){
             var self = this;
