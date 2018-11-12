@@ -92,11 +92,6 @@ process.on('message', function(message) {
     methodMap[message.cmd](message);
 });
 
-// restart
-methodMap.restart = function() {
-    process.emit('restart');
-};
-
 // reload
 methodMap.reload = function() {
     process.emit('reload');
