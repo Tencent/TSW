@@ -71,7 +71,7 @@ module.exports.addTestUser = (uin, val) => {
 module.exports.addTestUsers = (map) => {
     let expire = 24 * 60 * 60;
 
-    if (window.request.cookies && window.request.cookies['_expiresTest']) {
+    if (typeof window !== 'undefined' && window.request.cookies && window.request.cookies['_expiresTest']) {
         const expectExpire = parseInt(window.request.cookies['_expiresTest'] || 1, 10);
 
         if (!isNaN(expectExpire)) {
