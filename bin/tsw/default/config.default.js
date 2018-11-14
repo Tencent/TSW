@@ -112,6 +112,9 @@ this.CCIPLimit = 200;
 // 超限后自动拉黑
 this.CCIPLimitAutoBlock = false;
 
+// 通知开关
+this.CCIPLimitQuiet = false;
+
 // allowHost
 this.allowHost = [];
 
