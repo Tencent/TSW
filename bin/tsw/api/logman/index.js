@@ -141,7 +141,7 @@ const LogMan = {
         if (cmdCat) {
             // backup
             logger.info('backup: ' + cmdCat);
-            const result = await new Promise((resolve, reject) => {
+            await new Promise((resolve, reject) => {
                 cp.exec(cmdCat, {
                     timeout: 60000,
                     killSignal: 9
@@ -156,18 +156,14 @@ const LogMan = {
                 logger.error(err);
                 return err;
             });
-
-            if (result instanceof Error) {
-                return;
-            }
         }
 
         if (cmdClear) {
             // clear
             logger.info('clear: ' + cmdClear);
-            const result = await new Promise((resolve, reject) => {
+            await new Promise((resolve, reject) => {
                 cp.exec(cmdClear, {
-                    timeout: 5000,
+                    timeout: 60000,
                     killSignal: 9
                 }, function(error, stdout, stderr) {
                     if (error) {
@@ -180,10 +176,6 @@ const LogMan = {
                 logger.error(err);
                 return err;
             });
-
-            if (result instanceof Error) {
-                return;
-            }
         }
     }
 
