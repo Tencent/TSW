@@ -109,6 +109,9 @@ this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 1.5 : 1);
 // 限制
 this.CCIPLimit = 200;
 
+// CPU快照抓取时间
+this.cpuRecordTime = 5000;
+
 // 超限后自动拉黑
 this.CCIPLimitAutoBlock = false;
 
