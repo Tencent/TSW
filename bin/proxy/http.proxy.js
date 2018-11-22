@@ -151,7 +151,7 @@ process.on('profiler', function(data = {}) {
     }
 
     require('util/v8-profiler.js').writeProfilerOpt(__dirname + '/cpu' + serverInfo.cpu + '.' + Date.now() + '.cpuprofile', {
-        recordTime: data.time || 5000
+        recordTime: data.time || config.cpuRecordTime
     }, function(filename) {
         logger.info('dump written to ${filename}', {
             filename: filename
@@ -446,7 +446,7 @@ function afterCpu80(cpuUsed) {
             }
 
             if (profiler) {
-                profiler.getProfiler({ recordTime: 5000 }, profCallback);
+                profiler.getProfiler({ recordTime: config.cpuRecordTime }, profCallback);
             } else {
                 profCallback();
             }

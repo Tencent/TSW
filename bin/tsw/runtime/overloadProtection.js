@@ -15,6 +15,8 @@ cluster.isMaster && process.nextTick(function() {
     const logger = require('logger');
     const tnm2 = require('api/tnm2');
     const config = require('config');
+    let rejectRate = 0;
+    let cpuUsed = 0;
 
     // 高负载时丢弃部分请求
     let cpuLimit = 85;
@@ -28,13 +30,18 @@ cluster.isMaster && process.nextTick(function() {
         const distribute = RoundRobinHandle.prototype.distribute;
         if (!distribute.hasHack) {
             RoundRobinHandle.prototype.distribute = function(err, handle) {
-                if (global.cpuUsed > cpuLimit) {
-                    const rejectRate = Math.pow((global.cpuUsed - cpuLimit) / (100 - cpuLimit), 1.5);
-                    if (Math.random() < rejectRate) {
-                        handle.close();
-                        tnm2.Attr_API('SUM_TSW_OVERLOAD_REJECT', 1);
-                        return;
+                if (cpuUsed !== global.cpuUsed) {
+                    if (global.cpuUsed > cpuLimit) {
+                        rejectRate = rejectRate + 0.2 * ((global.cpuUsed - cpuLimit) / 100);
+                    } else {
+                        rejectRate = rejectRate + 0.1 * ((global.cpuUsed - cpuLimit) / 100);
                     }
+                    cpuUsed = global.cpuUsed;
+                }
+                if (rejectRate > 0 && Math.random() < rejectRate) {
+                    handle.close();
+                    tnm2.Attr_API('SUM_TSW_OVERLOAD_REJECT', 1);
+                    return;
                 }
                 distribute.call(this, err, handle);
             };
