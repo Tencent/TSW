@@ -23,6 +23,8 @@ const cpuMap = [];
 const tnm2 = require('api/tnm2');
 const network = require('util/network.js');
 const serverInfo = require('serverInfo.js');
+const { fork } = require('child_process');
+const path = require('path');
 
 process.on('uncaughtException', function(e) {
 
@@ -130,6 +132,7 @@ function startServer() {
         masterEventHandler();
         checkWorkerAlive();
         startAdmin();
+        startMasterMonitor();
 
         Object.defineProperty(process, 'title', Object.assign(Object.create(null), {
             value: 'TSW',
@@ -495,4 +498,14 @@ function masterEventHandler() {
             }
         }
     });
+}
+
+function startMasterMonitor() {
+
+    logger.info('start master monitor....');
+
+    fork(path.resolve(__dirname, './master-monitor.js'), [process.pid], {
+        silent: false
+    });
+
 }
