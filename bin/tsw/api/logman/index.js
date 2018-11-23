@@ -77,6 +77,19 @@ const LogMan = {
     },
 
     /**
+     * 停止log管理
+     */
+    stop: function() {
+        logger.info('stop log manager');
+
+        this.backLog();
+
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+    },
+
+    /**
      * 备份log
      */
     backLog: async function() {
