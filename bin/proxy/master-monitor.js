@@ -90,6 +90,8 @@ function startMonitor() {
 
     logger.info(`master monitor started. pid:${masterPid}`);
 
+    process.title = 'TSW/worker/master-monitor';
+
     if (!masterPid) {
         logger.info('master pid is empty! exit monitor');
         return;

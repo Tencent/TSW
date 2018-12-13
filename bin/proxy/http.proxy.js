@@ -47,6 +47,9 @@ let serverHttps;
 const server = http.createServer(requestHandler);
 const serverThis = http.createServer(requestHandler);
 
+server.on('error', serverError);
+serverThis.on('error', serverError);
+
 server.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
 serverThis.timeout = Math.max(config.timeout.upload || config.timeout.socket, 0);
 server.keepAliveTimeout = Math.max(config.timeout.keepAlive, 0);
@@ -58,6 +61,7 @@ if (config.httpsOptions) {
         requestHandler(req, res);
     });
 
+    serverHttps.on('error', serverError);
     serverHttps.on('clientError', function(err, socket) {   // eslint-disable-line handle-callback-err
         socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
     });
@@ -247,17 +251,7 @@ function listen(cpu) {
         host: config.httpAddress,
         port: config.httpPort,
         exclusive: false
-    }, function(err) {
-        if (err) {
-            logger.info('cpu: ${cpu}, listen http error ${address}:${port}', {
-                cpu: serverInfo.cpu,
-                address: config.httpAddress,
-                port: config.httpPort
-            });
-
-            return;
-        }
-
+    }, function() {
         logger.info('cpu: ${cpu}, listen http ok ${address}:${port}', {
             cpu: serverInfo.cpu,
             address: config.httpAddress,
@@ -319,17 +313,7 @@ function listen(cpu) {
             if (serverHttps) {
 
                 // 启动https
-                serverHttps.listen(config.httpsPort, config.httpsAddress, function(err) {
-                    if (err) {
-                        logger.info('cpu: ${cpu}, listen https error ${address}:${port}', {
-                            cpu: serverInfo.cpu,
-                            address: config.httpsPort,
-                            port: config.httpsAddress
-                        });
-
-                        return;
-                    }
-
+                serverHttps.listen(config.httpsPort, config.httpsAddress, function() {
                     logger.info('cpu: ${cpu}, listen https ok ${address}:${port}', {
                         cpu: serverInfo.cpu,
                         address: config.httpsAddress,
@@ -391,6 +375,14 @@ function heartBeat() {
     tnm2.Attr_API_Set('AVG_TSW_MEMORY_RSS', currMemory.rss);
     tnm2.Attr_API_Set('AVG_TSW_MEMORY_HEAP', currMemory.heapTotal);
     tnm2.Attr_API_Set('AVG_TSW_MEMORY_EXTERNAL', currMemory.external);
+}
+
+function serverError(err) {
+    logger.error('exit with ' + err.stack);
+
+    setTimeout(function() {
+        process.exit(1);
+    }, 500);
 }
 
 

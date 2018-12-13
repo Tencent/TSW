@@ -16,7 +16,7 @@ const parseGet = require('util/http/parseGet.js');
 const actions = require('./admin.actions.js');
 
 const server = http.createServer(function (req, res) {
-    logger.info('admin request by： ${url}', {
+    logger.debug('admin request by： ${url}', {
         url: req.url
     });
 
@@ -25,24 +25,27 @@ const server = http.createServer(function (req, res) {
     action.call(actions, req, res);
 });
 
+server.on('error', serverError);
+
+function serverError(err) {
+    logger.error('exit with ' + err.stack);
+
+    setTimeout(function() {
+        process.exit(1);
+    }, 500);
+}
+
 this.start = function () {
-    // 管理进程开启debug日志
-    logger.setLogLevel('debug');
+    // 管理进程开启info日志
+    logger.setLogLevel('info');
 
     logger.info('start admin...');
 
-    server.listen(config.httpAdminPort, config.httpAdminAddress, function (err) {
-        if (err) {
-            logger.info('admin listen error ${address}:${port}', {
-                address: '127.0.0.1',
-                port: config.httpAdminPort
-            });
-        } else {
-            logger.info('admin listen ok ${address}:${port}', {
-                address: '127.0.0.1',
-                port: config.httpAdminPort
-            });
-        }
+    server.listen(config.httpAdminPort, config.httpAdminAddress, function () {
+        logger.info('admin listen ok ${address}:${port}', {
+            address: '127.0.0.1',
+            port: config.httpAdminPort
+        });
     });
 
     // 变更感知
