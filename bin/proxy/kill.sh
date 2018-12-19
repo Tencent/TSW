@@ -32,6 +32,16 @@ else
 	echo "do nothing, there is no pids"
 fi
 
+PIDS=$(ps aux|grep master-monitor|gawk '$0 !~/grep/ {print $2}' |tr -s '\n' ' ')
+
+if [ "$PIDS" ]
+then
+	echo "kill -9 $PIDS"
+	kill -9 $PIDS
+else
+	echo "do nothing, there is no pids"
+fi
+
 sleep 0.5s
 echo "sleep 0.5s"
 

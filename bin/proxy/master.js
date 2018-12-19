@@ -155,7 +155,7 @@ function startServer() {
         }, 30 * 60000);
 
         if (cluster.isMaster && debugOptions.inspectorEnabled) {
-            logger.setLogLevel('debug');
+            logger.setLogLevel('info');
             logger.info('inspectorEnabled, start listening');
             process.emit('message', {
                 cmd: 'listen', cpu: 0

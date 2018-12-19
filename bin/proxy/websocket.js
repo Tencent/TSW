@@ -215,18 +215,7 @@ function bind_listen(server) {
                 wsRoute.doRoute(ws, 'message', { message: message, wsServer: server });
                 reportWebSocketLog(ws);
             });
-            ws.on('close', function(code, reason) {
-                tnm2.Attr_API('SUM_TSW_WEBSOCKET_CLOSE', 1);
-                if (wsClient) {
-                    wsClient.close();
-                    return;
-                }
-                wsRoute.doRoute(ws, 'close', { code: code, reason: reason, wsServer: server });
-                logger.debug('websocket server close, code : ${code}, reason : ${reason}', {
-                    code,
-                    reason
-                });
-
+            ws.once('clear', function() {
                 // 清理domain
                 setTimeout(function() {
                     reportWebSocketLog(ws, true);
@@ -251,7 +240,21 @@ function bind_listen(server) {
                     logger.debug('cleared');
                 }, 3000);
             });
-            ws.on('error', function(error) {
+            ws.once('close', function(code, reason) {
+                tnm2.Attr_API('SUM_TSW_WEBSOCKET_CLOSE', 1);
+                if (wsClient) {
+                    wsClient.close();
+                    return;
+                }
+                wsRoute.doRoute(ws, 'close', { code: code, reason: reason, wsServer: server });
+                logger.debug('websocket server close, code : ${code}, reason : ${reason}', {
+                    code,
+                    reason
+                });
+
+                this.emit('clear');
+            });
+            ws.once('error', function(error) {
                 tnm2.Attr_API('SUM_TSW_WEBSOCKET_ERROR', 1);
                 if (wsClient) {
                     if (wsClient.readyState === WebSocket.OPEN) {
@@ -265,6 +268,7 @@ function bind_listen(server) {
                 });
 
                 reportWebSocketLog(ws);
+                this.emit('clear');
             });
 
             logReport();
