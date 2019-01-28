@@ -38,7 +38,7 @@ process.nextTick(function() {
             let result = [];
             let buffer = Buffer.alloc(0);
             let bodySize = 0;
-            const maxBodySize = 1024 * 1024;
+            const maxBodySize = 512 * 1024;
             const timeStart = Date.now();
             let timeLookup = timeStart;
             let timeConnect = timeStart;
