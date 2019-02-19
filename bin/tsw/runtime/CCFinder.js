@@ -242,6 +242,10 @@ this.check = function (req, res) {
         title = `[${lang.__('mail.IPAggregationWarning')}][${cache.ipCacheLast.StdX10}%]${serverInfo.intranetIp}`;
     }
 
+    if (config.CCIPLimitQuiet) {
+        return;
+    }
+
     mail.SendMail(key, 'TSW', 3600, {
         'to': config.mailTo,
         'cc': config.mailCC,

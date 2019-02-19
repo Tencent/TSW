@@ -36,6 +36,8 @@ if (typeof processArgs.config === 'string') {
     cache.config = loadConfig('/etc/tsw.config.js');
 } else if (fs.existsSync('/usr/local/node_modules/config.js')) {
     cache.config = loadConfig('/usr/local/node_modules/config.js');
+} else if (fs.existsSync('/data/release/tsw.config.js')) {
+    cache.config = loadConfig('/data/release/tsw.config.js');
 } else if (fs.existsSync('/data/release/node_modules/config.js')) {
     cache.config = loadConfig('/data/release/node_modules/config.js');
 } else if (fs.existsSync(__dirname + '/../../conf/config.js')) {

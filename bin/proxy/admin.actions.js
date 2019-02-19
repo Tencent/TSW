@@ -17,6 +17,11 @@ module.exports = {
         res.end('no such command!');
     },
 
+    '/ping': function (req, res) {
+        res.writeHead(200);
+        res.end('');
+    },
+
     '/globaldump': function (req, res) {
         process.emit('sendCmd2workerOnce', {
             CMD: 'globaldump',
