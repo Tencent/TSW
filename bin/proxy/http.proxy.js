@@ -196,7 +196,7 @@ function requestHandler(req, res) {
     res.setHeader('Server', headerServer);
     res.setHeader('Cache-Control', 'no-cache');
 
-    if (config.devMode) {
+    if (config.devMode && config.autoCleanCache) {
         // 发者模式清除缓存
         cleanCache();
     }

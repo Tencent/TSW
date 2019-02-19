@@ -15,6 +15,9 @@ this.defaultConfigLoadFrom = __filename;
 // 开发者模式
 this.devMode = false;
 
+// 是否自动清理缓存
+this.autoCleanCache = true;
+
 // 是否测试环境
 this.isTest = false;
 
