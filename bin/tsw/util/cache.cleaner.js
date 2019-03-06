@@ -27,18 +27,18 @@ this.clear = function(dir, showLog) {
     });
 
     for (key in require.cache) {
-        
+
         if (key.indexOf(dir) >= 0) {
 
-            let mod = require.cache[key];
+            const mod = require.cache[key];
 
-            if(!/\.node$/i.test(key)){
+            if (!/\.node$/i.test(key)) {
 
-                let parentChildren = mod.parent && mod.parent.children;
-                if(parentChildren){
-                    let idx = parentChildren.indexOf(mod);
-                    if (idx >= 0){
-                        parentChildren.splice(idx, 1)
+                const parentChildren = mod.parent && mod.parent.children;
+                if (parentChildren) {
+                    const idx = parentChildren.indexOf(mod);
+                    if (idx >= 0) {
+                        parentChildren.splice(idx, 1);
                     }
                 }
                 delete require.cache[key];
@@ -49,7 +49,7 @@ this.clear = function(dir, showLog) {
                     });
                 }
 
-            }else{
+            } else {
                 mod.resolveFilenameCache = {};
                 require.cache[key].parent = null;
             }

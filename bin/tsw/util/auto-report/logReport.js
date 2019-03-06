@@ -765,4 +765,4 @@ module.exports.reportLog = function() {
     }
 
     module.exports.report(reportData);
-}
+};

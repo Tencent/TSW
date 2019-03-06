@@ -64,7 +64,7 @@ this.isAlpha = function(req) {
 };
 
 this.isAlphaUin = function (uin) {
-    if(!uin){
+    if (!uin) {
         return false;
     }
     const TSW = require('api/keyman');
