@@ -1,6 +1,6 @@
 # ChangeLog
 
-## [2019-03-07, Version  v1.3.0-alpha](https://github.com/Tencent/TSW/releases/tag/v1.3.0-alpha)
+## [2019-03-08, Version  v1.3.0](https://github.com/Tencent/TSW/releases/tag/v1.3.0)
 
 
 ### Bug fixes
@@ -30,6 +30,12 @@
  - [[```774f626a```](https://github.com/Tencent/TSW/commit/774f626a334364350e7440fa997bb4df8b93264d)] __-__ __server__: exit while listening failure (youkunhuang)
  - [[```43ad32f8```](https://github.com/Tencent/TSW/commit/43ad32f8d0261af79d327f156242dc5b537e7b9e)] __-__ __master__: update overload rules (youkunhuang)
  - [[```eee94bf0```](https://github.com/Tencent/TSW/commit/eee94bf0ae306db980ebc82b62c18502b69eeb6f)] __-__ __util__: use realIp first (youkunhuang)
+
+
+### Other commits
+
+ - [[```9872a70f```](https://github.com/Tencent/TSW/commit/9872a70f347028c920ae051c96da55f8a767c259)] __-__ __docs(changelog)__ : update tag name (RobinzZH)
+ - [[```b49ba073```](https://github.com/Tencent/TSW/commit/b49ba07364d6c35cc91692d45938c47210882c06)] __-__ __docs__ : update change log (robinzhxie)
 
 
 
