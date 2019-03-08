@@ -15,6 +15,9 @@ this.defaultConfigLoadFrom = __filename;
 // 开发者模式
 this.devMode = false;
 
+// 是否自动清理缓存
+this.autoCleanCache = true;
+
 // 是否测试环境
 this.isTest = false;
 
@@ -109,8 +112,14 @@ this.memoryLimit = 768 * 1024 * 1024 * (mpc >= 2 ? 1.5 : 1);
 // 限制
 this.CCIPLimit = 200;
 
+// CPU快照抓取时间
+this.cpuRecordTime = 5000;
+
 // 超限后自动拉黑
 this.CCIPLimitAutoBlock = false;
+
+// 通知开关
+this.CCIPLimitQuiet = false;
 
 // allowHost
 this.allowHost = [];

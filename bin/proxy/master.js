@@ -23,6 +23,8 @@ const cpuMap = [];
 const tnm2 = require('api/tnm2');
 const network = require('util/network.js');
 const serverInfo = require('serverInfo.js');
+const { fork } = require('child_process');
+const path = require('path');
 
 process.on('uncaughtException', function(e) {
 
@@ -130,6 +132,7 @@ function startServer() {
         masterEventHandler();
         checkWorkerAlive();
         startAdmin();
+        startMasterMonitor();
 
         Object.defineProperty(process, 'title', Object.assign(Object.create(null), {
             value: 'TSW',
@@ -152,7 +155,7 @@ function startServer() {
         }, 30 * 60000);
 
         if (cluster.isMaster && debugOptions.inspectorEnabled) {
-            logger.setLogLevel('debug');
+            logger.setLogLevel('info');
             logger.info('inspectorEnabled, start listening');
             process.emit('message', {
                 cmd: 'listen', cpu: 0
@@ -185,6 +188,7 @@ function closeWorker(worker) {
 
     if (worker.exitedAfterDisconnect) {
         logger.info('worker.exitedAfterDisconnect is true');
+        worker.kill(9);
         return;
     }
 
@@ -227,7 +231,7 @@ function restartWorker(worker) {
     }
 
     const cpu = getToBindCpu(worker);
-    logger.info('worker${cpu} pid=${pid} closed. restart new worker again.', {
+    logger.info('restart new worker instead of worker${cpu} pid=${pid}', {
         pid: worker.process.pid,
         cpu: cpu
     });
@@ -381,7 +385,7 @@ function masterEventHandler() {
 
         const cpu = getToBindCpu(currWorker);
 
-        logger.info('worker fork success! pid:${pid} cpu: ${cpu}', {
+        logger.info('worker${cpu} fork success! pid:${pid}, cpu: ${cpu}', {
             pid: currWorker.process.pid,
             cpu: cpu
         });
@@ -391,7 +395,7 @@ function masterEventHandler() {
         // 绑定cpu
         cpuUtil.taskset(cpu, currWorker.process.pid);
 
-        if (workerMap[cpu]) {
+        if (workerMap[cpu] && workerMap[cpu] !== currWorker) {
             closeWorker(workerMap[cpu]);
         }
 
@@ -456,19 +460,6 @@ function masterEventHandler() {
 
             setTimeout((function(worker, cpu) {
                 return function() {
-                    if (!worker.exitedAfterDisconnect) {
-                        logger.info('cpu${cpu} send restart message', {
-                            cpu: cpu
-                        });
-                        try {
-                            worker.send({ from: 'master', cmd: 'restart' });
-                        } catch (e) {
-                            logger.info('cpu${cpu} send restart to worker, error message: ${e.message} while', {
-                                cpu: cpu
-                            });
-                        }
-                    }
-
                     restartWorker(worker);
                 };
             })(worker, cpu), timeout);
@@ -507,4 +498,14 @@ function masterEventHandler() {
             }
         }
     });
+}
+
+function startMasterMonitor() {
+
+    logger.info('start master monitor....');
+
+    fork(path.resolve(__dirname, './master-monitor.js'), [process.pid], {
+        silent: false
+    });
+
 }

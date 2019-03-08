@@ -8,23 +8,7 @@
 'use strict';
 
 
-module.exports = require('../../bin/proxy/config.js');
+// Tips: the code below is not working in cycle dependencies
+// module.exports = require('../../bin/proxy/config.js');
 
-if (Object.keys(module.exports).length === 0) {
-
-    let curr = module;
-
-    /* eslint-disable no-console */
-    console.error('config加载存在循环引用:');
-
-    while (curr.parent) {
-
-        console.error(curr.parent.filename);
-        curr = curr.parent;
-    }
-    /* eslint-enable no-console */
-
-    process.emit('warning', 'config加载存在循环引用');
-
-}
-
+Object.assign(exports, require('../../bin/proxy/config.js'));

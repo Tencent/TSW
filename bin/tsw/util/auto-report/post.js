@@ -11,8 +11,7 @@
 const logger = require('logger');
 const Deferred = require('util/Deferred');
 const cmemTSW = require('data/cmem.tsw.js');
-const crypto = require('crypto');
-const zlib = require('zlib');
+const encryption = require('./encryption');
 const MAX_NUM = 64;
 const MAX_ALPHA_LOG = 1000;
 
@@ -280,42 +279,7 @@ module.exports.keyTextArr = function(key, index) {
 
 
 // 加密
-module.exports.encode = function(appid, appkey, data) {
-    const input = Buffer.from(JSON.stringify(data), 'UTF-8');
-    const buff = zlib.deflateSync(input);
-    const des = crypto.createCipher('des', (appid + appkey));
-    const buf1 = des.update(buff, null, 'hex');
-    const buf2 = des.final('hex');
-    const body = Buffer.from(buf1 + buf2, 'hex').toString('base64');
-    return body;
-};
+module.exports.encode = encryption.encode;
 
 // 解密
-module.exports.decode = function(appid, appkey, body) {
-    const des = crypto.createDecipher('des', (appid + appkey));
-    let buf1 = '';
-    let buf2 = '';
-
-    try {
-        buf1 = des.update(body, 'base64', 'hex');
-        buf2 = des.final('hex');
-    } catch (e) {
-        logger.error(e.stack);
-        return null;
-    }
-
-    const buff = Buffer.from(buf1 + buf2, 'hex');
-    const input = zlib.inflateSync(buff);
-
-    let data = null;
-
-    try {
-        data = JSON.parse(input.toString('UTF-8'));
-    } catch (e) {
-        logger.error(e.stack);
-        return null;
-    }
-
-    return data;
-};
-
+module.exports.decode = encryption.decode;
