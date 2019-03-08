@@ -1,6 +1,6 @@
 # ChangeLog
 
-## [2019-03-07, Version  v1.3.0](https://github.com/Tencent/TSW/releases/tag/v1.3.0-alpha)
+## [2019-03-07, Version  v1.3.0-alpha](https://github.com/Tencent/TSW/releases/tag/v1.3.0-alpha)
 
 
 ### Bug fixes
