@@ -1,5 +1,5 @@
 FROM alpine
-RUN apk --update --no-cache add procps git nodejs bash gawk
+RUN apk --update --no-cache add procps git nodejs nodejs-npm bash gawk
 RUN git clone https://github.com/Tencent/TSW.git /TSW
 WORKDIR /TSW
 VOLUME /data/release/node_modules/
