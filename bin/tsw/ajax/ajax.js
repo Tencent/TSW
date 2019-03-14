@@ -203,6 +203,7 @@ Ajax.prototype.doRequest = function(opt) {
     const logPre = '[' + AJAXSN + '] ';
 
     opt = Deferred.extend({
+        requestOptions: {},
         type: 'GET',
         url: '',
         devIp: '',
@@ -547,7 +548,8 @@ Ajax.prototype.doRequest = function(opt) {
         port: opt.proxyPort || opt.port,
         path: opt.proxyPath || opt.path,
         method: opt.type,
-        headers: opt.headers
+        headers: opt.headers,
+        ...opt.requestOptions
     });
 
     request.setNoDelay(true);

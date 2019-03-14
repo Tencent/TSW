@@ -7,7 +7,6 @@
  */
 'use strict';
 
-module.exports = plug;
 
 // 内置模块
 function plug(id) {
@@ -44,3 +43,4 @@ if (!global.plug) {
     })(JSON.stringify);
 }
 
+module.exports = global.plug;
