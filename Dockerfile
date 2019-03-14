@@ -1,10 +1,8 @@
-FROM alpine
-RUN apk --update --no-cache add procps git nodejs nodejs-npm bash gawk
-RUN git clone https://github.com/Tencent/TSW.git /TSW
+FROM node:10
+COPY  . /TSW
 WORKDIR /TSW
-VOLUME /data/release/node_modules/
 RUN npm install --no-optional
+RUN apt-get update && apt-get install gawk
 EXPOSE 80
 ENV IS_DOCKER=1
 CMD ["/TSW/bin/proxy/startup.sh"]
-
