@@ -81,6 +81,13 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
         });
     } else {
         logger.error(`unhandledRejection reason: ${errStr}`);
+        setImmediate(function() {
+            require('util/mail/mail.js').SendMail(key, 'js', 600, {
+                'title': key,
+                'runtimeType': 'unhandledRejection',
+                'content': content
+            });
+        });
     }
 });
 
@@ -178,13 +185,13 @@ methodMap.heartBeat = function(m) {
 // 关闭一个worker
 function closeWorker(worker) {
     const cpu = worker.cpuid;
-    let closeTimeWait = 10000;
+    let closeTimeWait = config.timeout.closeWorker;
 
     closeTimeWait = Math.max(closeTimeWait, config.timeout.socket);
     closeTimeWait = Math.max(closeTimeWait, config.timeout.post);
     closeTimeWait = Math.max(closeTimeWait, config.timeout.get);
     closeTimeWait = Math.max(closeTimeWait, config.timeout.keepAlive);
-    closeTimeWait = Math.min(60000, closeTimeWait) || 10000;
+    closeTimeWait = Math.min(config.timeout.closeWorker, closeTimeWait) || 10000;
 
     if (worker.exitedAfterDisconnect) {
         logger.info('worker.exitedAfterDisconnect is true');
@@ -393,7 +400,9 @@ function masterEventHandler() {
         tnm2.Attr_API('SUM_TSW_WORKER_FORK', 1);
 
         // 绑定cpu
-        cpuUtil.taskset(cpu, currWorker.process.pid);
+        if (config.taskset) {
+            cpuUtil.taskset(cpu, currWorker.process.pid);
+        }
 
         if (workerMap[cpu] && workerMap[cpu] !== currWorker) {
             closeWorker(workerMap[cpu]);
