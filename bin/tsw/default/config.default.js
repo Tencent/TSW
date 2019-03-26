@@ -33,6 +33,9 @@ this.httpPort = 80;
 // worker起始端口
 this.workerPortBase = 12801;
 
+// 是否关闭 RPC
+this.closeRPC = false;
+
 // webso监听端口
 this.websoPort = 20000;
 
@@ -74,6 +77,9 @@ this.mailCC = '';
 
 // cpu分配
 this.runAtThisCpu = 'auto';
+
+// 绑定cpu
+this.taskset = true;
 
 // worker用户
 this.workerUid = 'nobody';
@@ -130,13 +136,13 @@ this.idc = 'sz';
 this.l5api = {};
 
 this.timeout = {
+    closeWorker: 10000,
     socket: 120000,
     post: 30000,
     get: 10000,
     keepAlive: 10000,
     dns: 1000
 };
-
 
 this.extendMod = {
     getUin: req => {
