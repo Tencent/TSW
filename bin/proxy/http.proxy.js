@@ -78,7 +78,9 @@ logger.info('pid:${pid} createServer ok', {
 });
 
 // start RPC server
-require('webapp/Server.js').startServer();
+if(!config.closeRPC) {
+    require('webapp/Server.js').startServer();
+}
 
 // 分发父进程发送来的消息
 process.on('message', function(message) {
