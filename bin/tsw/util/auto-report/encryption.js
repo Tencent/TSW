@@ -17,9 +17,11 @@ const ALGORITHM_TAG_SIZE = 16;
 const ALGORITHM_KEY_SIZE = 16;
 const PBKDF2_NAME = 'sha256';
 const PBKDF2_SALT_SIZE = 16;
-const PBKDF2_ITERATIONS = 32767;
+const PBKDF2_ITERATIONS = 1024;
+const LASTPBKDF2_ITERATIONS = 32767;
 const CHARSET_NAME = 'UTF-8';
-const CURRENT_VERSION = 'v1:';
+const LASTAES_VERSION = 'v1:';
+const CURRENT_VERSION = 'v2:';
 
 const EVP_BytesToKey = password => {
     const pwd = Buffer.from(password, 'binary');
@@ -75,6 +77,23 @@ function decrypt(ciphertextAndNonce, key) {
     return Buffer.concat([cipher.update(ciphertext), cipher.final()]);
 }
 
+const matchAES = function(content) {
+    if (content.indexOf(CURRENT_VERSION) === 0) {
+        return {
+            iterations: PBKDF2_ITERATIONS,
+            ciphertext: Buffer.from(content.slice(CURRENT_VERSION.length), 'base64')
+        };
+    } else if (content.indexOf(LASTAES_VERSION) === 0) {
+        return {
+            iterations: LASTPBKDF2_ITERATIONS,
+            ciphertext: Buffer.from(content.slice(LASTAES_VERSION.length), 'base64')
+        };
+    }
+    return {
+        ciphertext: content
+    };
+};
+
 // 加密
 module.exports.encode = function (appid, appkey, data) {
     const buff = zlib.deflateSync(Buffer.from(JSON.stringify(data), CHARSET_NAME));
@@ -89,14 +108,13 @@ module.exports.encode = function (appid, appkey, data) {
 // 解密
 module.exports.decode = function (appid, appkey, body) {
     const password = appid + appkey;
-    const content = body || '';
+    const content = matchAES(body || '');
     let decodeResult;
     let data;
-    if (content.indexOf(CURRENT_VERSION) === 0) {
-        const ciphertextAndNonceAndSalt = Buffer.from(content.slice(CURRENT_VERSION.length), 'base64');
-        const salt = ciphertextAndNonceAndSalt.slice(0, PBKDF2_SALT_SIZE);
-        const ciphertextAndNonce = ciphertextAndNonceAndSalt.slice(PBKDF2_SALT_SIZE);
-        const key = crypto.pbkdf2Sync(Buffer.from(password, CHARSET_NAME), salt, PBKDF2_ITERATIONS, ALGORITHM_KEY_SIZE, PBKDF2_NAME);
+    if (content.iterations) {
+        const salt = content.ciphertext.slice(0, PBKDF2_SALT_SIZE);
+        const ciphertextAndNonce = content.ciphertext.slice(PBKDF2_SALT_SIZE);
+        const key = crypto.pbkdf2Sync(Buffer.from(password, CHARSET_NAME), salt, content.iterations, ALGORITHM_KEY_SIZE, PBKDF2_NAME);
         try {
             decodeResult = decrypt(ciphertextAndNonce, key);
         } catch (e) {
@@ -126,7 +144,6 @@ module.exports.decode = function (appid, appkey, body) {
         logger.warn(e.stack);
         return null;
     }
-
 
     return data;
 };

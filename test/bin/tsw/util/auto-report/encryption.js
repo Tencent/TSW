@@ -53,7 +53,17 @@ describe('test tsw/util/auto-report/encryption', () => {
             expect(decodeResult.hello).to.be.equal(data.hello);
         });
 
-        it('#decode aes', () => {
+        it('#decode aes for v2', () => {
+            const data = {
+                hello: 'world'
+            };
+            const aesResult = 'v2:YrCZaJTDTENaSdF7QYdHWXzMscc5T2c8J1WupQuBdU7jXX8MdyTTQQQ1IcA51P4EuwIbmeanCPRks55gb/BtWofeu/2s';
+            const decodeResult = encryption.decode(appid, appkey, aesResult);
+            expect(decodeResult).to.not.be.null; // eslint-disable-line
+            expect(decodeResult.hello).to.be.equal(data.hello);
+        });
+
+        it('#decode aes for v1', () => {
             const data = {
                 hello: 'world'
             };
