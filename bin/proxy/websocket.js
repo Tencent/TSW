@@ -127,7 +127,9 @@ function bind_listen(server) {
         d.run(function() {
             const req = ws.upgradeReq;
             parseGet(req);
-            d.currentContext.window.request = req;
+            if (d.currentContext.window) {
+                d.currentContext.window.request = req;
+            }
             contextMod.currentContext().mod_act = wsRoute.getModAct(ws);
             logger.setGroup('websocket');
             tnm2.Attr_API('SUM_TSW_WEBSOCKET_CONNECT', 1);
@@ -190,12 +192,6 @@ function bind_listen(server) {
                 wsRoute.doRoute(ws, 'connection', { wsServer: server });
             }
 
-            // 兼容以前的websocket逻辑，假的reponse事件，出现error方便打堆栈
-            window.response.emit = function (type, respondData) {
-                if (respondData && type === 'sendMessage') {
-                    ws.send(respondData);
-                }
-            };
 
             ws.on('message', function(message) {
                 logger.debug('server get message size : ${size}', {
@@ -227,9 +223,12 @@ function bind_listen(server) {
                     req.removeAllListeners('reportLog');
 
                     if (d.currentContext) {
+                        if (d.currentContext.window) {
+                            d.currentContext.window.websocket = null;
+                            d.currentContext.window = null;
+                        }
+
                         d.currentContext.beforeLogClean = null;
-                        d.currentContext.window.websocket = null;
-                        d.currentContext.window = null;
                         d.currentContext.log = null;
                         d.currentContext = null;
                     }
