@@ -13,7 +13,6 @@ const util = require('util');
 const contextMod = require('context.js');
 const callInfo = require('./callInfo.js');
 const { isWin32Like } = require('util/isWindows.js');
-const { debugOptions } = process.binding('config');
 const tnm2 = require('api/tnm2');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
 const cache = global[__filename] || {
@@ -301,10 +300,11 @@ Logger.prototype = {
     },
 
     writeLog: function(type, str, obj) {
-
         const level = this.type2level(type);
         const log = this.getLog();
         const allow = filter(level, str, obj);
+        const useInspectFlag = process.execArgv.join().includes('inspect');
+
         let logStr = null;
 
         if (log || allow === true || level >= config.getLogLevel()) {
@@ -322,7 +322,7 @@ Logger.prototype = {
             return this;
         }
 
-        if (debugOptions && debugOptions.inspectorEnabled) {
+        if (useInspectFlag) {
             // Chrome写入原始日志
             this.fillInspect(logStr, level);
             // 控制台写入高亮日志
