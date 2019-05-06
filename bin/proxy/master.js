@@ -16,7 +16,6 @@ const cpuUtil = require('util/cpu.js');
 const fs = require('fs');
 const serverOS = require('util/isWindows.js');
 const mail = require('util/mail/mail.js');
-const { debugOptions } = process.binding('config');
 const methodMap = {};
 const workerMap = {};
 const cpuMap = [];
@@ -94,13 +93,11 @@ process.on('unhandledRejection', (errorOrReason, currPromise) => {
 
 startServer();
 
-
 // 通过cluster启动master && worker
 function startServer() {
-
     let useWorker = true;
-
-    if (debugOptions.inspectorEnabled) {
+    const useInspectFlag = process.execArgv.join().includes('inspect');
+    if (useInspectFlag) {
         useWorker = false;
     }
 
@@ -161,7 +158,7 @@ function startServer() {
             require('runtime/md5.checker.js').check();
         }, 30 * 60000);
 
-        if (cluster.isMaster && debugOptions.inspectorEnabled) {
+        if (cluster.isMaster && useInspectFlag) {
             logger.setLogLevel('info');
             logger.info('inspectorEnabled, start listening');
             process.emit('message', {

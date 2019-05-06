@@ -7,8 +7,7 @@
  */
 'use strict';
 
-
-const { debugOptions } = process.binding('config');
+const useInspectFlag = process.execArgv.join().includes('inspect');
 
 this.levelMap = {
     'debug': 10,
@@ -23,7 +22,7 @@ this.logLevel = null;
 
 this.getLogLevel = function() {
 
-    if (debugOptions && debugOptions.inspectorEnabled) {
+    if (useInspectFlag) {
         return this.levelMap['debug'];
     }
 
