@@ -168,3 +168,5 @@ this.tswL5api['cmem.tsw.sh'] = this.tswL5api['cmem.tsw.sz'];
 this.tswL5api['cmem.tsw.tj'] = this.tswL5api['cmem.tsw.sh'];
 this.tswL5api['cmem.tsw.h5test'] = this.tswL5api['cmem.tsw.sz'];
 
+// 指定一个布尔值，表明TSW Master进程是否忽略来自系统的SIGTERM信号
+this.ignoreSIGTERM = false;

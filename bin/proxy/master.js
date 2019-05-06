@@ -504,6 +504,12 @@ function masterEventHandler() {
             }
         }
     });
+
+    if (config.ignoreSIGTERM) {
+        process.on('SIGTERM', () => {
+            logger.info('Received SIGTERM signal from system, but ignore it. This message usually indicates that TSW is running in a container.');
+        });
+    }
 }
 
 function startMasterMonitor() {
