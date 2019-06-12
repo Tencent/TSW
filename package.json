@@ -24,7 +24,7 @@
     "i18n": "^0.8.3",
     "memcached": "~0.2.8",
     "qs": "~6.5.1",
-    "ws": "~2.2.1"
+    "ws": "~7.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^6.2.0",
