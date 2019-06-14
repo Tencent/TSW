@@ -13,13 +13,13 @@ const _resolveFilename = Module._resolveFilename;
 const moduleStack = [];
 
 
-Module._resolveFilename = function(request, parent, isMain, options = {}) {
+Module._resolveFilename = function(request, parent, isMain, options) {
     // request = request.replace(/\?.*$/, '') // remove timestamp etc.
 
     // 性能优化
     // do not use cache when `options` has `paths` property
     // in v8.9.0 require.resolve case
-    if (parent.resolveFilenameCache && !options.paths) {
+    if (parent.resolveFilenameCache && options && !options.paths) {
         if (parent.resolveFilenameCache[request]) {
             return parent.resolveFilenameCache[request];
         }
