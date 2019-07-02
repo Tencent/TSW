@@ -298,7 +298,7 @@ function checkWorkerAlive() {
                     logger.error(worker.lastMessage);
 
                     if (config.CCIPLimitQuiet) {
-                        logger.error('hit CCIPLimitQuiet, no mail will be send');
+                        logger.warn('hit CCIPLimitQuiet, no mail will be send');
                     } else {
                         mail.SendMail(key, 'js', 600, {
                             'to': config.mailTo,
