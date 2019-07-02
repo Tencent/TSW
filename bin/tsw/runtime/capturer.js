@@ -48,7 +48,7 @@ process.nextTick(function() {
             let remotePort = '';
             let localAddress = '';
             let localPort = '';
-            const host = (opt.headers && opt.headers.host) || opt.host;
+            const host = (opt.headers && opt.headers.host) || opt.host || opt.hostname;
 
             if (context.requestCaptureSN) {
                 context.requestCaptureSN++;
@@ -99,6 +99,16 @@ process.nextTick(function() {
                     return;
                 }
 
+                let requestBody = '';
+
+                if( request._body ){
+                    if(request._body.length < maxBodySize){
+                        requestBody = request._body.toString('base64')
+                    }else{
+                        requestBody = Buffer.from(`body was too large too show, length: ${request._body.length}`).toString('base64')
+                    }
+                }
+
                 const curr = {
                     SN: SN,
 
@@ -115,7 +125,7 @@ process.nextTick(function() {
                     serverIp: remoteAddress || opt.host,
                     serverPort: remotePort || opt.port,
                     requestHeader: httpUtil.getClientRequestHeaderStr(request),
-                    requestBody: request._body ? request._body.toString('base64') : '',
+                    requestBody: requestBody,
                     responseHeader: httpUtil.getClientResponseHeaderStr(response, bodySize),
                     responseBody: (buffer.toString('base64')) || '',
                     timestamps: {

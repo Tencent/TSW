@@ -24,6 +24,7 @@ const tnm2 = require('api/tnm2');
 const format = require('webapp/utils/format');
 const CD = require('util/CD.js');
 const canIuse = /^[0-9a-zA-Z_-]{0,64}$/;
+const maxBodySize = 512 * 1024;
 const MAX_ALPHA_LOG = post.MAX_ALPHA_LOG;
 
 const limit = {
@@ -700,6 +701,16 @@ module.exports.reportLog = function() {
                 res._body = Buffer.from(format.formatBuffer(res._body));
             }
 
+            let requestBody = '';
+
+            if (req._body){
+                if (req._body.length < maxBodySize){
+                    requestBody = req._body.toString('base64')
+                }else{
+                    requestBody = Buffer.from(`body was too large too show, length: ${req._body.length}`).toString('base64');
+                }
+            }
+
             logJson.curr = {
                 protocol: 'HTTP',
                 host: req.headers.host,
@@ -714,7 +725,7 @@ module.exports.reportLog = function() {
                 serverIp: serverInfo.intranetIp,
                 serverPort: config.httpPort,
                 requestHeader: httpUtil.getRequestHeaderStr(req),
-                requestBody: req._body ? req._body.toString('base64') : '',
+                requestBody: requestBody,
                 responseHeader: httpUtil.getResponseHeaderStr(res),
                 responseBody: res && res._body ? res._body.toString('base64') : '',
                 logText: logText,

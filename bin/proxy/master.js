@@ -123,6 +123,10 @@ function startServer() {
         // 根据cpu数来初始化并启动子进程
         if (config.runAtThisCpu === 'auto') {
             cpuUtil.cpus().forEach(function(v, i) {
+                if (config.maxWorkerNum && i >= config.maxWorkerNum) {
+                    logger.info(`hit maxWorkerNum = ${config.maxWorkerNum}`);
+                    return;
+                }
                 cpuMap.push(0);
                 cluster.fork(process.env).cpuid = i;
             });
@@ -293,15 +297,18 @@ function checkWorkerAlive() {
 
                     logger.error(worker.lastMessage);
 
-                    mail.SendMail(key, 'js', 600, {
-                        'to': config.mailTo,
-                        'cc': config.mailCC,
-                        'runtimeType': 'Memory',
-                        'msgInfo': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}`,
-                        'title': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingWaring')}`,
-                        'content': `<p><strong>${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}</strong></p>`
-                    });
-
+                    if (config.CCIPLimitQuiet) {
+                        logger.warn('hit CCIPLimitQuiet, no mail will be send');
+                    } else {
+                        mail.SendMail(key, 'js', 600, {
+                            'to': config.mailTo,
+                            'cc': config.mailCC,
+                            'runtimeType': 'Memory',
+                            'msgInfo': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}`,
+                            'title': `${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingWaring')}`,
+                            'content': `<p><strong>${serverInfo.intranetIp} ${lang.__('mail.memoryExceedingTips')}</strong></p>`
+                        });
+                    }
                     restartWorker(worker);
                 }
             }
