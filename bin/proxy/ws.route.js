@@ -20,7 +20,7 @@ exports.doRoute = function(ws, type, opts) {
     const mod_act = exports.getModAct(ws),
         moduleObj = wsModMap.find(mod_act, ws);
 
-    if (typeof moduleObj !== 'object') {
+    if (!moduleObj || typeof moduleObj !== 'object') {
         try {
             ws.send('module ' + mod_act + ' is not object');
         } catch (e) {

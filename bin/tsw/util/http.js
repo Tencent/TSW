@@ -416,21 +416,21 @@ this.getUserIp = function(request) {
     const qvia = request.headers['qvia'] || '';
     const realIp = request.headers['x-real-ip'] || '';
 
-    if (realIp) {
+    if (xff) {
+
+        // xff判断，注意只认内网ip带的xff，外网带的不算
+        if (userIp && this.isInnerIP(userIp)) {
+
+            xff = xff.split(',')[0] || userIp;
+            userIp = xff.trim() || userIp;
+        }
+
+    } else if (realIp) {
 
         // x-real-ip
         if (userIp && this.isInnerIP(userIp)) {
             userIp = realIp;
         }
-    } else if (xff) {
-
-        // xff判断，注意只认内网ip带的xff，外网带的不算
-        if (userIp && this.isInnerIP(userIp)) {
-
-            xff = xff.split(',').slice(-1)[0] || userIp;
-            userIp = xff.trim() || userIp;
-        }
-
     } else if (qvia) {
 
         // 注意只认内网ip带的qvia，外网带的不算

@@ -268,6 +268,7 @@ Ajax.prototype.doRequest = function(opt) {
             },
             this._proxyRequest.headers,
             {
+                'x-real-ip': httpUtil.getUserIp(this._proxyRequest),
                 'x-forwarded-for': httpUtil.getUserIp(this._proxyRequest)
             },
             opt.headers
