@@ -80,6 +80,10 @@ module.exports = function(req, res) {
             setTimeout(function() {
                 logger.debug('clearing');
 
+                while (process.domain) {
+                    process.domain.exit();
+                }
+
                 d.remove(req);
                 d.remove(res);
 
@@ -100,8 +104,6 @@ module.exports = function(req, res) {
                 res = null;
                 start = null;
                 clear = null;
-
-                logger.debug('cleared');
             }, timeout);
         });
 

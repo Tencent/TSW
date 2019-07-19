@@ -78,7 +78,7 @@ logger.info('pid:${pid} createServer ok', {
 });
 
 // start RPC server
-if(!config.closeRPC) {
+if (!config.closeRPC) {
     require('webapp/Server.js').startServer();
 }
 
