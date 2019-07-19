@@ -696,7 +696,7 @@ module.exports.reportLog = function() {
         try {
 
             // webapp的二进制回包转成可视化的结构
-            if (!isWebSocket && res._body && res.getHeader('content-type') === 'webapp') {
+            if (!isWebSocket && res._body && res.getHeader('content-type') === 'webapp') {  // 不要用_headers了
                 res._body = Buffer.from(format.formatBuffer(res._body));
             }
 
