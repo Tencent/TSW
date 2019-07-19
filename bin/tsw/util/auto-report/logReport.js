@@ -671,7 +671,7 @@ module.exports.reportLog = function() {
             headers: httpUtil.getRequestHeaderStr(req),
             body: requestBodyText,
             statusCode: res.statusCode,
-            resHeaders: JSON.stringify(res._headers, null, 2)
+            resHeaders: JSON.stringify(res.getHeaders())
         });
     }
 
@@ -696,7 +696,7 @@ module.exports.reportLog = function() {
         try {
 
             // webapp的二进制回包转成可视化的结构
-            if (!isWebSocket && res._body && res._headers['content-type'] === 'webapp') {
+            if (!isWebSocket && res._body && res.getHeader('content-type') === 'webapp') {
                 res._body = Buffer.from(format.formatBuffer(res._body));
             }
 
@@ -707,8 +707,8 @@ module.exports.reportLog = function() {
                 cache: '',
                 process: 'TSW:' + process.pid,
                 resultCode: (res && res.statusCode) || 101,
-                contentLength: isWebSocket ? 0 : (res._headers['content-length'] || res._bodySize),
-                contentType: isWebSocket ? 'websocket' : res._headers['content-type'],
+                contentLength: isWebSocket ? 0 : (res.getHeader('content-type') || res._bodySize),
+                contentType: isWebSocket ? 'websocket' : res.getHeader('content-type'),
                 clientIp: httpUtil.getUserIp(req),
                 clientPort: req.socket && req.socket.remotePort,
                 serverIp: serverInfo.intranetIp,
@@ -747,7 +747,7 @@ module.exports.reportLog = function() {
             const pathName = req.REQUEST.pathname;
             const fileName = pathName.substr(pathName.lastIndexOf('/') + 1);
             reportData.group = module.exports.fingureCroup({
-                resHeaders: res._headers,
+                resHeaders: res.getHeaders(),
                 reqHeaders: req.headers,
                 suffix: fileName.indexOf('.') !== -1 ? fileName.substr(fileName.lastIndexOf('.') + 1) : '',
                 method: req.method,
