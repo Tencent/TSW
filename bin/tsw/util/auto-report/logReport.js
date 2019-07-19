@@ -703,10 +703,10 @@ module.exports.reportLog = function() {
 
             let requestBody = '';
 
-            if (req._body){
-                if (req._body.length < maxBodySize){
-                    requestBody = req._body.toString('base64')
-                }else{
+            if (req._body) {
+                if (req._body.length < maxBodySize) {
+                    requestBody = req._body.toString('base64');
+                } else {
                     requestBody = Buffer.from(`body was too large too show, length: ${req._body.length}`).toString('base64');
                 }
             }
@@ -718,7 +718,7 @@ module.exports.reportLog = function() {
                 cache: '',
                 process: 'TSW:' + process.pid,
                 resultCode: (res && res.statusCode) || 101,
-                contentLength: isWebSocket ? 0 : (res.getHeader('content-type') || res._bodySize),
+                contentLength: isWebSocket ? 0 : (res.getHeader('content-length') || res._bodySize),
                 contentType: isWebSocket ? 'websocket' : res.getHeader('content-type'),
                 clientIp: httpUtil.getUserIp(req),
                 clientPort: req.socket && req.socket.remotePort,
