@@ -105,7 +105,7 @@ this.router = {
     },
     find: function() {
         const res = window.response;
-        res.end(`route to config.default.js: ${__filename}`);
+        res.end('route to config.default.js');
     }
 };
 
