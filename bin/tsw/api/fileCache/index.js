@@ -77,21 +77,10 @@ this.set = function(filepath, data) {
     const basename = path.basename(filename);
     const randomname = basename + '.tmp.' + String(Math.random()).slice(2);
 
-    logger.debug('[set] filename : ${filename}', {
-        filename: filename
-    });
-
-    logger.debug('[set] dirname : ${dirname}', {
-        dirname: dirname
-    });
-
-    logger.debug('[set] basename : ${basename}', {
-        basename: basename
-    });
-
-    logger.debug('[set] randomname : ${randomname}', {
-        randomname: randomname
-    });
+    logger.debug(`[set] filename : ${filename}`);
+    logger.debug(`[set] dirname : ${dirname}`);
+    logger.debug(`[set] basename : ${basename}`);
+    logger.debug(`[set] randomname : ${randomname}`);
 
     this.mkdir(dirname);
 
@@ -103,10 +92,7 @@ this.set = function(filepath, data) {
 
     fs.writeFile([dirname, randomname].join('/'), buffer, { mode: 0o666 }, function(err) {
 
-        logger.debug('[write] done: ${randomname}, size: ${size}', {
-            randomname: randomname,
-            size: buffer.length
-        });
+        logger.debug(`[write] done: ${randomname}, size: ${buffer.length}`);
 
         if (err) {
             logger.info(err.stack);
@@ -120,10 +106,7 @@ this.set = function(filepath, data) {
                 logger.debug(err);
             }
 
-            logger.debug('[rename] done: ${basename}, cost: ${cost}ms', {
-                basename: basename,
-                cost: end - start
-            });
+            logger.debug(`[rename] done: ${basename}, cost: ${end - start}ms`);
         });
 
     });
@@ -156,12 +139,10 @@ this.getSync = function(filepath) {
     }
 
     const end = Date.now();
+    const size = buffer && buffer.length;
+    const cost = end - start;
 
-    logger.debug('[get] done: ${filename}, size: ${size}, cost: ${cost}ms', {
-        filename: filename,
-        size: buffer && buffer.length,
-        cost: end - start
-    });
+    logger.debug(`[get] done: ${filename}, size: ${size}, cost: ${cost}ms`);
 
     tnm2.Attr_API('SUM_TSW_FILECACHE_READ', 1);
     return res;
@@ -178,9 +159,7 @@ this.get = this.getAsync = function(filepath) {
         data: null
     };
 
-    logger.debug('[getAsync] ${filename}', {
-        filename: filename
-    });
+    logger.debug(`[getAsync] ${filename}`);
 
     fs.readFile(filename, function(err, buffer) {
 
@@ -200,7 +179,7 @@ this.get = this.getAsync = function(filepath) {
                 return;
             }
 
-            logger.debug('[getAsync] mtime: ${mtime}, size: ${size}', stats);
+            logger.debug(`[getAsync] mtime: ${stats.mtime}, size: ${stats.size}`);
 
             res.stats = stats;
             defer.resolve(res);
@@ -217,9 +196,7 @@ this.updateMtime = function(filepath, atime, mtime) {
     const filename = this.getDir(filepath);
 
 
-    logger.debug('[updateMtime] ${filename}', {
-        filename: filename
-    });
+    logger.debug(`[updateMtime] ${filename}`);
 
     fs.utimes(filename, atime || new Date(), mtime || new Date(), function(err) {
         if (err) {
@@ -227,6 +204,6 @@ this.updateMtime = function(filepath, atime, mtime) {
             return;
         }
 
-        logger.debug('[updateMtime] ${filename} succ');
+        logger.debug(`[updateMtime] ${filename} succ`);
     });
 };
