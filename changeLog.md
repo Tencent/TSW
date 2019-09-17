@@ -1,5 +1,60 @@
 # ChangeLog
 
+## [2019-07-19, Version  v1.4.1](https://github.com/Tencent/TSW/releases/tag/v1.4.1)
+
+
+### Bug fixes
+	
+ - [[```8d678781```](https://github.com/Tencent/TSW/commit/8d6787814f53f1c45b60e11a9e5fa665ca0d8cf0)] __-__ get user IP from XXF first (youkunhuang)
+ - [[```fda2ad28```](https://github.com/Tencent/TSW/commit/fda2ad28791a08c5c22564cc593d2a02ef0ca32f)] __-__ resolved #324 (Zhang Kaidong)
+ - [[```5d27976e```](https://github.com/Tencent/TSW/commit/5d27976e01b5202c184d970e4952ba8835345847)] __-__ upgrade ws version to 7 (RobinzZH)
+
+
+### Code Refactoring
+
+ - [[```8bb067c0```](https://github.com/Tencent/TSW/commit/8bb067c06c653afab55ed07a15cc86e5a6f2945a)] __-__ fix Dockerfile (mapleeit)
+ - [[```98762a59```](https://github.com/Tencent/TSW/commit/98762a593ba846fc814bb5d4c88d9cb787fa59d6)] __-__ refactor some code (youkunhuang)
+
+
+### Other commits
+
+ - [[```2d2e0112```](https://github.com/Tencent/TSW/commit/2d2e0112f47175a06f5cd24f1be7a67d8dd1140c)] __-__ 1.4.1 (robinzhxie)
+
+
+
+
+## [2019-05-09, Version  v1.4.0](https://github.com/Tencent/TSW/releases/tag/v1.4.0)
+
+
+### Bug fixes
+	
+ - [[```e555f55b```](https://github.com/Tencent/TSW/commit/e555f55bb34bd9ad3717dc4897d1314b5e10136a)] __-__ resolved Tencent/TSW#317 (lemanzhang)
+ - [[```e8dd7e14```](https://github.com/Tencent/TSW/commit/e8dd7e1404535f8c3d13d89f9ac206c674dcfe74)] __-__ __websocket__: window not find (tarotlwei)
+ - [[```da266d91```](https://github.com/Tencent/TSW/commit/da266d9150aeb2b6e4a899f407f3059d36751176)] __-__ __encryption__: update iterations for pbkdf2 (robinzhxie)
+ - [[```c5727216```](https://github.com/Tencent/TSW/commit/c572721662904f52f628a2280f5f950459578467)] __-__ __docker__: update Dockerfile (mapleeit)
+
+
+### Features
+
+ - [[```edf16146```](https://github.com/Tencent/TSW/commit/edf16146d0706567ce38a5cd1c8727d8a75d8d49)] __-__ __docker__: don&#39;t redirect stdout in dockerfile (mapleeit)
+ - [[```4ff24c26```](https://github.com/Tencent/TSW/commit/4ff24c26e0ce3dd9f0ddc9d2bb1578a79c77f905)] __-__ add ignoreSIGTERM config (lemanzhang)
+
+
+### Code Refactoring
+
+ - [[```868c498b```](https://github.com/Tencent/TSW/commit/868c498b19cc61088fba944e2f130ce79f318ddf)] __-__ sync from tencent interal TSW (youkunhuang)
+ - [[```2bc400b2```](https://github.com/Tencent/TSW/commit/2bc400b201312350eb4ac8964f14d86deda47afc)] __-__ __docker__: add nodejs-npm for building image (lemanzhang)
+
+
+### Other commits
+
+ - [[```fc28436d```](https://github.com/Tencent/TSW/commit/fc28436dc42de6897f9c577380255431628d35fe)] __-__ 1.4.0 (mapleeit)
+ - [[```0805d72c```](https://github.com/Tencent/TSW/commit/0805d72cb0a87fc59899b11cc70a8c0c04b7d459)] __-__ __test(encryption)__ : test decode for v1 &amp; v2 (robinzhxie)
+ - [[```17f15fe6```](https://github.com/Tencent/TSW/commit/17f15fe60e5334f039c928f6cb7146cede226f2c)] __-__ __docs(changelog)__ : update change log (robinzhxie)
+
+
+
+
 ## [2019-03-08, Version  v1.3.0](https://github.com/Tencent/TSW/releases/tag/v1.3.0)
 
 
