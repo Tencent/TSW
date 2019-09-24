@@ -76,7 +76,8 @@ function bind_listen(server) {
         logger.debug('ws server error:' + (error && error.stack));
     });
 
-    server.on('connection', function(ws) {
+    server.on('connection', function(ws, request) {
+        ws.upgradeReq = ws.upgradeReq || request;
         process.SN = process.SN || 0;
         let d = domain.create();
         d.add(ws);
