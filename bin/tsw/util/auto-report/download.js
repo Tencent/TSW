@@ -193,7 +193,7 @@ const initRequestHar = function (request) {
 
                 const postDataArr = requestArr[requestArr.length - 1];
                 request.postData.text = postDataArr;
-                
+
             }
         }
         // 补齐cookie
