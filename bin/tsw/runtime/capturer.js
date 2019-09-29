@@ -101,11 +101,11 @@ process.nextTick(function() {
 
                 let requestBody = '';
 
-                if( request._body ){
-                    if(request._body.length < maxBodySize){
-                        requestBody = request._body.toString('base64')
-                    }else{
-                        requestBody = Buffer.from(`body was too large too show, length: ${request._body.length}`).toString('base64')
+                if (request._body) {
+                    if (request._body.length < maxBodySize) {
+                        requestBody = request._body.toString('base64');
+                    } else {
+                        requestBody = Buffer.from(`body was too large too show, length: ${request._body.length}`).toString('base64');
                     }
                 }
 

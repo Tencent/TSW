@@ -189,12 +189,10 @@ const initRequestHar = function (request) {
                         }
                     }
                 });
-                if (request.method && request.method === 'POST') {
-                    const postDataArr = requestArr[requestArr.length - 1];
-                    request.postData.mimeType = 'multipart/form-data';
-                    request.postData.text = postDataArr;
-                }
 
+
+                const postDataArr = requestArr[requestArr.length - 1];
+                request.postData.text = postDataArr;
 
             }
         }

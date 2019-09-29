@@ -98,6 +98,17 @@ this.modMap = {
     }
 };
 
+// 配置默认的名称和路由信息，方便新人理解
+this.router = {
+    name: function() {
+        return 'default';
+    },
+    find: function() {
+        const res = window.response;
+        res.end('route to config.default.js');
+    }
+};
+
 this.isCloud = false;
 
 this.page419 = null;
