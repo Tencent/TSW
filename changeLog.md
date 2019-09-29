@@ -1,5 +1,37 @@
 # ChangeLog
 
+## [2019-09-29, Version  v1.4.3](https://github.com/Tencent/TSW/releases/tag/v1.4.3)
+
+
+### Bug fixes
+	
+ - [[```1f9ba814```](https://github.com/Tencent/TSW/commit/1f9ba814563ddf26e050f8114eaf5a627a2ae6f0)] __-__ __eslint__: lint code (robinzhxie)
+ - [[```bf14d6ea```](https://github.com/Tencent/TSW/commit/bf14d6eaeaaa8d013d8970624906b87b9b19f74b)] __-__ __websocket__: fix websocket url not defined error (hazelchen)
+ - [[```99575bbb```](https://github.com/Tencent/TSW/commit/99575bbbbaec4f8a40fa2f2c7504b8713028cafe)] __-__ fix har log (yinghaowang)
+ - [[```0d42babb```](https://github.com/Tencent/TSW/commit/0d42babb7ac4d703c6e7cf22b5bb7eb0de503944)] __-__ add default router config (jackqqxu)
+ - [[```b599f506```](https://github.com/Tencent/TSW/commit/b599f50665a15402b50b990392603358a857bbb5)] __-__ add default router config (jackqqxu)
+ - [[```2eba668e```](https://github.com/Tencent/TSW/commit/2eba668e4474ed086c171947457a944670d29929)] __-__ outgoingMessage.prototype._headers is deprecated (jackqqxu)
+ - [[```379bad0c```](https://github.com/Tencent/TSW/commit/379bad0c8d5f8c52612a4a564a6bc0a73100321f)] __-__ outgoingMessage.prototype._headers is deprecated (jackqqxu)
+ - [[```573ab47a```](https://github.com/Tencent/TSW/commit/573ab47a2226695d9f9b803e89c1fc8567bade87)] __-__ outgoingMessage.prototype._headers is deprecated (jackqqxu)
+
+
+
+
+## [2019-09-29, Version  v1.4.2](https://github.com/Tencent/TSW/releases/tag/v1.4.2)
+
+
+### Bug fixes
+	
+ - [[```173829bb```](https://github.com/Tencent/TSW/commit/173829bb3ad614d233d8193b7b58303e79a0b0a5)] __-__ upgrade version to match npm (robinzhxie)
+
+
+### Other commits
+
+ - [[```9243c944```](https://github.com/Tencent/TSW/commit/9243c94489e94a6d143803d9bc9f5781c7277195)] __-__ __docs__ : update change log (robinzhxie)
+
+
+
+
 ## [2019-07-19, Version  v1.4.1](https://github.com/Tencent/TSW/releases/tag/v1.4.1)
 
 
