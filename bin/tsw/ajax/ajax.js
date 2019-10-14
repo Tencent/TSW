@@ -484,19 +484,30 @@ Ajax.prototype.doRequest = function(opt) {
         }
     }
 
-    if (httpUtil.isGetLike(opt.type) && opt.headers['content-length']) {
+    if (httpUtil.isGetLike(opt.type)) {
 
-        logger.debug('reset Content-Length: 0 , origin: ' + opt.headers['content-length']);
+        if (opt.headers['content-length']) {
 
-        delete opt.headers['content-length'];
-        delete opt.headers['content-type'];
-        opt.body = null;
-    } else if (opt.body) {
-        if (!Buffer.isBuffer(opt.body)) {
-            opt.body = Buffer.from(opt.body, 'UTF-8');
+            logger.debug('reset Content-Length: 0 , origin: ' + opt.headers['content-length']);
+    
+            delete opt.headers['content-length'];
+            delete opt.headers['content-type'];
+            opt.body = null;
         }
 
-        opt.headers['Content-Length'] = opt.body.length;
+    } else {
+        
+        if (opt.body) {
+            if (!Buffer.isBuffer(opt.body)) {
+                opt.body = Buffer.from(opt.body, 'UTF-8');
+            }
+    
+            opt.headers['Content-Length'] = opt.body.length;
+        }else if( opt.dataType === 'proxy' ){
+            // keep origin
+        }else{
+            opt.headers['Content-Length'] = 0;
+        }
     }
 
     if (opt.protocol === 'https:') {
