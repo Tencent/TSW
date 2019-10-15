@@ -109,6 +109,17 @@ this.router = {
     }
 };
 
+this.wsRouter = {
+    name: function() {
+        return 'default';
+    },
+    find: function(name, ws) {
+        ws && ws.close();
+        return null;
+    }
+};
+
+
 this.isCloud = false;
 
 this.page419 = null;
