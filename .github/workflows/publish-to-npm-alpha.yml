@@ -1,0 +1,47 @@
+name: Publish to Npm(Alpha Version)
+
+on:
+  pull_request:
+    branches: dev
+
+jobs:
+  publish-to-npm-alpha:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull code
+        uses: actions/checkout@v1
+      - name: Set up node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: '10.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Semantic release
+        uses: cycjimmy/semantic-release-action@v2
+        id: semantic
+        with:
+          branch: dev
+          extra_plugins: |
+            @semantic-release/git
+            @semantic-release/changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Test Outputs
+        run: |
+          echo ${{ steps.semantic.outputs.new_release_version }}
+          echo ${{ steps.semantic.outputs.new_release_major_version }}
+          echo ${{ steps.semantic.outputs.new_release_minor_version }}
+          echo ${{ steps.semantic.outputs.new_release_patch_version }}
+
+      - name: Publish to gitHub package registry
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: npm publish --tag alpha
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Push updates to branch for major version
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: "git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:refs/heads/v${{steps.semantic.outputs.new_release_major_version}}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

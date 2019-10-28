@@ -2,7 +2,7 @@
 
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg) [![Build Status](https://travis-ci.org/Tencent/TSW.svg?branch=master)](https://travis-ci.org/Tencent/TSW)
-
+![npm-alpha](https://github.com/Tencent/TSW/workflows/Publish%20to%20Npm(Alpha%20Version)/badge.svg)
 ---
 
 
