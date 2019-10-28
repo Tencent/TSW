@@ -1,0 +1,38 @@
+name: Node.js Package
+
+on:
+  pull_request:
+    branches: dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - name: Install Dependencies
+        run: npm install
+      - name: Commitlint
+        run: echo 'success'
+      - name: Run ESLint
+        run: npm run lint
+      - name: Run tests
+        run: npm test
+      - name: Run Code Coverage
+        run: npm run coverage
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm publish --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
