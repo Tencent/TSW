@@ -1,32 +1,32 @@
-name: Lint Code
+name: build
 
 on:
   pull_request:
-    branches: dev
+    branches:
+      - master
+      - dev
 
 jobs:
   lint-code:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Pull Code
         uses: actions/checkout@v1
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
-          node-version: '12.x'
+          node-version: '10.x'
       - name: Install Dependencies
         run: npm install
       - name: Commit Linter
         uses: wagoid/commitlint-github-action@v1.2.2
         with:
-          configFile: './commitlintrc.yml'
+          configFile: '.commitlintrc.yml'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run ESLinter
         run: npm run lint
       - name: Run Tests
         run: npm test
       - name: Run Code Coverage
         run: npm run coverage
-      - name: Test Node Version
-        run: node -v

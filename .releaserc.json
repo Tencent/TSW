@@ -1,0 +1,9 @@
+{
+    "branch": "master",
+    "tagFormat": "v${version}",
+    "dryRun": false,
+    "debug": true,
+    "plugins": [
+        "@semantic-release/npm"
+    ]
+}
