@@ -159,9 +159,15 @@ function bind_listen(server) {
             if (testSpaceInfo) {
                 const clientReqHeaders = Object.assign({}, req.headers);
                 delete clientReqHeaders['sec-websocket-key'];
-                wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, {
+                const options = {
                     headers: clientReqHeaders
-                });
+                };
+
+                if (clientReqHeaders['sec-websocket-protocol']) {
+                    options.protocol = clientReqHeaders['sec-websocket-protocol'];
+                }
+
+                wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, options);
 
                 logger.debug('websocket server proxy , proxy server ip: ${proxyServerIp} > ${serverIp}:${serverPort}', {
                     proxyServerIp: serverInfo.intranetIp,
