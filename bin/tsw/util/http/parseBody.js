@@ -65,7 +65,7 @@ module.exports = function(req, res, next) {
             }
 
             req.body = req.POST;
-        } else if (contentType.indexOf('application/json') > -1) {
+        } else if (contentType.indexOf('application/json') > -1 || contentType.indexOf('text/json') > -1 ) {
 
             try {
                 req.POST = JSON.parse(req.REQUEST.body);

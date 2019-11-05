@@ -680,6 +680,7 @@ function doRoute(req, res) {
         contentType.indexOf('application/x-www-form-urlencoded') > -1
         || contentType.indexOf('text/plain') > -1
         || contentType.indexOf('application/json') > -1
+        || contentType.indexOf('text/json') > -1
     ) {
         parseBody(req, res, function() {
             return modulePathHandler();
