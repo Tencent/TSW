@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 
-import { add } from '../../src/core/add'
+import { add } from '../../lib/core/add'
 
 describe('test add', function() {
     it('add(1,2)=3', function(done) {
