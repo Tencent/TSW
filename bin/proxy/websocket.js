@@ -159,7 +159,7 @@ function bind_listen(server) {
             if (testSpaceInfo) {
                 const clientReqHeaders = Object.assign({}, req.headers);
                 delete clientReqHeaders['sec-websocket-key'];
-                wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + req.url, testSpaceInfo.testPort, {
+                wsClient = new WebSocket('ws://' + testSpaceInfo.testIp + ':' + testSpaceInfo.testPort + req.url, clientReqHeaders['sec-websocket-protocol'] || null, {
                     headers: clientReqHeaders
                 });
 
