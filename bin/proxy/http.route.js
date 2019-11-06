@@ -677,6 +677,7 @@ function doRoute(req, res) {
         // stream handler
         return modulePathHandler();
     } else if (
+        // text/json不是标准的MIME，这里增加兼容主要考虑能够正常处理一些老式的项目发出的请求
         contentType.indexOf('application/x-www-form-urlencoded') > -1
         || contentType.indexOf('text/plain') > -1
         || contentType.indexOf('application/json') > -1
