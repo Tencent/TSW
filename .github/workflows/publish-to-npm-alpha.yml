@@ -2,10 +2,10 @@ name: Publish to npm
 
 on:
   push:
-    branches: master
+    branches: release
 
 jobs:
-  publish-to-npm-alpha:
+  publish-to-npm:
     runs-on: ubuntu-latest
     steps:
       - name: Pull code

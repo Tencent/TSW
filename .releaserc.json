@@ -1,5 +1,5 @@
 {
-    "branch": "master",
+    "branch": "release",
     "tagFormat": "v${version}",
     "dryRun": false,
     "debug": true,
