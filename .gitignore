@@ -4,4 +4,4 @@ node_modules
 .DS_Store
 dist
 .nyc_output
-coverage-summary
+coverage
