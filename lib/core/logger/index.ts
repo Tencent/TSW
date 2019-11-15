@@ -1,6 +1,10 @@
 class Logger {
-    writeLog(level, info) {
-        return `${level}: ${info}`
+    writeLog(level: any, info: any) {}
+    debug(str: string) {
+        console.debug(str)
+    }
+    error(str: string) {
+        console.error(str)
     }
 }
 
