@@ -1,17 +1,20 @@
 class Logger {
-    writeLog(level: any, info: any) {}
-    debug(str: string) {
-        console.debug(str)
-    }
-    error(str: string) {
-        console.error(str)
-    }
+  writeLog(level: any, info: any) {
+    // do nothing
+  }
+  debug(str: string) {
+    console.debug(str);
+  }
+
+  error(str: string) {
+    console.error(str);
+  }
 }
 
-let logger
+let logger: Logger;
 
 if (!logger) {
-    logger = new Logger()
+  logger = new Logger();
 }
 
-export default logger
+export default logger;

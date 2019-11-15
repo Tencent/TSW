@@ -6,15 +6,14 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-declare global {
-    interface Console {
-        originDebug(message?: any, ...optionalParams: any[]): void
-        originLog(message?: any, ...optionalParams: any[]): void
-        originInfo(message?: any, ...optionalParams: any[]): void
-        originDir(message?: any, ...optionalParams: any[]): void
-        originWarn(message?: any, ...optionalParams: any[]): void
-        originError(message?: any, ...optionalParams: any[]): void
-    }
-}
 
-export {}
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+declare interface Console {
+  originDebug(message?: any, ...optionalParams: any[]): void;
+  originLog(message?: any, ...optionalParams: any[]): void;
+  originInfo(message?: any, ...optionalParams: any[]): void;
+  originDir(message?: any, ...optionalParams: any[]): void;
+  originWarn(message?: any, ...optionalParams: any[]): void;
+  originError(message?: any, ...optionalParams: any[]): void;
+}

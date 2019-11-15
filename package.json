@@ -1,51 +1,57 @@
 {
-    "name": "@tswjs/tsw",
-    "version": "2.0.0",
-    "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
-    "main": "dist/index.js",
-    "scripts": {
-        "commitlint": "commitlint --color",
-        "lint": "tslint -p ./tsconfig.json --fix",
-        "test": "jest --coverage",
-        "build": "tsc",
-        "dev": "tsc --watch"
-    },
-    "repository": {
-        "type": "git",
-        "url": "http://git.code.oa.com/tsw/TSW2.git"
-    },
-    "keywords": [
-        "tsw"
-    ],
-    "engines": {
-        "node": ">= 8.0.0"
-    },
-    "license": "MIT",
-    "devDependencies": {
-        "@commitlint/cli": "^7.5.2",
-        "@commitlint/config-conventional": "^7.5.0",
-        "@types/jest": "^24.0.23",
-        "@types/node": "^11.9.5",
-        "husky": "^1.3.1",
-        "jest": "^24.9.0",
-        "lint-staged": "^8.1.4",
-        "prettier": "^1.16.4",
-        "ts-jest": "^24.1.0",
-        "ts-node": "^8.0.2",
-        "tslint": "^5.13.0",
-        "tslint-config-prettier": "^1.18.0",
-        "typescript": "^3.7.2"
-    },
-    "husky": {
-        "hooks": {
-            "commit-msg": "commitlint -e .git/COMMIT_EDITMSG",
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*.ts": [
-            "prettier --write",
-            "git add"
-        ]
+  "name": "@tswjs/tsw",
+  "version": "2.0.0",
+  "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
+  "main": "dist/index.js",
+  "scripts": {
+    "commitlint": "commitlint --color",
+    "test": "jest --coverage",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --fix --ext .ts ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tencent/TSW.git"
+  },
+  "keywords": [
+    "tsw"
+  ],
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^7.5.2",
+    "@commitlint/config-conventional": "^7.5.0",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^11.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.7.0",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-eslint-comments": "^3.1.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsdoc": "^18.0.1",
+    "husky": "^1.3.1",
+    "jest": "^24.9.0",
+    "lint-staged": "^8.1.4",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.7.2"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -e .git/COMMIT_EDITMSG",
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "yarn lint:fix",
+      "git add"
+    ]
+  }
 }
