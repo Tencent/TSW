@@ -29,5 +29,5 @@ jobs:
         run: npm run lint
       - name: Run Tests
         run: npm test
-      - name: Run Code Coverage
-        run: npm run coverage
+      # - name: Run Code Coverage
+      #   run: npm run coverage
