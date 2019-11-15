@@ -1,5 +1,5 @@
 export const config = {
-    timeout: {
-        dns: 3000,
-    },
-}
+  timeout: {
+    dns: 3000
+  }
+};
