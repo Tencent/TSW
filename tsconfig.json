@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "es2017"
+        ]
+    },
+    "files": [
+        "./typings/type.d.ts"
+    ],
+    "include": [
+        "./lib/**/*"
+    ]
+}

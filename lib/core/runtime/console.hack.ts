@@ -6,75 +6,74 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import util from 'util'
+import * as util from 'util'
 
-export const ConsoleHack = () => {
+import logger from '../logger/index'
+
+export const consoleHack = () => {
     if (!global[__filename]) {
         global[__filename] = true
-        process.nextTick(() => {
-            const logger = require('logger')
-            /* eslint-disable no-console */
-            console.debug = (log => {
-                return (...args) => {
-                    return logger.writeLog(
-                        'DEBUG',
-                        `${util.format.apply(null, args)}`,
-                    )
-                }
-            })((console.originDebug = console.debug))
+        /* eslint-disable no-console */
+        console.debug = (log => {
+            return (...args) => {
+                return logger.writeLog(
+                    'DEBUG',
+                    `${util.format.apply(null, args)}`,
+                )
+            }
+        })((console.originDebug = console.debug))
 
-            console.log = (log => {
-                return (...args) => {
-                    return logger.writeLog(
-                        'DEBUG',
-                        `${util.format.apply(null, args)}`,
-                    )
-                }
-            })((console.originLog = console.log))
+        console.log = (log => {
+            return (...args) => {
+                return logger.writeLog(
+                    'DEBUG',
+                    `${util.format.apply(null, args)}`,
+                )
+            }
+        })((console.originLog = console.log))
 
-            console.info = (log => {
-                return (...args) => {
-                    return logger.writeLog(
-                        'INFO',
-                        `${util.format.apply(null, args)}`,
-                    )
-                }
-            })((console.originInfo = console.info))
+        console.info = (log => {
+            return (...args) => {
+                return logger.writeLog(
+                    'INFO',
+                    `${util.format.apply(null, args)}`,
+                )
+            }
+        })((console.originInfo = console.info))
 
-            console.dir = (log => {
-                return function(object, options) {
-                    options = Object.assign(
-                        {
-                            customInspect: false,
-                        },
-                        options,
-                    )
-                    return logger.writeLog(
-                        'INFO',
-                        `${util.inspect(object, options)}`,
-                    )
-                }
-            })((console.originDir = console.dir))
+        console.dir = (log => {
+            return function(object, options) {
+                options = Object.assign(
+                    {
+                        customInspect: false,
+                    },
+                    options,
+                )
+                return logger.writeLog(
+                    'INFO',
+                    `${util.inspect(object, options)}`,
+                )
+            }
+        })((console.originDir = console.dir))
 
-            console.warn = (log => {
-                return (...args) => {
-                    return logger.writeLog(
-                        'WARN',
-                        `${util.format.apply(null, args)}`,
-                    )
-                }
-            })((console.originWarn = console.warn))
+        console.warn = (log => {
+            return (...args) => {
+                return logger.writeLog(
+                    'WARN',
+                    `${util.format.apply(null, args)}`,
+                )
+            }
+        })((console.originWarn = console.warn))
 
-            console.error = (log => {
-                return (...args) => {
-                    return logger.writeLog(
-                        'ERROR',
-                        `${util.format.apply(null, args)}`,
-                    )
-                }
-            })((console.originError = console.error))
+        console.error = (log => {
+            return (...args) => {
+                return logger.writeLog(
+                    'ERROR',
+                    `${util.format.apply(null, args)}`,
+                )
+            }
+        })((console.originError = console.error))
 
-            /* eslint-enable no-console */
-        })
+        /* eslint-enable no-console */
     }
 }
