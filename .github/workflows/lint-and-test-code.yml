@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - release
+      - 2.0
 
 jobs:
   lint-code:

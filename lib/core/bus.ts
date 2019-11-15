@@ -1,18 +1,18 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from "events";
 
 export enum EVENT_LIST {
-    DNS_LOOKUP_SUCCESS = 'DNS_LOOKUP_SUCCESS',
-    DNS_LOOKUP_ERROR = 'DNS_LOOKUP_ERROR',
+  DNS_LOOKUP_SUCCESS = "DNS_LOOKUP_SUCCESS",
+  DNS_LOOKUP_ERROR = "DNS_LOOKUP_ERROR"
 }
 
-export interface IEventPayload {
-    error: Error | null
-    code: number
-    msg: string
-    success: boolean
-    data: any | null
+export interface EventPayload {
+  error: Error | null;
+  code: number;
+  msg: string;
+  success: boolean;
+  data: any | null;
 }
 
-let bus: EventEmitter
+let bus: EventEmitter | undefined;
 
-export const eventBus = bus ? bus : (bus = new EventEmitter())
+export const eventBus = bus ? bus : (bus = new EventEmitter());
