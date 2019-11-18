@@ -10,53 +10,53 @@
 
 if (!global[__filename]) {
 
-    global[__filename] = true;
+  global[__filename] = true;
 
-    process.nextTick(function() {
-        const util = require('util');
-        const logger = require('logger');
+  process.nextTick(function () {
+    const util = require('util');
+    const logger = require('logger');
 
-        /* eslint-disable no-console */
+    /* eslint-disable no-console */
 
-        console.debug = (function(log) {
-            return function(...args) {
-                return logger.writeLog('DBUG', `${util.format.apply(null, args)}`);
-            };
-        })(console.originDebug = console.debug);
+    console.debug = (function (log) {
+      return function (...args) {
+        return logger.writeLog('DEBUG', `${util.format.apply(null, args)}`);
+      };
+    })(console.originDebug = console.debug);
 
-        console.log = (function(log) {
-            return function(...args) {
-                return logger.writeLog('DBUG', `${util.format.apply(null, args)}`);
-            };
-        })(console.originLog = console.log);
+    console.log = (function (log) {
+      return function (...args) {
+        return logger.writeLog('DEBUG', `${util.format.apply(null, args)}`);
+      };
+    })(console.originLog = console.log);
 
-        console.info = (function(log) {
-            return function(...args) {
-                return logger.writeLog('INFO', `${util.format.apply(null, args)}`);
-            };
-        })(console.originInfo = console.info);
+    console.info = (function (log) {
+      return function (...args) {
+        return logger.writeLog('INFO', `${util.format.apply(null, args)}`);
+      };
+    })(console.originInfo = console.info);
 
-        console.dir = (function(log) {
-            return function(object, options) {
-                options = Object.assign({
-                    customInspect: false
-                }, options);
-                return logger.writeLog('INFO', `${util.inspect(object, options)}`);
-            };
-        })(console.originDir = console.dir);
+    console.dir = (function (log) {
+      return function (object, options) {
+        options = Object.assign({
+          customInspect: false
+        }, options);
+        return logger.writeLog('INFO', `${util.inspect(object, options)}`);
+      };
+    })(console.originDir = console.dir);
 
-        console.warn = (function(log) {
-            return function(...args) {
-                return logger.writeLog('WARN', `${util.format.apply(null, args)}`);
-            };
-        })(console.originWarn = console.warn);
+    console.warn = (function (log) {
+      return function (...args) {
+        return logger.writeLog('WARN', `${util.format.apply(null, args)}`);
+      };
+    })(console.originWarn = console.warn);
 
-        console.error = (function(log) {
-            return function(...args) {
-                return logger.writeLog('ERRO', `${util.format.apply(null, args)}`);
-            };
-        })(console.originError = console.error);
+    console.error = (function (log) {
+      return function (...args) {
+        return logger.writeLog('ERRO', `${util.format.apply(null, args)}`);
+      };
+    })(console.originError = console.error);
 
-        /* eslint-enable no-console */
-    });
+    /* eslint-enable no-console */
+  });
 }
