@@ -1,13 +1,20 @@
+type LoggerLevel =
+  | "DEBUG"
+  | "INFO"
+  | "WARN"
+  | "ERROR"
+
 class Logger {
-  writeLog(level: any, info: any) {
+  writeLog(level: LoggerLevel, info: string): void {
     // do nothing
   }
-  debug(str: string) {
-    console.debug(str);
+
+  debug(str: string): void {
+    // do nothing
   }
 
-  error(str: string) {
-    console.error(str);
+  error(str: string): void {
+    // do nothing
   }
 }
 
