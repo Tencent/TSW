@@ -6,6 +6,8 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as util from "util";
 
 import logger from "../logger/index";
@@ -15,40 +17,63 @@ let consoleHacked = false;
 export const consoleHack = (): void => {
   if (!consoleHacked) {
     consoleHacked = true;
-    console.debug = (log => (...args) =>
-      logger.writeLog("DEBUG", `${util.format.apply(null, args)}`))(
-        (console.originDebug = console.debug)
-      );
 
-    console.log = (log => (...args) =>
-      logger.writeLog("DEBUG", `${util.format.apply(null, args)}`))(
-        (console.originLog = console.log)
-      );
+    console.originDebug = console.debug;
+    console.originLog = console.log;
+    console.originInfo = console.info;
+    console.originDir = console.dir;
+    console.originWarn = console.warn;
+    console.originError = console.error;
 
-    console.info = (log => (...args) =>
-      logger.writeLog("INFO", `${util.format.apply(null, args)}`))(
-        (console.originInfo = console.info)
-      );
+    console.debug = (
+      message?: any,
+      ...optionalParams: any[]
+    ): void => logger.writeLog(
+      "DEBUG",
+      `${util.format(message, optionalParams)}`
+    );
 
-    console.dir = (log =>
-      function (object, options) {
-        return logger.writeLog(
-          "INFO",
-          `${util.inspect(object, {
-            customInspect: false,
-            ...options
-          })}`
-        );
-      })((console.originDir = console.dir));
+    console.log = (
+      message?: any,
+      ...optionalParams: any[]
+    ): void => logger.writeLog(
+      "DEBUG",
+      `${util.format(message, optionalParams)}`
+    );
 
-    console.warn = (log => (...args) =>
-      logger.writeLog("WARN", `${util.format.apply(null, args)}`))(
-        (console.originWarn = console.warn)
-      );
+    console.info = (
+      message?: any,
+      ...optionalParams: any[]
+    ): void => logger.writeLog(
+      "INFO",
+      `${util.format(message, optionalParams)}`
+    );
 
-    console.error = (log => (...args) =>
-      logger.writeLog("ERROR", `${util.format.apply(null, args)}`))(
-        (console.originError = console.error)
-      );
+    console.dir = (
+      obj: any,
+      options?: NodeJS.InspectOptions
+    ): void => logger.writeLog(
+      "INFO",
+      `${util.inspect(obj, {
+        customInspect: false,
+        ...options
+      })}`
+    );
+
+    console.warn = (
+      message?: any,
+      ...optionalParams: any[]
+    ): void => logger.writeLog(
+      "WARN",
+      `${util.format(message, optionalParams)}`
+    );
+
+    console.error = (
+      message?: any,
+      ...optionalParams: any[]
+    ): void => logger.writeLog(
+      "ERROR",
+      `${util.format(message, optionalParams)}`
+    );
   }
 };
