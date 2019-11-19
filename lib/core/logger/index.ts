@@ -7,6 +7,7 @@ type LoggerLevel =
 class Logger {
   writeLog(level: LoggerLevel, info: string): void {
     // do nothing
+    process.stdout.write(info);
   }
 
   debug(str: string): void {
