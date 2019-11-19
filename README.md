@@ -12,9 +12,10 @@
 
 ## 具体模块
 
+- [ ] `logger`
 - [ ] `capturer`
 - [ ] `context`
-- [ ] hack
+- [ ] hack things
   - [ ] `dns.hack`
   - [ ] `console.hack`
   - [ ] `fs.hack`
