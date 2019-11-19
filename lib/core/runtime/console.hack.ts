@@ -77,3 +77,23 @@ export const consoleHack = (): void => {
     );
   }
 };
+
+export const consoleRestore = (): void => {
+  if (consoleHacked) {
+    consoleHacked = false;
+
+    console.debug = console.originDebug;
+    console.info = console.originInfo;
+    console.log = console.originLog
+    console.warn = console.originWarn
+    console.error = console.originError
+    console.dir = console.originDir
+
+    delete console.originDebug
+    delete console.originInfo
+    delete console.originLog
+    delete console.originWarn
+    delete console.originError
+    delete console.originDir
+  }
+}
