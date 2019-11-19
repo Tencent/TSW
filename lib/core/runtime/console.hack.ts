@@ -10,9 +10,11 @@ import * as util from "util";
 
 import logger from "../logger/index";
 
-export const consoleHack = () => {
-  if (!global[__filename]) {
-    global[__filename] = true;
+let consoleHacked = false;
+
+export const consoleHack = (): void => {
+  if (!consoleHacked) {
+    consoleHacked = true;
     console.debug = (log => (...args) =>
       logger.writeLog("DEBUG", `${util.format.apply(null, args)}`))(
         (console.originDebug = console.debug)

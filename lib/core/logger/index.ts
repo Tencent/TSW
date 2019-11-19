@@ -7,15 +7,14 @@ type LoggerLevel =
 class Logger {
   writeLog(level: LoggerLevel, info: string): void {
     // do nothing
-    console.log(level);
-    console.log(info);
   }
+
   debug(str: string): void {
-    console.debug(str);
+    // do nothing
   }
 
   error(str: string): void {
-    console.error(str);
+    // do nothing
   }
 }
 
