@@ -7,8 +7,8 @@
 
 ## TSW 2.0 版本核心目标
 
-- [ ] 通过 `tsw index.js` 方式启动的应用能够拥有**抓包**和**全息日志**的能力。
-- [ ] 支持 >= Node 12
+- 通过 `tsw index.js` 方式启动的应用能够拥有**抓包**和**全息日志**的能力。
+- 支持 >= Node 12
 
 ## 具体模块
 
@@ -16,8 +16,8 @@
 - [ ] `capturer`
 - [ ] `context`
 - [ ] hack things
-  - [ ] `dns.hack`
-  - [ ] `console.hack`
+  - [x] `dns.hack`
+  - [x] `console.hack`
   - [ ] `fs.hack`
 
 ## 许可证
