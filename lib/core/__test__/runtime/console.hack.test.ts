@@ -38,4 +38,14 @@ describe("console hack test", () => {
     console.error("test_log");
     expect(mockedWriteLog.mock.calls.length).toEqual(6);
   });
+
+  test("multi consoleRestore() should not have side effect", () => {
+    consoleRestore();
+    consoleRestore();
+  });
+
+  test("multi consoleHack() should not have side effect", () => {
+    consoleHack();
+    consoleHack();
+  });
 });
