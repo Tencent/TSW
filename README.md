@@ -19,6 +19,8 @@
   - [x] `dns.hack`
   - [x] `console.hack`
   - [ ] `fs.hack`
+  - [x] `http-create-server.hack`
+  - [ ] `https-create-server.hack`
 
 ## 许可证
 
