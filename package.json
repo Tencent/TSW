@@ -53,5 +53,9 @@
       "yarn lint:fix",
       "git add"
     ]
+  },
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "moment": "^2.24.0"
   }
 }

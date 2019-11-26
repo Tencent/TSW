@@ -17,3 +17,14 @@ declare interface Console {
   originWarn(message?: any, ...optionalParams: any[]): void;
   originError(message?: any, ...optionalParams: any[]): void;
 }
+
+declare namespace NodeJS {
+  interface Process {
+    serverInfo: {
+      cpu?: string;
+    };
+    domain: {
+      currentContext: any;
+    };
+  }
+}
