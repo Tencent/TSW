@@ -12,9 +12,10 @@ jest.mock('../../context');
   }
 })
 
+const log = Context.currentContext().log
+
 describe("logger test", () => {
-  const log = Context.currentContext().log
-  test("loglevel could be set by setLogLevel", async () => {
+  test("log could be set by setLogLevel", async () => {
     logger.setLogLevel(10)
     expect(logger.getLogLevel()).toBe(10)
   })

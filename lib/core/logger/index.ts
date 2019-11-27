@@ -20,23 +20,9 @@ enum TYPE_COLOR {
   'FATAL' = 'cyan'
 }
 
-const errFreqConfig = {     // //错误log频率限制
-  'time': 5 * 1000,       // 频率周期
-  'count': 100000             // 最大次数
-};
-const freqCache = {
-  clearTime: 0,
-  count: 0,
-  detail: {}
-};
-
 let logger: Logger;
 
-const isExceedFreq = (level: number, str?: string, obj?: any): boolean => {
-  return true;
-}
-
-class Logger {
+export class Logger {
   logLevel: number
   setLogLevel(level: string | number): void{
     if(typeof level == 'string'){
@@ -102,26 +88,25 @@ class Logger {
   writeLog(type: string, str: string): Logger {
     const level: number = TYPE_2_LEVEL[type]
     const log: Log = this.getLog();
-    const allow: boolean = isExceedFreq(level, str);
     const useInspectFlag = process.execArgv.join().includes('inspect');
     let logStr: string = null;
     const logLevel: number = this.getLogLevel();
-    if(log || allow === true || level >= logLevel) {
-      logStr = Logger.formatStr(type, level, str)
+    if(log || level >= logLevel){
+      logStr = this.formatStr(type, level, str)
     }
     if(logStr === null) {
       return this;
     }
     // 全息日志写入原始日志
     this.fillBuffer(type, logStr);
-    if(allow === false || level < logLevel) {
+    if(level < logLevel){
       return this;
     }
     if(useInspectFlag){
       // Chrome写入原始日志
       Logger.fillInspect(logStr, level);
       // 控制台写入高亮日志
-      const logWithColor = Logger.formatStr(type, level, str, true)
+      const logWithColor = this.formatStr(type, level, str, true)
       Logger.fillStdout(logWithColor);
     }else{
       // 非调试模式写入原始日志
@@ -129,10 +114,10 @@ class Logger {
     }
     return this;
   }
-  static formatStr(type: string, level: number, str: string, useColor?: boolean): string{
-    const log: Log = logger.getLog();
+  formatStr(type: string, level: number, str: string, useColor?: boolean): string{
+    const log: Log = this.getLog();
     let filename: string, line: number, column: number, enable = false, info: Info;
-    if(level >= logger.getLogLevel()){
+    if(level >= this.getLogLevel()){
       enable = true;
     }
     if(log && log['showLineNumber']){
