@@ -4,7 +4,7 @@ export interface Info {
   filename?: string;
 }
 
-const captureStackTrace = (_, stack) => {
+const captureStackTrace = (_, stack: object): object => {
   return stack;
 }
 
