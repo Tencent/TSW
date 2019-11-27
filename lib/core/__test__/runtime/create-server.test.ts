@@ -27,16 +27,20 @@ describe("http createServer hack test", () => {
     const port = randomPort();
     const path = "test-path";
 
-    createServer((req, res) => {
+    const server = createServer((req, res) => {
       // TODO: Enable this test when Jest release 25.0.0
       // https://github.com/facebook/jest/issues/7247
 
       // expect(process.domain).not.toBeNull();
-      res.end("");
+      res.statusCode = 200;
+      res.end("success");
     }).listen(port);
 
     return new Promise((resolve, reject) => {
       httpGet(`http://127.0.0.1:${port}/${path}`, (res) => {
+        // Close server first
+        server.close();
+
         if (res.statusCode === 200) resolve();
         else reject();
       });
