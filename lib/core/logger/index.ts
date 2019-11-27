@@ -1,23 +1,11 @@
-import * as util from 'util'
 import * as moment from 'moment'
 import * as chalk from 'chalk'
+import * as path from 'path'
 
-import * as contextMod from '../context'
-import { isWin32Like } from '../util/isWindows'
+import { Log, currentContext } from '../context'
+import { isLinux } from '../util/isWindows'
 import { getCallInfo, Info } from './callInfo'
 
-type Log = contextMod.Log | null
-type LogInfo = {
-  type?: string;
-  pid?: number;
-  cpu?: string | number;
-  SN?: number;
-  file?: string;
-  line?: number;
-  moment?: string;
-  txt?: string;
-  column?: number;
-}
 enum TYPE_2_LEVEL {
   'DEBUG' = 10,
   'INFO' = 20,
@@ -32,37 +20,20 @@ enum TYPE_COLOR {
   'FATAL' = 'cyan'
 }
 
+const errFreqConfig = {     // //错误log频率限制
+  'time': 5 * 1000,       // 频率周期
+  'count': 100000             // 最大次数
+};
+const freqCache = {
+  clearTime: 0,
+  count: 0,
+  detail: {}
+};
+
 let logger: Logger;
 
 const isExceedFreq = (level: number, str?: string, obj?: any): boolean => {
   return true;
-}
-const merge = (str: string, obj?: object): string => {
-  if(typeof obj !== 'object'){
-    return str;
-  }
-  str = str.replace(/\$\{(.+?)\}/g, ($0, $1): string => {
-    let rs = obj[$1] || '';
-    if(typeof rs === 'object'){
-      rs = util.inspect(rs);
-    }else{
-      rs = String(rs);
-    }
-    return rs;
-  })
-}
-const formatStr = (obj: LogInfo, useColor?: boolean): string => {
-  const moment = obj.moment
-  const type = `[${obj.type}]`
-  const cpuInfo = `[${obj.pid} cpu${obj.cpu} ${obj.SN}]`
-  const fileInfo = `[${obj.file}:${obj.line}]`
-  const txt = obj.txt
-  if(useColor){
-    const typeColor = TYPE_COLOR[obj.type] || 'black'
-    return `${chalk.black(moment)} ${chalk[typeColor](type)} ${chalk.black(cpuInfo)} ${chalk.blue(fileInfo)} ${txt}`
-  }else{
-    return `${moment} ${type} ${cpuInfo} ${fileInfo} ${txt}`
-  }
 }
 
 class Logger {
@@ -78,16 +49,13 @@ class Logger {
     return this.logLevel;
   }
   getLog(): Log{
-    const log: Log = contextMod.currentContext().log;
+    const log: Log = currentContext().log;
     return log
   }
   clean(): void{
     let log: Log = this.getLog();
     if(log){
       log.arr = null
-      if(log.json){
-        delete log.json;
-      }
       log = null;
     }
   }
@@ -108,113 +76,91 @@ class Logger {
         }
       }
       const arrLength: number = log.arr.length;
-      const ajaxLength: number = log.json && log.json.ajax && log.json.ajax.length;
-      if(arrLength % 512 === 0 || ajaxLength % 10 === 0) {
-        const beforeLogClean = contextMod.currentContext().beforeLogClean;
+      if(arrLength % 512 === 0 ) {
+        const beforeLogClean = currentContext().beforeLogClean;
         if (typeof beforeLogClean === 'function') {
           beforeLogClean();
         }
-      }else if (arrLength % 1024 === 0 || ajaxLength % 20 === 0) {
+      }else if (arrLength % 1024 === 0) {
         process.emit('warning', new Error('too many log'));
         this.clean();
       }
     }
   }
-  getSN(): number{
-    return contextMod.currentContext().SN || 0;
+  debug(str: string): void{
+    this.writeLog('DEBUG', str);
   }
-  getCpu(): string{
-    let cpu: string = process.serverInfo && process.serverInfo.cpu;
-    if(cpu === undefined){
-      cpu = '';
-    }
-    return cpu;
+  info(str: string): void{
+    this.writeLog('INFO', str)
   }
-  debug(str: string, obj?: object): void{
-    this.writeLog('DEBUG', str, obj);
+  warn(str: string): void{
+    this.writeLog('WARN', str)
   }
-  info(str: string, obj?: object): void{
-    this.writeLog('INFO', str, obj)
+  error(str: string): void{
+    this.writeLog('ERROR', str)
   }
-  warn(str: string, obj?: object): void{
-    this.writeLog('WARN', str, obj)
-  }
-  error(str: string, obj?: object): void{
-    this.writeLog('ERROR', str, obj)
-  }
-  writeLog(type: string, str: string, obj?: object): Logger {
+  writeLog(type: string, str: string): Logger {
     const level: number = TYPE_2_LEVEL[type]
     const log: Log = this.getLog();
-    const allow: boolean = isExceedFreq(level, str, obj);
+    const allow: boolean = isExceedFreq(level, str);
     const useInspectFlag = process.execArgv.join().includes('inspect');
     let logStr: string = null;
     const logLevel: number = this.getLogLevel();
     if(log || allow === true || level >= logLevel) {
-      logStr = this._getLog(type, level, str, obj);
+      logStr = Logger.formatStr(type, level, str)
     }
-    if (logStr === null) {
+    if(logStr === null) {
       return this;
     }
     // 全息日志写入原始日志
     this.fillBuffer(type, logStr);
-    if (allow === false || level < logLevel) {
+    if(allow === false || level < logLevel) {
       return this;
     }
     if(useInspectFlag){
       // Chrome写入原始日志
-      this.fillInspect(logStr, level);
+      Logger.fillInspect(logStr, level);
       // 控制台写入高亮日志
-      const logWithColor = this._getLog(type, level, str, obj, 'color');
-      this.fillStdout(logWithColor);
+      const logWithColor = Logger.formatStr(type, level, str, true)
+      Logger.fillStdout(logWithColor);
     }else{
       // 非调试模式写入原始日志
-      this.fillStdout(logStr);
+      Logger.fillStdout(logStr);
     }
     return this;
   }
-  _getLog(type: string, level: number, str: string, obj: object | null, useColor?: string): any{
-    const log: Log = this.getLog();
-    let filename: string, column: number, line: number, enable = false, info: Info;
-    if(level >= this.getLogLevel()){
+  static formatStr(type: string, level: number, str: string, useColor?: boolean): string{
+    const log: Log = logger.getLog();
+    let filename: string, line: number, column: number, enable = false, info: Info;
+    if(level >= logger.getLogLevel()){
       enable = true;
     }
     if(log && log['showLineNumber']){
       enable = true;
     }
-    if(enable || isWin32Like){
+    if(enable || !isLinux){
+      // Format stack traces to an array of CallSite objects.
+      // See CallSite object definitions at https://v8.dev/docs/stack-trace-api.
       info = getCallInfo(3);
-      line = info.line;
       column = info.column;
+      line = info.line;
       filename = info.filename || '';
     }
-    const now = new Date();
-    if(isWin32Like) {
-      filename = filename.replace(/\\/g, '/');
+    filename = filename.split(path.sep).join('/');
+    const pid = process.pid;
+    const SN = currentContext().SN;
+    const timestamp = moment(new Date()).format('YYYY-MM-DD HH:mm:ss.SSS')
+    const logType = `[${type}]`
+    const cpuInfo = `[${pid} ${SN}]`
+    const fileInfo = `[${filename}:${line}:${column}]`
+    if(useColor){
+      const typeColor = TYPE_COLOR[type] || 'black'
+      return `${chalk.black(timestamp)} ${chalk[typeColor](logType)} ${chalk.black(cpuInfo)} ${chalk.blue(fileInfo)} ${str}`
+    }else{
+      return `${timestamp} ${logType} ${cpuInfo} ${fileInfo} ${str}`
     }
-    // let index: number = filename.lastIndexOf('/node_modules/');
-    // if (index >= 0) {
-    //   index += 14;
-    // } else {
-    //   index = filename.lastIndexOf('/') + 1;
-    // }
-    // if(index >= 0) {
-    //   filename = filename.slice(index);
-    // }
-    const txt: string = typeof str == 'string' ? merge(str, obj) : (typeof str === 'object' ? '\n' : '') + util.inspect(str);
-    const logStr: string = formatStr({
-      SN: this.getSN(),
-      moment: moment(now).format('YYYY-MM-DD HH:mm:ss.SSS'),
-      type,
-      file: filename,
-      txt,
-      line,
-      column,
-      cpu: this.getCpu(),
-      pid: process.pid
-    }, !!useColor);
-    return logStr;
   }
-  fillInspect(str: string, level: number): void{
+  static fillInspect(str: string, level: number): void{
     if(level <= 20){
       (console.originLog || console.log)(str);
     }else if(level <= 30) {
@@ -223,7 +169,7 @@ class Logger {
       (console.originError || console.error)(str);
     }
   }
-  fillStdout(str: string): void{
+  static fillStdout(str: string): void{
     process.stdout.write(str + '\n');
   }
 }
