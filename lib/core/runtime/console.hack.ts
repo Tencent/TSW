@@ -10,7 +10,7 @@
 
 import * as util from "util";
 
-import logger from "../logger/index";
+import logger, { Logger } from "../logger/index";
 
 let consoleHacked = false;
 
@@ -28,7 +28,7 @@ export const consoleHack = (): void => {
     console.debug = (
       message?: any,
       ...optionalParams: any[]
-    ): void => logger.writeLog(
+    ): Logger => logger.writeLog(
       "DEBUG",
       `${util.format(message, optionalParams)}`
     );
@@ -36,7 +36,7 @@ export const consoleHack = (): void => {
     console.log = (
       message?: any,
       ...optionalParams: any[]
-    ): void => logger.writeLog(
+    ): Logger => logger.writeLog(
       "DEBUG",
       `${util.format(message, optionalParams)}`
     );
@@ -44,7 +44,7 @@ export const consoleHack = (): void => {
     console.info = (
       message?: any,
       ...optionalParams: any[]
-    ): void => logger.writeLog(
+    ): Logger => logger.writeLog(
       "INFO",
       `${util.format(message, optionalParams)}`
     );
@@ -52,7 +52,7 @@ export const consoleHack = (): void => {
     console.dir = (
       obj: any,
       options?: NodeJS.InspectOptions
-    ): void => logger.writeLog(
+    ): Logger => logger.writeLog(
       "INFO",
       `${util.inspect(obj, {
         customInspect: false,
@@ -63,7 +63,7 @@ export const consoleHack = (): void => {
     console.warn = (
       message?: any,
       ...optionalParams: any[]
-    ): void => logger.writeLog(
+    ): Logger => logger.writeLog(
       "WARN",
       `${util.format(message, optionalParams)}`
     );
@@ -71,7 +71,7 @@ export const consoleHack = (): void => {
     console.error = (
       message?: any,
       ...optionalParams: any[]
-    ): void => logger.writeLog(
+    ): Logger => logger.writeLog(
       "ERROR",
       `${util.format(message, optionalParams)}`
     );
