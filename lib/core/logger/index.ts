@@ -11,7 +11,7 @@ import * as chalk from 'chalk'
 import * as path from 'path'
 
 import { Log, currentContext } from '../context'
-import { isLinux } from '../util/isWindows'
+import { isLinux } from '../util/isLinux'
 import { getCallInfo, Info } from './callInfo'
 
 enum TYPE_2_LEVEL {
