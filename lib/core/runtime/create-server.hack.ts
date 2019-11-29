@@ -46,6 +46,7 @@ export const httpCreateServerHack = (): void => {
           console.log(
             "httpCreateServerHack - calling requestListener within domain"
           );
+
           console.log(process.domain);
           requestListener(req, res);
         });
@@ -54,6 +55,7 @@ export const httpCreateServerHack = (): void => {
       if (options) {
         return createServer.apply(this, [options, requestListenerWrap]);
       }
+
       return createServer.apply(this, [requestListenerWrap]);
     })(http.createServer);
   }

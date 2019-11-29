@@ -19,6 +19,7 @@ describe("logger test", () => {
     logger.setLogLevel(10);
     expect(logger.getLogLevel()).toBe(10);
   });
+
   test("log could be classified by level", async () => {
     logger.debug("TEST DEBUG LOG");
     expect(log.DEBUG).toBe(1);
@@ -29,10 +30,12 @@ describe("logger test", () => {
     logger.error("TEST ERROR LOG");
     expect(log.ERROR).toBe(1);
   });
+
   test("log could be collected in currentContext", async () => {
     logger.info("LOG LENGTH IS CUMULATIVE");
     expect(log.arr.length).toBe(5);
   });
+
   test("log could be clean", async () => {
     Logger.clean();
     expect(log.arr).toBe(null);
