@@ -25,4 +25,4 @@ export interface EventPayload {
 
 let bus: EventEmitter | undefined;
 
-export const eventBus = bus ? bus : (bus = new EventEmitter());
+export const eventBus = bus || (bus = new EventEmitter());
