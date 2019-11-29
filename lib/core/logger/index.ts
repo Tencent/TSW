@@ -174,17 +174,6 @@ export class Logger {
           log[type] = 1;
         }
       }
-
-      const arrLength = log.arr.length;
-      if (arrLength % 512 === 0) {
-        const { beforeLogClean } = currentContext();
-        if (typeof beforeLogClean === "function") {
-          beforeLogClean();
-        }
-      } else if (arrLength % 1024 === 0) {
-        process.emit("warning", new Error("too many log"));
-        Logger.clean();
-      }
     }
   }
 
