@@ -36,6 +36,9 @@
     // 禁止多余的逗号
     "comma-dangle": ["error", "never"],
 
+    // 强制要求类成员之间要保留空行, 但允许单行类成员声明之间没有空行
+    "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
+
     // 强制要求多行代码块只有要保留空行
     "padding-line-between-statements": [
       "error",
