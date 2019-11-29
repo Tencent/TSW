@@ -19,9 +19,6 @@ export interface ContextType {
   log?: Log;
   SN?: number;
 }
-export interface Window {
-  request?: string | undefined | null;
-}
 
 export default (): ContextType => {
   const log: Log = {};
