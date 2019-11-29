@@ -5,7 +5,6 @@ jest.mock("../../context");
 
 (currentContext as jest.Mock).mockReturnValue({
   log: {},
-  window: {},
   SN: 0,
   beforeClean: () => {
 
