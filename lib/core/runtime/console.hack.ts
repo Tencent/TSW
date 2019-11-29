@@ -84,16 +84,16 @@ export const consoleRestore = (): void => {
 
     console.debug = console.originDebug;
     console.info = console.originInfo;
-    console.log = console.originLog
-    console.warn = console.originWarn
-    console.error = console.originError
-    console.dir = console.originDir
+    console.log = console.originLog;
+    console.warn = console.originWarn;
+    console.error = console.originError;
+    console.dir = console.originDir;
 
-    delete console.originDebug
-    delete console.originInfo
-    delete console.originLog
-    delete console.originWarn
-    delete console.originError
-    delete console.originDir
+    delete console.originDebug;
+    delete console.originInfo;
+    delete console.originLog;
+    delete console.originWarn;
+    delete console.originError;
+    delete console.originDir;
   }
-}
+};

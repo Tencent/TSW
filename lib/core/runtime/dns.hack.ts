@@ -10,7 +10,7 @@ import * as dns from "dns";
 import * as net from "net";
 
 import { EVENT_LIST, eventBus, EventPayload } from "../bus";
-import { config } from "../config";
+import config from "../config";
 import logger from "../logger";
 
 export interface DnsEventPayload extends EventPayload {
@@ -42,28 +42,25 @@ export const dnsHack = (): void => {
     // eslint-disable-next-line
     // @ts-ignore
     // By default, ts not allow us to rewrite original methods.
-    dns.lookup = (lookup => (
+    dns.lookup = ((lookup) => (
       hostname: string,
       optionsOrCallback: lookupSecondParam,
       callbackOrUndefined?: lookupCallback
     ): void => {
       const start = Date.now();
 
-      const options =
-        typeof optionsOrCallback === "function"
-          ? undefined
-          : optionsOrCallback;
-      const callback =
-        typeof optionsOrCallback === "function"
-          ? optionsOrCallback
-          : callbackOrUndefined;
+      const options = typeof optionsOrCallback === "function"
+        ? undefined
+        : optionsOrCallback;
+      const callback = typeof optionsOrCallback === "function"
+        ? optionsOrCallback
+        : callbackOrUndefined;
 
       if (net.isIP(hostname)) {
         if (options) {
           return lookup.apply(this, [hostname, options, callback]);
-        } else {
-          return lookup.apply(this, [hostname, callback]);
         }
+        return lookup.apply(this, [hostname, callback]);
       }
 
       logger.debug(`dns lookup for ${hostname}`);
@@ -72,7 +69,6 @@ export const dnsHack = (): void => {
       let code: number;
       let success: boolean;
       let timeoutError: Error;
-      // eslint-disable-next-line
       let timer: NodeJS.Timeout | undefined;
 
       const callbackWrap = (
@@ -133,9 +129,12 @@ export const dnsHack = (): void => {
 
       if (options) {
         return lookup.apply(this, [hostname, options, callbackWrap]);
-      } else {
-        return lookup.apply(this, [hostname, callbackWrap]);
       }
+      return lookup.apply(this, [hostname, callbackWrap]);
     })(dns.lookup);
   }
+};
+
+export const dnsRestore = (): void => {
+
 };

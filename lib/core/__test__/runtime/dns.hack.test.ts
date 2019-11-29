@@ -22,11 +22,11 @@ describe("dns hack test", () => {
 
   test("eventBus was informed", async () => {
     await new Promise((resolve, reject) => {
-      eventBus.on("DNS_LOOKUP_SUCCESS", data => {
+      eventBus.on("DNS_LOOKUP_SUCCESS", (data) => {
         resolve(data);
       });
 
-      eventBus.on("DNS_LOOKUP_ERROR", err => {
+      eventBus.on("DNS_LOOKUP_ERROR", (err) => {
         reject(err);
       });
 
