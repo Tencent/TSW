@@ -12,7 +12,7 @@ import * as path from "path";
 
 import currentContext, { Log } from "../context";
 import isLinux from "../util/isLinux";
-import getCallInfo, { Info } from "./callInfo";
+import getCallInfo from "./callInfo";
 
 enum LOG_LEVEL {
   "DEBUG" = 10,
@@ -68,7 +68,7 @@ export class Logger {
 
   writeLog(type: LogLevelStrings, str: string): Logger {
     const level: number = LOG_LEVEL[type];
-    const log: Log = Logger.getLog();
+    const log = Logger.getLog();
     const useInspectFlag = process.execArgv.join().includes("inspect");
     let logStr: string = null;
     const logLevel: number = this.getLogLevel();
@@ -106,12 +106,12 @@ export class Logger {
     str: string,
     useColor?: boolean
   ): string {
-    const log: Log = Logger.getLog();
+    const log = Logger.getLog();
     let filename: string;
     let line: number;
     let column: number;
     let enable = false;
-    let info: Info;
+
     if (level >= this.getLogLevel()) {
       enable = true;
     }
@@ -121,12 +121,9 @@ export class Logger {
     }
 
     if (enable || !isLinux) {
-      // Format stack traces to an array of CallSite objects.
-      // See CallSite object definitions at https://v8.dev/docs/stack-trace-api.
-      info = getCallInfo(3);
-      column = info.column;
-      line = info.line;
-      filename = info.filename || "";
+      // Magic number: 3
+      // formatStr -> writeLog -> debug -> User call
+      ({ column, line, filename } = getCallInfo(3));
     }
 
     filename = (filename || "").split(path.sep).join("/");
@@ -152,7 +149,7 @@ export class Logger {
   }
 
   static clean(): void {
-    let log: Log = Logger.getLog();
+    let log = Logger.getLog();
     if (log) {
       log.arr = null;
       log = null;
