@@ -1,9 +1,9 @@
 import { consoleHack, consoleRestore } from "../../runtime/console.hack";
 import logger from "../../logger/index";
 
-jest.mock('../../logger/index')
+jest.mock("../../logger/index");
 
-const mockedWriteLog = logger.writeLog as jest.Mock<any, any>
+const mockedWriteLog = logger.writeLog as jest.Mock<any, any>;
 
 beforeAll(() => {
   consoleHack();
@@ -11,7 +11,7 @@ beforeAll(() => {
 
 afterAll(() => {
   consoleRestore();
-})
+});
 
 describe("console hack test", () => {
   test("ensure console contains all origin functions", () => {

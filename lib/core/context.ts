@@ -25,15 +25,15 @@ export interface Window{
   request?: string | undefined | null;
 }
 
-export const currentContext = (): ContextType => {
-  const log: Log = {}
-  const window: Window = {}
-  const SN = 0
-  const beforeLogClean = (): void =>{}
+export default (): ContextType => {
+  const log: Log = {};
+  const window: Window = {};
+  const SN = 0;
+  const beforeLogClean = (): void => {};
   return {
     log,
     window,
     SN,
     beforeLogClean
-  }
-}
+  };
+};

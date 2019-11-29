@@ -11,6 +11,6 @@
  * under the License.
  */
 
-const isOSX = process.platform === 'darwin';
-const isWindows = process.platform === 'win32';
-export const isLinux = !(isWindows || isOSX);
+const isOSX = process.platform === "darwin";
+const isWindows = process.platform === "win32";
+export default !(isWindows || isOSX);
