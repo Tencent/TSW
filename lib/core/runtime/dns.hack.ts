@@ -60,6 +60,7 @@ export const dnsHack = (): void => {
         if (options) {
           return lookup.apply(this, [hostname, options, callback]);
         }
+
         return lookup.apply(this, [hostname, callback]);
       }
 
@@ -130,6 +131,7 @@ export const dnsHack = (): void => {
       if (options) {
         return lookup.apply(this, [hostname, options, callbackWrap]);
       }
+
       return lookup.apply(this, [hostname, callbackWrap]);
     })(dns.lookup);
   }

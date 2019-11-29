@@ -6,7 +6,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-export interface Log{
+export interface Log {
   showLineNumber?: boolean;
   arr?: Array<string>;
   ERROR?: number;
@@ -21,7 +21,7 @@ export interface ContextType {
   SN?: number;
   beforeLogClean?: any;
 }
-export interface Window{
+export interface Window {
   request?: string | undefined | null;
 }
 
