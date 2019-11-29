@@ -7,24 +7,42 @@
  */
 
 export interface Log {
-  showLineNumber?: boolean;
-  arr?: Array<string>;
-  ERROR?: number;
-  WARN?: number;
-  INFO?: number;
-  DEBUG?: number;
+  showLineNumber: boolean;
+  arr: Array<string>;
+
+  ERROR: number;
+  WARN: number;
+  INFO: number;
+  DEBUG: number;
 }
 
-export interface ContextType {
-  log?: Log;
-  SN?: number;
+export class Context {
+  log: Log;
+  SN: number;
+
+  constructor() {
+    this.log = {
+      showLineNumber: false,
+      arr: [],
+      ERROR: 0,
+      WARN: 0,
+      INFO: 0,
+      DEBUG: 0
+    };
+
+    this.SN = process.SN || 0;
+  }
 }
 
-export default (): ContextType => {
-  const log: Log = {};
-  const SN = 0;
-  return {
-    log,
-    SN
-  };
+export default (): Context => {
+  if (!process.domain) {
+    // TODO: should throw Error
+    throw Error("fetching context - process.domain is null or undefined");
+  }
+
+  if (!process.domain.currentContext) {
+    process.domain.currentContext = new Context();
+  }
+
+  return process.domain.currentContext;
 };

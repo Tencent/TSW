@@ -3,6 +3,14 @@ import { isIP } from "net";
 
 import { eventBus } from "../../bus";
 import { dnsHack, dnsRestore } from "../../runtime/dns.hack";
+import logger from "../../logger/index";
+
+jest.mock("../../logger/index");
+
+(logger.debug as jest.Mock).mockImplementation(() => {});
+(logger.info as jest.Mock).mockImplementation(() => {});
+(logger.warn as jest.Mock).mockImplementation(() => {});
+(logger.error as jest.Mock).mockImplementation(() => {});
 
 beforeAll(() => {
   dnsHack();
