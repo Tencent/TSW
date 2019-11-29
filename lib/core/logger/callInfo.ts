@@ -6,37 +6,40 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-export interface Info {
-  line?: number;
-  column?: number;
-  filename?: string;
-}
-
-const captureStackTrace = (_, stack: object): object => stack;
-
-export default (level = 0): Info => {
+/**
+ * 利用 V8 Error.captureStackTrace API
+ * 实现对调用堆栈的详细追踪
+ */
+export default (level = 0): {
+  line: number;
+  column: number;
+  filename: string;
+} => {
   const res = {
     line: 0,
     column: 0,
     filename: ""
   };
 
-  const orig = Error.prepareStackTrace;
-  const origLimit = Error.stackTraceLimit;
-  Error.prepareStackTrace = captureStackTrace;
-  Error.stackTraceLimit = 5;
+  const originPrepareStackTrace = Error.prepareStackTrace;
+  const originStackTraceLimit = Error.stackTraceLimit;
+  // Format stack traces to an array of CallSite objects.
+  // See CallSite object definitions at https://v8.dev/docs/stack-trace-api.
+  Error.prepareStackTrace = (
+    error,
+    structuredStackTrace
+  ): NodeJS.CallSite[] => structuredStackTrace;
+
+  Error.stackTraceLimit = 100;
 
   const err = Object.create(null);
   Error.captureStackTrace(err);
   const { stack } = err;
 
-  Error.prepareStackTrace = orig;
-  Error.stackTraceLimit = origLimit;
+  Error.prepareStackTrace = originPrepareStackTrace;
+  Error.stackTraceLimit = originStackTraceLimit;
 
-  if (stack
-    && stack[level]
-    && typeof stack[level].getLineNumber === "function"
-  ) {
+  if (typeof stack?.level?.getLineNumber === "function") {
     res.line = stack[level].getLineNumber();
     res.column = stack[level].getColumnNumber();
     res.filename = stack[level].getFileName();
