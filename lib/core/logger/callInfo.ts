@@ -12,18 +12,14 @@ export interface Info {
   filename?: string;
 }
 
-const captureStackTrace = (_, stack: object): object => {
-  return stack;
-}
+const captureStackTrace = (_, stack: object): object => stack;
 
-export const getCallInfo = (level: number): Info => {
+export default (level = 0): Info => {
   const res = {
     line: 0,
     column: 0,
-    filename: ''
+    filename: ""
   };
-
-  level = level || 0;
 
   const orig = Error.prepareStackTrace;
   const origLimit = Error.stackTraceLimit;
@@ -31,17 +27,20 @@ export const getCallInfo = (level: number): Info => {
   Error.stackTraceLimit = 5;
 
   const err = Object.create(null);
-  Error.captureStackTrace(err);     // eslint-disable-line no-caller
+  Error.captureStackTrace(err);
   const { stack } = err;
 
   Error.prepareStackTrace = orig;
   Error.stackTraceLimit = origLimit;
 
-  if (stack && stack[level] && typeof stack[level].getLineNumber === 'function') {
+  if (stack
+    && stack[level]
+    && typeof stack[level].getLineNumber === "function"
+  ) {
     res.line = stack[level].getLineNumber();
     res.column = stack[level].getColumnNumber();
     res.filename = stack[level].getFileName();
   }
 
   return res;
-}
+};

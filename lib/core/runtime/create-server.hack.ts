@@ -43,20 +43,21 @@ export const httpCreateServerHack = (): void => {
         d.add(req);
         d.add(res);
         d.run(() => {
-          console.log("httpCreateServerHack - calling requestListener within domain");
+          console.log(
+            "httpCreateServerHack - calling requestListener within domain"
+          );
           console.log(process.domain);
           requestListener(req, res);
         });
-      }
+      };
 
       if (options) {
         return createServer.apply(this, [options, requestListenerWrap]);
-      } else {
-        return createServer.apply(this, [requestListenerWrap]);
       }
+      return createServer.apply(this, [requestListenerWrap]);
     })(http.createServer);
   }
-}
+};
 
 export const httpCreateServerRestore = (): void => {
   if (httpCreateServerHacked) {
@@ -66,4 +67,4 @@ export const httpCreateServerRestore = (): void => {
     // By default, ts not allow us to rewrite original methods.
     http.createServer = originHttpCreateServer;
   }
-}
+};

@@ -1,5 +1,6 @@
 {
   "extends": [
+    "airbnb-base",
     "plugin:@typescript-eslint/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -16,5 +17,35 @@
     "node": true,
     "jest": true
   },
-  "rules": {}
+  "rules": {
+    "no-console": "off",
+
+    "max-len": ["error", { "code": 80, "ignoreComments": true }],
+
+    // 不要求对 import 进行排序
+    "import/order": "off",
+
+    "import/no-mutable-exports": "off",
+
+    // 不要求 import 的模块一定要存在, 因为有自定义的 resolve 和 alias
+    "import/no-unresolved": "off",
+
+    // 使用双引号
+    "quotes": ["error", "double"],
+
+    // 禁止多余的逗号
+    "comma-dangle": ["error", "never"],
+
+    // 不允许使用 @deprecated 的变量或函数
+    "import/no-deprecated": "error",
+
+    // jsdoc @param 的名字和顺序必须和定义的一致
+    "jsdoc/check-param-names": "error",
+
+    // jsdoc 中 @ 开头的 tag 名称必须符合规范
+    "jsdoc/check-tag-names": "error",
+
+    // 不允许出现未使用的 eslint-disable
+    "eslint-comments/no-unused-disable": "error"
+  }
 }
