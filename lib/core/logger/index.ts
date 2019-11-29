@@ -20,6 +20,7 @@ enum TYPE_2_LEVEL {
   "WARN" = 30,
   "ERROR"= 40,
 }
+
 enum TYPE_COLOR {
   "DEBUG" = "yellow",
   "INFO" = "blue",
@@ -33,7 +34,7 @@ let logger: Logger;
 export class Logger {
   logLevel: number
 
-  setLogLevel(level: string | number): void{
+  setLogLevel(level: string | number): void {
     if (typeof level === "string") {
       this.logLevel = TYPE_2_LEVEL[level];
     } else {
@@ -45,61 +46,19 @@ export class Logger {
     return this.logLevel;
   }
 
-  static getLog(): Log {
-    const { log } = currentContext();
-    return log;
-  }
-
-  static clean(): void{
-    let log: Log = Logger.getLog();
-    if (log) {
-      log.arr = null;
-      log = null;
-    }
-  }
-
-  static fillBuffer(type: string, logStr: string): void{
-    const log: Log = Logger.getLog();
-    if (log) {
-      if (!log.arr) {
-        log.arr = [];
-      }
-      if (logStr) {
-        log.arr.push(logStr);
-      }
-      if (type) {
-        if (log[type]) {
-          log[type] += 1;
-        } else {
-          log[type] = 1;
-        }
-      }
-      const arrLength: number = log.arr.length;
-      if (arrLength % 512 === 0) {
-        const { beforeLogClean } = currentContext();
-        if (typeof beforeLogClean === "function") {
-          beforeLogClean();
-        }
-      } else if (arrLength % 1024 === 0) {
-        process.emit("warning", new Error("too many log"));
-        Logger.clean();
-      }
-    }
-  }
-
-  debug(str: string): void{
+  debug(str: string): void {
     this.writeLog("DEBUG", str);
   }
 
-  info(str: string): void{
+  info(str: string): void {
     this.writeLog("INFO", str);
   }
 
-  warn(str: string): void{
+  warn(str: string): void {
     this.writeLog("WARN", str);
   }
 
-  error(str: string): void{
+  error(str: string): void {
     this.writeLog("ERROR", str);
   }
 
@@ -112,14 +71,17 @@ export class Logger {
     if (log || level >= logLevel) {
       logStr = this.formatStr(type, level, str);
     }
+
     if (logStr === null) {
       return this;
     }
+
     // 全息日志写入原始日志
     Logger.fillBuffer(type, logStr);
     if (level < logLevel) {
       return this;
     }
+
     if (useInspectFlag) {
       // Chrome写入原始日志
       Logger.fillInspect(logStr, level);
@@ -130,6 +92,7 @@ export class Logger {
       // 非调试模式写入原始日志
       Logger.fillStdout(logStr);
     }
+
     return this;
   }
 
@@ -148,9 +111,11 @@ export class Logger {
     if (level >= this.getLogLevel()) {
       enable = true;
     }
+
     if (log && log.showLineNumber) {
       enable = true;
     }
+
     if (enable || !isLinux) {
       // Format stack traces to an array of CallSite objects.
       // See CallSite object definitions at https://v8.dev/docs/stack-trace-api.
@@ -159,6 +124,7 @@ export class Logger {
       line = info.line;
       filename = info.filename || "";
     }
+
     filename = (filename || "").split(path.sep).join("/");
     const { pid } = process;
     const { SN } = currentContext();
@@ -172,10 +138,56 @@ export class Logger {
         chalk.black(cpuInfo)
       } ${chalk.blue(fileInfo)} ${str}`;
     }
+
     return `${timestamp} ${logType} ${cpuInfo} ${fileInfo} ${str}`;
   }
 
-  static fillInspect(str: string, level: number): void{
+  static getLog(): Log {
+    const { log } = currentContext();
+    return log;
+  }
+
+  static clean(): void {
+    let log: Log = Logger.getLog();
+    if (log) {
+      log.arr = null;
+      log = null;
+    }
+  }
+
+  static fillBuffer(type: string, logStr: string): void {
+    const log = Logger.getLog();
+    if (log) {
+      if (!log.arr) {
+        log.arr = [];
+      }
+
+      if (logStr) {
+        log.arr.push(logStr);
+      }
+
+      if (type) {
+        if (log[type]) {
+          log[type] += 1;
+        } else {
+          log[type] = 1;
+        }
+      }
+
+      const arrLength = log.arr.length;
+      if (arrLength % 512 === 0) {
+        const { beforeLogClean } = currentContext();
+        if (typeof beforeLogClean === "function") {
+          beforeLogClean();
+        }
+      } else if (arrLength % 1024 === 0) {
+        process.emit("warning", new Error("too many log"));
+        Logger.clean();
+      }
+    }
+  }
+
+  static fillInspect(str: string, level: number): void {
     if (level <= 20) {
       (console.originLog || console.log)(str);
     } else if (level <= 30) {
@@ -185,7 +197,7 @@ export class Logger {
     }
   }
 
-  static fillStdout(str: string): void{
+  static fillStdout(str: string): void {
     process.stdout.write(`${str}\n`);
   }
 }
@@ -193,4 +205,5 @@ export class Logger {
 if (!logger) {
   logger = new Logger();
 }
+
 export default logger;

@@ -36,6 +36,16 @@
     // 禁止多余的逗号
     "comma-dangle": ["error", "never"],
 
+    // 强制要求多行代码块只有要保留空行
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "class", "next": "*" },
+      { "blankLine": "always", "prev": "function", "next": "*" },
+      { "blankLine": "always", "prev": "iife", "next": "*" },
+      { "blankLine": "always", "prev": "multiline-block-like", "next": "*" },
+      { "blankLine": "always", "prev": "multiline-expression", "next": "*" }
+    ],
+
     // 不允许使用 @deprecated 的变量或函数
     "import/no-deprecated": "error",
 
