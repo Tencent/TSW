@@ -2,10 +2,14 @@ import { lookup } from "dns";
 import { isIP } from "net";
 
 import { eventBus } from "../../bus";
-import { dnsHack } from "../../runtime/dns.hack";
+import { dnsHack, dnsRestore } from "../../runtime/dns.hack";
 
 beforeAll(() => {
   dnsHack();
+});
+
+afterAll(() => {
+  dnsRestore();
 });
 
 describe("dns hack test", () => {
