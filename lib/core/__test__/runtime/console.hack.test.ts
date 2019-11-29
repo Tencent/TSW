@@ -3,7 +3,7 @@ import logger from "../../logger/index";
 
 jest.mock("../../logger/index");
 
-const mockedWriteLog = logger.writeLog as jest.Mock<any, any>;
+const mockedWriteLog = logger.writeLog as jest.Mock;
 
 beforeAll(() => {
   consoleHack();
