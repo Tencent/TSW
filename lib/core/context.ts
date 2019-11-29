@@ -17,9 +17,7 @@ export interface Log {
 
 export interface ContextType {
   log?: Log;
-  window?: Window;
   SN?: number;
-  beforeLogClean?: any;
 }
 export interface Window {
   request?: string | undefined | null;
@@ -27,13 +25,9 @@ export interface Window {
 
 export default (): ContextType => {
   const log: Log = {};
-  const window: Window = {};
   const SN = 0;
-  const beforeLogClean = (): void => {};
   return {
     log,
-    window,
-    SN,
-    beforeLogClean
+    SN
   };
 };
