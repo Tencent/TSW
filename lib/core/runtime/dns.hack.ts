@@ -19,18 +19,18 @@ export interface DnsEventPayload extends EventPayload {
   } | null;
 }
 
-type lookupCallback = (
+type LookupCallback = (
   err: NodeJS.ErrnoException | null,
   address: string | dns.LookupAddress[],
   family: number
 ) => void;
 
-type lookupSecondParam =
+type LookupSecondParam =
   | number
   | dns.LookupOneOptions
   | dns.LookupAllOptions
   | dns.LookupOptions
-  | lookupCallback;
+  | LookupCallback;
 
 let dnsHacked = false;
 
@@ -44,8 +44,8 @@ export const dnsHack = (): void => {
     // By default, ts not allow us to rewrite original methods.
     dns.lookup = ((lookup) => (
       hostname: string,
-      optionsOrCallback: lookupSecondParam,
-      callbackOrUndefined?: lookupCallback
+      optionsOrCallback: LookupSecondParam,
+      callbackOrUndefined?: LookupCallback
     ): void => {
       const start = Date.now();
 

@@ -14,14 +14,14 @@ import currentContext, { Log } from "../context";
 import isLinux from "../util/isLinux";
 import getCallInfo, { Info } from "./callInfo";
 
-enum TYPE_2_LEVEL {
+enum LOG_LEVEL {
   "DEBUG" = 10,
   "INFO" = 20,
   "WARN" = 30,
   "ERROR"= 40,
 }
 
-enum TYPE_COLOR {
+enum LOG_COLOR {
   "DEBUG" = "yellow",
   "INFO" = "blue",
   "WARN" = "magenta",
@@ -29,17 +29,21 @@ enum TYPE_COLOR {
   "FATAL" = "cyan"
 }
 
+type LogLevelStrings = keyof typeof LOG_LEVEL;
+
 let logger: Logger;
 
 export class Logger {
   logLevel: number
 
-  setLogLevel(level: string | number): void {
+  setLogLevel(level: LogLevelStrings): number {
     if (typeof level === "string") {
-      this.logLevel = TYPE_2_LEVEL[level];
+      this.logLevel = LOG_LEVEL[level];
     } else {
       this.logLevel = level;
     }
+
+    return this.logLevel;
   }
 
   getLogLevel(): number {
@@ -62,8 +66,8 @@ export class Logger {
     this.writeLog("ERROR", str);
   }
 
-  writeLog(type: string, str: string): Logger {
-    const level: number = TYPE_2_LEVEL[type];
+  writeLog(type: LogLevelStrings, str: string): Logger {
+    const level: number = LOG_LEVEL[type];
     const log: Log = Logger.getLog();
     const useInspectFlag = process.execArgv.join().includes("inspect");
     let logStr: string = null;
@@ -97,7 +101,7 @@ export class Logger {
   }
 
   formatStr(
-    type: string,
+    type: LogLevelStrings,
     level: number,
     str: string,
     useColor?: boolean
@@ -133,7 +137,7 @@ export class Logger {
     const cpuInfo = `[${pid} ${SN}]`;
     const fileInfo = `[${filename}:${line}:${column}]`;
     if (useColor) {
-      const typeColor = TYPE_COLOR[type] || "black";
+      const typeColor = LOG_COLOR[type];
       return `${chalk.black(timestamp)} ${chalk[typeColor](logType)} ${
         chalk.black(cpuInfo)
       } ${chalk.blue(fileInfo)} ${str}`;
