@@ -33,11 +33,13 @@ type LookupSecondParam =
   | LookupCallback;
 
 let dnsHacked = false;
+let originDnsLookUp = null;
 
 export const dnsHack = (): void => {
   // Ensure hack can only be run once.
   if (!dnsHacked) {
     dnsHacked = true;
+    originDnsLookUp = dns.lookup;
 
     // eslint-disable-next-line
     // @ts-ignore
@@ -138,5 +140,11 @@ export const dnsHack = (): void => {
 };
 
 export const dnsRestore = (): void => {
-
+  if (dnsHacked) {
+    // eslint-disable-next-line
+    // @ts-ignore
+    // By default, ts not allow us to rewrite original methods.
+    dns.lookup = originDnsLookUp;
+    dnsHacked = false;
+  }
 };
