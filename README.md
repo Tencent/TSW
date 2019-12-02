@@ -12,6 +12,7 @@
 
 ## 具体模块
 
+- [ ] CLI
 - [x] `logger`
 - [ ] `capturer`
 - [x] `context`
@@ -25,7 +26,3 @@
 ## 许可证
 
 Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE) 。
-
-## 联系方式
-
-tsw@tencent.com
