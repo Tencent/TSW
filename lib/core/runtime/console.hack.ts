@@ -10,7 +10,8 @@
 
 import * as util from "util";
 
-import logger, { Logger } from "../logger/index";
+import logger from "../logger/index";
+import getCurrentContext from "../context";
 
 let consoleHacked = false;
 
@@ -28,53 +29,89 @@ export const consoleHack = (): void => {
     console.debug = (
       message?: any,
       ...optionalParams: any[]
-    ): Logger => logger.writeLog(
-      "DEBUG",
-      `${util.format(message, optionalParams)}`
-    );
+    ): void => {
+      if (getCurrentContext() === null) {
+        return console.originDebug(message, optionalParams);
+      }
+
+      return logger.writeLog(
+        "DEBUG",
+        `${util.format(message, ...optionalParams)}`
+      );
+    };
 
     console.log = (
       message?: any,
       ...optionalParams: any[]
-    ): Logger => logger.writeLog(
-      "DEBUG",
-      `${util.format(message, optionalParams)}`
-    );
+    ): void => {
+      if (getCurrentContext() === null) {
+        return console.originLog(message, ...optionalParams);
+      }
+
+      return logger.writeLog(
+        "DEBUG",
+        `${util.format(message, ...optionalParams)}`
+      );
+    };
 
     console.info = (
       message?: any,
       ...optionalParams: any[]
-    ): Logger => logger.writeLog(
-      "INFO",
-      `${util.format(message, optionalParams)}`
-    );
+    ): void => {
+      if (getCurrentContext() === null) {
+        return console.originInfo(message, ...optionalParams);
+      }
+
+      return logger.writeLog(
+        "INFO",
+        `${util.format(message, ...optionalParams)}`
+      );
+    };
 
     console.dir = (
       obj: any,
       options?: NodeJS.InspectOptions
-    ): Logger => logger.writeLog(
-      "INFO",
-      `${util.inspect(obj, {
-        customInspect: false,
-        ...options
-      })}`
-    );
+    ): void => {
+      if (getCurrentContext() === null) {
+        return console.originDir(obj, options);
+      }
+
+      return logger.writeLog(
+        "INFO",
+        `${util.inspect(obj, {
+          customInspect: false,
+          ...options
+        })}`
+      );
+    };
 
     console.warn = (
       message?: any,
       ...optionalParams: any[]
-    ): Logger => logger.writeLog(
-      "WARN",
-      `${util.format(message, optionalParams)}`
-    );
+    ): void => {
+      if (getCurrentContext() === null) {
+        return console.originWarn(message, optionalParams);
+      }
+
+      return logger.writeLog(
+        "WARN",
+        `${util.format(message, ...optionalParams)}`
+      );
+    };
 
     console.error = (
       message?: any,
       ...optionalParams: any[]
-    ): Logger => logger.writeLog(
-      "ERROR",
-      `${util.format(message, optionalParams)}`
-    );
+    ): void => {
+      if (getCurrentContext() === null) {
+        return console.originError(message, optionalParams);
+      }
+
+      return logger.writeLog(
+        "ERROR",
+        `${util.format(message, ...optionalParams)}`
+      );
+    };
   }
 };
 
