@@ -19,9 +19,10 @@ declare interface Console {
 
 declare namespace NodeJS {
   interface Process {
-    domain: {
-      currentContext: any;
-    };
     SN: number;
+  }
+
+  interface Domain {
+    currentContext?: any;
   }
 }
