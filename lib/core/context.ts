@@ -34,10 +34,9 @@ export class Context {
   }
 }
 
-export default (): Context => {
+export default (): Context | null => {
   if (!process.domain) {
-    // TODO: should throw Error
-    throw Error("fetching context - process.domain is null or undefined");
+    return null;
   }
 
   if (!process.domain.currentContext) {
