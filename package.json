@@ -2,7 +2,8 @@
   "name": "@tswjs/tsw",
   "version": "2.0.0",
   "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
-  "main": "dist/cli.js",
+  "main": "dist/index.js",
+  "bin": "dist/cli.js",
   "scripts": {
     "commitlint": "commitlint --color",
     "test": "jest --coverage",
@@ -27,6 +28,7 @@
     "@commitlint/config-conventional": "^7.5.0",
     "@types/jest": "^24.0.23",
     "@types/node": "^11.9.5",
+    "@types/yargs": "^13.0.3",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
     "eslint": "^6.6.0",
@@ -56,6 +58,7 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "yargs": "^15.0.2"
   }
 }
