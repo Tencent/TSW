@@ -397,10 +397,7 @@ const downloadHaz = function (request, response, opt) {
         tmp &&
         tmp.ajax &&
         tmp.ajax.forEach(function(ajax, i) {
-            if (!ajax.SN) {
-                return;
-            }
-            if( ajax ){
+            if ( ajax &&  ajax.SN  ) {
                 viewData.push(ajax);
             }
         });
