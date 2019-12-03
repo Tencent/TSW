@@ -1,9 +1,9 @@
 import { consoleHack, consoleRestore } from "../../runtime/console.hack";
 import logger from "../../logger/index";
+import getCurrentContext from "../../context";
 
 jest.mock("../../logger/index");
-
-const mockedWriteLog = logger.writeLog as jest.Mock;
+jest.mock("../../context");
 
 beforeAll(() => {
   consoleHack();
@@ -24,6 +24,9 @@ describe("console hack test", () => {
   });
 
   test("console.debug should be logged by logger", () => {
+    (getCurrentContext as jest.Mock).mockImplementation(() => true);
+    const mockedWriteLog = logger.writeLog as jest.Mock;
+
     expect(mockedWriteLog.mock.calls.length).toEqual(0);
     console.debug("test_log");
     expect(mockedWriteLog.mock.calls.length).toEqual(1);
@@ -37,6 +40,8 @@ describe("console hack test", () => {
     expect(mockedWriteLog.mock.calls.length).toEqual(5);
     console.error("test_log");
     expect(mockedWriteLog.mock.calls.length).toEqual(6);
+
+    (getCurrentContext as jest.Mock).mockClear();
   });
 
   test("multi consoleRestore() should not have side effect", () => {
