@@ -26,17 +26,14 @@ enum LOG_COLOR {
   "INFO" = "blue",
   "WARN" = "magenta",
   "ERROR"= "red",
-  "FATAL" = "cyan"
 }
 
 type LogLevelStrings = keyof typeof LOG_LEVEL;
 
-let logger: Logger;
-
 export class Logger {
-  logLevel: number
+  public logLevel: number
 
-  setLogLevel(level: LogLevelStrings): number {
+  public setLogLevel(level: LogLevelStrings): number {
     if (typeof level === "string") {
       this.logLevel = LOG_LEVEL[level];
     } else {
@@ -46,109 +43,117 @@ export class Logger {
     return this.logLevel;
   }
 
-  getLogLevel(): number {
-    return this.logLevel;
-  }
-
-  debug(str: string): void {
+  public debug(str: string): void {
     this.writeLog("DEBUG", str);
   }
 
-  info(str: string): void {
+  public info(str: string): void {
     this.writeLog("INFO", str);
   }
 
-  warn(str: string): void {
+  public warn(str: string): void {
     this.writeLog("WARN", str);
   }
 
-  error(str: string): void {
+  public error(str: string): void {
     this.writeLog("ERROR", str);
   }
 
-  writeLog(type: LogLevelStrings, str: string): Logger {
-    const level: number = LOG_LEVEL[type];
-    const log = Logger.getLog();
+  public writeLog(type: LogLevelStrings, str: string): void {
+    const level = LOG_LEVEL[type];
+
+    // Drop log
+    if (level < this.logLevel) {
+      return;
+    }
+
+    // TODO: incorrect flag detected, for example:
+    // node ./inspect.js
     const useInspectFlag = process.execArgv.join().includes("inspect");
-    let logStr: string = null;
-    const logLevel: number = this.getLogLevel();
-    if (log || level >= logLevel) {
-      logStr = this.formatStr(type, level, str);
-    }
 
-    if (logStr === null) {
-      return this;
-    }
+    const logStr = Logger.formatStr(str, type, {
+      levelLimit: this.logLevel
+    });
 
-    // 全息日志写入原始日志
+    // Store log
     Logger.fillBuffer(type, logStr);
-    if (level < logLevel) {
-      return this;
-    }
 
     if (useInspectFlag) {
-      // Chrome写入原始日志
+      // When started with inspect, log will send to 2 places
+      // 1. Local stdout
+      // 2. Remote(maybe chrome inspect window) inspect window
+
+      // Here for remote window
       Logger.fillInspect(logStr, level);
-      // 控制台写入高亮日志
-      const logWithColor = this.formatStr(type, level, str, true);
+
+      const logWithColor = Logger.formatStr(str, type, {
+        levelLimit: this.logLevel,
+        color: true
+      });
+
+      // Here for local stdout, with color
       Logger.fillStdout(logWithColor);
     } else {
-      // 非调试模式写入原始日志
+      // Send to local stdout
       Logger.fillStdout(logStr);
     }
-
-    return this;
   }
 
-  formatStr(
-    type: LogLevelStrings,
-    level: number,
+  /**
+   * Format a string based on it's type(DEBUG/INFO/...)
+   * @param str String need to be formatted
+   * @param type Log level of this string
+   * @param options Options
+   * @param options.levelLimit Log level limit, log will be dropped when not match it
+   * @param options.color Add ANSI color or not
+   */
+  private static formatStr(
     str: string,
-    useColor?: boolean
+    type: LogLevelStrings,
+    options: {
+      levelLimit: number;
+      color?: boolean;
+    }
   ): string {
-    const log = Logger.getLog();
-    let filename: string;
-    let line: number;
-    let column: number;
-    let enable = false;
+    const { levelLimit, color } = options;
+    const { showLineNumber } = Logger.getLog();
 
-    if (level >= this.getLogLevel()) {
-      enable = true;
-    }
+    const needCallInfoDetail = (LOG_LEVEL[type] >= levelLimit
+      && showLineNumber)
+      || !isLinux;
 
-    if (log && log.showLineNumber) {
-      enable = true;
-    }
-
-    if (enable || !isLinux) {
-      // Magic number: 3
-      // formatStr -> writeLog -> debug -> User call
-      ({ column, line, filename } = getCallInfo(3));
-    }
-
-    filename = (filename || "").split(path.sep).join("/");
-    const { pid } = process;
-    const { SN } = currentContext();
     const timestamp = moment(new Date()).format("YYYY-MM-DD HH:mm:ss.SSS");
     const logType = `[${type}]`;
-    const cpuInfo = `[${pid} ${SN}]`;
-    const fileInfo = `[${filename}:${line}:${column}]`;
-    if (useColor) {
+    const pidInfo = `[${process.pid} ${currentContext().SN}]`;
+    const callInfo = ((): string => {
+      if (!needCallInfoDetail) return "";
+      // Magic number: 5
+      // ./lib/core/logger/callInfo.js [exports.default]
+      // ./lib/core/logger/index.js [THIS anonymous function]
+      // ./lib/core/logger/index.js [formatStr]
+      // ./lib/core/logger/index.js [writeLog]
+      // ./lib/core/runtime/console.hack.js [console.log]
+      // User called here
+      const { column, line, filename } = getCallInfo(5);
+      return `[${filename.split(path.sep).join("/")}:${line}:${column}]`;
+    })();
+
+    if (color) {
       const typeColor = LOG_COLOR[type];
       return `${chalk.black(timestamp)} ${chalk[typeColor](logType)} ${
-        chalk.black(cpuInfo)
-      } ${chalk.blue(fileInfo)} ${str}`;
+        chalk.black(pidInfo)
+      } ${chalk.blue(callInfo)} ${str}`;
     }
 
-    return `${timestamp} ${logType} ${cpuInfo} ${fileInfo} ${str}`;
+    return `${timestamp} ${logType} ${pidInfo} ${callInfo} ${str}`;
   }
 
-  static getLog(): Log {
+  private static getLog(): Log {
     const { log } = currentContext();
     return log;
   }
 
-  static clean(): void {
+  public static clean(): void {
     let log = Logger.getLog();
     if (log) {
       log.arr = null;
@@ -156,7 +161,7 @@ export class Logger {
     }
   }
 
-  static fillBuffer(type: string, logStr: string): void {
+  private static fillBuffer(type: string, logStr: string): void {
     const log = Logger.getLog();
     if (log) {
       if (!log.arr) {
@@ -177,7 +182,7 @@ export class Logger {
     }
   }
 
-  static fillInspect(str: string, level: number): void {
+  private static fillInspect(str: string, level: number): void {
     if (level <= 20) {
       (console.originLog || console.log)(str);
     } else if (level <= 30) {
@@ -187,11 +192,12 @@ export class Logger {
     }
   }
 
-  static fillStdout(str: string): void {
+  private static fillStdout(str: string): void {
     process.stdout.write(`${str}\n`);
   }
 }
 
+let logger: Logger;
 if (!logger) {
   logger = new Logger();
 }
