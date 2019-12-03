@@ -390,10 +390,11 @@ const downloadHaz = function (request, response, opt) {
         data = data.reverse();
     }
     data.forEach(function (tmp, i) {
-        if (tmp.curr) {
+        if (tmp && tmp.curr) {
             viewData.push(tmp.curr);
         }
 
+        tmp &&
         tmp.ajax &&
         tmp.ajax.forEach(function(ajax, i) {
             if (!ajax.SN) {
