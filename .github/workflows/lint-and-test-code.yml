@@ -16,9 +16,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
-          node-version: '10.x'
+          node-version: '12.x'
       - name: Install Dependencies
-        run: npm install
+        run: yarn
       - name: Commit Linter
         uses: wagoid/commitlint-github-action@v1.2.2
         with:
@@ -26,8 +26,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run ESLinter
-        run: npm run lint
+        run: yarn lint
       - name: Run Tests
-        run: npm test
-      # - name: Run Code Coverage
-      #   run: npm run coverage
+        run: yarn test

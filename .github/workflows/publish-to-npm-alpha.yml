@@ -13,9 +13,9 @@ jobs:
       - name: Set up node.js
         uses: actions/setup-node@master
         with:
-          node-version: '10.x'
+          node-version: '12.x'
       - name: Install dependencies
-        run: npm install
+        run: yarn
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
