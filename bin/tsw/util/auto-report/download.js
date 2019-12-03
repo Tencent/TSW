@@ -390,21 +390,21 @@ const downloadHaz = function (request, response, opt) {
         data = data.reverse();
     }
     data.forEach(function (tmp, i) {
-        if (tmp.curr) {
+        if (tmp && tmp.curr) {
             viewData.push(tmp.curr);
         }
 
+        tmp &&
         tmp.ajax &&
         tmp.ajax.forEach(function(ajax, i) {
-            if (!ajax.SN) {
-                return;
+            if ( ajax &&  ajax.SN  ) {
+                viewData.push(ajax);
             }
-            viewData.push(ajax);
         });
     });
 
     viewData.forEach(function(tmp, i) {
-        if (tmp.requestHeader) {
+        if ( tmp && tmp.requestHeader) {
             tmp.requestRaw = Buffer.concat([
                 Buffer.from(tmp.requestHeader || '', 'utf-8'),
                 Buffer.from(tmp.requestBody || '', 'base64')
