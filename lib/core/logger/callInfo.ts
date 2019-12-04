@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-
+import * as path from "path";
 /**
  * 利用 V8 Error.captureStackTrace API
  * 实现对调用堆栈的详细追踪
@@ -42,7 +42,7 @@ export default (level = 0): {
   if (typeof stack?.[level]?.getLineNumber === "function") {
     res.line = stack[level].getLineNumber();
     res.column = stack[level].getColumnNumber();
-    res.filename = stack[level].getFileName();
+    res.filename = path.relative(process.cwd(), stack[level].getFileName());
   }
 
   return res;
