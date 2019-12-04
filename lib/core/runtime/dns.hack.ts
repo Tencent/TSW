@@ -58,15 +58,20 @@ export const dnsHack = (): void => {
         ? optionsOrCallback
         : callbackOrUndefined;
 
+      logger.debug(`dns lookup for ${hostname}`);
+
+      // For http.request, if host is a ip
+      // It will not entry dns.lookup by default
+      // https://github.com/nodejs/node/blob/master/lib/net.js#L1002
+      // But still need this, in case use call dns.lookup directly
       if (net.isIP(hostname)) {
+        logger.debug(`dns lookup: ${hostname} is a ip`);
         if (options) {
           return lookup.apply(this, [hostname, options, callback]);
         }
 
         return lookup.apply(this, [hostname, callback]);
       }
-
-      logger.debug(`dns lookup for ${hostname}`);
 
       let isCalled = false;
       let code: number;
