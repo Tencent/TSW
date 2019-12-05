@@ -12,6 +12,7 @@ import * as path from "path";
 
 import currentContext, { Log } from "../context";
 import isLinux from "../util/isLinux";
+import isInspect from "../util/isInspect";
 import getCallInfo from "./callInfo";
 
 enum LOG_LEVEL {
@@ -67,10 +68,6 @@ export class Logger {
       return;
     }
 
-    // TODO: incorrect flag detected, for example:
-    // node ./inspect.js
-    const useInspectFlag = process.execArgv.join().includes("inspect");
-
     const logStr = Logger.formatStr(str, type, {
       levelLimit: this.logLevel
     });
@@ -78,7 +75,7 @@ export class Logger {
     // Store log
     Logger.fillBuffer(type, logStr);
 
-    if (useInspectFlag) {
+    if (isInspect) {
       // When started with inspect, log will send to 2 places
       // 1. Local stdout
       // 2. Remote(maybe chrome inspect window) inspect window
