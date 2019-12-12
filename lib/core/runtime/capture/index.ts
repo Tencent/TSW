@@ -5,14 +5,16 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-import * as http from 'http';
-import { URL } from 'url';
-import { RequestOptions, IncomingMessage } from 'http';
-import { Socket } from 'net';
+// eslint-disable-next-line import/no-duplicates
+import * as http from "http";
+// eslint-disable-next-line import/no-duplicates
+import { RequestOptions, IncomingMessage } from "http";
+import { URL } from "url";
+import { Socket } from "net";
 
-import { currentContext } from '../../context';
-import logger from '../../logger/index';
-import { captureRequestBody, captureResponseBody } from '../../util/http'
+import currentContext from "../../context";
+import logger from "../../logger/index";
+import { captureRequestBody, captureResponseBody } from "../../util/http";
 
 type requestCallback = (
   res: IncomingMessage
@@ -44,138 +46,181 @@ interface ResponseInfo {
 
 const maxBodySize = 512 * 1024;
 
-export const requestHack = <T extends typeof http.request>(originRequest: T, protocol: requestProtocol): () => T  => {
-  return (optionsOrUrl?: optionsType, optionsOrCallback?: optionalType): T => {
-    const request = originRequest.apply(this, [optionsOrUrl, optionsOrCallback]);
+const requestHack = <T extends typeof http.request>(
+  originRequest: T,
+  protocol: requestProtocol
+): () => T => (
+    optionsOrUrl?: optionsType,
+    optionsOrCallback?: optionalType
+  ): T => {
+    const request = originRequest.apply(
+      this, [optionsOrUrl, optionsOrCallback]
+    );
     const logPre = `[${currentContext().SN}]`;
-    if(optionsOrUrl instanceof URL){
-      return
+    if (optionsOrUrl instanceof URL) {
+      return;
     }
+
     const { method, host, path } = optionsOrUrl;
     const ip = host;
-    let port: requestPort = protocol == 'https:'? 443: 80;
+    let port: requestPort = protocol === "https:" ? 443 : 80;
     port = port || optionsOrUrl.port;
-    logger.debug(`${logPre} ${method} ${ip}:${port} ~ ${protocol}//${host}${path}`)
+    // eslint-disable-next-line max-len
+    logger.debug(`${logPre} ${method} ${ip}:${port} ~ ${protocol}//${host}${path}`);
     // 请求信息 - clientIp clientPort requestBody
-    let requestInfo: RequestInfo
+    let requestInfo: RequestInfo;
     // 响应信息 - serveIp servePort responseBody
-    let responseInfo: ResponseInfo
+    let responseInfo: ResponseInfo;
     // 请求时序
     const timeStart = Date.now();
     const timestamps: Timestamps = {
       timeStart,
       timeConnect: timeStart
-    }
+    };
+    let cost: number;
     // 请求结束后，将请求信息记录在logger.json中
     const recordInLogger = (): void => {
-      logger.debug(`record request info -> request length: ${responseInfo.contentLength}`)
-    }
+      // eslint-disable-next-line max-len
+      logger.debug(`record request info -> request length: ${responseInfo.contentLength}`);
+    };
+
     // 结束请求
     const finishRequest = (response?: IncomingMessage): void => {
       timestamps.timeEnd = new Date().getTime();
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      request.removeListener('socket', onSocket);
+      request.removeListener("socket", onSocket);
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      request.removeListener('error', onError);
+      request.removeListener("error", onError);
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      request.removeListener('response', onResponse);
+      request.removeListener("response", onResponse);
       recordInLogger();
-    }
+    };
+
     // 错误日志
     const onError = (error: Error): void => {
       logger.error(`${logPre} request error ${error.stack}`);
-      recordInLogger()
-    }
+      recordInLogger();
+    };
+
     // 获取远程IP与端口
     const onSocket = (socket: Socket): void => {
-      if(socket.remoteAddress){
-        const timeLookup = timestamps.timeLookup = Date.now();
+      if (socket.remoteAddress) {
+        const timeLookup = Date.now();
+        timestamps.timeLookup = timeLookup;
         timestamps.timeConnect = Date.now();
-        const remoteAddress = responseInfo.remoteAddress = socket.remoteAddress;
-        const remotePort = responseInfo.remotePort = socket.remotePort;
-        const cost = timeLookup - timeStart;
-        logger.debug(`${logPre} socket reuse ${remoteAddress}:${remotePort}, cost ${cost}ms`);
-        return
+        responseInfo.remoteAddress = socket.remoteAddress;
+        responseInfo.remotePort = socket.remoteAddress;
+        cost = timeLookup - timeStart;
+        // eslint-disable-next-line max-len
+        logger.debug(`${logPre} socket reuse ${socket.remoteAddress}:${socket.remotePort}, cost ${cost}ms`);
+        return;
       }
 
-      const onError = (error: Error): void => {
+      const onSocketError = (error: Error): boolean => {
         logger.error(`${logPre} socket error ${error.stack}`);
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         cleanSocket();
         finishRequest();
+        return true;
       };
+
       const onConnect = (): void => {
         timestamps.timeConnect = Date.now();
-        const cost = timestamps.timeConnect - timeStart;
-        const remoteAddress = responseInfo.remoteAddress = socket.remoteAddress;
-        const remotePort = responseInfo.remotePort = socket.remotePort;
-        logger.debug(`${logPre} connect ${remoteAddress}:${remotePort}, cost ${cost}ms`);
+        cost = timestamps.timeConnect - timeStart;
+        responseInfo.remoteAddress = socket.remoteAddress;
+        responseInfo.remotePort = socket.remotePort;
+        // eslint-disable-next-line max-len
+        logger.debug(`${logPre} connect ${socket.remoteAddress}:${socket.remotePort}, cost ${cost}ms`);
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         cleanSocket();
       };
-      const onLookup =(err, address, family, host): void => {
-        const timeLookup = timestamps.timeLookup = Date.now();
-        const cost = timeLookup - timeStart;
-        logger.debug(`${logPre} dns lookup ${host} -> ${address || 'null'}, cost ${cost}ms`);
+
+      const onLookup = (
+        err: Error,
+        address: string,
+        family: string | number,
+        // eslint-disable-next-line no-shadow
+        host: string
+      ): void => {
+        const timeLookup = Date.now();
+        timestamps.timeLookup = timeLookup;
+        cost = timeLookup - timeStart;
+        // eslint-disable-next-line max-len
+        logger.debug(`${logPre} dns lookup ${host} -> ${address || "null"}, cost ${cost}ms`);
         if (err) {
           logger.error(`${logPre} lookup error ${err.stack}`);
         }
       };
+
       const cleanSocket = (): void => {
-        socket.removeListener('error', onError);
-        socket.removeListener('connect', onConnect);
-        socket.removeListener('lookup', onLookup);
+        socket.removeListener("error", onSocketError);
+        socket.removeListener("connect", onConnect);
+        socket.removeListener("lookup", onLookup);
       };
-    }
+    };
+
     // 抓取请求包
-    captureRequestBody(request)
+    captureRequestBody(request);
     // 抓回包
     const onResponse = (response: IncomingMessage): void => {
       timestamps.timeResponse = Date.now();
-      const socket: Socket = response.socket;
-      const remotePort = responseInfo.remotePort = socket.remotePort;
-      const remoteAddress = responseInfo.remoteAddress = socket.remoteAddress;
-      const localAddress = requestInfo.localAddress = socket.localAddress;
-      const localPort = requestInfo.localPort = socket.localPort;
-      const cost = timestamps.timeResponse - timestamps.timeStart;
-      logger.debug(`${logPre} ${localAddress}:${localPort} > ${remoteAddress}:${remotePort} response ${response.statusCode} cost:${cost}ms ${response.headers['content-encoding']}`);
+      const { socket } = response;
+      responseInfo.remotePort = socket.remotePort;
+      responseInfo.remoteAddress = socket.remoteAddress;
+      requestInfo.localAddress = socket.localAddress;
+      requestInfo.localPort = socket.localPort;
+      cost = timestamps.timeResponse - timestamps.timeStart;
+      // eslint-disable-next-line max-len
+      logger.debug(`${logPre} ${socket.localAddress}:${socket.localPort} > ${socket.remoteAddress}:${socket.remotePort} response ${response.statusCode} cost:${cost}ms ${response.headers["content-encoding"]}`);
       // 抓取请求包
       const handler = (chunk: chunk): void => {
         responseInfo.contentLength += chunk.length;
-        if(responseInfo.contentLength <= maxBodySize){
+        if (responseInfo.contentLength <= maxBodySize) {
           responseInfo.responseBody.push(chunk);
         }
-      }
-      captureResponseBody(response, handler)
-      const finishResponse = (response: IncomingMessage) => {
-        response.removeListener('data', handler);
-        finishRequest(response)
-      }
-      response.once('close', () => {
+      };
+
+      captureResponseBody(response, handler);
+      const finishResponse = (_response: IncomingMessage): void => {
+        _response.removeListener("data", handler);
+        finishRequest(_response);
+      };
+
+      response.once("close", () => {
         logger.debug(`${logPre} close`);
         finishResponse.call(response);
-      })
-      response.once('end', () => {
-        const cost = Date.now() - timeStart;
-        logger.debug(`${logPre}end size：${responseInfo.contentLength}, receive data cost: ${cost}ms'`);
-        finishResponse.call(response)
-      })
-    }
+      });
+
+      response.once("end", () => {
+        cost = Date.now() - timeStart;
+        // eslint-disable-next-line max-len
+        logger.debug(`${logPre} end size：${responseInfo.contentLength}, receive data cost: ${cost}ms'`);
+        finishResponse.call(response);
+      });
+    };
+
     // 事件监听
-    request.once('socket', onSocket);
-    request.once('error', onError);
-    request.once('finish', () => {
+    request.once("socket", onSocket);
+    request.once("error", onError);
+    request.once("finish", () => {
       let requestBody: string;
+      // eslint-disable-next-line no-underscore-dangle
       const length = request._bodySize;
-      if(length >= maxBodySize){
-        requestBody = Buffer.from(`body was too large too show, length: ${length}`).toString('base64');
-      }else{
-        requestBody = request._body.toString('base64');
+      if (length >= maxBodySize) {
+        // eslint-disable-next-line max-len
+        requestBody = Buffer.from(`body was too large too show, length: ${length}`).toString("base64");
+      } else {
+        // eslint-disable-next-line no-underscore-dangle
+        requestBody = request._body.toString("base64");
       }
+
       requestInfo.requestBody = requestBody;
       logger.debug(`${logPre} send finish, total size ${length}`);
     });
-    request.once('response', onResponse)
-    return request
-  }
-}
+
+    request.once("response", onResponse);
+    // eslint-disable-next-line consistent-return
+    return request;
+  };
+
+export default requestHack;
