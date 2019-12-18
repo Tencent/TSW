@@ -1,7 +1,7 @@
 # [Tencent Server Web](https://tswjs.org)
 
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg) [![Build Status](https://github.com/tencent/tsw/workflows/build/badge.svg)](https://travis-ci.org/Tencent/TSW)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/TSW/pulls) [![wiki](https://img.shields.io/badge/Wiki-open-brightgreen.svg)](https://tswjs.org/guide/index) ![node](https://img.shields.io/badge/node-%3E%3D8.0.0-green.svg) [![Actions Status](https://github.com/Tencent/TSW/workflows/build/badge.svg)](https://github.com/Tencent/TSW/actions)
 
 ---
 
