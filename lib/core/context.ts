@@ -19,6 +19,7 @@ export interface Log {
 export class Context {
   log: Log;
   SN: number;
+  captureSN: number;
 
   constructor() {
     this.log = {
@@ -31,6 +32,7 @@ export class Context {
     };
 
     this.SN = process.SN || 0;
+    this.captureSN = 0;
   }
 }
 
