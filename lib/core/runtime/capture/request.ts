@@ -17,7 +17,7 @@ export const captureRequestBody = (request: http.ClientRequest): void => {
   const body: Buffer[] = [];
 
   (request as any)._send = ((fn) => (
-    data: Buffer | Uint8Array | string,
+    data: Buffer | string,
     encodingOrCallback?: string | ((err?: Error) => void) | undefined,
     callbackOrUndefined?: ((err?: Error) => void) | undefined
   ): boolean => {
@@ -36,11 +36,7 @@ export const captureRequestBody = (request: http.ClientRequest): void => {
         return data;
       }
 
-      if (typeof data === "string") {
-        return Buffer.from(data, encoding);
-      }
-
-      return Buffer.from(data);
+      return Buffer.from(data, encoding);
     })();
 
     bodySize += buffer.length;
@@ -52,14 +48,7 @@ export const captureRequestBody = (request: http.ClientRequest): void => {
   (request as any)._finish = ((fn) => (
     ...args: unknown[]
   ): void => {
-    (request as any)._body = ((): Buffer => {
-      // 请求结束后，将_body转换为buffer
-      if (!Buffer.isBuffer(body)) {
-        return Buffer.concat(body);
-      }
-
-      return body;
-    })();
+    (request as any)._body = Buffer.concat(body);
 
     (request as any)._bodyTooLarge = bodySize > maxBodySize;
     (request as any)._bodySize = bodySize;
