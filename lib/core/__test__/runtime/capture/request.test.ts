@@ -8,7 +8,6 @@
 
 /* eslint-disable no-underscore-dangle, @typescript-eslint/no-explicit-any */
 import * as http from "http";
-import * as querystring from "querystring";
 import { captureRequestBody } from "../../../runtime/capture/request";
 
 /**
@@ -33,9 +32,10 @@ afterAll(() => {
 
 describe("capture request function test", () => {
   test("request should capture post data", (done) => {
-    const postData = querystring.stringify({
-      msg: "Hello World!"
-    });
+    const firstData = "a";
+    const secondData = "b";
+    const thirdData = "c";
+    const data = firstData + secondData + thirdData;
 
     const req = http.request({
       hostname: "127.0.0.1",
@@ -44,22 +44,28 @@ describe("capture request function test", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Content-Length": Buffer.byteLength(postData)
+        "Content-Length": Buffer.byteLength(data)
       }
     }, () => {
       expect((req as any)._body).toBeTruthy();
-      expect((req as any)._body.toString()).toEqual(postData);
-      expect((req as any)._bodySize).toEqual(Buffer.byteLength(postData));
+      expect((req as any)._body.toString()).toEqual(data);
+      expect((req as any)._bodySize).toEqual(Buffer.byteLength(data));
       expect((req as any)._bodyTooLarge).toEqual(false);
-
-      server.close();
       done();
     });
 
     captureRequestBody(req);
 
+    req.write(firstData);
     // Write data to request body
-    req.write(postData);
+    req.write(Buffer.from(secondData, "utf8"), "utf8", () => {
+      // do nothing
+    });
+
+    req.write(Buffer.from(thirdData), () => {
+      // do nothing
+    });
+
     req.end();
   });
 });
