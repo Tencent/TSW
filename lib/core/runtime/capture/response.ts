@@ -16,6 +16,7 @@ const maxBodySize = 512 * 1024;
 export interface ResponseBodyInfo {
   bodyLength: number;
   body: any[];
+  bodyTooLarge: boolean;
 }
 
 export const captureResponseBody = (
@@ -25,13 +26,23 @@ export const captureResponseBody = (
 
   const info: ResponseBodyInfo = {
     bodyLength: 0,
-    body: []
+    body: [],
+    bodyTooLarge: false
   };
 
   const handler = (chunk: any): void => {
-    info.bodyLength += chunk.length;
-    if (info.bodyLength <= maxBodySize) {
-      info.body.push(chunk);
+    const byteLength = ((): number => {
+      if (Buffer.isBuffer(chunk)) {
+        return chunk.length;
+      }
+
+      return Buffer.byteLength(chunk);
+    })();
+
+    info.bodyLength += byteLength;
+    info.body.push(chunk);
+    if (info.bodyLength > maxBodySize) {
+      info.bodyTooLarge = true;
     }
   };
 
