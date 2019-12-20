@@ -8,7 +8,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as http from "http";
-import logger from "../../logger/index";
 
 // Max response body size
 const maxBodySize = 512 * 1024;
@@ -19,10 +18,10 @@ export interface ResponseBodyInfo {
   bodyTooLarge: boolean;
 }
 
-export const captureResponseBody = (
-  response: http.IncomingMessage
+export const captureReadableStream = (
+  stream: NodeJS.ReadableStream
 ): ResponseBodyInfo => {
-  const originPush = response.push;
+  const originPush = (stream as any).push;
 
   const info: ResponseBodyInfo = {
     bodyLength: 0,
@@ -31,38 +30,29 @@ export const captureResponseBody = (
   };
 
   const handler = (chunk: any): void => {
-    const byteLength = ((): number => {
-      if (Buffer.isBuffer(chunk)) {
-        return chunk.length;
-      }
-
-      return Buffer.byteLength(chunk);
-    })();
-
-    info.bodyLength += byteLength;
-    info.body.push(chunk);
-    if (info.bodyLength > maxBodySize) {
-      info.bodyTooLarge = true;
-    }
+    info.bodyLength += Buffer.byteLength(chunk);
+    info.body.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    info.bodyTooLarge = info.bodyLength > maxBodySize;
   };
 
-  let { head } = (response as any).readableBuffer;
+  let { head } = (stream as any).readableBuffer;
   while (head) {
     handler(head.data);
     head = head.next;
   }
 
-  response.push = (chunk: any, encoding?: string): boolean => {
-    try {
-      if (chunk) {
-        handler(chunk);
-      }
-    } catch (error) {
-      logger.debug(`capture stream chunk error ${error.message}`);
+  // eslint-disable-next-line no-param-reassign
+  (stream as any).push = (chunk: any, encoding?: string): boolean => {
+    if (chunk) {
+      handler(chunk);
     }
 
-    return originPush.call(response, chunk, encoding);
+    return originPush.call(stream, chunk, encoding);
   };
 
   return info;
 };
+
+export const captureResponseBody = (
+  response: http.IncomingMessage
+): ResponseBodyInfo => captureReadableStream(response);
