@@ -9,7 +9,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as http from "http";
-import { captureResponseBody } from "../../../runtime/capture/response";
+import {
+  captureResponseBody,
+  captureReadableStream
+} from "../../../runtime/capture/response";
+import { Readable } from "stream";
 
 /**
  * 4000 - 5000 random port
@@ -56,6 +60,23 @@ describe("capture response function test", () => {
     req.once("close", () => {
       expect(Buffer.concat(info.body)).toEqual(Buffer.from(responseData));
       expect(info.bodyLength).toEqual(Buffer.byteLength(responseData));
+      done();
+    });
+  });
+
+  test("capture readableStream should be right", (done) => {
+    const stream = new Readable();
+
+    stream.push("before");
+    const info = captureReadableStream(stream);
+
+    stream.push("after");
+    stream.destroy();
+
+    stream.on("close", () => {
+      expect(info.bodyLength).toEqual(Buffer.byteLength("beforeafter"));
+      expect(Buffer.concat(info.body)).toEqual(Buffer.from("beforeafter"));
+      expect(info.bodyTooLarge).toEqual(false);
       done();
     });
   });

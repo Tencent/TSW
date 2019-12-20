@@ -104,7 +104,8 @@ export const hack = <T extends typeof http.request>(
     const requestInfo: RequestInfo = {};
     const responseInfo: ResponseInfo = {
       body: [],
-      bodyLength: 0
+      bodyLength: 0,
+      bodyTooLarge: false
     };
     const timeStart = Date.now();
     const timestamps: Timestamps = {
