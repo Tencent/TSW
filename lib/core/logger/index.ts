@@ -60,6 +60,14 @@ export class Logger {
     this.writeLog("ERROR", str);
   }
 
+  public static clean(): void {
+    let log = Logger.getLog();
+    if (log) {
+      log.arr = null;
+      log = null;
+    }
+  }
+
   public writeLog(type: LogLevelStrings, str: string): void {
     const level = LOG_LEVEL[type];
 
@@ -148,14 +156,6 @@ export class Logger {
   private static getLog(): Log {
     const { log } = currentContext();
     return log;
-  }
-
-  public static clean(): void {
-    let log = Logger.getLog();
-    if (log) {
-      log.arr = null;
-      log = null;
-    }
   }
 
   private static fillBuffer(type: string, logStr: string): void {
