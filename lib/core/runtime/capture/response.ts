@@ -14,7 +14,8 @@ const maxBodySize = 512 * 1024;
 
 export interface ResponseBodyInfo {
   bodyLength: number;
-  body: any[];
+  bodyChunks: Buffer[];
+  body: Buffer;
   bodyTooLarge: boolean;
 }
 
@@ -25,13 +26,15 @@ export const captureReadableStream = (
 
   const info: ResponseBodyInfo = {
     bodyLength: 0,
-    body: [],
-    bodyTooLarge: false
+    bodyChunks: [],
+    bodyTooLarge: false,
+    body: Buffer.alloc(0)
   };
 
   const handler = (chunk: any): void => {
     info.bodyLength += Buffer.byteLength(chunk);
-    info.body.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    info.bodyChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    info.body = Buffer.concat(info.bodyChunks);
     info.bodyTooLarge = info.bodyLength > maxBodySize;
   };
 
