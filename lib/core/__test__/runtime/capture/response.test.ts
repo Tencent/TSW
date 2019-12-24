@@ -58,7 +58,7 @@ describe("capture response function test", () => {
     req.write(data);
 
     req.once("close", () => {
-      expect(Buffer.concat(info.body)).toEqual(Buffer.from(responseData));
+      expect(info.body).toEqual(Buffer.from(responseData));
       expect(info.bodyLength).toEqual(Buffer.byteLength(responseData));
       done();
     });
@@ -75,7 +75,7 @@ describe("capture response function test", () => {
 
     stream.on("close", () => {
       expect(info.bodyLength).toEqual(Buffer.byteLength("beforeafter"));
-      expect(Buffer.concat(info.body)).toEqual(Buffer.from("beforeafter"));
+      expect(info.body).toEqual(Buffer.from("beforeafter"));
       expect(info.bodyTooLarge).toEqual(false);
       done();
     });

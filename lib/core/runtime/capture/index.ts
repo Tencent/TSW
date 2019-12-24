@@ -12,29 +12,12 @@ import * as https from "https";
 import { URL } from "url";
 import { Socket, isIP } from "net";
 import { captureRequestBody } from "./request";
-import { captureResponseBody, ResponseBodyInfo } from "./response";
+import { captureResponseBody } from "./response";
 
-import currentContext from "../../context";
+import currentContext, { RequestLog } from "../../context";
 import logger from "../../logger/index";
 
 type requestProtocol = "http:" | "https:";
-
-interface Timestamps {
-  timeStart: number;
-  timeConnect: number;
-  timeLookup?: number;
-  timeResponse?: number;
-  timeEnd?: number;
-}
-interface RequestInfo {
-  localAddress?: string;
-  localPort?: string | number;
-  requestBody?: string;
-}
-interface ResponseInfo extends ResponseBodyInfo {
-  remoteAddress?: string;
-  remotePort?: string | number;
-}
 
 /**
  * Convert a URL instance to a http.request options
@@ -88,75 +71,72 @@ export const hack = <T extends typeof http.request>(
       options = Object.assign(options, args[1]);
     }
 
-    // Execute request here
+    // Execute request
     const request: http.ClientRequest = originRequest.apply(this, args);
-
-    const logPre = `[${currentContext().captureSN}]`;
-    currentContext().captureSN += 1;
-
-    const {
-      method, hostname, path, port
-    } = options;
-
-    logger.debug(`${logPre} ${method} ${hostname}:${port} ~ ${
-      protocol}//${hostname}${path}`);
-
-    const requestInfo: RequestInfo = {};
-    const responseInfo: ResponseInfo = {
-      body: [],
-      bodyLength: 0,
-      bodyTooLarge: false
-    };
-    const timeStart = Date.now();
-    const timestamps: Timestamps = {
-      timeStart,
-      timeConnect: timeStart
-    };
-    let cost: number;
-    // 请求结束后，将请求信息记录在logger.json中
-    const recordInLogger = (): void => {
-      logger.debug(`record request info -> request length: ${
-        responseInfo.bodyLength}`);
-    };
-
-    const finishRequest = (): void => {
-      timestamps.timeEnd = new Date().getTime();
-
-      console.log(timestamps);
-      console.log(requestInfo);
-      console.log(responseInfo);
-
-      recordInLogger();
-    };
-
+    // Execute capture
     captureRequestBody(request);
 
-    request.once("socket", (socket: Socket): void => {
-      if (socket.remoteAddress) {
-        const timeLookup = Date.now();
-        timestamps.timeLookup = timeLookup;
-        timestamps.timeConnect = Date.now();
-        responseInfo.remoteAddress = socket.remoteAddress;
-        responseInfo.remotePort = socket.remoteAddress;
-        cost = timeLookup - timeStart;
-        logger.debug(`${logPre} socket reuse ${
-          socket.remoteAddress}:${socket.remotePort}, cost ${cost}ms`);
+    const context = currentContext();
 
-        return;
-      }
+    const logPre = `[${context.captureSN}]`;
+
+    const {
+      method, hostname, path, port, host
+    } = options;
+
+    logger.debug(`${logPre} Request begin. ${method} ${hostname}:${port} ~ ${
+      protocol}//${hostname}${path}`);
+
+    const requestLog: Partial<RequestLog> = {
+      SN: context.captureSN,
+
+      host,
+      protocol: protocol.toUpperCase() as RequestLog["protocol"],
+      url: `${protocol}//${host}${path}`,
+      cache: "",
+      process: `TSW: ${process.pid}`,
+      timestamps: {
+        ServerConnected: new Date(),
+        ClientConnected: new Date(),
+        GatewayTime: 0,
+        TCPConnectTime: 0,
+        HTTPSHandshakeTime: 0
+      } as RequestLog["timestamps"]
+    };
+
+    const { timestamps } = requestLog;
+
+    const finishRequest = (): void => {
+      context.captureRequests.push(requestLog as RequestLog);
+      context.captureSN += 1;
+
+      console.log(requestLog);
+
+      logger.debug(`Record request info. Response length: ${
+        requestLog.contentLength
+      }`);
+    };
+
+    request.once("socket", (socket: Socket): void => {
+      timestamps.ClientBeginRequest = new Date();
+      timestamps.FiddlerBeginRequest = new Date();
+      timestamps.GotRequestHeaders = new Date();
 
       if (!isIP(hostname)) {
         socket.once("lookup", (
           err: Error,
           address: string,
           family: string | number,
-          host: string
+          /**
+           * host
+           */
+          h: string
         ): void => {
-          const timeLookup = Date.now();
-          timestamps.timeLookup = timeLookup;
-          cost = timeLookup - timeStart;
-          logger.debug(`${logPre} dns lookup ${host} -> ${
-            address || "null"}, cost ${cost}ms`);
+          timestamps.DNSTime = new Date().getTime()
+            - timestamps.ClientBeginRequest.getTime();
+
+          logger.debug(`${logPre} dns lookup ${h} -> ${
+            address || "null"}, cost ${timestamps.DNSTime}ms`);
 
           if (err) {
             logger.error(`${logPre} lookup error ${err.stack}`);
@@ -165,27 +145,34 @@ export const hack = <T extends typeof http.request>(
       }
 
       socket.once("connect", (): void => {
-        timestamps.timeConnect = Date.now();
-        cost = timestamps.timeConnect - timeStart;
-        responseInfo.remoteAddress = socket.remoteAddress;
-        responseInfo.remotePort = socket.remotePort;
+        const timeConnect = Date.now();
+        const cost = timeConnect - 0;
         logger.debug(`${logPre} connect ${
           socket.remoteAddress}:${socket.remotePort}, cost ${cost}ms`);
       });
 
-      socket.once("error", (error: Error): boolean => {
-        logger.error(`${logPre} socket error ${error.stack}`);
-        finishRequest();
-        return true;
-      });
+      if (socket.remoteAddress) {
+        timestamps.DNSTime = new Date().getTime()
+            - timestamps.ClientBeginRequest.getTime();
+
+        logger.debug(`${logPre} socket reuse ${
+          socket.remoteAddress
+        }:${socket.remotePort}, cost ${
+          timestamps.DNSTime
+        }ms`);
+      }
     });
 
     request.once("error", (error: Error) => {
       logger.error(`${logPre} request error ${error.stack}`);
-      recordInLogger();
+      finishRequest();
     });
 
     request.once("finish", () => {
+      timestamps.ClientDoneRequest = new Date();
+      // Unknown when server got the request
+      timestamps.ServerGotRequest = new Date();
+
       let requestBody: string;
       const length = (request as any)._bodySize;
       const tooLarge = (request as any)._bodyTooLarge;
@@ -196,40 +183,66 @@ export const hack = <T extends typeof http.request>(
         requestBody = (request as any)._body.toString("base64");
       }
 
-      requestInfo.requestBody = requestBody;
+      requestLog.requestHeader = (request as any)._header;
+      requestLog.requestBody = requestBody;
       logger.debug(`${logPre} send finish, total size ${length}`);
     });
 
     request.once("response", (response: http.IncomingMessage): void => {
-      timestamps.timeResponse = Date.now();
+      const timeOnResponse = new Date();
+      timestamps.ServerBeginResponse = timeOnResponse;
+      timestamps.ClientBeginResponse = timeOnResponse;
+      timestamps.GotResponseHeaders = timeOnResponse;
+
       const { socket } = response;
-      responseInfo.remotePort = socket.remotePort;
-      responseInfo.remoteAddress = socket.remoteAddress;
-      requestInfo.localAddress = socket.localAddress;
-      requestInfo.localPort = socket.localPort;
-      cost = timestamps.timeResponse - timestamps.timeStart;
+      requestLog.serverIp = socket.remoteAddress;
+      requestLog.serverPort = socket.remotePort;
+      requestLog.clientIp = socket.localAddress;
+      requestLog.clientPort = socket.localPort;
 
       logger.debug(`${logPre} ${socket.localAddress}:${socket.localPort} > ${
         socket.remoteAddress
       }:${socket.remotePort} response ${
         response.statusCode
-      } cost:${cost}ms ${
+      }. Cost:${
+        timestamps.ServerBeginResponse.getTime()
+        - timestamps.ClientConnected.getTime()
+      } ms ${
         response.headers["content-encoding"]
       }`);
 
-      Object.assign(responseInfo, captureResponseBody(response));
+      // responseInfo can't retrieve data until response "end" event
+      const responseInfo = captureResponseBody(response);
 
       response.once("close", () => {
-        logger.debug(`${logPre} close`);
-        finishRequest();
-      });
+        const timeOnResponseClose = new Date();
+        timestamps.ServerDoneResponse = timeOnResponseClose;
+        timestamps.ClientDoneResponse = timeOnResponseClose;
 
-      response.once("end", () => {
-        cost = Date.now() - timeStart;
+        requestLog.resultCode = response.statusCode;
+        requestLog.contentLength = Number(response.headers["content-length"]);
+        requestLog.contentType = response.headers["content-type"];
+        requestLog.responseHeader = ((): string => {
+          const result = [];
+          result.push(`HTTP/${response.httpVersion} ${
+            response.statusCode} ${response.statusMessage}`);
 
-        logger.debug(`${logPre} end size：${
-          responseInfo.bodyLength
-        }, receive data cost: ${cost}ms'`);
+          Object.keys(response.headers).forEach((key) => {
+            result.push(`${key}: ${response.headers[key]}`);
+          });
+
+          result.concat(["", ""]);
+          return result.join("\r\n");
+        })();
+
+        requestLog.responseBody = responseInfo.body.toString("base64");
+
+        logger.debug(`${logPre} Response on end. Size：${
+          requestLog.contentLength
+        }. Cost: ${
+          timestamps.ServerDoneResponse.getTime()
+          - timestamps.ClientConnected.getTime()
+        } ms'`);
 
         finishRequest();
       });

@@ -16,10 +16,101 @@ export interface Log {
   DEBUG: number;
 }
 
+export interface RequestLog {
+  SN: number;
+
+  protocol: "HTTPS" | "HTTP";
+  host: string;
+  url: string;
+  cache: string;
+  process: string;
+  resultCode: number;
+  contentLength: number;
+  contentType: string;
+  clientIp: string;
+  clientPort: number;
+  serverIp: string;
+  serverPort: number;
+  requestHeader: string;
+  requestBody: string;
+  responseHeader: string;
+  responseBody: string;
+  /**
+   * Fiddler timers
+   */
+  timestamps: {
+      /**
+       * Exact time that the client browser made a TCP/IP connection to Fiddler.
+       */
+      ClientConnected: Date;
+      /**
+       * Time at which this HTTP request began. May be much later than ClientConnected due to client connection reuse.
+       */
+      ClientBeginRequest: Date;
+      /**
+       * Exact time at which Fiddler finished reading the request headers from the client
+       */
+      GotRequestHeaders: Date;
+      /**
+       * Exact time that the client browser finished sending the HTTP request to Fiddler.
+       */
+      ClientDoneRequest: Date;
+      /**
+       * milliseconds Fiddler spent determining the upstream gateway proxy to use (e.g. processing autoproxy script). Mutually exclusive to DNSTime.
+       */
+      GatewayTime: number;
+      /**
+       * milliseconds Fiddler spent in DNS looking up the server's IP address.
+       */
+      DNSTime: number;
+      /**
+       * milliseconds Fiddler spent TCP/IP connecting to that server's IP address.
+       */
+      TCPConnectTime: number;
+      /**
+       * Amount of time spent in HTTPS handshake
+       */
+      HTTPSHandshakeTime: number;
+      /**
+       * Time at which this connection to the server was made. May be much earlier than ClientConnected due to server connection reuse.
+       */
+      ServerConnected: Date;
+      /**
+       * The time at which Fiddler began sending the HTTP request to the server.
+       */
+      FiddlerBeginRequest: Date;
+      /**
+       * Exact time that Fiddler finished (re)sending the HTTP request to the server.
+       */
+      ServerGotRequest: Date;
+      /**
+       * Exact time that Fiddler got the first bytes of the server's HTTP response.
+       */
+      ServerBeginResponse: Date;
+      /**
+       * Exact time when Fiddler starts getting the response back from the server.
+       */
+      GotResponseHeaders: Date;
+      /**
+       * Exact time that Fiddler got the last bytes of the server's HTTP response.
+       */
+      ServerDoneResponse: Date;
+      /**
+       * Exact time that Fiddler began transmitting the HTTP response to the client browser.
+       */
+      ClientBeginResponse: Date;
+      /**
+       * Exact time that Fiddler finished transmitting the HTTP response to the client browser.
+       */
+      ClientDoneResponse: Date;
+  };
+}
+
 export class Context {
   log: Log;
   SN: number;
   captureSN: number;
+  captureRequests: RequestLog[];
 
   constructor() {
     this.log = {
@@ -33,6 +124,7 @@ export class Context {
 
     this.SN = process.SN || 0;
     this.captureSN = 0;
+    this.captureRequests = [];
   }
 }
 
