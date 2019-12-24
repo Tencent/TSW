@@ -35,9 +35,6 @@ export interface RequestLog {
   requestBody: string;
   responseHeader: string;
   responseBody: string;
-  /**
-   * Fiddler timers
-   */
   timestamps: {
     /**
      * Request begin.
