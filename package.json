@@ -26,6 +26,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
+    "@types/archiver": "^3.0.0",
     "@types/jest": "^24.0.23",
     "@types/node": "^11.9.5",
     "@types/yargs": "^13.0.3",
@@ -57,6 +58,7 @@
     ]
   },
   "dependencies": {
+    "archiver": "^3.1.1",
     "chalk": "^3.0.0",
     "moment": "^2.24.0",
     "yargs": "^15.0.2"
