@@ -77,7 +77,6 @@ export const hack = <T extends typeof http.request>(
     captureRequestBody(request);
 
     const context = currentContext();
-
     const logPre = `[${context.captureSN}]`;
 
     const {
@@ -95,32 +94,22 @@ export const hack = <T extends typeof http.request>(
       url: `${protocol}//${host}${path}`,
       cache: "",
       process: `TSW: ${process.pid}`,
-      timestamps: {
-        ServerConnected: new Date(),
-        ClientConnected: new Date(),
-        GatewayTime: 0,
-        TCPConnectTime: 0,
-        HTTPSHandshakeTime: 0
-      } as RequestLog["timestamps"]
+      timestamps: {} as RequestLog["timestamps"]
     };
 
     const { timestamps } = requestLog;
+    timestamps.requestStart = new Date();
 
     const finishRequest = (): void => {
       context.captureRequests.push(requestLog as RequestLog);
-      context.captureSN += 1;
 
-      console.log(requestLog);
-
-      logger.debug(`Record request info. Response length: ${
+      logger.debug(`${logPre} Record request info. Response length: ${
         requestLog.contentLength
       }`);
     };
 
     request.once("socket", (socket: Socket): void => {
-      timestamps.ClientBeginRequest = new Date();
-      timestamps.FiddlerBeginRequest = new Date();
-      timestamps.GotRequestHeaders = new Date();
+      timestamps.onSocket = new Date();
 
       if (!isIP(hostname)) {
         socket.once("lookup", (
@@ -132,11 +121,12 @@ export const hack = <T extends typeof http.request>(
            */
           h: string
         ): void => {
-          timestamps.DNSTime = new Date().getTime()
-            - timestamps.ClientBeginRequest.getTime();
+          timestamps.onLookUp = new Date();
+          timestamps.dnsTime = timestamps.onLookUp.getTime()
+            - timestamps.onSocket.getTime();
 
           logger.debug(`${logPre} dns lookup ${h} -> ${
-            address || "null"}, cost ${timestamps.DNSTime}ms`);
+            address || "null"}, cost ${timestamps.dnsTime}ms`);
 
           if (err) {
             logger.error(`${logPre} lookup error ${err.stack}`);
@@ -145,33 +135,33 @@ export const hack = <T extends typeof http.request>(
       }
 
       socket.once("connect", (): void => {
-        const timeConnect = Date.now();
-        const cost = timeConnect - 0;
-        logger.debug(`${logPre} connect ${
-          socket.remoteAddress}:${socket.remotePort}, cost ${cost}ms`);
+        timestamps.socketConnect = new Date();
+
+        logger.debug(`${logPre} Socket connect. Remote: ${
+          socket.remoteAddress
+        }:${socket.remotePort}. Cost ${
+          timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
+        } ms`);
       });
 
       if (socket.remoteAddress) {
-        timestamps.DNSTime = new Date().getTime()
-            - timestamps.ClientBeginRequest.getTime();
+        timestamps.dnsTime = 0;
 
-        logger.debug(`${logPre} socket reuse ${
+        logger.debug(`${logPre} Socket reuse. Remote: ${
           socket.remoteAddress
-        }:${socket.remotePort}, cost ${
-          timestamps.DNSTime
-        }ms`);
+        }:${socket.remotePort}`);
       }
     });
 
     request.once("error", (error: Error) => {
-      logger.error(`${logPre} request error ${error.stack}`);
+      logger.error(`${logPre} Request error. Stack: ${error.stack}`);
       finishRequest();
     });
 
     request.once("finish", () => {
-      timestamps.ClientDoneRequest = new Date();
-      // Unknown when server got the request
-      timestamps.ServerGotRequest = new Date();
+      timestamps.requestFinish = new Date();
+
+      context.captureSN += 1;
 
       let requestBody: string;
       const length = (request as any)._bodySize;
@@ -185,14 +175,15 @@ export const hack = <T extends typeof http.request>(
 
       requestLog.requestHeader = (request as any)._header;
       requestLog.requestBody = requestBody;
-      logger.debug(`${logPre} send finish, total size ${length}`);
+      logger.debug(`${logPre} Request send finish. total size ${
+        length
+      }. Cost: ${
+        timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
+      } ms`);
     });
 
     request.once("response", (response: http.IncomingMessage): void => {
-      const timeOnResponse = new Date();
-      timestamps.ServerBeginResponse = timeOnResponse;
-      timestamps.ClientBeginResponse = timeOnResponse;
-      timestamps.GotResponseHeaders = timeOnResponse;
+      timestamps.onResponse = new Date();
 
       const { socket } = response;
       requestLog.serverIp = socket.remoteAddress;
@@ -200,24 +191,22 @@ export const hack = <T extends typeof http.request>(
       requestLog.clientIp = socket.localAddress;
       requestLog.clientPort = socket.localPort;
 
-      logger.debug(`${logPre} ${socket.localAddress}:${socket.localPort} > ${
+      logger.debug(`${logPre} On response. Socket chain: ${
+        socket.localAddress
+      }:${socket.localPort} > ${
         socket.remoteAddress
-      }:${socket.remotePort} response ${
+      }:${socket.remotePort}. Response status code: ${
         response.statusCode
-      }. Cost:${
-        timestamps.ServerBeginResponse.getTime()
-        - timestamps.ClientConnected.getTime()
-      } ms ${
-        response.headers["content-encoding"]
-      }`);
+      }. Cost: ${
+        timestamps.onResponse.getTime()
+        - timestamps.onSocket.getTime()
+      } ms`);
 
       // responseInfo can't retrieve data until response "end" event
       const responseInfo = captureResponseBody(response);
 
       response.once("close", () => {
-        const timeOnResponseClose = new Date();
-        timestamps.ServerDoneResponse = timeOnResponseClose;
-        timestamps.ClientDoneResponse = timeOnResponseClose;
+        timestamps.responseClose = new Date();
 
         requestLog.resultCode = response.statusCode;
         requestLog.contentLength = Number(response.headers["content-length"]);
@@ -242,8 +231,8 @@ export const hack = <T extends typeof http.request>(
         logger.debug(`${logPre} Response on end. Size：${
           requestLog.contentLength
         }. Cost: ${
-          timestamps.ServerDoneResponse.getTime()
-          - timestamps.ClientConnected.getTime()
+          timestamps.responseClose.getTime()
+          - timestamps.onSocket.getTime()
         } ms'`);
 
         finishRequest();
