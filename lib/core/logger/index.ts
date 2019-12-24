@@ -146,9 +146,9 @@ export class Logger {
 
     if (color) {
       const typeColor = LOG_COLOR[type];
-      return `${chalk.black(timestamp)} ${chalk[typeColor](logType)} ${
-        chalk.black(pidInfo)
-      } ${chalk.blue(callInfo)} ${str}`;
+      return `${chalk.whiteBright(timestamp)} ${chalk[typeColor](logType)} ${
+        chalk.whiteBright(pidInfo)
+      } ${chalk.blueBright(callInfo)} ${str}`;
     }
 
     return `${timestamp} ${logType} ${pidInfo} ${callInfo} ${str}`;
