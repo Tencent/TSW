@@ -231,7 +231,9 @@ export const hack = <T extends typeof http.request>(
             result.push(`${key}: ${response.headers[key]}`);
           });
 
-          result.concat(["", ""]);
+          result.push("");
+          result.push("");
+
           return result.join("\r\n");
         })();
 
