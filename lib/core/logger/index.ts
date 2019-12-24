@@ -14,6 +14,7 @@ import currentContext, { Log } from "../context";
 import isLinux from "../util/isLinux";
 import isInspect from "../util/isInspect";
 import getCallInfo from "./callInfo";
+import { Stream } from "stream";
 
 enum LOG_LEVEL {
   "DEBUG" = 10,
@@ -180,6 +181,16 @@ export class Logger {
   }
 
   private static fillInspect(str: string, level: number): void {
+    /* eslint-disable no-underscore-dangle, @typescript-eslint/no-explicit-any */
+    if ((console as any)._stdout === process.stdout) {
+      const empty = new Stream.Writable();
+      empty.write = (): boolean => false;
+      empty.end = (): void => {};
+      (console as any)._stdout = empty;
+      (console as any)._stderr = empty;
+    }
+    /* eslint-enable */
+
     if (level <= 20) {
       (console.originLog || console.log)(str);
     } else if (level <= 30) {
