@@ -23,4 +23,12 @@ declare namespace NodeJS {
   interface Domain {
     currentContext?: any;
   }
+
+  interface Global {
+    tswConfig: {
+      appid: string;
+      appkey: string;
+      plugins: string[];
+    };
+  }
 }
