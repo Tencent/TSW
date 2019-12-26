@@ -2,7 +2,6 @@
 
 import * as yargs from "yargs";
 import tsw from "./index";
-import * as path from "path";
 
 const { argv } = yargs
   .alias("h", "help")
@@ -11,9 +10,15 @@ const { argv } = yargs
     type: "boolean",
     description: "Run with verbose logging",
     default: false
+  })
+  .option("config", {
+    alias: "c",
+    type: "string",
+    description: "Config file path",
+    default: "tswconfig.json"
   });
 
-const { _ } = argv;
+const { _, config } = argv;
 const [main] = _;
 
-tsw(path.resolve(process.cwd(), main));
+tsw(process.cwd(), main, config);
