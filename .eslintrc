@@ -20,6 +20,12 @@
   "rules": {
     "no-console": "off",
 
+    // 有大量对未暴露出来的属性做 hack
+    // 需要使用 (res as any)._send = () => {} 的方式
+    "no-underscore-dangle": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-param-reassign": "off",
+
     "max-len": ["error", { "code": 80, "ignoreComments": true }],
 
     // 不要求对 import 进行排序
