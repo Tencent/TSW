@@ -8,6 +8,7 @@
 
 import * as http from "http";
 import * as domain from "domain";
+import { captureOutgoing } from "./capture/outgoing";
 
 let httpCreateServerHacked = false;
 let originHttpCreateServer = null;
