@@ -5,8 +5,6 @@
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as http from "http";
 
 // Max response body size
@@ -44,7 +42,6 @@ export const captureReadableStream = (
     head = head.next;
   }
 
-  // eslint-disable-next-line no-param-reassign
   (stream as any).push = (chunk: any, encoding?: string): boolean => {
     if (chunk) {
       handler(chunk);
@@ -56,6 +53,6 @@ export const captureReadableStream = (
   return info;
 };
 
-export const captureResponseBody = (
+export const captureIncoming = (
   response: http.IncomingMessage
 ): ResponseBodyInfo => captureReadableStream(response);

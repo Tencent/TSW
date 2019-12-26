@@ -6,17 +6,16 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-/* eslint-disable no-underscore-dangle, @typescript-eslint/no-explicit-any */
 import * as http from "http";
 
 // Max request body size
 const maxBodySize = 512 * 1024;
 
-export const captureRequestBody = (request: http.ClientRequest): void => {
+export const captureOutgoing = (outgoing: http.OutgoingMessage): void => {
   let bodySize = 0;
   const body: Buffer[] = [];
 
-  (request as any)._send = ((fn) => (
+  (outgoing as any)._send = ((fn) => (
     data: Buffer | string,
     encodingOrCallback?: string | ((err?: Error) => void) | undefined,
     callbackOrUndefined?: ((err?: Error) => void) | undefined
@@ -42,17 +41,17 @@ export const captureRequestBody = (request: http.ClientRequest): void => {
     bodySize += buffer.length;
     body.push(buffer);
 
-    return fn.apply(request, [data, encoding, callback]);
-  })((request as any)._send);
+    return fn.apply(outgoing, [data, encoding, callback]);
+  })((outgoing as any)._send);
 
-  (request as any)._finish = ((fn) => (
+  (outgoing as any)._finish = ((fn) => (
     ...args: unknown[]
   ): void => {
-    (request as any)._body = Buffer.concat(body);
+    (outgoing as any)._body = Buffer.concat(body);
 
-    (request as any)._bodyTooLarge = bodySize > maxBodySize;
-    (request as any)._bodySize = bodySize;
+    (outgoing as any)._bodyTooLarge = bodySize > maxBodySize;
+    (outgoing as any)._bodySize = bodySize;
 
-    return fn.apply(request, args);
-  })((request as any)._finish);
+    return fn.apply(outgoing, args);
+  })((outgoing as any)._finish);
 };

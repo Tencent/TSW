@@ -6,13 +6,12 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-/* eslint-disable no-underscore-dangle, @typescript-eslint/no-explicit-any */
 import * as http from "http";
 import * as https from "https";
 import { URL } from "url";
 import { Socket, isIP } from "net";
-import { captureRequestBody } from "./request";
-import { captureResponseBody } from "./response";
+import { captureOutgoing } from "./outgoing";
+import { captureIncoming } from "./incoming";
 
 import currentContext, { RequestLog } from "../../context";
 import logger from "../../logger/index";
@@ -74,7 +73,7 @@ export const hack = <T extends typeof http.request>(
     // Execute request
     const request: http.ClientRequest = originRequest.apply(this, args);
     // Execute capture
-    captureRequestBody(request);
+    captureOutgoing(request);
 
     const context = currentContext();
     const logPre = `[${context.captureSN}]`;
@@ -203,7 +202,7 @@ export const hack = <T extends typeof http.request>(
       } ms`);
 
       // responseInfo can't retrieve data until response "end" event
-      const responseInfo = captureResponseBody(response);
+      const responseInfo = captureIncoming(response);
 
       response.once("close", () => {
         timestamps.responseClose = new Date();
