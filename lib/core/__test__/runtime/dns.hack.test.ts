@@ -1,7 +1,7 @@
 import { lookup } from "dns";
 import { isIP } from "net";
 
-import { eventBus } from "../../bus";
+import { eventBus, EVENT_LIST } from "../../bus";
 import { dnsHack, dnsRestore } from "../../runtime/dns.hack";
 import logger from "../../logger/index";
 
@@ -34,11 +34,11 @@ describe("dns hack test", () => {
 
   test("eventBus was informed", async () => {
     await new Promise((resolve, reject) => {
-      eventBus.on("DNS_LOOKUP_SUCCESS", (data) => {
+      eventBus.on(EVENT_LIST.DNS_LOOKUP_SUCCESS, (data) => {
         resolve(data);
       });
 
-      eventBus.on("DNS_LOOKUP_ERROR", (err) => {
+      eventBus.on(EVENT_LIST.DNS_LOOKUP_ERROR, (err) => {
         reject(err);
       });
 
