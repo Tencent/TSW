@@ -10,7 +10,28 @@ import { EventEmitter } from "events";
 
 export enum EVENT_LIST {
   DNS_LOOKUP_SUCCESS = "DNS_LOOKUP_SUCCESS",
-  DNS_LOOKUP_ERROR = "DNS_LOOKUP_ERROR"
+  DNS_LOOKUP_ERROR = "DNS_LOOKUP_ERROR",
+
+  /**
+   * Emitted when then http.ServerResponse begin writeHead()
+   */
+  RESPONSE_START = "RESPONSE_START",
+  /**
+   * http.ServerResponse on "finish" event
+   *
+   * Emitted when the response has been sent.
+   * More specifically, this event is emitted when the last segment of the
+   * response headers and body have been handed off to the operating system
+   * for transmission over the network.
+   * It does not imply that the client has received anything yet.
+   */
+  RESPONSE_FINISH = "RESPONSE_FINISH",
+  /**
+   * http.ServerResponse on "close" event
+   *
+   * Indicates that the underlying connection was terminated.
+   */
+  RESPONSE_CLOSE = "RESPONSE_CLOSE"
 }
 
 export interface EventPayload {
