@@ -6,13 +6,11 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import * as http from "http";
 import {
-  captureResponseBody,
+  captureIncoming,
   captureReadableStream
-} from "../../../runtime/capture/response";
+} from "../../../runtime/capture/incoming";
 import { Readable } from "stream";
 
 /**
@@ -52,7 +50,7 @@ describe("capture response function test", () => {
         "Content-Length": Buffer.byteLength(data)
       }
     }, (response) => {
-      info = captureResponseBody(response);
+      info = captureIncoming(response);
     });
 
     req.write(data);
