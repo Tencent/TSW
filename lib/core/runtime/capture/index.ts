@@ -204,7 +204,7 @@ export const hack = <T extends typeof http.request>(
       // responseInfo can't retrieve data until response "end" event
       const responseInfo = captureIncoming(response);
 
-      response.once("close", () => {
+      response.once("end", () => {
         timestamps.responseClose = new Date();
 
         requestLog.resultCode = response.statusCode;
