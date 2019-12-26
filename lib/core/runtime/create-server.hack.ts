@@ -8,7 +8,7 @@
 
 import * as http from "http";
 import * as domain from "domain";
-import { RequestLog } from "../context";
+import { RequestLog, Context } from "../context";
 import { address } from "ip";
 import { AddressInfo } from "net";
 import { captureOutgoing } from "./capture/outgoing";
@@ -22,7 +22,7 @@ export interface ResponseEventPayload extends EventPayload {
   data: {
     req: http.IncomingMessage;
     res: http.ServerResponse;
-    currentRequest: RequestLog | undefined;
+    context: Context;
   };
 }
 
@@ -82,13 +82,14 @@ export const httpCreateServerHack = (): void => {
         ): ReturnType<typeof res.writeHead> => {
           timestamps.onResponse = new Date();
 
+          const context = process.domain.currentContext;
           const payload: ResponseEventPayload = {
             code: 0,
             msg: "success",
             success: true,
             error: null,
             data: {
-              req, res, currentRequest: undefined
+              req, res, context
             }
           };
 
@@ -157,7 +158,7 @@ export const httpCreateServerHack = (): void => {
             success: true,
             error: null,
             data: {
-              req, res, currentRequest: context.currentRequest as RequestLog
+              req, res, context
             }
           };
 
@@ -175,7 +176,7 @@ export const httpCreateServerHack = (): void => {
             success: true,
             error: null,
             data: {
-              req, res, currentRequest: context.currentRequest as RequestLog
+              req, res, context
             }
           };
 
