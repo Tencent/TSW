@@ -72,9 +72,26 @@ export interface RequestLog {
 }
 
 export class Context {
+  /**
+   * Line by line logs for current request/response.
+   */
   log: Log;
+  /**
+   * Serial number for this process.
+   * Indicates how many this server handled.
+   */
   SN: number;
+  /**
+   * Raw data of current request/response.
+   */
+  currentRequest: RequestLog;
+  /**
+   * How many ajax launched by current request.
+   */
   captureSN: number;
+  /**
+   * All ajax raw data.
+   */
   captureRequests: RequestLog[];
 
   constructor() {
@@ -88,6 +105,7 @@ export class Context {
     };
 
     this.SN = process.SN || 0;
+
     this.captureSN = 0;
     this.captureRequests = [];
   }
