@@ -181,7 +181,6 @@ export class Logger {
   }
 
   private static fillInspect(str: string, level: number): void {
-    /* eslint-disable no-underscore-dangle, @typescript-eslint/no-explicit-any */
     if ((console as any)._stdout === process.stdout) {
       const empty = new Stream.Writable();
       empty.write = (): boolean => false;

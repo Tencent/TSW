@@ -6,9 +6,8 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-/* eslint-disable no-underscore-dangle, @typescript-eslint/no-explicit-any */
 import * as http from "http";
-import { captureRequestBody } from "../../../runtime/capture/request";
+import { captureOutgoing } from "../../../runtime/capture/outgoing";
 
 /**
  * 4000 - 5000 random port
@@ -54,7 +53,7 @@ describe("capture request function test", () => {
       done();
     });
 
-    captureRequestBody(req);
+    captureOutgoing(req);
 
     req.write(firstData);
     // Write data to request body
