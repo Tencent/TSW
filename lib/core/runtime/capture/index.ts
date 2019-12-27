@@ -184,6 +184,8 @@ export const hack = <T extends typeof http.request>(
       const { socket } = response;
       requestLog.serverIp = socket.remoteAddress;
       requestLog.serverPort = socket.remotePort;
+      // This could be undefined
+      // https://stackoverflow.com/questions/16745745/nodejs-tcp-socket-does-not-show-client-hostname-information
       requestLog.clientIp = socket.localAddress;
       requestLog.clientPort = socket.localPort;
 

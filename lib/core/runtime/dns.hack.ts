@@ -9,15 +9,9 @@
 import * as dns from "dns";
 import * as net from "net";
 
-import { EVENT_LIST, eventBus, EventPayload } from "../bus";
+import { EVENT_LIST, eventBus } from "../bus";
 import config from "../config";
 import logger from "../logger";
-
-export interface DnsEventPayload extends EventPayload {
-  data: {
-    address: string | dns.LookupAddress[];
-  } | null;
-}
 
 type LookupCallback = (
   err: NodeJS.ErrnoException | null,
@@ -74,8 +68,6 @@ export const dnsHack = (): void => {
       }
 
       let isCalled = false;
-      let code: number;
-      let success: boolean;
       let timeoutError: Error;
       let timer: NodeJS.Timeout | undefined;
 
@@ -90,40 +82,13 @@ export const dnsHack = (): void => {
 
         isCalled = true;
 
-        if (!err) {
-          code = 0;
-          success = true;
-        } else if (err === timeoutError) {
-          code = 513;
-          success = false;
-        } else {
-          code = 500;
-          success = false;
-        }
-
         const cost = Date.now() - start;
-        if (success) {
+        if (!err) {
           logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
-          const payload: DnsEventPayload = {
-            code,
-            msg: "success",
-            success: true,
-            data: {
-              address
-            },
-            error: null
-          };
-          eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, payload);
+          eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, address);
         } else {
           logger.error(`dns lookup [${cost}ms] error: ${err.stack}`);
-          const payload: DnsEventPayload = {
-            code,
-            msg: err.message,
-            success: true,
-            data: null,
-            error: err
-          };
-          eventBus.emit(EVENT_LIST.DNS_LOOKUP_ERROR, payload);
+          eventBus.emit(EVENT_LIST.DNS_LOOKUP_ERROR, err);
         }
 
         if (timer) clearTimeout(timer);

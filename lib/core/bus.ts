@@ -7,6 +7,80 @@
  */
 
 import { EventEmitter } from "events";
+import * as dns from "dns";
+import * as http from "http";
+import { Context } from "./context";
+
+interface ResponseEventPayload {
+  req: http.IncomingMessage;
+  res: http.ServerResponse;
+  context: Context;
+}
+
+interface EventBus extends EventEmitter {
+  emit(
+    event: "DNS_LOOKUP_SUCCESS",
+    payload: string | dns.LookupAddress[]
+  ): boolean;
+  emit(
+    event: "DNS_LOOKUP_ERROR",
+    payload: NodeJS.ErrnoException
+  ): boolean;
+  emit(
+    event: "RESPONSE_START",
+    payload: ResponseEventPayload
+  ): boolean;
+  emit(
+    event: "RESPONSE_FINISH",
+    payload: ResponseEventPayload
+  ): boolean;
+  emit(
+    event: "RESPONSE_CLOSE",
+    payload: ResponseEventPayload
+  ): boolean;
+
+  on(
+    event: "DNS_LOOKUP_SUCCESS",
+    listener: (payload: string | dns.LookupAddress[]) => void
+  ): this;
+  on(
+    event: "DNS_LOOKUP_ERROR",
+    listener: (payload: NodeJS.ErrnoException) => void
+  ): this;
+  on(
+    event: "RESPONSE_START",
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  on(
+    event: "RESPONSE_FINISH",
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  on(
+    event: "RESPONSE_CLOSE",
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+
+  once(
+    event: "DNS_LOOKUP_SUCCESS",
+    listener: (payload: string | dns.LookupAddress[]) => void
+  ): this;
+  once(
+    event: "DNS_LOOKUP_ERROR",
+    listener: (payload: NodeJS.ErrnoException) => void
+  ): this;
+  once(
+    event: "RESPONSE_START",
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  once(
+    event: "RESPONSE_FINISH",
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  once(
+    event: "RESPONSE_CLOSE",
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+}
 
 export enum EVENT_LIST {
   DNS_LOOKUP_SUCCESS = "DNS_LOOKUP_SUCCESS",
@@ -34,14 +108,6 @@ export enum EVENT_LIST {
   RESPONSE_CLOSE = "RESPONSE_CLOSE"
 }
 
-export interface EventPayload {
-  error: Error | null;
-  code: number;
-  msg: string;
-  success: boolean;
-  data: any | null;
-}
+let bus: EventBus | undefined;
 
-let bus: EventEmitter | undefined;
-
-export const eventBus = bus || (bus = new EventEmitter());
+export const eventBus: EventBus = bus || (bus = new EventEmitter());
