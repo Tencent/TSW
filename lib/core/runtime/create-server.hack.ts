@@ -108,12 +108,10 @@ export const httpCreateServerHack = (): void => {
 
             protocol: "HTTP",
             host: req.headers.host,
-            url: `http://${req.headers.host}${req.url}`,
-            cache: "",
+            path: req.url,
+
             process: `TSW: ${process.pid}`,
-            resultCode: res.statusCode,
-            contentLength: Number(res.getHeader("content-length")),
-            contentType: res.getHeader("content-type"),
+
             clientIp: req.socket.remoteAddress,
             clientPort: req.socket.remotePort,
             serverIp: address(),
@@ -149,6 +147,9 @@ export const httpCreateServerHack = (): void => {
               return result.join("\r\n");
             })(),
             responseBody: (res as any)._body.toString("base64"),
+            responseLength: (res as any)._bodyLength,
+            responseType: res.getHeader("content-type"),
+            statusCode: res.statusCode,
             timestamps
           } as RequestLog;
 

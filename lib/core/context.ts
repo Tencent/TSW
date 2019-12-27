@@ -21,20 +21,23 @@ export interface RequestLog {
 
   protocol: "HTTPS" | "HTTP";
   host: string;
-  url: string;
-  cache: string;
+  path: string;
   process: string;
-  resultCode: number;
-  contentLength: number;
-  contentType: string;
+
   clientIp: string;
   clientPort: number;
   serverIp: string;
   serverPort: number;
+
   requestHeader: string;
   requestBody: string;
+
   responseHeader: string;
   responseBody: string;
+  responseLength: number;
+  responseType: string;
+  statusCode: number;
+
   timestamps: {
     /**
      * Request begin.

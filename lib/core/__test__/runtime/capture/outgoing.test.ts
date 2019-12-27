@@ -48,7 +48,7 @@ describe("capture request function test", () => {
     }, () => {
       expect((req as any)._body).toBeTruthy();
       expect((req as any)._body.toString()).toEqual(data);
-      expect((req as any)._bodySize).toEqual(Buffer.byteLength(data));
+      expect((req as any)._bodyLength).toEqual(Buffer.byteLength(data));
       expect((req as any)._bodyTooLarge).toEqual(false);
       done();
     });

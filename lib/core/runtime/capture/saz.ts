@@ -112,7 +112,7 @@ export const downloadSaz = (requests: RequestLog[]): void => {
   <PipeInfo />
   <SessionFlags>
     <SessionFlag N="x-clientport" V="${req.clientPort}" />
-    <SessionFlag N="x-responsebodytransferlength" V="${req.contentLength}" />
+    <SessionFlag N="x-responsebodytransferlength" V="${req.responseLength}" />
     <SessionFlag N="x-egressport" V="${req.serverPort}" />
     <SessionFlag N="x-hostip" V="${req.serverIp}" />
     <SessionFlag N="x-processinfo" V="${req.process}" />
