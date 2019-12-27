@@ -79,19 +79,19 @@ export const hack = <T extends typeof http.request>(
     const logPre = `[${context.captureSN}]`;
 
     const {
-      method, hostname, path, port, host
+      method, hostname, path, port
     } = options;
 
-    logger.debug(`${logPre} Request begin. ${method} ${hostname}:${port} ~ ${
-      protocol}//${hostname}${path}`);
+    logger.debug(`${logPre} Request begin. ${
+      method} ${hostname}${port ? `:${port}` : ""} ~ ${path}`);
 
     const requestLog: Partial<RequestLog> = {
       SN: context.captureSN,
 
-      host,
-      protocol: protocol.toUpperCase() as RequestLog["protocol"],
-      url: `${protocol}//${host}${path}`,
-      cache: "",
+      protocol: protocol === "http:" ? "HTTP" : "HTTPS",
+      host: hostname,
+      path,
+
       process: `TSW: ${process.pid}`,
       timestamps: {} as RequestLog["timestamps"]
     };
@@ -102,8 +102,8 @@ export const hack = <T extends typeof http.request>(
     const finishRequest = (): void => {
       context.captureRequests.push(requestLog as RequestLog);
 
-      logger.debug(`${logPre} Record request info. Response length: ${
-        requestLog.contentLength
+      logger.debug(`${logPre} Record request info. Response body length: ${
+        requestLog.responseLength
       }`);
     };
 
@@ -115,20 +115,17 @@ export const hack = <T extends typeof http.request>(
           err: Error,
           address: string,
           family: string | number,
-          /**
-           * host
-           */
-          h: string
+          host: string
         ): void => {
           timestamps.onLookUp = new Date();
           timestamps.dnsTime = timestamps.onLookUp.getTime()
             - timestamps.onSocket.getTime();
 
-          logger.debug(`${logPre} dns lookup ${h} -> ${
+          logger.debug(`${logPre} Dns lookup ${host} -> ${
             address || "null"}, cost ${timestamps.dnsTime}ms`);
 
           if (err) {
-            logger.error(`${logPre} lookup error ${err.stack}`);
+            logger.error(`${logPre} Lookup error ${err.stack}`);
           }
         });
       }
@@ -136,7 +133,7 @@ export const hack = <T extends typeof http.request>(
       socket.once("connect", (): void => {
         timestamps.socketConnect = new Date();
 
-        logger.debug(`${logPre} Socket connect. Remote: ${
+        logger.debug(`${logPre} Socket connected. Remote: ${
           socket.remoteAddress
         }:${socket.remotePort}. Cost ${
           timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
@@ -146,7 +143,7 @@ export const hack = <T extends typeof http.request>(
       if (socket.remoteAddress) {
         timestamps.dnsTime = 0;
 
-        logger.debug(`${logPre} Socket reuse. Remote: ${
+        logger.debug(`${logPre} Socket reused. Remote: ${
           socket.remoteAddress
         }:${socket.remotePort}`);
       }
@@ -163,7 +160,7 @@ export const hack = <T extends typeof http.request>(
       context.captureSN += 1;
 
       let requestBody: string;
-      const length = (request as any)._bodySize;
+      const length = (request as any)._bodyLength;
       const tooLarge = (request as any)._bodyTooLarge;
       if (tooLarge) {
         requestBody = Buffer.from(`body was too large too show, length: ${
@@ -174,7 +171,7 @@ export const hack = <T extends typeof http.request>(
 
       requestLog.requestHeader = (request as any)._header;
       requestLog.requestBody = requestBody;
-      logger.debug(`${logPre} Request send finish. total size ${
+      logger.debug(`${logPre} Request send finish. Body size ${
         length
       }. Cost: ${
         timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
@@ -190,7 +187,7 @@ export const hack = <T extends typeof http.request>(
       requestLog.clientIp = socket.localAddress;
       requestLog.clientPort = socket.localPort;
 
-      logger.debug(`${logPre} On response. Socket chain: ${
+      logger.debug(`${logPre} Request on response. Socket chain: ${
         socket.localAddress
       }:${socket.localPort} > ${
         socket.remoteAddress
@@ -207,9 +204,9 @@ export const hack = <T extends typeof http.request>(
       response.once("end", () => {
         timestamps.responseClose = new Date();
 
-        requestLog.resultCode = response.statusCode;
-        requestLog.contentLength = Number(response.headers["content-length"]);
-        requestLog.contentType = response.headers["content-type"];
+        requestLog.statusCode = response.statusCode;
+        requestLog.responseLength = responseInfo.bodyLength;
+        requestLog.responseType = response.headers["content-type"];
         requestLog.responseHeader = ((): string => {
           const result = [];
           result.push(`HTTP/${response.httpVersion} ${
@@ -227,8 +224,8 @@ export const hack = <T extends typeof http.request>(
 
         requestLog.responseBody = responseInfo.body.toString("base64");
 
-        logger.debug(`${logPre} Response on end. Size：${
-          requestLog.contentLength
+        logger.debug(`${logPre} Response on end. Body size：${
+          requestLog.responseLength
         }. Cost: ${
           timestamps.responseClose.getTime()
           - timestamps.onSocket.getTime()

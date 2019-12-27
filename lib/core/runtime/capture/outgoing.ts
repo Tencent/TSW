@@ -12,7 +12,7 @@ import * as http from "http";
 const maxBodySize = 512 * 1024;
 
 export const captureOutgoing = (outgoing: http.OutgoingMessage): void => {
-  let bodySize = 0;
+  let bodyLength = 0;
   const body: Buffer[] = [];
 
   (outgoing as any)._send = ((fn) => (
@@ -38,7 +38,7 @@ export const captureOutgoing = (outgoing: http.OutgoingMessage): void => {
       return Buffer.from(data, encoding);
     })();
 
-    bodySize += buffer.length;
+    bodyLength += buffer.length;
     body.push(buffer);
 
     return fn.apply(outgoing, [data, encoding, callback]);
@@ -49,8 +49,8 @@ export const captureOutgoing = (outgoing: http.OutgoingMessage): void => {
   ): void => {
     (outgoing as any)._body = Buffer.concat(body);
 
-    (outgoing as any)._bodyTooLarge = bodySize > maxBodySize;
-    (outgoing as any)._bodySize = bodySize;
+    (outgoing as any)._bodyTooLarge = bodyLength > maxBodySize;
+    (outgoing as any)._bodyLength = bodyLength;
 
     return fn.apply(outgoing, args);
   })((outgoing as any)._finish);
