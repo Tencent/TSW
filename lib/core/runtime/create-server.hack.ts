@@ -8,23 +8,15 @@
 
 import * as http from "http";
 import * as domain from "domain";
-import { RequestLog, Context } from "../context";
+import { RequestLog } from "../context";
 import { address } from "ip";
 import { AddressInfo } from "net";
 import { captureOutgoing } from "./capture/outgoing";
 import { captureIncoming } from "./capture/incoming";
-import { eventBus, EVENT_LIST, EventPayload } from "../bus";
+import { eventBus, EVENT_LIST } from "../bus";
 
 let httpCreateServerHacked = false;
 let originHttpCreateServer = null;
-
-export interface ResponseEventPayload extends EventPayload {
-  data: {
-    req: http.IncomingMessage;
-    res: http.ServerResponse;
-    context: Context;
-  };
-}
 
 export const httpCreateServerHack = (): void => {
   if (!httpCreateServerHacked) {
@@ -83,17 +75,10 @@ export const httpCreateServerHack = (): void => {
           timestamps.onResponse = new Date();
 
           const context = process.domain.currentContext;
-          const payload: ResponseEventPayload = {
-            code: 0,
-            msg: "success",
-            success: true,
-            error: null,
-            data: {
-              req, res, context
-            }
-          };
 
-          eventBus.emit(EVENT_LIST.RESPONSE_START, payload);
+          eventBus.emit(EVENT_LIST.RESPONSE_START, {
+            req, res, context
+          });
 
           captureOutgoing(res);
 
@@ -153,17 +138,9 @@ export const httpCreateServerHack = (): void => {
             timestamps
           } as RequestLog;
 
-          const payload: ResponseEventPayload = {
-            code: 0,
-            msg: "success",
-            success: true,
-            error: null,
-            data: {
-              req, res, context
-            }
-          };
-
-          eventBus.emit(EVENT_LIST.RESPONSE_FINISH, payload);
+          eventBus.emit(EVENT_LIST.RESPONSE_FINISH, {
+            req, res, context
+          });
         });
 
         res.once("close", () => {
@@ -171,17 +148,9 @@ export const httpCreateServerHack = (): void => {
 
           const context = process.domain.currentContext;
 
-          const payload: ResponseEventPayload = {
-            code: 0,
-            msg: "success",
-            success: true,
-            error: null,
-            data: {
-              req, res, context
-            }
-          };
-
-          eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, payload);
+          eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, {
+            req, res, context
+          });
         });
       };
 
