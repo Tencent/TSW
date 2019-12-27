@@ -28,6 +28,62 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 
 TODO
 
+<h2 align="center">Plugins</h2>
+
+### 插件是什么？
+
+TSW 核心的实现方式是 Hack NodeJS 自身的 `http.request` 以及 `http.createServer`， 以此来实现抓包机制。在服务器处理请求的前后，在服务器向其他服务器发包的前后，等等，都会有相应的事件抛出，以供用户来进行自定义处理。**为了让用户更加方便地复用、传播这样一组组自定义处理，我们将他们抽象出来，形成了插件机制。**
+
+### 一个最简单的插件
+
+#### Commonjs
+
+```js
+// simple-plugin-commonjs.js
+
+export.modules = (eventBus, config) => {
+  eventBus.on("RESPONSE_CLOSE", (payload) => {
+    console.log(payload);
+  })
+}
+```
+
+#### ES6 module
+
+```js
+// simple-plugin-es6module.js
+
+export default (eventBus, config) => {
+  eventBus.on("RESPONSE_CLOSE", (payload) => {
+    console.log(payload);
+  })
+}
+```
+
+#### `eventBus`
+
+`eventBus` 是通过 `new EventEmitter()` 得到的。TSW 核心会在各个关键时机触发上面的事件。
+
+| key | 含义（触发时机） | payload |
+| -- | -- | -- |
+| `DNS_LOOKUP_SUCCESS` | 在每次 DNS 查询成功之后触发 | `string | dns.LookupAddress[]` |
+| `DNS_LOOKUP_ERROR` | 在每次 DNS 查询失败之后触发 | `NodeJS.ErrnoException` |
+| `RESPONSE_START` | 在每次服务器开始返回响应（执行 `writeHead`）时触发 | `ResponseEventPayload` |
+| `RESPONSE_FINISH` | 在响应结束时（`res.on("finish")`）触发 | `ResponseEventPayload` |
+| `RESPONSE_CLOSE` | 在底层链接关闭时 （`res.on("close")`）触发 | `ResponseEventPayload` |
+
+#### `config`
+
+`config` 是用户的自定义配置。
+
+### 配置文件
+
+| key | 必传 | 类型 | 含义 | 
+| -- | -- | -- | -- |
+| appid | 否 | `String` | [TSW 开放平台](https://tswjs.org) 接入时获得 | 
+| appkey | 否 | `String` | [TSW 开放平台](https://tswjs.org) 接入时获得 | 
+| plugins | 否 | `String[]` | 插件列表 |
+
 <h2 align="center">License</h2>
 
 Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE) 。
