@@ -1,0 +1,7 @@
+{
+  "appid": "tsw1431",
+  "appkey": "PwPaD4RRAsrSdRZjQSc3fbKM",
+  "plugins": [
+    "@tswjs/open-platform-plugin"
+  ]
+}
