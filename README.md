@@ -26,7 +26,66 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 
 <h2 align="center">Quick Start</h2>
 
-TODO
+首先，通过 npm 或者 yarn 安装 npm 包，`npm install --save @tswjs/tsw` or `yarn add @tswjs/tsw`。
+
+原本通过 `node ./index.js` 方式启动的应用，更换为 `npx tsw ./index.js`。
+
+### Examples
+
+我们提供了一些示例项目以让大家尽快了解该项目。
+
+1. `cd ~`
+2. `git clone https://github.com/Tencent/TSW.git`
+3. `cd TSW`
+
+#### Native `http.createServer`
+
+1. `cd examples/http-create-server`
+2. `npx tsw ./index.js`
+3. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
+
+#### Koa
+
+1. `cd examples/koa`
+2. `yarn serve` 或者 `npm run serve`
+3. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
+
+#### 使用 https://tswjs.org 开放平台
+
+在默认的情况下，TSW 只是会把所有的日志和抓包内容抓取到并且送到事件总线上，以供 [插件](#插件是什么？) 消费。所以将日志和抓包内容落地查看一般需要用户自己编写插件以及提供存储，使用成本过于高昂。因此，TSW 官方提供了公共的服务平台，以供用户以更成本、更快、更方便地使用 TSW 的特性。使用方式如下：
+
+1. 登录 https://tswjs.org 并在其上新建一个应用
+
+![create-app](./static/images/create-app.png)
+
+1. 打开应用，获取 `appid` 和 `appkey`
+
+![appid-appkey](./static/images/appid-appkey.png)
+
+1. 在项目根目录下新增配置文件 `tswconfig.json`，并将 `appid` 和 `appkey` 配置完成
+
+```json
+{
+  "appid": "your-app-id",
+  "appkey": "your-app-key",
+  "plugins": [
+    "@tswjs/open-platform-plugin"
+  ]
+}
+```
+
+1. 向之前启动的 Koa 或者原生 http server 发送请求，并且在开放平台上查看对应的日志和抓包。查看地址为下方地址拼接而成 `https://domain/log/view/demo`
+
+![log-view](./static/images/log-view.png)
+
+**日志记录**
+
+![log](./static/images/log.png)
+
+**在线查看抓包内容**
+
+![capture](./static/images/capture.png)
+
 
 <h2 align="center">Plugins</h2>
 
