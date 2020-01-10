@@ -21,7 +21,7 @@ const loadPlugins = async (
     } else if (pluginPath.startsWith(".")) {
       absolutePath = path.resolve(basePath, pluginPath);
     } else {
-      absolutePath = pluginPath;
+      absolutePath = path.resolve(basePath, "node_modules", pluginPath);
     }
 
     // eslint-disable-next-line no-await-in-loop
@@ -34,14 +34,15 @@ export default async (
   mainPath: string,
   configPath: string
 ): Promise<void> => {
-  global.tswConfig = await import(path.resolve(basePath, configPath));
+  const configAbsolutePath = path.resolve(basePath, configPath);
+  global.tswConfig = await import(configAbsolutePath);
 
   httpCreateServerHack();
   dnsHack();
   consoleHack();
   requestHack();
 
-  await loadPlugins(basePath, global.tswConfig);
+  await loadPlugins(path.dirname(configAbsolutePath), global.tswConfig);
 
   await import(path.resolve(basePath, mainPath));
 };
