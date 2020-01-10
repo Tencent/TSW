@@ -46,19 +46,43 @@ export class Logger {
   }
 
   public debug(str: string): void {
-    this.writeLog("DEBUG", str);
+    if (!currentContext()) {
+      console.debug(Logger.formatStr(str, "DEBUG", {
+        levelLimit: this.logLevel
+      }));
+    } else {
+      this.writeLog("DEBUG", str);
+    }
   }
 
   public info(str: string): void {
-    this.writeLog("INFO", str);
+    if (!currentContext()) {
+      console.info(Logger.formatStr(str, "INFO", {
+        levelLimit: this.logLevel
+      }));
+    } else {
+      this.writeLog("INFO", str);
+    }
   }
 
   public warn(str: string): void {
-    this.writeLog("WARN", str);
+    if (!currentContext()) {
+      console.warn(Logger.formatStr(str, "WARN", {
+        levelLimit: this.logLevel
+      }));
+    } else {
+      this.writeLog("WARN", str);
+    }
   }
 
   public error(str: string): void {
-    this.writeLog("ERROR", str);
+    if (!currentContext()) {
+      console.error(Logger.formatStr(str, "ERROR", {
+        levelLimit: this.logLevel
+      }));
+    } else {
+      this.writeLog("ERROR", str);
+    }
   }
 
   public static clean(): void {
@@ -122,7 +146,14 @@ export class Logger {
     }
   ): string {
     const { levelLimit, color } = options;
-    const { showLineNumber } = Logger.getLog();
+
+    let showLineNumber = false;
+    let SN = -1;
+
+    if (currentContext()) {
+      ({ showLineNumber } = Logger.getLog());
+      ({ SN } = currentContext());
+    }
 
     const needCallInfoDetail = (LOG_LEVEL[type] >= levelLimit
       && showLineNumber)
@@ -130,7 +161,7 @@ export class Logger {
 
     const timestamp = moment(new Date()).format("YYYY-MM-DD HH:mm:ss.SSS");
     const logType = `[${type}]`;
-    const pidInfo = `[${process.pid} ${currentContext().SN}]`;
+    const pidInfo = `[${process.pid} ${SN}]`;
     const callInfo = ((): string => {
       if (!needCallInfoDetail) return "";
       // Magic number: 5
@@ -154,7 +185,11 @@ export class Logger {
     return `${timestamp} ${logType} ${pidInfo} ${callInfo} ${str}`;
   }
 
-  private static getLog(): Log {
+  private static getLog(): Log | undefined {
+    if (!currentContext()) {
+      return undefined;
+    }
+
     const { log } = currentContext();
     return log;
   }
