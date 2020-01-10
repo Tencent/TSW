@@ -8,7 +8,7 @@
     "commitlint": "commitlint --color",
     "test": "jest --coverage",
     "build": "tsc",
-    "dev": "tsc --watch",
+    "dev": "tsc --watch --sourceMap",
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --fix --ext .ts ."
   },
