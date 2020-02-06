@@ -18,6 +18,7 @@ const serverOS = require('util/isWindows.js');
 const mail = require('util/mail/mail.js');
 const methodMap = {};
 const workerMap = {};
+const undeadWorkerMap = {};
 const cpuMap = [];
 const tnm2 = require('api/tnm2');
 const network = require('util/network.js');
@@ -203,6 +204,7 @@ function closeWorker(worker) {
     if (workerMap[cpu] === worker) {
         delete workerMap[cpu];
     }
+    undeadWorkerMap[worker.process.pid] = worker;
 
     const closeFn = (function(worker) {
         let closed = false;
@@ -220,6 +222,26 @@ function closeWorker(worker) {
 
             closed = true;
             worker.destroy();
+
+            setTimeout(function() {
+                if (undeadWorkerMap[worker.process.pid] === worker) {
+                    try {
+                        logger.info(
+                            `worker/${worker.cpuid} ${
+                                worker.process.pid
+                            } still not killed. try process.kill`
+                        );
+                        delete undeadWorkerMap[worker.process.pid];
+                        worker.process.kill();
+                    } catch (e) {
+                        logger.info(
+                            `worker/${worker.cpuid} ${
+                                worker.process.pid
+                            } process kill failed: ${e.message}`
+                        );
+                    }
+                }
+            }, 10000);
         };
     })(worker);
 
@@ -447,6 +469,10 @@ function masterEventHandler() {
     cluster.on('exit', function(worker) {
 
         const cpu = getToBindCpu(worker);
+
+        if (undeadWorkerMap[worker.process.pid]) {
+            delete undeadWorkerMap[worker.process.pid];
+        }
 
         logger.info('worker${cpu} pid=${pid} exit event fired.', {
             pid: worker.process.pid,
