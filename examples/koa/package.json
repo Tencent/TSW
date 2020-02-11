@@ -1,7 +1,7 @@
 {
   "name": "koa-example",
   "scripts": {
-    "serve": "NODE_OPTIONS='--inspect=localhost:4442' tsw ./koa.js"
+    "serve": "NODE_OPTIONS='--inspect=localhost:4442' tsw ./index.js"
   },
   "version": "1.0.0",
   "main": "index.js",
