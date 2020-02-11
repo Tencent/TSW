@@ -52,21 +52,6 @@ export const httpCreateServerHack = (): void => {
           socketConnect: start
         } as RequestLog["timestamps"];
 
-        console.log("httpCreateServerHack - creating domain");
-
-        const d = domain.create();
-
-        d.add(req);
-        d.add(res);
-        d.run(() => {
-          console.log(
-            "httpCreateServerHack - calling requestListener within domain"
-          );
-
-          console.log(process.domain);
-          requestListener(req, res);
-        });
-
         const requestInfo = captureIncoming(req);
 
         res.writeHead = ((fn): typeof res.writeHead => (
@@ -151,6 +136,15 @@ export const httpCreateServerHack = (): void => {
           eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, {
             req, res, context
           });
+        });
+
+        // Creating a domain and wrapping the execution.
+        const d = domain.create();
+
+        d.add(req);
+        d.add(res);
+        d.run(() => {
+          requestListener(req, res);
         });
       };
 
