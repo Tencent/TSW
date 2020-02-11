@@ -122,7 +122,7 @@ export const hack = <T extends typeof http.request>(
             - timestamps.onSocket.getTime();
 
           logger.debug(`${logPre} Dns lookup ${host} -> ${
-            address || "null"}, cost ${timestamps.dnsTime}ms`);
+            address || "null"}. Cost ${timestamps.dnsTime}ms`);
 
           if (err) {
             logger.error(`${logPre} Lookup error ${err.stack}`);
@@ -231,7 +231,7 @@ export const hack = <T extends typeof http.request>(
         }. Cost: ${
           timestamps.responseClose.getTime()
           - timestamps.onSocket.getTime()
-        } ms'`);
+        } ms`);
 
         finishRequest();
       });
