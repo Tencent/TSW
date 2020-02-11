@@ -47,8 +47,9 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 #### Koa
 
 1. `cd examples/koa`
-2. `yarn serve` 或者 `npm run serve`
-3. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
+1. `yarn`
+1. `yarn serve` 或者 `npm run serve`
+1. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
 
 #### 使用 https://tswjs.org 开放平台
 
