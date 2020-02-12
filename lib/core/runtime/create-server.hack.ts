@@ -8,7 +8,7 @@
 
 import * as http from "http";
 import * as domain from "domain";
-import { RequestLog } from "../context";
+import currentContext, { RequestLog } from "../context";
 import { address } from "ip";
 import { AddressInfo } from "net";
 import { captureOutgoing } from "./capture/outgoing";
@@ -144,6 +144,8 @@ export const httpCreateServerHack = (): void => {
         d.add(req);
         d.add(res);
         d.run(() => {
+          // 初始化一下 Context
+          currentContext();
           requestListener(req, res);
         });
       };
