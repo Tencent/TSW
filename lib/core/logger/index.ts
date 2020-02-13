@@ -36,12 +36,7 @@ export class Logger {
   public logLevel: number
 
   public setLogLevel(level: LogLevelStrings): number {
-    if (typeof level === "string") {
-      this.logLevel = LOG_LEVEL[level];
-    } else {
-      this.logLevel = level;
-    }
-
+    this.logLevel = LOG_LEVEL[level];
     return this.logLevel;
   }
 
@@ -108,7 +103,7 @@ export class Logger {
     // Store log
     Logger.fillBuffer(type, logStr);
 
-    if (isInspect) {
+    if (isInspect()) {
       // When started with inspect, log will send to 2 places
       // 1. Local stdout
       // 2. Remote(maybe chrome inspect window) inspect window

@@ -39,7 +39,7 @@ export default (level = 0): {
   Error.prepareStackTrace = originPrepareStackTrace;
   Error.stackTraceLimit = originStackTraceLimit;
 
-  if (typeof stack?.[level]?.getLineNumber === "function") {
+  if (typeof stack[level]?.getLineNumber === "function") {
     res.line = stack[level].getLineNumber();
     res.column = stack[level].getColumnNumber();
     res.filename = path.relative(process.cwd(), stack[level].getFileName());
