@@ -12,6 +12,13 @@ const { log } = currentContext();
 
 describe("logger test", () => {
   test("log could be set by setLogLevel", async () => {
+    logger.setLogLevel("ERROR");
+    expect(logger.logLevel).toBe(40);
+    logger.info("TEST INFO LOG SHOULD BE DROP ");
+    expect(log.INFO).toBe(0);
+  });
+
+  test("log could be set by setLogLevel", async () => {
     logger.setLogLevel("DEBUG");
     expect(logger.logLevel).toBe(10);
   });
@@ -30,6 +37,13 @@ describe("logger test", () => {
   test("log could be collected in currentContext", async () => {
     logger.info("LOG LENGTH IS CUMULATIVE");
     expect(log.arr.length).toBe(5);
+  });
+
+  test("log could be log with color", async () => {
+    process.env.NODE_OPTIONS = "--inspect=true";
+    logger.error("LOG IS COLORFUL");
+    logger.warn("LOG IS COLORFUL");
+    logger.info("LOG IS COLORFUL");
   });
 
   test("log could be clean", async () => {
