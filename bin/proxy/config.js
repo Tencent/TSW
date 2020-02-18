@@ -67,7 +67,7 @@ if (exports.router) {
     };
 }
 
-if (exports.wsRouter) {
+if (exports.wsRouter && !exports.wsModAct && !exports.wsModMap) {
     exports.wsModAct = {
         getModAct: function(ws) {
             return exports.wsRouter.name(ws);
