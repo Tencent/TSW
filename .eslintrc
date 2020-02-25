@@ -67,6 +67,15 @@
     "jsdoc/check-tag-names": "error",
 
     // 不允许出现未使用的 eslint-disable
-    "eslint-comments/no-unused-disable": "error"
+    "eslint-comments/no-unused-disable": "error",
+
+    // 允许空箭头函数
+    "@typescript-eslint/no-empty-function": [
+      "error", 
+      { "allow": ["arrowFunctions"] }
+    ],
+
+    // 允许 import 文件时缺失后缀
+    "import/extensions": "off"
   }
 }
