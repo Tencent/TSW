@@ -96,6 +96,10 @@ export class Context {
    * All ajax raw data.
    */
   captureRequests: RequestLog[];
+  /**
+   * testIp for alpha user.
+   */
+  testIp: string;
 
   constructor() {
     this.log = {
@@ -111,6 +115,7 @@ export class Context {
 
     this.captureSN = 0;
     this.captureRequests = [];
+    this.testIp = "";
   }
 }
 

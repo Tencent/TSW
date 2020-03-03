@@ -146,6 +146,59 @@ export const httpCreateServerHack = (): void => {
         d.run(() => {
           // 初始化一下 Context
           currentContext();
+
+          const context = process.domain.currentContext;
+          eventBus.emit(EVENT_LIST.RESPONSE_START, {
+            req, res, context
+          });
+
+          // 在这转发
+          if (context.testIp !== "") {
+            console.debug("isTestUser...");
+
+            const requestOptions = {
+              hostname: context.testIp,
+              port: 1337,
+              path: req.url,
+              method: req.method,
+              headers: req.headers
+            };
+            requestOptions.headers.isTestUser = "true";
+            console.debug("start proxy for test env");
+            const proxyReq = http.request(requestOptions, (proxyRes) => {
+              proxyRes.pipe(res);
+              for (const headerType of Object.keys(proxyRes.headers)) {
+                res.setHeader(headerType, proxyRes.headers[headerType]);
+              }
+
+              res.writeHead(proxyRes.statusCode);
+              proxyRes.on("end", () => {
+                console.debug("end proxy");
+              });
+            });
+
+            if (/POST|PUT/i.test(req.method)) {
+              req.pipe(proxyReq);
+            } else {
+              proxyReq.end();
+            }
+
+            proxyReq.on("error", (err) => {
+              console.error("h5test proxy fail...");
+              console.error(JSON.stringify(err));
+              if (res.headersSent) {
+                res.end();
+                return;
+              }
+
+              res.setHeader("Content-Type", "text/html; charset=UTF-8");
+              res.writeHead(500);
+              res.end();
+            });
+
+            return;
+          }
+
           requestListener(req, res);
         });
       };
