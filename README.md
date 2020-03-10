@@ -28,7 +28,7 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 
 首先，通过 npm 或者 yarn 安装 npm 包，`npm install --save @tswjs/tsw` or `yarn add @tswjs/tsw`。
 
-原本通过 `node ./index.js` 方式启动的应用，更换为 `npx tsw ./index.js`。
+原本通过 `node ./index.js` 方式启动的应用，更换为 `npx @tswjs/tsw ./index.js`。
 
 ### Examples
 
