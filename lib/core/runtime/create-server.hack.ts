@@ -146,6 +146,58 @@ export const httpCreateServerHack = (): void => {
         d.run(() => {
           // 初始化一下 Context
           currentContext();
+
+          const context = process.domain.currentContext;
+          eventBus.emit(EVENT_LIST.REQUEST_START, {
+            req, context
+          });
+
+          // proxy req to proxy env when hitting uid
+          if (context.proxyIp !== "" && !req.headers.proxiedByTSW) {
+            console.debug("isProxyUser...");
+
+            const requestOptions = {
+              hostname: context.proxyIp,
+              port: context.proxyPort,
+              path: req.url,
+              method: req.method,
+              headers: { proxiedByTSW: true, ...req.headers }
+            };
+            console.debug("start proxy");
+            const proxyReq = http.request(requestOptions, (proxyRes) => {
+              proxyRes.pipe(res);
+              Object.keys(proxyRes.headers).forEach((headerType) => {
+                res.setHeader(headerType, proxyRes.headers[headerType]);
+              });
+
+              res.writeHead(proxyRes.statusCode);
+              proxyRes.on("end", () => {
+                console.debug("end proxy");
+              });
+            });
+
+            if (/POST|PUT/i.test(req.method)) {
+              req.pipe(proxyReq);
+            } else {
+              proxyReq.end();
+            }
+
+            proxyReq.on("error", (err) => {
+              console.error("proxy fail...");
+              console.error(JSON.stringify(err));
+              if (res.headersSent) {
+                res.end();
+                return;
+              }
+
+              res.setHeader("Content-Type", "text/html; charset=UTF-8");
+              res.writeHead(500);
+              res.end();
+            });
+
+            return;
+          }
+
           requestListener(req, res);
         });
       };

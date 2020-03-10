@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@tswjs/open-platform-plugin": "^0.0.2",
+    "@tswjs/open-platform-plugin": "0.0.6",
     "@tswjs/tsw": "^2.0.0-alpha",
     "axios": "^0.19.0",
     "express": "^4.17.1"

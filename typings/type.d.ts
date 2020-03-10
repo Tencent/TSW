@@ -30,5 +30,6 @@ declare namespace NodeJS {
       appkey: string;
       plugins: string[];
     };
+    eventBus: EventEmitter;
   }
 }

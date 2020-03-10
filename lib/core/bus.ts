@@ -17,6 +17,11 @@ interface ResponseEventPayload {
   context: Context;
 }
 
+interface RequestEventPayload {
+  req: http.IncomingMessage;
+  context: Context;
+}
+
 interface EventBus extends EventEmitter {
   emit(
     event: "DNS_LOOKUP_SUCCESS",
@@ -38,6 +43,10 @@ interface EventBus extends EventEmitter {
     event: "RESPONSE_CLOSE",
     payload: ResponseEventPayload
   ): boolean;
+  emit(
+    event: "REQUEST_START",
+    payload: RequestEventPayload
+  ): boolean;
 
   on(
     event: "DNS_LOOKUP_SUCCESS",
@@ -59,6 +68,10 @@ interface EventBus extends EventEmitter {
     event: "RESPONSE_CLOSE",
     listener: (payload: ResponseEventPayload) => void
   ): this;
+  on(
+    event: "REQUEST_START",
+    listener: (payload: RequestEventPayload) => void
+  ): this;
 
   once(
     event: "DNS_LOOKUP_SUCCESS",
@@ -79,6 +92,10 @@ interface EventBus extends EventEmitter {
   once(
     event: "RESPONSE_CLOSE",
     listener: (payload: ResponseEventPayload) => void
+  ): this;
+  once(
+    event: "REQUEST_START",
+    listener: (payload: RequestEventPayload) => void
   ): this;
 }
 
@@ -105,7 +122,12 @@ export enum EVENT_LIST {
    *
    * Indicates that the underlying connection was terminated.
    */
-  RESPONSE_CLOSE = "RESPONSE_CLOSE"
+  RESPONSE_CLOSE = "RESPONSE_CLOSE",
+
+  /**
+   * Emitted when then http.Request coming
+   */
+  REQUEST_START = "REQUEST_START",
 }
 
 let bus: EventBus | undefined;

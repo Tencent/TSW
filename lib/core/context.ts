@@ -96,6 +96,18 @@ export class Context {
    * All ajax raw data.
    */
   captureRequests: RequestLog[];
+  /**
+   * Proxy ip for certain request.
+   */
+  proxyIp: string;
+  /**
+   * Proxy port for certain request.
+   */
+  proxyPort: number;
+  /**
+   * Mark for user.
+   */
+  uid: string;
 
   constructor() {
     this.log = {
@@ -111,6 +123,9 @@ export class Context {
 
     this.captureSN = 0;
     this.captureRequests = [];
+    this.proxyIp = "";
+    this.proxyPort = 80;
+    this.uid = "";
   }
 }
 

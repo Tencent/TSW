@@ -10,6 +10,6 @@
     ],
     "resolveJsonModule": true,
     // "noImplicitAny": true
-    // "sourceMap": true, // for debug
+    "sourceMap": true, // for debug
   }
 }
