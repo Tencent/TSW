@@ -26,10 +26,7 @@ declare namespace NodeJS {
 
   interface Global {
     tswConfig: {
-      appid: string;
-      appkey: string;
-      plugins: string[];
+      plugins: any[];
     };
-    eventBus: EventEmitter;
   }
 }

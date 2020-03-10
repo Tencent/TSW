@@ -11,8 +11,13 @@ export default async (
   configPath: string
 ): Promise<void> => {
   const configAbsolutePath = path.resolve(basePath, configPath);
-  global.eventBus = eventBus;
   global.tswConfig = await import(configAbsolutePath);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const plugin of global.tswConfig.plugins) {
+    // eslint-disable-next-line no-await-in-loop
+    await plugin.init(eventBus, global.tswConfig);
+  }
 
   httpCreateServerHack();
   dnsHack();

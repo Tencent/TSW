@@ -153,7 +153,7 @@ export const httpCreateServerHack = (): void => {
           });
 
           // proxy req to proxy env when hitting uid
-          if (context.proxyIp !== "" && !req.headers.proxiedByTSW) {
+          if (context.proxyIp !== "" && !req.headers["x-tsw-proxy"]) {
             console.debug("isProxyUser...");
 
             const requestOptions = {
@@ -161,7 +161,7 @@ export const httpCreateServerHack = (): void => {
               port: context.proxyPort,
               path: req.url,
               method: req.method,
-              headers: { proxiedByTSW: true, ...req.headers }
+              headers: { "x-tsw-proxy": "true", ...req.headers }
             };
             console.debug("start proxy");
             const proxyReq = http.request(requestOptions, (proxyRes) => {
