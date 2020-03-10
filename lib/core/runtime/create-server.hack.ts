@@ -14,6 +14,7 @@ import { AddressInfo } from "net";
 import { captureOutgoing } from "./capture/outgoing";
 import { captureIncoming } from "./capture/incoming";
 import { eventBus, EVENT_LIST } from "../bus";
+import isProxyEnv from "../util/isProxyEnv";
 
 let httpCreateServerHacked = false;
 let originHttpCreateServer = null;
@@ -148,23 +149,22 @@ export const httpCreateServerHack = (): void => {
           currentContext();
 
           const context = process.domain.currentContext;
-          eventBus.emit(EVENT_LIST.RESPONSE_START, {
-            req, res, context
+          eventBus.emit(EVENT_LIST.REQUEST_START, {
+            req, context
           });
 
-          // 在这转发
-          if (context.testIp !== "") {
-            console.debug("isTestUser...");
+          // proxy req from official env to proxy env when hitting uid
+          if (!isProxyEnv() && context.proxyIp !== "" && !req.headers.isproxyuser) {
+            console.debug("isProxyUser...");
 
             const requestOptions = {
-              hostname: context.testIp,
-              port: 1337,
+              hostname: context.proxyIp,
+              port: context.proxyPort,
               path: req.url,
               method: req.method,
-              headers: req.headers
+              headers: Object.assign({ isProxyUser: true }, req.headers)
             };
-            requestOptions.headers.isTestUser = "true";
-            console.debug("start proxy for test env");
+            console.debug("start proxy");
             const proxyReq = http.request(requestOptions, (proxyRes) => {
               proxyRes.pipe(res);
               for (const headerType of Object.keys(proxyRes.headers)) {
@@ -184,7 +184,7 @@ export const httpCreateServerHack = (): void => {
             }
 
             proxyReq.on("error", (err) => {
-              console.error("h5test proxy fail...");
+              console.error("proxy fail...");
               console.error(JSON.stringify(err));
               if (res.headersSent) {
                 res.end();

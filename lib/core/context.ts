@@ -97,9 +97,17 @@ export class Context {
    */
   captureRequests: RequestLog[];
   /**
-   * testIp for alpha user.
+   * proxyIp for alpha user.
    */
-  testIp: string;
+  proxyIp: string;
+  /**
+   * proxyPort for alpha user.
+   */
+  proxyPort: string;
+  /**
+   * mark for user.
+   */
+  uid: string;
 
   constructor() {
     this.log = {
@@ -115,13 +123,16 @@ export class Context {
 
     this.captureSN = 0;
     this.captureRequests = [];
-    this.testIp = "";
+    this.proxyIp = "";
+    this.proxyPort = "";
+    this.uid = "";
   }
 }
 
 export default (): Context | null => {
   if (!process.domain) {
-    return null;
+    // return null;
+    return new Context(); // 在server之外的请求，因为没有doman，context=null
   }
 
   if (!process.domain.currentContext) {
