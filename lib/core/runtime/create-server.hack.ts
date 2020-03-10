@@ -14,7 +14,6 @@ import { AddressInfo } from "net";
 import { captureOutgoing } from "./capture/outgoing";
 import { captureIncoming } from "./capture/incoming";
 import { eventBus, EVENT_LIST } from "../bus";
-import isProxyEnv from "../util/isProxyEnv";
 
 let httpCreateServerHacked = false;
 let originHttpCreateServer = null;
@@ -153,8 +152,8 @@ export const httpCreateServerHack = (): void => {
             req, context
           });
 
-          // proxy req from official env to proxy env when hitting uid
-          if (!isProxyEnv() && context.proxyIp !== "" && !req.headers.isproxyuser) {
+          // proxy req to proxy env when hitting uid
+          if (context.proxyIp !== "" && !req.headers.proxiedByTSW) {
             console.debug("isProxyUser...");
 
             const requestOptions = {
@@ -162,7 +161,7 @@ export const httpCreateServerHack = (): void => {
               port: context.proxyPort,
               path: req.url,
               method: req.method,
-              headers: { isProxyUser: true, ...req.headers }
+              headers: { proxiedByTSW: true, ...req.headers }
             };
             console.debug("start proxy");
             const proxyReq = http.request(requestOptions, (proxyRes) => {

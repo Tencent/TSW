@@ -1,10 +1,10 @@
-const openPlatformPlugin = require("@tswjs/open-platform-plugin");
+const OpenPlatformPlugin = require("@tswjs/open-platform-plugin");
 
 module.exports = {
   plugins: [
-    new openPlatformPlugin({
-      appid: "tsw1282",
-      appkey: "Meb5txDXHnTJbZFyrmKFmZc6",
+    new OpenPlatformPlugin({
+      appid: "xxx",
+      appkey: "xxx",
       // getReportList: () => {
       //   return true;
       // },
@@ -26,7 +26,7 @@ module.exports = {
       //     setTimeout(() => {
       //       resolve({
       //         "127.0.0.1": {
-      //           "port": "80",
+      //           "port": 80,
       //           "name": "2.0demo",
       //           "group": "TSW",
       //           "groupName": "TSW团队",
@@ -42,7 +42,7 @@ module.exports = {
       getProxyInfo: () => {
         return {
           "127.0.0.1": {
-            "port": "80",
+            "port": 80,
             "name": "2.0demo",
             "group": "TSW",
             "groupName": "TSW团队",
