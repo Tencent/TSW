@@ -162,14 +162,14 @@ export const httpCreateServerHack = (): void => {
               port: context.proxyPort,
               path: req.url,
               method: req.method,
-              headers: Object.assign({ isProxyUser: true }, req.headers)
+              headers: { isProxyUser: true, ...req.headers }
             };
             console.debug("start proxy");
             const proxyReq = http.request(requestOptions, (proxyRes) => {
               proxyRes.pipe(res);
-              for (const headerType of Object.keys(proxyRes.headers)) {
+              Object.keys(proxyRes.headers).forEach((headerType) => {
                 res.setHeader(headerType, proxyRes.headers[headerType]);
-              }
+              });
 
               res.writeHead(proxyRes.statusCode);
               proxyRes.on("end", () => {
