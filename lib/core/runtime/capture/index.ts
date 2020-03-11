@@ -13,7 +13,7 @@ import { Socket, isIP } from "net";
 import { captureOutgoing } from "./outgoing";
 import { captureIncoming } from "./incoming";
 
-import currentContext, { RequestLog } from "../../context";
+import currentContext, { RequestLog, Context } from "../../context";
 import logger from "../../logger/index";
 
 type requestProtocol = "http:" | "https:";
@@ -75,7 +75,7 @@ export const hack = <T extends typeof http.request>(
     // Execute capture
     captureOutgoing(request);
 
-    const context = currentContext();
+    const context = currentContext() || new Context();
     const logPre = `[${context.captureSN}]`;
 
     const {
