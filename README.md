@@ -38,12 +38,6 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 2. `git clone https://github.com/Tencent/TSW.git`
 3. `cd TSW`
 
-#### Native `http.createServer`
-
-1. `cd examples/http-create-server`
-2. `npx @tswjs/tsw ./index.js`
-3. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
-
 #### Koa
 
 1. `cd examples/koa`
