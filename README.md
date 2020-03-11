@@ -41,7 +41,7 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 #### Native `http.createServer`
 
 1. `cd examples/http-create-server`
-2. `npx tsw ./index.js`
+2. `npx @tswjs/tsw ./index.js`
 3. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
 
 #### Koa
@@ -50,13 +50,6 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 1. `yarn`
 1. `yarn serve` 或者 `npm run serve`
 1. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
-
-#### Express
-
-1. `cd examples/express`
-1. `yarn`
-1. `yarn serve` 或者 `npm run serve`
-1. `curl -v localhost:4443`
 
 #### 使用 https://tswjs.org 开放平台
 
@@ -103,29 +96,21 @@ TSW 核心的实现方式是 Hack NodeJS 自身的 `http.request` 以及 `http.c
 
 ### 一个最简单的插件
 
-#### Commonjs
-
 ```js
-// simple-plugin-commonjs.js
+export.modules = class MyPlugin() {
+  constructor() {
+    this.name = "MyPlugin"
+  }
 
-export.modules = (eventBus, config) => {
-  eventBus.on("RESPONSE_CLOSE", (payload) => {
-    console.log(payload);
-  })
+  async init(eventBus, config) {
+    eventBus.on("RESPONSE_CLOSE", (payload) => {
+      console.log(payload);
+    })
+  }
 }
 ```
 
-#### ES6 module
-
-```js
-// simple-plugin-es6module.js
-
-export default (eventBus, config) => {
-  eventBus.on("RESPONSE_CLOSE", (payload) => {
-    console.log(payload);
-  })
-}
-```
+`init` 方法是必须的，这个方法在插件加载开始时会被调用，可以是同步也可以是异步。
 
 #### `eventBus`
 
@@ -138,18 +123,25 @@ export default (eventBus, config) => {
 | `RESPONSE_START` | 在每次服务器开始返回响应（执行 `writeHead`）时触发 | `ResponseEventPayload` |
 | `RESPONSE_FINISH` | 在响应结束时（`res.on("finish")`）触发 | `ResponseEventPayload` |
 | `RESPONSE_CLOSE` | 在底层链接关闭时 （`res.on("close")`）触发 | `ResponseEventPayload` |
+| `REQUEST_START` | 在每次服务器接受到新的请求时触发 | `RequestEventPayload` |
 
 #### `config`
 
-`config` 是用户的自定义配置。
+`config` 是用户的自定义配置。一个简单的配置文件如下：
+
+```js
+module.exports = {
+  plugins: [
+    new MyPlugin({})
+  ]
+}
+```
 
 ### 配置文件
 
 | key | 必传 | 类型 | 含义 | 
 | -- | -- | -- | -- |
-| appid | 否 | `String` | [TSW 开放平台](https://tswjs.org) 接入时获得 | 
-| appkey | 否 | `String` | [TSW 开放平台](https://tswjs.org) 接入时获得 | 
-| plugins | 否 | `String[]` | 插件列表 |
+| plugins | 否 | `new Plugin[]` | 插件列表 |
 
 <h2 align="center">License</h2>
 
