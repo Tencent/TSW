@@ -15,7 +15,7 @@ const { argv } = yargs
     alias: "c",
     type: "string",
     description: "Config file path",
-    default: "tswconfig.json"
+    default: "tswconfig.js"
   });
 
 const { _, config } = argv;
