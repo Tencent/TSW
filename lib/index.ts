@@ -16,7 +16,10 @@ export default async (
   // eslint-disable-next-line no-restricted-syntax
   for (const plugin of global.tswConfig.plugins) {
     // eslint-disable-next-line no-await-in-loop
-    await plugin.init(eventBus, global.tswConfig);
+    await plugin.init(eventBus, global.tswConfig).catch((e) => {
+      console.error(`${plugin.name} 插件初始化失败: ${e.message}`);
+      process.exit(-1);
+    });
   }
 
   httpCreateServerHack();
