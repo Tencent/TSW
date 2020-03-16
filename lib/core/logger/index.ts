@@ -15,6 +15,7 @@ import isLinux from "../util/isLinux";
 import isInspect from "../util/isInspect";
 import getCallInfo from "./callInfo";
 import { Stream } from "stream";
+import { config as winstonConfig, Logger as WinstonLogger } from "winston";
 
 enum LOG_LEVEL {
   "DEBUG" = 10,
@@ -32,8 +33,12 @@ enum LOG_COLOR {
 
 type LogLevelStrings = keyof typeof LOG_LEVEL;
 
+type WinstonLogLevel = keyof typeof winstonConfig.syslog.levels;
+
 export class Logger {
   public logLevel: number
+
+  public winstonLogger: WinstonLogger
 
   public setLogLevel(level: LogLevelStrings): number {
     this.logLevel = LOG_LEVEL[level];
@@ -103,6 +108,11 @@ export class Logger {
     // Store log
     Logger.fillBuffer(type, logStr);
 
+    if (this.winstonLogger) {
+      const winstonLogType = Logger.getWinstonType(type);
+      this.winstonLogger.log(`${winstonLogType}`, logStr);
+    }
+
     if (isInspect()) {
       // When started with inspect, log will send to 2 places
       // 1. Local stdout
@@ -122,6 +132,24 @@ export class Logger {
       // Send to local stdout
       Logger.fillStdout(logStr);
     }
+  }
+
+  /**
+   * Convert TSW log level to winston log level
+   * @param type Type of tsw log level
+   */
+  private static getWinstonType(type: LogLevelStrings): WinstonLogLevel {
+    const logType = type.toLowerCase();
+    const winstonLogLevel = winstonConfig.syslog.levels;
+    if (winstonLogLevel[logType]) {
+      return logType;
+    }
+
+    /**
+     * Take the least important level from Winston syslog levels
+     */
+    const levels = Object.keys(winstonLogLevel);
+    return levels[levels.length - 1];
   }
 
   /**
