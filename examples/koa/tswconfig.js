@@ -1,3 +1,4 @@
+const winston = require("winston");
 const OpenPlatformPlugin = require("@tswjs/open-platform-plugin");
 
 module.exports = {
@@ -23,5 +24,9 @@ module.exports = {
         };
       }
     })
+  ],
+  winstonTransports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error'}),
+    new winston.transports.File({ filename: 'debug.log', level: 'debug'})
   ]
 };

@@ -6,27 +6,16 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-declare interface Console {
-  originDebug(message?: any, ...optionalParams: any[]): void;
-  originLog(message?: any, ...optionalParams: any[]): void;
-  originInfo(message?: any, ...optionalParams: any[]): void;
-  originDir(message?: any, ...optionalParams: any[]): void;
-  originWarn(message?: any, ...optionalParams: any[]): void;
-  originError(message?: any, ...optionalParams: any[]): void;
-}
+import * as winston from "winston";
+import * as Transports from "winston-transport";
+import logger from "./logger/index";
 
-declare namespace NodeJS {
-  interface Process {
-    SN: number;
+export const winstonHack = (): void => {
+  const transports: Array<Transports> = global.tswConfig.winstonTransports;
+  if (transports) {
+    logger.winstonLogger = winston.createLogger({
+      format: winston.format.simple(),
+      transports
+    });
   }
-
-  interface Domain {
-    currentContext?: any;
-  }
-  interface Global {
-    tswConfig: {
-      plugins: any[];
-      winstonTransports: any[];
-    };
-  }
-}
+};

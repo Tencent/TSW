@@ -4,6 +4,7 @@ import { httpCreateServerHack } from "./core/runtime/create-server.hack";
 import { dnsHack } from "./core/runtime/dns.hack";
 import { requestHack } from "./core/runtime/capture/index";
 import { eventBus } from "./core/bus";
+import { winstonHack } from "./core/winston";
 
 export default async (
   basePath: string,
@@ -12,7 +13,6 @@ export default async (
 ): Promise<void> => {
   const configAbsolutePath = path.resolve(basePath, configPath);
   global.tswConfig = await import(configAbsolutePath);
-
   // eslint-disable-next-line no-restricted-syntax
   for (const plugin of global.tswConfig.plugins) {
     // eslint-disable-next-line no-await-in-loop
@@ -26,6 +26,7 @@ export default async (
   dnsHack();
   consoleHack();
   requestHack();
+  winstonHack();
 
   await import(path.resolve(basePath, mainPath));
 };

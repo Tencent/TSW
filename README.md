@@ -127,6 +127,31 @@ module.exports = {
 | -- | -- | -- | -- |
 | plugins | 否 | `new Plugin[]` | 插件列表 |
 
+<h2 align="center">winston</h2>
+
+### winston 是什么？
+
+`winston` 是一个通用且轻量的日志包。`winston` 支持多个日志通道，并且可以分别定义日志优先级。除了内置的三个日志传输通道[`Console`、 `File`、`HTTP`](https://github.com/winstonjs/winston#common-transport-options)，在 Winston 项目外部还会维护一些[传输模块](https://github.com/winstonjs)。查看 `winston` [官方文档](https://github.com/winstonjs/winston)。
+
+TSW 2.0 支持使用 `winston` 传输通道记录日志信息，用户在配置文件中可以添加 `winston.transports` 实例，日志会落到对应配置中。
+
+### 一个简单的示例
+
+使用 `winston` 记录 `error` 级别 以及 `debug` 级别以下的日志信息到对应文件中，当前 `config` 文件配置如下：
+
+```js
+module.exports = {
+  winston: [
+    new winston.transports.File({ filename: 'error.log', level: 'error'}),
+    new winston.transports.File({ filename: 'debug.log', level: 'debug'})
+  ]
+}
+```
+
+**日志记录**
+
+![log](./static/images/winston-log.png)
+
 <h2 align="center">License</h2>
 
 Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE) 。

@@ -65,6 +65,8 @@
     "ip": "^1.1.5",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
+    "winston": "^3.2.1",
+    "winston-transport": "^4.3.0",
     "yargs": "^15.0.2"
   }
 }
