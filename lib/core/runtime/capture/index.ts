@@ -10,6 +10,7 @@ import * as http from "http";
 import * as https from "https";
 import { URL } from "url";
 import { Socket, isIP } from "net";
+import { cloneDeep } from "lodash";
 import { captureOutgoing } from "./outgoing";
 import { captureIncoming } from "./incoming";
 
@@ -214,8 +215,16 @@ export const hack = <T extends typeof http.request>(
           result.push(`HTTP/${response.httpVersion} ${
             response.statusCode} ${response.statusMessage}`);
 
-          Object.keys(response.headers).forEach((key) => {
-            result.push(`${key}: ${response.headers[key]}`);
+          const cloneHeaders = cloneDeep(response.headers);
+          // Transfer a chunked response to a full response.
+          if (!cloneHeaders["content-length"]
+            && responseInfo.bodyLength >= 0) {
+            delete cloneHeaders["transfer-encoding"];
+            cloneHeaders["content-length"] = String(responseInfo.bodyLength);
+          }
+
+          Object.keys(cloneHeaders).forEach((key) => {
+            result.push(`${key}: ${cloneHeaders[key]}`);
           });
 
           result.push("");
