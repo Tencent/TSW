@@ -141,7 +141,7 @@ TSW 2.0 支持使用 `winston` 传输通道记录日志信息，用户在配置�
 
 ```js
 module.exports = {
-  winston: [
+  winstonTransports: [
     new winston.transports.File({ filename: 'error.log', level: 'error'}),
     new winston.transports.File({ filename: 'debug.log', level: 'debug'})
   ]
