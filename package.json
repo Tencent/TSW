@@ -1,6 +1,6 @@
 {
   "name": "@tswjs/tsw",
-  "version": "2.0.0-alpha.8",
+  "version": "2.0.0-alpha.9",
   "description": "A Node.js infrastructure which is designed for improving the efficiency of locating problems, providing multiple functions for front-end developers",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
