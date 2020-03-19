@@ -123,7 +123,8 @@ export class Context {
 
     this.captureSN = 0;
     this.captureRequests = [];
-    this.proxyIp = "";
+    // Empty string is a loopback address in IPV6
+    this.proxyIp = "NOT_A_IP";
     this.proxyPort = 80;
     this.uid = "";
   }
