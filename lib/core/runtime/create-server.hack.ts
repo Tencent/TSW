@@ -52,6 +52,21 @@ export const httpCreateServerHack = (): void => {
           socketConnect: start
         } as RequestLog["timestamps"];
 
+        // Creating a domain and wrapping the execution.
+        const d = domain.create();
+
+        d.add(req);
+        d.add(res);
+
+        const clearDomain = (): void => {
+          d.remove(req);
+          d.remove(res);
+
+          while (process.domain) {
+            (process.domain as domain.Domain).exit();
+          }
+        };
+
         const requestInfo = captureIncoming(req);
 
         res.writeHead = ((fn): typeof res.writeHead => (
@@ -123,6 +138,8 @@ export const httpCreateServerHack = (): void => {
             timestamps
           } as RequestLog;
 
+          clearDomain();
+
           eventBus.emit(EVENT_LIST.RESPONSE_FINISH, {
             req, res, context
           });
@@ -138,11 +155,6 @@ export const httpCreateServerHack = (): void => {
           });
         });
 
-        // Creating a domain and wrapping the execution.
-        const d = domain.create();
-
-        d.add(req);
-        d.add(res);
         d.run(() => {
           // 初始化一下 Context
           currentContext();
