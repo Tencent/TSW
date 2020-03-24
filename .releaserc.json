@@ -1,9 +1,9 @@
 {
-    "branch": "release",
-    "tagFormat": "v${version}",
-    "dryRun": false,
-    "debug": true,
-    "plugins": [
-        "@semantic-release/npm"
-    ]
+  "branch": "release",
+  "tagFormat": "v${version}",
+  "dryRun": false,
+  "debug": true,
+  "plugins": [
+    "@semantic-release/npm"
+  ]
 }
