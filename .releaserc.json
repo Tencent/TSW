@@ -1,8 +1,5 @@
 {
-  "branch": [{
-    "name": "master",
-    "prerelease": true
-  }],
+  "branch": ["master"],
   "tagFormat": "v${version}",
   "dryRun": false,
   "debug": true,
