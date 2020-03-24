@@ -2,7 +2,7 @@ name: Publish to npm
 
 on:
   push:
-    branches: release
+    branches: ["master"]
 
 jobs:
   publish-to-npm:
@@ -16,6 +16,8 @@ jobs:
           node-version: '12.x'
       - name: Install dependencies
         run: yarn
+      - name: build
+        run: yarn build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
