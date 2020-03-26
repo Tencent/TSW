@@ -7,8 +7,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@tswjs/open-platform-plugin": "0.0.7",
-    "@tswjs/tsw": "^2.0.0-alpha",
+    "@tswjs/open-platform-plugin": "0.0.9",
+    "@tswjs/tsw": "^2.0.0",
     "axios": "^0.19.2",
     "koa": "^2.11.0",
     "winston": "^3.2.1",

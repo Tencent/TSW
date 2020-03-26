@@ -6,10 +6,10 @@ module.exports = {
     new OpenPlatformPlugin({
       appid: "tsw1431",
       appkey: "PwPaD4RRAsrSdRZjQSc3fbKM",
-      reportStrategy: "proxied",
+      reportStrategy: "always",
       // 只支持同步写法
       getUid: (request) => {
-        return request.headers["uid"];
+        return "xxx";
       },
       getProxyInfo: () => {
         return {
