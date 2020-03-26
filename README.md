@@ -30,6 +30,8 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 
 原本通过 `node ./index.js` 方式启动的应用，更换为 `npx @tswjs/tsw ./index.js`。
 
+TSW 2.0 也兼容 ts-node，用户在安装完 ts-node 依赖包后，仍以 `npx @tswjs/tsw ./index.ts` 启动应用即可。
+
 ### Examples
 
 我们提供了一些示例项目以让大家尽快了解该项目。

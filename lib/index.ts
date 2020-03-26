@@ -28,5 +28,6 @@ export default async (
   requestHack();
   winstonHack();
 
-  await import(path.resolve(basePath, mainPath));
+  (await import("ts-node")).register();
+  require(path.resolve(basePath, mainPath));
 };

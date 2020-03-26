@@ -6,3 +6,5 @@ dist
 .nyc_output
 coverage
 *.log
+debug.log
+error.log
