@@ -76,11 +76,6 @@
     ],
 
     // 允许 import 文件时缺失后缀
-    "import/extensions": "off",
-
-    // allow to require module by dynamic path
-    "import/no-dynamic-require": "off",
-    // allow ts-node to hack global-require
-    "global-require": "off"
+    "import/extensions": "off"
   }
 }

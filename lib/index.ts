@@ -5,6 +5,7 @@ import { dnsHack } from "./core/runtime/dns.hack";
 import { requestHack } from "./core/runtime/capture/index";
 import { eventBus } from "./core/bus";
 import { winstonHack } from "./core/winston";
+import isUseTsNode from "./core/util/isUseTsNode";
 
 export default async (
   basePath: string,
@@ -28,6 +29,9 @@ export default async (
   requestHack();
   winstonHack();
 
-  (await import("ts-node")).register();
-  require(path.resolve(basePath, mainPath));
+  if (isUseTsNode()) {
+    (await import("ts-node")).register();
+  }
+
+  await import(path.resolve(basePath, mainPath));
 };
