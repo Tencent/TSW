@@ -34,7 +34,7 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 #### Ts-node 启动
 `NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts`
 #### Inspect 模式
-`NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.ts`
+`NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`
 #### More
 `npx @tswjs/tsw --help`
 
