@@ -30,11 +30,3 @@ declare namespace NodeJS {
     };
   }
 }
-
-// Ignore “cannot find module” error on typescript
-declare module "ts-node" {
-  let tsNode: {
-    register: () => {};
-  };
-  export = tsNode;
-}
