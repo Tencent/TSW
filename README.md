@@ -15,12 +15,14 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 
 <table>
   <tr>
-    <th><h4 align="center">🚀<h4 align="center">~0 侵入</h4 align="center"></th>
-    <th><h4 align="center">🗡️</h4 align="center"><h4 align="center">定位问题如手术刀般犀利</h4 align="center"></th>
+    <th><h4 align="center">🚀<h4 align="center">0 侵入</h4 align="center"></th>
+    <th><h4 align="center">📒</h4 align="center"><h4 align="center">全息日志</h4 align="center"></th>
+    <th><h4 align="center">🛠</h4 align="center"><h4 align="center">请求抓包</h4 align="center"></th>
   </tr>
   <tr>
-    <td width="33%"><sub>通过 Hack NodeJS 底层代码实现抓包、全息日志功能。对原有业务代码几乎零侵入。</sub></td>
-    <td width="33%"><sub>TSW 提供了显微镜级别的全息日志，给开发者以完美的现场还原。可以重现每一个请求现场。一秒定位问题。</sub></td>
+    <td width="33%"><sub>通过 Hack NodeJS 底层代码实现功能。对原有业务代码 0 侵入。</sub></td>
+    <td width="33%"><sub>按照请求聚类的显微镜级别的全息日志，给开发者以完美的现场还原。</sub></td>
+    <td width="33%"><sub>可抓取 Server 端向外部发送的所有请求的完整包体内容，与后台沟通再无障碍。</sub></td>
   </tr>
 </table>
 
@@ -30,13 +32,17 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 
 原本通过 `node ./index.js` 方式启动的应用，更换为 `npx @tswjs/tsw ./index.js`。
 
-### CLI Options
-#### Ts-node 启动
+**注意事项**：`node --inspect ./index.js` 中的 CLI 参数如 `--inspect` 需要转化为环境变量 `NODE_OPTIONS` 来执行，如 `NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`。
+
+### 使用 ts
+
+在保证项目有 [ts-node](https://www.npmjs.com/package/ts-node) 包依赖的情况下，按照如下方式执行即可直接加载 ts 文件。
+
 `NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts`
-#### Inspect 模式
-`NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`
-#### More
-`npx @tswjs/tsw --help`
+
+### CLI (Command Line Interface)
+
+使用 `npx @tswjs/tsw --help` 来获取 CLI 选项。
 
 ### Examples
 
