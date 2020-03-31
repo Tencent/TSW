@@ -2,12 +2,19 @@
 # yarn lockfile v1
 
 
-"@tswjs/open-platform-plugin@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@tswjs/open-platform-plugin/-/open-platform-plugin-0.0.9.tgz#58d8119e66513ae9fd708f3b1525c805c2a041c6"
-  integrity sha512-U4yMTJubkBsMYBV5PyvJrhA6FdaavBOgUM0Sx9BhzdZd8au0+qHML1arHJCRKZ3i8pN1brLEL7BVpvySQRuXfA==
+"@tswjs/open-platform-api@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@tswjs/open-platform-api/-/open-platform-api-1.0.0.tgz#58021d196521bc57fd6129f7a8e804d910f28568"
+  integrity sha512-a5ojTtZN+tKSrDMVArJoQqCINWgEWT2EsEGEeKw2MGNxjGZS239gXxJU724DghuTL/QKHWJi8JMsAkSsb9DeJQ==
   dependencies:
-    axios "^0.19.0"
+    axios "^0.19.2"
+
+"@tswjs/open-platform-plugin@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@tswjs/open-platform-plugin/-/open-platform-plugin-1.0.0.tgz#59e22dc6bf7dfa788b02bdbde02d166e5cde14fd"
+  integrity sha512-snm1Z/JB5l5UPrkiv8MNrJmdIAurGEvGZju7LUWXteovT76hNLxNHq6GQbmK2bnw90kiFeure8IE0NAqYc6TPQ==
+  dependencies:
+    "@tswjs/open-platform-api" "^1.0.0"
     ip "^1.1.5"
     moment "^2.24.0"
 
@@ -91,13 +98,6 @@ async@^2.6.1, async@^2.6.3:
   integrity sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
   dependencies:
     lodash "^4.17.14"
-
-axios@^0.19.0:
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.1.tgz#8a6a04eed23dfe72747e1dd43c604b8f1677b5aa"
-  integrity sha512-Yl+7nfreYKaLRvAvjNPkvfjnQHJM1yLBY3zhqAwcJSwR/6ETkanUgylgtIvkvz0xJ+p/vZuNw8X7Hnb7Whsbpw==
-  dependencies:
-    follow-redirects "1.5.10"
 
 axios@^0.19.2:
   version "0.19.2"
