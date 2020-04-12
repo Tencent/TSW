@@ -8,6 +8,7 @@
 
 import * as http from "http";
 import * as https from "https";
+import * as domain from "domain";
 import { URL } from "url";
 import { Socket, isIP } from "net";
 import { cloneDeep } from "lodash";
@@ -100,12 +101,22 @@ export const hack = <T extends typeof http.request>(
     const { timestamps } = requestLog;
     timestamps.requestStart = new Date();
 
+    const clearDomain = (): void => {
+      const parser = request.socket["parser"] as any;
+      if (parser && parser.domain) {
+        (parser.domain as domain.Domain).exit();
+        parser.domain = null;
+      }
+    };
+
     const finishRequest = (): void => {
       context.captureRequests.push(requestLog as RequestLog);
 
       logger.debug(`${logPre} Record request info. Response body length: ${
         requestLog.responseLength
       }`);
+
+      clearDomain();
     };
 
     request.once("socket", (socket: Socket): void => {
@@ -155,6 +166,7 @@ export const hack = <T extends typeof http.request>(
       finishRequest();
     });
 
+    request.once("close", clearDomain);
     request.once("finish", () => {
       timestamps.requestFinish = new Date();
 
