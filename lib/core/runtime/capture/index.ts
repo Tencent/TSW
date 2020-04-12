@@ -115,8 +115,6 @@ export const hack = <T extends typeof http.request>(
       logger.debug(`${logPre} Record request info. Response body length: ${
         requestLog.responseLength
       }`);
-
-      clearDomain();
     };
 
     request.once("socket", (socket: Socket): void => {
@@ -164,6 +162,7 @@ export const hack = <T extends typeof http.request>(
     request.once("error", (error: Error) => {
       logger.error(`${logPre} Request error. Stack: ${error.stack}`);
       finishRequest();
+      clearDomain();
     });
 
     request.once("close", clearDomain);
@@ -189,6 +188,8 @@ export const hack = <T extends typeof http.request>(
       }. Cost: ${
         timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
       } ms`);
+
+      clearDomain();
     });
 
     request.once("response", (response: http.IncomingMessage): void => {
