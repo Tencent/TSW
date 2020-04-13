@@ -62,7 +62,7 @@ export const httpCreateServerHack = (): void => {
           d.remove(req);
           d.remove(res);
 
-          const parser = req.socket["parser"] as any;
+          const parser = (req.socket as any).parser as any;
           if (parser && parser.domain) {
             (parser.domain as domain.Domain).exit();
             parser.domain = null;

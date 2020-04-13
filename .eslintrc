@@ -40,8 +40,6 @@
 
     // 使用双引号
     "quotes": ["error", "double"],
-    // 不要禁用[]取属性,typescript取手动挂载的属性时必须使用[]取值
-    "dot-notation": "off",
 
     // 禁止多余的逗号
     "comma-dangle": ["error", "never"],
