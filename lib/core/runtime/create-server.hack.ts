@@ -62,6 +62,12 @@ export const httpCreateServerHack = (): void => {
           d.remove(req);
           d.remove(res);
 
+          const parser = (req.socket as any).parser as any;
+          if (parser && parser.domain) {
+            (parser.domain as domain.Domain).exit();
+            parser.domain = null;
+          }
+
           while (process.domain) {
             (process.domain as domain.Domain).exit();
           }
@@ -149,6 +155,8 @@ export const httpCreateServerHack = (): void => {
           timestamps.responseClose = new Date();
 
           const context = process.domain.currentContext;
+
+          clearDomain();
 
           eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, {
             req, res, context
