@@ -59,32 +59,28 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
 1. `yarn serve` 或者 `npm run serve`
 1. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
 
-#### 使用 https://tswjs.org 开放平台
+<h2 align="center">Config</h2>
 
-在默认的情况下，TSW 只是会把所有的日志和抓包内容抓取到并且送到事件总线上，以供 [插件](#插件是什么？) 消费。所以将日志和抓包内容落地查看一般需要用户自己编写插件以及提供存储，使用成本过于高昂。因此，TSW 官方提供了公共的服务平台，以供用户以更成本、更快、更方便地使用 TSW 的特性。使用方式如下：
+配置文件是 TSW 启动时加载进运行时的配置文件，主要声明需要使用的插件列表 [插件](#Plugins)。**默认会加载项目根目录的 `tswconfig.js` 文件，也可以通过启动参数 `-c` 或者 `--config` 来手动指定配置文件路径。**
 
-1. 登录 https://tswjs.org 并在其上新建一个应用
+### 配置文件示例
 
-![create-app](./static/images/create-app.png)
+```js
+module.exports = {
+  plugins: [
+    new MyPlugin({})
+  ]
+}
+```
 
-1. 打开应用，获取 `appid` 和 `appkey`
+### 参数列表
 
-![appid-appkey](./static/images/appid-appkey.png)
+#### plugins
 
-1. 在项目根目录下新增配置文件 `tswconfig.js`，并参照 [开放平台插件](https://github.com/tswjs/open-platform-plugin) 指引配置完成。
+- `Plugin[]`
+- `Optional`
 
-1. 向之前启动的 Koa 或者原生 http server 发送请求，并且在开放平台上查看对应的日志和抓包。查看地址为下方地址拼接而成 `https://domain/log/view/YOUR_UID`
-
-![log-view](./static/images/log-view.png)
-
-**日志记录**
-
-![log](./static/images/log.png)
-
-**在线查看抓包内容**
-
-![capture](./static/images/capture.png)
-
+插件列表
 
 <h2 align="center">Plugins</h2>
 
@@ -117,31 +113,53 @@ export.modules = class MyPlugin() {
 | key | 含义（触发时机） | payload |
 | -- | -- | -- |
 | `DNS_LOOKUP_SUCCESS` | 在每次 DNS 查询成功之后触发 | `string | dns.LookupAddress[]` |
-| `DNS_LOOKUP_ERROR` | 在每次 DNS 查询失败之后触发 | `NodeJS.ErrnoException` |
+| `DNS_LOOKUP_ERROR` | 在每次 DNS 查询失败之后触发 | `NodeJS.ErrorException` |
 | `RESPONSE_START` | 在每次服务器开始返回响应（执行 `writeHead`）时触发 | `ResponseEventPayload` |
 | `RESPONSE_FINISH` | 在响应结束时（`res.on("finish")`）触发 | `ResponseEventPayload` |
 | `RESPONSE_CLOSE` | 在底层链接关闭时 （`res.on("close")`）触发 | `ResponseEventPayload` |
 | `REQUEST_START` | 在每次服务器接受到新的请求时触发 | `RequestEventPayload` |
 
-#### `config`
 
-`config` 是用户的自定义配置。一个简单的配置文件如下：
+<h2 align="center">Open Platform</h2>
 
-```js
-module.exports = {
-  plugins: [
-    new MyPlugin({})
+在默认的情况下，TSW 只是会把所有的日志和抓包内容抓取到并且送到事件总线上，以供 [插件](#插件是什么？) 消费。所以将日志和抓包内容落地查看一般需要用户自己编写插件以及提供存储，使用成本过于高昂。因此，TSW 官方提供了公共的服务平台（https://tswjs.org），以供用户以更成本、更快、更方便地使用 TSW 的特性。使用方式见 [使用 TSW 开放平台](./docs/use-open-platform.md)
+
+<h2 align="center">Cluster</h2>
+
+TSW 2.0 是面对容器化和云原生设计的，所以没有内置 Cluster 相关功能，推荐直接使用容器的健康检查来完成服务的无损重启和故障重启机制。对于没有使用容器化方案的场景来说，我们推荐使用 [pm2](https://github.com/Unitech/pm2) 类似工具来实现多进程模式。
+
+### pm2
+
+#### 使用 Ecosystem File
+
+```json
+// ecosystem.config.json
+
+{
+  "apps": [
+    {
+      "name": "app-name",
+      "script": "./node_modules/@tswjs/tsw/dist/cli.js",
+      "args": "built/index.js",
+      // other options
+    }
   ]
 }
 ```
 
-### 配置文件
+```json
+// package.json
 
-| key | 必传 | 类型 | 含义 | 
-| -- | -- | -- | -- |
-| plugins | 否 | `new Plugin[]` | 插件列表 |
+{
+  ...
+  "scripts": {
+    "start": "pm2 start ecosystem.config.json"
+  },
+  ...
+}
+```
 
-<h2 align="center">winston</h2>
+<h2 align="center">Winston</h2>
 
 ### winston 是什么？
 
