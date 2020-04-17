@@ -132,7 +132,7 @@ TSW 2.0 是面对容器化和云原生设计的，所以没有内置 Cluster 相
 
 #### 使用 Ecosystem File
 
-```json
+```js
 // ecosystem.config.json
 
 {
@@ -147,7 +147,7 @@ TSW 2.0 是面对容器化和云原生设计的，所以没有内置 Cluster 相
 }
 ```
 
-```json
+```js
 // package.json
 
 {
