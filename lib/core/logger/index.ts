@@ -258,7 +258,9 @@ export class Logger {
   }
 
   private static fillStdout(str: string): void {
-    process.stdout.write(`${str}\n`);
+    // console hacking origin write, so use originWrite
+    const stdout = (process.stdout as any).originWrite || process.stdout.write;
+    stdout.call(process.stdout, `${str}\n`);
   }
 }
 
