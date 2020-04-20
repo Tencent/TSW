@@ -9,8 +9,8 @@
 import * as http from "http";
 import * as domain from "domain";
 import currentContext, { RequestLog } from "../context";
-import { address, isV4Format, isV6Format } from "ip";
-import { AddressInfo } from "net";
+import { address } from "ip";
+import { AddressInfo, isIP } from "net";
 import { captureOutgoing } from "./capture/outgoing";
 import { captureIncoming } from "./capture/incoming";
 import { eventBus, EVENT_LIST } from "../bus";
@@ -173,7 +173,7 @@ export const httpCreateServerHack = (): void => {
           });
 
           // proxy req to proxy env when hitting uid
-          if ((isV4Format(context.proxyIp) || isV6Format(context.proxyIp))
+          if ((isIP(context.proxyIp))
             && !req.headers["x-tsw-proxy"]) {
             console.debug("isProxyUser...");
 
