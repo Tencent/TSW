@@ -6,7 +6,7 @@ spawn(
   "sh",
   [
     "-c",
-    "npx xl_close_port -p 3000 && node ../dist/cli.js ./originServer.js -c ./tswconfig.js"
+    "npx xl_close_port -p 3000 && node ../dist/cli.js ./originServer.js -c ./start/tswconfig.js"
   ], {
     stdio: ["pipe", "inherit", "inherit"]
   }

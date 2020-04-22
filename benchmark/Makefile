@@ -1,6 +1,7 @@
 all:
-	@./run start resultByOrigin.txt
-	@./run startByTsw resultByTsw.txt
+	@./run start/start metricsResult/resultByOrigin.txt
+	@./run start/startByTsw metricsResult/resultByTsw.txt
+	@./run start/startByTswNoReport metricsResult/resultByTswNoReport.txt
 	@echo
 
 .PHONY: all
