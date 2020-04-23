@@ -3,6 +3,10 @@
 node $1 &
 pid=$!
 
+if [ ! -d metricsResult  ];then
+  mkdir metricsResult
+fi
+
 sleep 2
 
 wrk 'http://localhost:3000/' \
