@@ -9,8 +9,8 @@
 import * as http from "http";
 import * as domain from "domain";
 import currentContext, { RequestLog } from "../context";
-import { address, isV4Format, isV6Format } from "ip";
-import { AddressInfo } from "net";
+import { address } from "ip";
+import { AddressInfo, isIP } from "net";
 import { captureOutgoing } from "./capture/outgoing";
 import { captureIncoming } from "./capture/incoming";
 import { eventBus, EVENT_LIST } from "../bus";
@@ -61,6 +61,12 @@ export const httpCreateServerHack = (): void => {
         const clearDomain = (): void => {
           d.remove(req);
           d.remove(res);
+
+          const parser = (req.socket as any).parser as any;
+          if (parser && parser.domain) {
+            (parser.domain as domain.Domain).exit();
+            parser.domain = null;
+          }
 
           while (process.domain) {
             (process.domain as domain.Domain).exit();
@@ -150,6 +156,8 @@ export const httpCreateServerHack = (): void => {
 
           const context = process.domain.currentContext;
 
+          clearDomain();
+
           eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, {
             req, res, context
           });
@@ -165,7 +173,7 @@ export const httpCreateServerHack = (): void => {
           });
 
           // proxy req to proxy env when hitting uid
-          if ((isV4Format(context.proxyIp) || isV6Format(context.proxyIp))
+          if ((isIP(context.proxyIp))
             && !req.headers["x-tsw-proxy"]) {
             console.debug("isProxyUser...");
 

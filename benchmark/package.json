@@ -1,0 +1,14 @@
+{
+  "name": "benchmark",
+  "version": "1.0.0",
+  "description": "",
+  "main": "makefile",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "xl_close_port": "^1.0.1"
+  },
+  "dependencies": {
+    "@tswjs/open-platform-plugin": "^1.1.2"
+  }
+}

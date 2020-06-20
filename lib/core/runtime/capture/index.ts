@@ -8,6 +8,7 @@
 
 import * as http from "http";
 import * as https from "https";
+import * as domain from "domain";
 import { URL } from "url";
 import { Socket, isIP } from "net";
 import { cloneDeep } from "lodash";
@@ -100,6 +101,14 @@ export const hack = <T extends typeof http.request>(
     const { timestamps } = requestLog;
     timestamps.requestStart = new Date();
 
+    const clearDomain = (): void => {
+      const parser = (request.socket as any).parser as any;
+      if (parser && parser.domain) {
+        (parser.domain as domain.Domain).exit();
+        parser.domain = null;
+      }
+    };
+
     const finishRequest = (): void => {
       context.captureRequests.push(requestLog as RequestLog);
 
@@ -153,8 +162,10 @@ export const hack = <T extends typeof http.request>(
     request.once("error", (error: Error) => {
       logger.error(`${logPre} Request error. Stack: ${error.stack}`);
       finishRequest();
+      clearDomain();
     });
 
+    request.once("close", clearDomain);
     request.once("finish", () => {
       timestamps.requestFinish = new Date();
 
@@ -177,6 +188,8 @@ export const hack = <T extends typeof http.request>(
       }. Cost: ${
         timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
       } ms`);
+
+      clearDomain();
     });
 
     request.once("response", (response: http.IncomingMessage): void => {

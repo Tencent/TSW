@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+node $1 &
+pid=$!
+
+if [ ! -d metricsResult  ];then
+  mkdir metricsResult
+fi
+
+sleep 2
+
+wrk 'http://localhost:3000/' \
+  -d 3 \
+  -c 50 \
+  -t 8 \
+  > $2
+
+npx xl_close_port -p 3000
+kill $pid

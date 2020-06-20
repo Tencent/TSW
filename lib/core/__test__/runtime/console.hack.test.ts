@@ -13,6 +13,10 @@ afterAll(() => {
   consoleRestore();
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("console hack test", () => {
   test("ensure console contains all origin functions", () => {
     expect(typeof console.originDebug).toBe("function");
@@ -40,6 +44,19 @@ describe("console hack test", () => {
     expect(mockedWriteLog.mock.calls.length).toEqual(5);
     console.error("test_log");
     expect(mockedWriteLog.mock.calls.length).toEqual(6);
+
+    (getCurrentContext as jest.Mock).mockClear();
+  });
+
+  test("console.debug should be logged by log111ger", () => {
+    (getCurrentContext as jest.Mock).mockImplementation(() => true);
+    const mockedWriteLog = logger.writeLog as jest.Mock;
+
+    expect(mockedWriteLog.mock.calls.length).toEqual(0);
+    process.stdout.write("test_log");
+    expect(mockedWriteLog.mock.calls.length).toEqual(1);
+    process.stderr.write("test_log");
+    expect(mockedWriteLog.mock.calls.length).toEqual(2);
 
     (getCurrentContext as jest.Mock).mockClear();
   });
