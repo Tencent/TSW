@@ -71,6 +71,8 @@ export const httpCreateServerHack = (): void => {
           while (process.domain) {
             (process.domain as domain.Domain).exit();
           }
+
+          (d as any).currentContext = null;
         };
 
         const requestInfo = captureIncoming(req);

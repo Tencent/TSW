@@ -101,12 +101,46 @@ export const hack = <T extends typeof http.request>(
     const { timestamps } = requestLog;
     timestamps.requestStart = new Date();
 
-    const clearDomain = (): void => {
-      const parser = (request.socket as any).parser as any;
-      if (parser && parser.domain) {
-        (parser.domain as domain.Domain).exit();
-        parser.domain = null;
+    const onLookup = (
+      err: Error,
+      address: string,
+      family: string | number,
+      host: string
+    ): void => {
+      timestamps.onLookUp = new Date();
+      timestamps.dnsTime = timestamps.onLookUp.getTime()
+        - timestamps.onSocket.getTime();
+
+      logger.debug(`${logPre} Dns lookup ${host} -> ${
+        address || "null"}. Cost ${timestamps.dnsTime}ms`);
+
+      if (err) {
+        logger.error(`${logPre} Lookup error ${err.stack}`);
       }
+    };
+
+    const onConnect = (): void => {
+      timestamps.socketConnect = new Date();
+
+      logger.debug(`${logPre} Socket connected. Remote: ${
+        request.socket.remoteAddress
+      }:${request.socket.remotePort}. Cost ${
+        timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
+      } ms`);
+    };
+
+    const clearDomain = (): void => {
+      const socket = request.socket as any;
+      // If you use httpagent, these two events will not be triggered and must be removed manually
+      socket.off("lookup", onLookup);
+      socket.off("connect", onConnect);
+      // todo sockect._handle also has domain property
+      [socket.parser, socket].forEach((item) => {
+        if (item && item.domain) {
+          item.domain.exit();
+          item.domain = null;
+        }
+      });
     };
 
     const finishRequest = (): void => {
@@ -121,34 +155,10 @@ export const hack = <T extends typeof http.request>(
       timestamps.onSocket = new Date();
 
       if (!isIP(hostname)) {
-        socket.once("lookup", (
-          err: Error,
-          address: string,
-          family: string | number,
-          host: string
-        ): void => {
-          timestamps.onLookUp = new Date();
-          timestamps.dnsTime = timestamps.onLookUp.getTime()
-            - timestamps.onSocket.getTime();
-
-          logger.debug(`${logPre} Dns lookup ${host} -> ${
-            address || "null"}. Cost ${timestamps.dnsTime}ms`);
-
-          if (err) {
-            logger.error(`${logPre} Lookup error ${err.stack}`);
-          }
-        });
+        socket.once("lookup", onLookup);
       }
 
-      socket.once("connect", (): void => {
-        timestamps.socketConnect = new Date();
-
-        logger.debug(`${logPre} Socket connected. Remote: ${
-          socket.remoteAddress
-        }:${socket.remotePort}. Cost ${
-          timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
-        } ms`);
-      });
+      socket.once("connect", onConnect);
 
       if (socket.remoteAddress) {
         timestamps.dnsTime = 0;
