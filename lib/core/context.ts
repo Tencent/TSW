@@ -119,7 +119,10 @@ export class Context {
       DEBUG: 0
     };
 
-    this.SN = process.SN || 0;
+    process.SN = process.SN || 0;
+    process.SN += 1;
+
+    this.SN = process.SN;
 
     this.captureSN = 0;
     this.captureRequests = [];
