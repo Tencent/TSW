@@ -115,7 +115,7 @@
 	
  - [[```c168fdfb```](https://github.com/Tencent/TSW/commit/c168fdfb9ceae77786acea9fc5cad611cf7d9d48)] __-__ __encryption__: upgrading des to aes for #304 (robinzhxie)
  - [[```10689be6```](https://github.com/Tencent/TSW/commit/10689be68cd518674e61ded27f66d5d658ca4b54)] __-__ modify maxBodySize of capturer from 1MB to 5KB (yippeehuang)
- - [[```d7a1ff60```](https://github.com/Tencent/TSW/commit/d7a1ff60c7385594b3c449cd61dc025e1e844ee4)] __-__ __config__: resovle circular dependency (neilcui)
+ - [[```d7a1ff60```](https://github.com/Tencent/TSW/commit/d7a1ff60c7385594b3c449cd61dc025e1e844ee4)] __-__ __config__: resolve circular dependency (neilcui)
  - [[```9f8eb041```](https://github.com/Tencent/TSW/commit/9f8eb041731f099462d2970b00bf076d5badcf6f)] __-__ __config__: update dependencies (Zhang Kaidong)
  - [[```daeaa84b```](https://github.com/Tencent/TSW/commit/daeaa84bd26d19ad8676e4bbc3bbe4b1fa511d11)] __-__ __logman__: keep log clear always (youkunhuang)
  - [[```01eba311```](https://github.com/Tencent/TSW/commit/01eba3116b2d3bb54b5ccfce0cd7ac22fb1a5402)] __-__ __master__: do not close self (youkunhuang)
@@ -126,7 +126,7 @@
  - [[```69f1a182```](https://github.com/Tencent/TSW/commit/69f1a18295a2c7850d73f7b2aa99949e3a30e87c)] __-__ use `devMode` and `autoCleanCache` to handle cache cleaning (JrainLau)
  - [[```633f8c60```](https://github.com/Tencent/TSW/commit/633f8c60ceeeb35f40039c5171793c4f36261aa3)] __-__ __changelogs__: add script for changelog (RobinzZH)
  - [[```091b2274```](https://github.com/Tencent/TSW/commit/091b227434ef2f530db129d364eee60f62a48aad)] __-__ __config__: support /data/release/tsw.config.js config path (mc-zone)
- - [[```a26a51e3```](https://github.com/Tencent/TSW/commit/a26a51e3595dbad18d4087be8a4f6c0099500e03)] __-__ __logman__: add stop funciton for stopping (maplemiao)
+ - [[```a26a51e3```](https://github.com/Tencent/TSW/commit/a26a51e3595dbad18d4087be8a4f6c0099500e03)] __-__ __logman__: add stop function for stopping (maplemiao)
  - [[```209fbd01```](https://github.com/Tencent/TSW/commit/209fbd0173177cae9d176697b3af5ed75c58e994)] __-__ __master-monitor__: restart tsw when master is not reply (loviselu)
  - [[```b1e1d4cf```](https://github.com/Tencent/TSW/commit/b1e1d4cf8d28b1ea6df411816d67abfe88133d2e)] __-__ __config__: now cpuRecordTime can configure (youkunhuang)
  - [[```f92f90c0```](https://github.com/Tencent/TSW/commit/f92f90c06879acd82d08c8d04d8614436ba02b01)] __-__ __ccfinder__: add CCIPLimitQuiet options to close notify (youkunhuang)
