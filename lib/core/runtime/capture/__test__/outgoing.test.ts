@@ -7,11 +7,7 @@
  */
 
 import * as http from "http";
-import {
-  captureIncoming,
-  captureReadableStream
-} from "../../../runtime/capture/incoming";
-import { Readable } from "stream";
+import { captureOutgoing } from "../outgoing";
 
 /**
  * 4000 - 5000 random port
@@ -21,13 +17,11 @@ const randomPort = (): number => Math.floor(Math.random() * 1000 + 4000);
 let server: http.Server;
 let port: number;
 
-const responseData = "success";
-
 beforeAll(() => {
   port = randomPort();
   server = http.createServer((req, res) => {
     res.statusCode = 200;
-    res.end(responseData);
+    res.end("success");
   }).listen(port);
 });
 
@@ -35,10 +29,12 @@ afterAll(() => {
   server.close();
 });
 
-describe("capture response function test", () => {
-  test("response data should be captured", (done) => {
-    const data = "a";
-    let info: any;
+describe("capture request function test", () => {
+  test("request should capture post data", (done) => {
+    const firstData = "a";
+    const secondData = "b";
+    const thirdData = "c";
+    const data = firstData + secondData + thirdData;
 
     const req = http.request({
       hostname: "127.0.0.1",
@@ -49,33 +45,26 @@ describe("capture response function test", () => {
         "Content-Type": "application/x-www-form-urlencoded",
         "Content-Length": Buffer.byteLength(data)
       }
-    }, (response) => {
-      info = captureIncoming(response);
-    });
-
-    req.write(data);
-
-    req.once("close", () => {
-      expect(info.body).toEqual(Buffer.from(responseData));
-      expect(info.bodyLength).toEqual(Buffer.byteLength(responseData));
+    }, () => {
+      expect((req as any)._body).toBeTruthy();
+      expect((req as any)._body.toString()).toEqual(data);
+      expect((req as any)._bodyLength).toEqual(Buffer.byteLength(data));
+      expect((req as any)._bodyTooLarge).toEqual(false);
       done();
     });
-  });
 
-  test("capture readableStream should be right", (done) => {
-    const stream = new Readable();
+    captureOutgoing(req);
 
-    stream.push("before");
-    const info = captureReadableStream(stream);
-
-    stream.push("after");
-    stream.destroy();
-
-    stream.on("close", () => {
-      expect(info.bodyLength).toEqual(Buffer.byteLength("beforeafter"));
-      expect(info.body).toEqual(Buffer.from("beforeafter"));
-      expect(info.bodyTooLarge).toEqual(false);
-      done();
+    req.write(firstData);
+    // Write data to request body
+    req.write(Buffer.from(secondData, "utf8"), "utf8", () => {
+      // do nothing
     });
+
+    req.write(Buffer.from(thirdData), () => {
+      // do nothing
+    });
+
+    req.end();
   });
 });

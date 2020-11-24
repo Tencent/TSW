@@ -1,4 +1,4 @@
-import getCallInfo from "../../logger/callInfo";
+import getCallInfo from "../callInfo";
 
 describe("callInfo test", () => {
   test("callInfo test without arguments", () => {

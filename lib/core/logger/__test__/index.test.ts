@@ -1,4 +1,4 @@
-import logger, { Logger } from "../../logger/index";
+import logger, { Logger } from "../index";
 import currentContext from "../../context";
 
 jest.mock("../../context");
