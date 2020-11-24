@@ -2,7 +2,7 @@ import { lookup } from "dns";
 import { isIP } from "net";
 
 import { eventBus, EVENT_LIST } from "../../bus";
-import { dnsHack, dnsRestore } from "../../runtime/dns.hack";
+import { dnsHack, dnsRestore } from "../dns.hack";
 import logger from "../../logger/index";
 
 jest.mock("../../logger/index");

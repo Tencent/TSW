@@ -1,4 +1,4 @@
-import { consoleHack, consoleRestore } from "../../runtime/console.hack";
+import { consoleHack, consoleRestore } from "../console.hack";
 import logger from "../../logger/index";
 import getCurrentContext from "../../context";
 

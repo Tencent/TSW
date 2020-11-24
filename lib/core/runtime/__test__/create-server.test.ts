@@ -10,7 +10,7 @@ import { createServer, get as httpGet } from "http";
 import {
   httpCreateServerHack,
   httpCreateServerRestore
-} from "../../runtime/create-server.hack";
+} from "../create-server.hack";
 
 beforeAll(() => {
   httpCreateServerHack();
