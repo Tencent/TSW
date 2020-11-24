@@ -29,3 +29,5 @@ jobs:
         run: yarn lint
       - name: Run Tests
         run: yarn test
+      - name: codecov
+        uses: codecov/codecov-action@v1
