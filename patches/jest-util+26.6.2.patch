@@ -1,0 +1,28 @@
+diff --git a/node_modules/jest-util/build/createProcessObject.js b/node_modules/jest-util/build/createProcessObject.js
+index 90de355..c317789 100644
+--- a/node_modules/jest-util/build/createProcessObject.js
++++ b/node_modules/jest-util/build/createProcessObject.js
+@@ -117,18 +117,11 @@ function _default() {
+ 
+   newProcess.send = () => {};
+ 
+-  const domainPropertyDescriptor = Object.getOwnPropertyDescriptor(
+-    newProcess,
+-    'domain'
+-  );
+-
+-  if (domainPropertyDescriptor && !domainPropertyDescriptor.enumerable) {
+-    Object.defineProperty(newProcess, 'domain', {
+-      get() {
+-        return process.domain;
+-      }
+-    });
+-  }
++  Object.defineProperty(newProcess, 'domain', {
++    get() {
++      return process.domain;
++    }
++  });
+ 
+   return newProcess;
+ }

@@ -34,6 +34,8 @@ describe("http createServer hack test", () => {
       // TODO: Enable this test when Jest release 25.0.0
       // https://github.com/facebook/jest/issues/7247
 
+      // console.log(process.domain);
+
       // expect(process.domain).not.toBeNull();
       res.statusCode = 200;
       res.end("success");
