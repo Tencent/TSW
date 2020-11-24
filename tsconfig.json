@@ -6,7 +6,6 @@
     // "strict": true,
     "lib": [
       "es2017",
-      "dom"
     ],
     "resolveJsonModule": true,
     // "noImplicitAny": true
