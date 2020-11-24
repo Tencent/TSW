@@ -23,10 +23,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
-  code-cov:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Pull code
         uses: actions/checkout@v1
+      - name: Install Dependencies
+        run: yarn
+      - name: Run Tests
+        run: yarn test
       - name: codecov
         uses: codecov/codecov-action@v1
