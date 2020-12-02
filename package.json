@@ -11,7 +11,8 @@
     "dev": "tsc --watch --sourceMap",
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --fix --ext .ts .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "prepublishOnly": "rm -rf patches"
   },
   "repository": {
     "type": "git",
