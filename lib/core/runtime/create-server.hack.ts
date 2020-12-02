@@ -80,7 +80,7 @@ export const httpCreateServerHack = (): void => {
         ): ReturnType<typeof res.writeHead> => {
           timestamps.onResponse = new Date();
 
-          const context = process.domain.currentContext;
+          const context = currentContext();
 
           eventBus.emit(EVENT_LIST.RESPONSE_START, {
             req, res, context
@@ -92,7 +92,7 @@ export const httpCreateServerHack = (): void => {
         })(res.writeHead);
 
         res.once("finish", () => {
-          const context = process.domain.currentContext;
+          const context = currentContext();
 
           context.currentRequest = {
             SN: context.SN,
@@ -154,7 +154,7 @@ export const httpCreateServerHack = (): void => {
         res.once("close", () => {
           timestamps.responseClose = new Date();
 
-          const context = process.domain.currentContext;
+          const context = currentContext();
 
           clearDomain();
 
@@ -164,10 +164,7 @@ export const httpCreateServerHack = (): void => {
         });
 
         d.run(() => {
-          // 初始化一下 Context
-          currentContext();
-
-          const context = process.domain.currentContext;
+          const context = currentContext();
           eventBus.emit(EVENT_LIST.REQUEST_START, {
             req, context
           });
