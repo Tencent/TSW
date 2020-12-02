@@ -6,7 +6,7 @@ module.exports = {
     new OpenPlatformPlugin({
       appid: "tsw1431",
       appkey: "PwPaD4RRAsrSdRZjQSc3fbKM",
-      reportStrategy: "always",
+      reportStrategy: "proxied",
       // 只支持同步写法
       getUid: (request) => {
         return "xxx";
@@ -20,7 +20,7 @@ module.exports = {
           "desc": "2.0demo测试环境",
           "order": 30,
           "owner": "demoUser",
-          "alphaList": ["demoUser"]
+          "alphaList": ["xxx"]
         };
       }
     })
