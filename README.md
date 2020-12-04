@@ -3,8 +3,6 @@
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![Build Status](https://github.com/tencent/tsw/workflows/build/badge.svg)](https://github.com/Tencent/TSW/actions?query=workflow%3Abuild) [![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest) [![codecov](https://codecov.io/gh/tencent/tsw/branch/master/graph/badge.svg)](https://codecov.io/gh/tencent/tsw)
 
-2.0 进度参见：https://github.com/Tencent/TSW/projects
-
 <h2 align="center">What is it</h2>
 
 Tencent Server Web(TSW) 是一套面向 WEB 前端开发者，以提升问题定位效率为初衷，提供**染色抓包**、**全息日志**和**异常发现**的 Node.js 基础设施。TSW 关注业务的运维监控能力，适用于 http、websocket 协议的业务场景，可无缝与现有应用（Koa、Express）进行整合。
