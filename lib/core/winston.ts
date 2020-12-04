@@ -19,3 +19,9 @@ export const winstonHack = (): void => {
     });
   }
 };
+
+export const winstonRestore = (): void => {
+  if (logger.winstonLogger) {
+    logger.winstonLogger = undefined;
+  }
+};
