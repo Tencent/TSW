@@ -9,7 +9,7 @@
   "dependencies": {
     "@tswjs/open-platform-plugin": "^1.1.1",
     "@tswjs/tsw": "^2.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "koa": "^2.11.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.3.0"
