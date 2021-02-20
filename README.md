@@ -110,7 +110,7 @@ export.modules = class MyPlugin() {
 
 | key | 含义（触发时机） | payload |
 | -- | -- | -- |
-| `DNS_LOOKUP_SUCCESS` | 在每次 DNS 查询成功之后触发 | `string | dns.LookupAddress[]` |
+| `DNS_LOOKUP_SUCCESS` | 在每次 DNS 查询成功之后触发 | `string \| dns.LookupAddress[]` |
 | `DNS_LOOKUP_ERROR` | 在每次 DNS 查询失败之后触发 | `NodeJS.ErrorException` |
 | `RESPONSE_START` | 在每次服务器开始返回响应（执行 `writeHead`）时触发 | `ResponseEventPayload` |
 | `RESPONSE_FINISH` | 在响应结束时（`res.on("finish")`）触发 | `ResponseEventPayload` |
