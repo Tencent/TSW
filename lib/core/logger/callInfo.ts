@@ -42,7 +42,12 @@ export default (level = 0): {
   if (typeof stack[level]?.getLineNumber === "function") {
     res.line = stack[level].getLineNumber();
     res.column = stack[level].getColumnNumber();
-    res.filename = path.relative(process.cwd(), stack[level].getFileName());
+    res.filename = path.relative(
+      process.cwd(),
+      // 某些场景下 getFileName() 可能为 undefined
+      // 比如模块不是通过内置的 require 去加载的，而使用其他手段加载
+      stack[level].getFileName() || ""
+    );
   }
 
   return res;
