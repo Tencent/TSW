@@ -29,7 +29,7 @@ export const consoleHack = (): void => {
       ...optionalParams: any[]
     ): void => {
       if (getCurrentContext() === null) {
-        return console.originDebug(message, optionalParams);
+        return console.originDebug(message, ...optionalParams);
       }
 
       return logger.writeLog(
@@ -88,7 +88,7 @@ export const consoleHack = (): void => {
       ...optionalParams: any[]
     ): void => {
       if (getCurrentContext() === null) {
-        return console.originWarn(message, optionalParams);
+        return console.originWarn(message, ...optionalParams);
       }
 
       return logger.writeLog(
@@ -102,7 +102,7 @@ export const consoleHack = (): void => {
       ...optionalParams: any[]
     ): void => {
       if (getCurrentContext() === null) {
-        return console.originError(message, optionalParams);
+        return console.originError(message, ...optionalParams);
       }
 
       return logger.writeLog(
