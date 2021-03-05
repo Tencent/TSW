@@ -28,8 +28,9 @@ export const consoleHack = (): void => {
       message?: any,
       ...optionalParams: any[]
     ): void => {
+      const debug = console.originDebug || console.debug;
       if (getCurrentContext() === null) {
-        return console.originDebug(message, optionalParams);
+        return debug.call(console, message, ...optionalParams);
       }
 
       return logger.writeLog(
@@ -42,8 +43,9 @@ export const consoleHack = (): void => {
       message?: any,
       ...optionalParams: any[]
     ): void => {
+      const log = console.originLog || console.log;
       if (getCurrentContext() === null) {
-        return console.originLog(message, ...optionalParams);
+        return log.call(console, message, ...optionalParams);
       }
 
       return logger.writeLog(
@@ -56,8 +58,9 @@ export const consoleHack = (): void => {
       message?: any,
       ...optionalParams: any[]
     ): void => {
+      const info = console.originInfo || console.info;
       if (getCurrentContext() === null) {
-        return console.originInfo(message, ...optionalParams);
+        return info.call(console, message, ...optionalParams);
       }
 
       return logger.writeLog(
@@ -70,8 +73,9 @@ export const consoleHack = (): void => {
       obj: any,
       options?: NodeJS.InspectOptions
     ): void => {
+      const dir = console.originDir || console.dir;
       if (getCurrentContext() === null) {
-        return console.originDir(obj, options);
+        return dir.call(console, obj, options);
       }
 
       return logger.writeLog(
@@ -87,8 +91,9 @@ export const consoleHack = (): void => {
       message?: any,
       ...optionalParams: any[]
     ): void => {
+      const warn = console.originWarn || console.warn;
       if (getCurrentContext() === null) {
-        return console.originWarn(message, optionalParams);
+        return warn.call(console, message, ...optionalParams);
       }
 
       return logger.writeLog(
@@ -101,8 +106,9 @@ export const consoleHack = (): void => {
       message?: any,
       ...optionalParams: any[]
     ): void => {
+      const error = console.originError || console.error;
       if (getCurrentContext() === null) {
-        return console.originError(message, optionalParams);
+        return error.call(console, message, ...optionalParams);
       }
 
       return logger.writeLog(
