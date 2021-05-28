@@ -6,3 +6,4 @@ dist
 .nyc_output
 coverage
 *.log
+benchmark/metricsResult
