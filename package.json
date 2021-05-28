@@ -12,7 +12,8 @@
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --fix --ext .ts .",
     "postinstall": "patch-package",
-    "prepublishOnly": "rm -rf patches"
+    "prepublishOnly": "rm -rf patches",
+    "benchmark": "cd benchmark && make"
   },
   "repository": {
     "type": "git",
