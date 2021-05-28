@@ -6,17 +6,17 @@ const OpenPlatformPlugin = require("@tswjs/open-platform-plugin");
 module.exports = {
   plugins: [
     new OpenPlatformPlugin({
-      appid: "tsw1282",
-      appkey: "Meb5txDXHnTJbZFyrmKFmZc6",
+      appid: "tsw1844",
+      appkey: "fTctzeCnBHKJZyBYmBAB3H5R",
       reportStrategy: "always",
       // 只支持同步写法
       getUid: (request) => "xxx",
       getProxyInfo: () => ({
         port: 80,
-        name: "2.0demo",
+        name: "benchmark",
         group: "TSW",
         groupName: "TSW团队",
-        desc: "2.0demo测试环境",
+        desc: "benchmark测试环境",
         order: 30,
         owner: "demoUser",
         alphaList: ["demoUser"]
