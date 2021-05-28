@@ -18,26 +18,33 @@ TSW 2.0 是在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式演�
     <th><h4 align="center">🛠</h4 align="center"><h4 align="center">请求抓包</h4 align="center"></th>
   </tr>
   <tr>
-    <td width="33%"><sub>通过 Hack NodeJS 底层代码实现功能。对原有业务代码 0 侵入。</sub></td>
-    <td width="33%"><sub>按照请求聚类的显微镜级别的全息日志，给开发者以完美的现场还原。</sub></td>
-    <td width="33%"><sub>可抓取 Server 端向外部发送的所有请求的完整包体内容，与后台沟通再无障碍。</sub></td>
+    <td width="33%">通过 Hack NodeJS 底层代码实现功能。对原有业务代码 0 侵入。</td>
+    <td width="33%">按照请求聚类的显微镜级别的全息日志，给开发者完美的现场还原。</td>
+    <td width="33%">可抓取 Server 端向外部发送的所有请求的完整包体内容，与后台沟通再无障碍。</td>
   </tr>
 </table>
 
 <h2 align="center">Quick Start</h2>
 
-首先，通过 npm 或者 yarn 安装 npm 包，`npm install --save @tswjs/tsw` or `yarn add @tswjs/tsw`。
+### 1. 安装
+```bash
+npm install --save @tswjs/tsw
+// yarn add @tswjs/tsw
+```
 
-原本通过 `node ./index.js` 方式启动的应用，更换为 `npx @tswjs/tsw ./index.js`。
+### 2. 启动
+```bash
+npx @tswjs/tsw ./index.js
+```
 
-**注意事项**：`node --inspect ./index.js` 中的 CLI 参数如 `--inspect` 需要转化为环境变量 `NODE_OPTIONS` 来执行，如 `NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`。
+**注意事项**：原先 `node --inspect ./index.js` 中的 CLI 参数如 `--inspect` 需要转化为环境变量 `NODE_OPTIONS` 来执行，如 `NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`。
 
 ### 使用 ts
 
-在保证项目有 [ts-node](https://www.npmjs.com/package/ts-node) 包依赖的情况下，按照如下方式执行即可直接加载 ts 文件。
-
-`NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts`
-
+在保证项目有 [ts-node](https://www.npmjs.com/package/ts-node) 依赖包的情况下，按照如下方式执行即可直接加载 ts 文件。
+```bash
+NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts
+```
 ### CLI (Command Line Interface)
 
 使用 `npx @tswjs/tsw --help` 来获取 CLI 选项。
