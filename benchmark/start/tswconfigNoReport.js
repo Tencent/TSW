@@ -6,8 +6,8 @@ const OpenPlatformPlugin = require("@tswjs/open-platform-plugin");
 module.exports = {
   plugins: [
     new OpenPlatformPlugin({
-      appid: "tsw1282",
-      appkey: "Meb5txDXHnTJbZFyrmKFmZc6",
+      appid: "tsw1844",
+      appkey: "fTctzeCnBHKJZyBYmBAB3H5R",
       reportStrategy: "never"
     })
   ],
