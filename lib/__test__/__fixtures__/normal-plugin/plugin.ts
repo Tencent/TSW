@@ -6,7 +6,7 @@ export class NormalPlugin {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async init(eventBus: any, config: any): Promise<void> {
+  async init(): Promise<void> {
     // do nothing
   }
 }
