@@ -6,7 +6,7 @@ export class ErrorPlugin {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async init(eventBus: any, config: any): Promise<void> {
+  async init(): Promise<void> {
     throw new Error("throw a error");
   }
 }
