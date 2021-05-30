@@ -3,7 +3,7 @@ import * as http from "http";
 const attaid = "07500056550";
 const token = "5953169376";
 
-export const attaReport = (data) => {
+export const attaReport = (data): void => {
   let url = `https://h.trace.qq.com/kv?
     attaid=${attaid}&token=${token}&_dc=${Math.random().toFixed(5)}`;
 
