@@ -80,7 +80,7 @@ module.exports = {
 
 ### 参数列表
 |    Name     |     Type    |   Optional  |  Description  |
-| ----------- | ----------- | ----------- | ----------- | 
+| :-: | :-: | :-: | :-: | 
 |   plugins   | [...`Plugin`] |  yes | 插件列表 |
 
 
