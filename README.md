@@ -81,7 +81,7 @@ module.exports = {
 ### 参数列表
 |    Name     |     Type    |   Optional  |  Description  |
 | :-: | :-: | :-: | :-: | 
-|   plugins   | [...`Plugin`] |  yes | 插件列表 |
+|   plugins   | [...[Plugin](#Plugins)] |  yes | 插件列表 |
 
 
 <h2 align="center">Plugins</h2>
