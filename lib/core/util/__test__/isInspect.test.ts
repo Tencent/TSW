@@ -6,8 +6,14 @@ describe("test inspect env", () => {
     expect(isInspect()).toBe(false);
   });
 
-  test("test isInspect when NODE_OPTIONS === '--inspect=true'", () => {
-    process.env.NODE_OPTIONS = "--inspect=true";
+  test("test isInspect when NODE_OPTIONS === '--require=ts-node/register'",
+    () => {
+      process.env.NODE_OPTIONS = "--require=ts-node/register";
+      expect(isInspect()).toBe(false);
+    });
+
+  test("test isInspect when NODE_OPTIONS === '--inspect'", () => {
+    process.env.NODE_OPTIONS = "--inspect";
     expect(isInspect()).toBe(true);
   });
 
