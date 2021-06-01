@@ -292,7 +292,7 @@ let hacked = false;
 let originHttpRequest = null;
 let originHttpsRequest = null;
 export const requestHack = (): void => {
-  isCleanLog = global.tswConfig.cleanLog || false;
+  isCleanLog = (global.tswConfig && global.tswConfig.cleanLog) || false;
   if (!hacked) {
     originHttpRequest = http.request;
     originHttpsRequest = https.request;

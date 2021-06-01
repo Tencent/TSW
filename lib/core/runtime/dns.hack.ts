@@ -30,7 +30,7 @@ let dnsHacked = false;
 let originDnsLookUp = null;
 
 export const dnsHack = (): void => {
-  const isCleanLog = global.tswConfig.cleanLog || false;
+  const isCleanLog = (global.tswConfig && global.tswConfig.cleanLog) || false;
   // Ensure hack can only be run once.
   if (!dnsHacked) {
     dnsHacked = true;
