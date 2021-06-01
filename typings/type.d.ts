@@ -27,6 +27,7 @@ declare namespace NodeJS {
     tswConfig: {
       plugins: any[];
       winstonTransports: any[];
+      cleanLog?: boolean;
     };
   }
 }

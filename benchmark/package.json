@@ -9,6 +9,6 @@
     "xl_close_port": "^1.0.1"
   },
   "dependencies": {
-    "@tswjs/open-platform-plugin": "^1.1.2"
+    "@tswjs/open-platform-plugin": "^1.3.0"
   }
 }
