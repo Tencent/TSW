@@ -8,6 +8,7 @@ import { dnsHack, dnsRestore } from "./core/runtime/dns.hack";
 import { requestHack, requestRestore } from "./core/runtime/capture/index";
 import { winstonHack, winstonRestore } from "./core/winston";
 import { eventBus } from "./core/bus";
+import logger from "./core/logger";
 
 export const installHacks = (): void => {
   httpCreateServerHack();
@@ -32,6 +33,9 @@ export default async (
 ): Promise<void> => {
   const configAbsolutePath = path.resolve(basePath, configPath);
   global.tswConfig = await import(configAbsolutePath);
+
+  logger.setCleanLog(global.tswConfig && global.tswConfig.cleanLog);
+
   // eslint-disable-next-line no-restricted-syntax
   for (const plugin of global.tswConfig.plugins) {
     try {

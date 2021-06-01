@@ -19,7 +19,6 @@ import currentContext, { RequestLog, Context } from "../../context";
 import logger from "../../logger/index";
 
 type requestProtocol = "http:" | "https:";
-let isCleanLog = false;
 
 /**
  * Convert a URL instance to a http.request options
@@ -85,10 +84,8 @@ export const hack = <T extends typeof http.request>(
       method, hostname, path, port
     } = options;
 
-    if (!isCleanLog) {
-      logger.debug(`${logPre} Request begin. ${
-        method} ${hostname}${port ? `:${port}` : ""} ~ ${path}`);
-    }
+    logger.debug(`${logPre} Request begin. ${
+      method} ${hostname}${port ? `:${port}` : ""} ~ ${path}`);
 
     const requestLog: Partial<RequestLog> = {
       SN: context.captureSN,
@@ -115,11 +112,9 @@ export const hack = <T extends typeof http.request>(
     const finishRequest = (): void => {
       context.captureRequests.push(requestLog as RequestLog);
 
-      if (!isCleanLog) {
-        logger.debug(`${logPre} Record request info. Response body length: ${
-          requestLog.responseLength
-        }`);
-      }
+      logger.debug(`${logPre} Record request info. Response body length: ${
+        requestLog.responseLength
+      }`);
     };
 
     request.once("socket", (socket: Socket): void => {
@@ -136,13 +131,11 @@ export const hack = <T extends typeof http.request>(
           timestamps.dnsTime = timestamps.onLookUp.getTime()
             - timestamps.onSocket.getTime();
 
-          if (!isCleanLog) {
-            logger.debug(`${logPre} Dns lookup ${host} -> ${
-              address || "null"}. Cost ${timestamps.dnsTime}ms`);
-          }
+          logger.debug(`${logPre} Dns lookup ${host} -> ${
+            address || "null"}. Cost ${timestamps.dnsTime}ms`);
 
           if (err) {
-            if (isCleanLog) {
+            if (logger.getCleanLog()) {
               logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
             }
 
@@ -155,28 +148,24 @@ export const hack = <T extends typeof http.request>(
       socket.once("connect", (): void => {
         timestamps.socketConnect = new Date();
 
-        if (!isCleanLog) {
-          logger.debug(`${logPre} Socket connected. Remote: ${
-            socket.remoteAddress
-          }:${socket.remotePort}. Cost ${
-            timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
-          } ms`);
-        }
+        logger.debug(`${logPre} Socket connected. Remote: ${
+          socket.remoteAddress
+        }:${socket.remotePort}. Cost ${
+          timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
+        } ms`);
       });
 
       if (socket.remoteAddress) {
         timestamps.dnsTime = 0;
 
-        if (!isCleanLog) {
-          logger.debug(`${logPre} Socket reused. Remote: ${
-            socket.remoteAddress
-          }:${socket.remotePort}`);
-        }
+        logger.debug(`${logPre} Socket reused. Remote: ${
+          socket.remoteAddress
+        }:${socket.remotePort}`);
       }
     });
 
     request.once("error", (error: Error) => {
-      if (isCleanLog) {
+      if (logger.getCleanLog()) {
         logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
       }
 
@@ -203,13 +192,11 @@ export const hack = <T extends typeof http.request>(
 
       requestLog.requestHeader = (request as any)._header;
       requestLog.requestBody = requestBody;
-      if (!isCleanLog) {
-        logger.debug(`${logPre} Request send finish. Body size ${
-          length
-        }. Cost: ${
-          timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
-        } ms`);
-      }
+      logger.debug(`${logPre} Request send finish. Body size ${
+        length
+      }. Cost: ${
+        timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
+      } ms`);
 
       clearDomain();
     });
@@ -225,18 +212,16 @@ export const hack = <T extends typeof http.request>(
       requestLog.clientIp = socket.localAddress;
       requestLog.clientPort = socket.localPort;
 
-      if (!isCleanLog) {
-        logger.debug(`${logPre} Request on response. Socket chain: ${
-          socket.localAddress
-        }:${socket.localPort} > ${
-          socket.remoteAddress
-        }:${socket.remotePort}. Response status code: ${
-          response.statusCode
-        }. Cost: ${
-          timestamps.onResponse.getTime()
-        - timestamps.onSocket.getTime()
-        } ms`);
-      }
+      logger.debug(`${logPre} Request on response. Socket chain: ${
+        socket.localAddress
+      }:${socket.localPort} > ${
+        socket.remoteAddress
+      }:${socket.remotePort}. Response status code: ${
+        response.statusCode
+      }. Cost: ${
+        timestamps.onResponse.getTime()
+      - timestamps.onSocket.getTime()
+      } ms`);
 
       // responseInfo can't retrieve data until response "end" event
       const responseInfo = captureIncoming(response);
@@ -272,14 +257,12 @@ export const hack = <T extends typeof http.request>(
 
         requestLog.responseBody = responseInfo.body.toString("base64");
 
-        if (!isCleanLog) {
-          logger.debug(`${logPre} Response on end. Body size：${
-            requestLog.responseLength
-          }. Cost: ${
-            timestamps.responseClose.getTime()
-          - timestamps.onSocket.getTime()
-          } ms`);
-        }
+        logger.debug(`${logPre} Response on end. Body size：${
+          requestLog.responseLength
+        }. Cost: ${
+          timestamps.responseClose.getTime()
+        - timestamps.onSocket.getTime()
+        } ms`);
 
         finishRequest();
       });
@@ -292,7 +275,6 @@ let hacked = false;
 let originHttpRequest = null;
 let originHttpsRequest = null;
 export const requestHack = (): void => {
-  isCleanLog = (global.tswConfig && global.tswConfig.cleanLog) || false;
   if (!hacked) {
     originHttpRequest = http.request;
     originHttpsRequest = https.request;

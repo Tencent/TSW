@@ -30,7 +30,6 @@ let dnsHacked = false;
 let originDnsLookUp = null;
 
 export const dnsHack = (): void => {
-  const isCleanLog = (global.tswConfig && global.tswConfig.cleanLog) || false;
   // Ensure hack can only be run once.
   if (!dnsHacked) {
     dnsHacked = true;
@@ -53,14 +52,14 @@ export const dnsHack = (): void => {
         ? optionsOrCallback
         : callbackOrUndefined;
 
-      if (!isCleanLog) logger.debug(`dns lookup for ${hostname}`);
+      logger.debug(`dns lookup for ${hostname}`);
 
       // For http.request, if host is a ip
       // It will not entry dns.lookup by default
       // https://github.com/nodejs/node/blob/master/lib/net.js#L1002
       // But still need this, in case use call dns.lookup directly
       if (net.isIP(hostname)) {
-        if (!isCleanLog) logger.debug(`dns lookup: ${hostname} is a ip`);
+        logger.debug(`dns lookup: ${hostname} is a ip`);
         if (options) {
           return lookup.apply(this, [hostname, options, callback]);
         }
@@ -85,8 +84,7 @@ export const dnsHack = (): void => {
 
         const cost = Date.now() - start;
         if (!err) {
-          // eslint-disable-next-line max-len
-          if (!isCleanLog) logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
+          logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
           eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, address);
         } else {
           logger.error(`dns lookup [${cost}ms]: ${hostname} > ${address},
