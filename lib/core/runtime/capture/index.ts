@@ -135,7 +135,12 @@ export const hack = <T extends typeof http.request>(
             address || "null"}. Cost ${timestamps.dnsTime}ms`);
 
           if (err) {
-            logger.error(`${logPre} Lookup error ${err.stack}`);
+            if (logger.getCleanLog()) {
+              logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
+            }
+
+            logger.error(`${logPre} Lookup ${host} -> ${
+              address || "null"}, error ${err.stack}`);
           }
         });
       }
@@ -160,6 +165,10 @@ export const hack = <T extends typeof http.request>(
     });
 
     request.once("error", (error: Error) => {
+      if (logger.getCleanLog()) {
+        logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
+      }
+
       logger.error(`${logPre} Request error. Stack: ${error.stack}`);
       finishRequest();
       clearDomain();
@@ -211,7 +220,7 @@ export const hack = <T extends typeof http.request>(
         response.statusCode
       }. Cost: ${
         timestamps.onResponse.getTime()
-        - timestamps.onSocket.getTime()
+      - timestamps.onSocket.getTime()
       } ms`);
 
       // responseInfo can't retrieve data until response "end" event
@@ -252,7 +261,7 @@ export const hack = <T extends typeof http.request>(
           requestLog.responseLength
         }. Cost: ${
           timestamps.responseClose.getTime()
-          - timestamps.onSocket.getTime()
+        - timestamps.onSocket.getTime()
         } ms`);
 
         finishRequest();

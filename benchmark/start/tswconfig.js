@@ -26,5 +26,6 @@ module.exports = {
   winstonTransports: [
     new winston.transports.File({ filename: "error.log", level: "error" }),
     new winston.transports.File({ filename: "debug.log", level: "debug" })
-  ]
+  ],
+  cleanLog: true
 };

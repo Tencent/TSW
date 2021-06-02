@@ -36,6 +36,8 @@ type LogLevelStrings = keyof typeof LOG_LEVEL;
 type WinstonLogLevel = keyof typeof winstonConfig.syslog.levels;
 
 export class Logger {
+  private isCleanLog = false;
+
   public logLevel: number
 
   public winstonLogger: WinstonLogger
@@ -45,7 +47,16 @@ export class Logger {
     return this.logLevel;
   }
 
+  public setCleanLog(isCleanLog: boolean): void {
+    this.isCleanLog = isCleanLog;
+  }
+
+  public getCleanLog(): boolean {
+    return this.isCleanLog;
+  }
+
   public debug(str: string): void {
+    if (this.isCleanLog) return;
     if (!currentContext()) {
       console.debug(Logger.formatStr(str, "DEBUG", {
         levelLimit: this.logLevel
@@ -56,6 +67,7 @@ export class Logger {
   }
 
   public info(str: string): void {
+    if (this.isCleanLog) return;
     if (!currentContext()) {
       console.info(Logger.formatStr(str, "INFO", {
         levelLimit: this.logLevel

@@ -87,7 +87,9 @@ export const dnsHack = (): void => {
           logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
           eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, address);
         } else {
-          logger.error(`dns lookup [${cost}ms] error: ${err.stack}`);
+          logger.error(`dns lookup [${cost}ms]: ${hostname} > ${address},
+           error: ${err.stack}`);
+
           eventBus.emit(EVENT_LIST.DNS_LOOKUP_ERROR, err);
         }
 
