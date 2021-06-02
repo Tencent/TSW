@@ -1,14 +1,15 @@
 {
   "name": "koa-example",
   "scripts": {
-    "serve": "NODE_OPTIONS='--inspect=localhost:4442' tsw ./index.js"
+    "serve": "tsw ./index.js",
+    "serve:inspect": "NODE_OPTIONS='--inspect=localhost:4442' tsw ./index.js"
   },
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@tswjs/open-platform-plugin": "^1.1.1",
-    "@tswjs/tsw": "^2.0.0",
+    "@tswjs/open-platform-plugin": "^1.3.0",
+    "@tswjs/tsw": "^2.4.0",
     "axios": "^0.21.1",
     "koa": "^2.11.0",
     "winston": "^3.2.1",
