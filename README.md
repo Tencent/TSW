@@ -32,7 +32,7 @@ npm install --save @tswjs/tsw
 // yarn add @tswjs/tsw
 ```
 ### 2. 添加配置文件  
-配置文件是 TSW 启动时加载进运行时的配置文件，主要声明需要使用的 [[插件](#Plugins) 列表。**默认会加载项目根目录下的 `tswconfig.js` 文件，也可以通过启动参数 `-c` 或者 `--config` 来手动指定配置文件路径。**
+配置文件是 TSW 启动时加载进运行时的配置文件，主要声明需要使用的 [插件](#Plugins) 列表。**默认会加载项目根目录下的 `tswconfig.js` 文件，也可以通过启动参数 `-c` 或者 `--config` 来手动指定配置文件路径。**
 
 **注意事项**: 2.0 中没有集成开放平台相关逻辑，而是封装成了一个插件让用户按需使用，详情见[插件](#Plugins)章节。
 
@@ -47,7 +47,7 @@ module.exports = {
 **参数列表**:
 |    Name     |     Type    |     default    |   Optional  |  Description  |
 | :-: | :-: | :-: | :-: | :-: |
-|   plugins   | [...[Plugin](#Plugins)] | - |  yes | 插件列表 |
+|   plugins   | [...[Plugin](#Plugins)] | - |  yes | [插件](#Plugins)列表 |
 |   cleanLog  | boolean |  `false` |  yes | 是否关闭默认打印 |
 |   winstonTransports  | ...[winston.transports.File]	 |  - |  yes | [Winston](#winston-是什么)日志通道 |
 ### 3. 启动
@@ -57,9 +57,7 @@ npx @tswjs/tsw ./index.js
 
 **注意事项**：原先 `node --inspect ./index.js` 中的 CLI 参数如 `--inspect` 需要转化为环境变量 `NODE_OPTIONS` 来执行，如 `NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`。
 
-**使用 ts**
-
-在保证项目有 [ts-node](https://www.npmjs.com/package/ts-node) 依赖包的情况下，按照如下方式执行即可直接加载 ts 文件。
+**使用 ts**: 在保证项目有 [ts-node](https://www.npmjs.com/package/ts-node) 依赖包的情况下，按照如下方式执行即可直接加载 ts 文件。
 ```bash
 NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts
 ```
@@ -123,7 +121,7 @@ export.modules = class MyPlugin() {
 <h2 align="center">Open Platform</h2>
 
 在默认的情况下，TSW 只是会把所有的日志和抓包内容抓取到并且送到事件总线上，以供 [插件](#插件是什么？) 消费。所以将日志和抓包内容落地查看一般需要用户自己编写插件以及提供存储，使用成本过于高昂。  
-因此，TSW 官方提供了公共的服务平台（https://tswjs.org），让用户低成本、更快、更方便地使用 TSW 的特性。使用方式见 [使用 TSW 开放平台](./docs/use-open-platform.md)。
+因此，TSW 官方提供了公共的服务平台（https://tswjs.org），让用户低成本、更快、更方便地使用 TSW 的特性，详情见 [开放平台使用指引](./docs/use-open-platform.md)。
 
 <h2 align="center">Cluster</h2>
 
