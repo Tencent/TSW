@@ -16,6 +16,12 @@ describe("logger test", () => {
     expect(logger.logLevel).toBe(10);
   });
 
+  test("log could be set by setCleanLog", async () => {
+    logger.setCleanLog(true);
+    expect(logger.getCleanLog()).toBe(true);
+    logger.setCleanLog(false);
+  });
+
   test("log could be classified by level", async () => {
     logger.debug("TEST DEBUG LOG");
     expect(log.DEBUG).toBe(1);
