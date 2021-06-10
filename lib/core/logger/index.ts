@@ -47,7 +47,7 @@ export class Logger {
     return this.logLevel;
   }
 
-  public setCleanLog(isCleanLog: boolean): void {
+  public setCleanLog(isCleanLog = false): void {
     this.isCleanLog = isCleanLog;
   }
 
