@@ -34,7 +34,8 @@ export default async (
   const configAbsolutePath = path.resolve(basePath, configPath);
   global.tswConfig = await import(configAbsolutePath);
 
-  logger.setCleanLog(global.tswConfig && global.tswConfig.cleanLog);
+  logger.setCleanLog(global.tswConfig.cleanLog);
+  logger.setLogLevel(global.tswConfig.logLevel);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const plugin of global.tswConfig.plugins) {
