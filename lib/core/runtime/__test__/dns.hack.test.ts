@@ -74,10 +74,10 @@ describe("dns hack test", () => {
 
   test("a wrong domain should fail", async () => {
     await new Promise((resolve) => {
-      const nullDomain = "this.is.not.a.domain";
+      const nullDomain = "this is not a domain";
       lookup(nullDomain, (err) => {
         // error could be "Dns Lookup Timeout"
-        // or "getaddrinfo ENOTFOUND this.is.not.a.domain"
+        // or "getaddrinfo ENOTFOUND this is not a domain"
         expect(err).toBeTruthy();
         resolve();
       });
