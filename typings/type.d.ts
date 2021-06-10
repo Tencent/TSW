@@ -28,6 +28,7 @@ declare namespace NodeJS {
       plugins: any[];
       winstonTransports: any[];
       cleanLog?: boolean;
+      logLevel?: "DEBUG" | "INFO" | "WARN" | "ERROR";
     };
   }
 }

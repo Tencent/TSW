@@ -42,7 +42,7 @@ export class Logger {
 
   public winstonLogger: WinstonLogger
 
-  public setLogLevel(level: LogLevelStrings): number {
+  public setLogLevel(level: LogLevelStrings = "DEBUG"): number {
     this.logLevel = LOG_LEVEL[level];
     return this.logLevel;
   }
