@@ -22,83 +22,6 @@ interface RequestEventPayload {
   context: Context;
 }
 
-interface EventBus extends EventEmitter {
-  emit(
-    event: "DNS_LOOKUP_SUCCESS",
-    payload: string | dns.LookupAddress[]
-  ): boolean;
-  emit(
-    event: "DNS_LOOKUP_ERROR",
-    payload: NodeJS.ErrnoException
-  ): boolean;
-  emit(
-    event: "RESPONSE_START",
-    payload: ResponseEventPayload
-  ): boolean;
-  emit(
-    event: "RESPONSE_FINISH",
-    payload: ResponseEventPayload
-  ): boolean;
-  emit(
-    event: "RESPONSE_CLOSE",
-    payload: ResponseEventPayload
-  ): boolean;
-  emit(
-    event: "REQUEST_START",
-    payload: RequestEventPayload
-  ): boolean;
-
-  on(
-    event: "DNS_LOOKUP_SUCCESS",
-    listener: (payload: string | dns.LookupAddress[]) => void
-  ): this;
-  on(
-    event: "DNS_LOOKUP_ERROR",
-    listener: (payload: NodeJS.ErrnoException) => void
-  ): this;
-  on(
-    event: "RESPONSE_START",
-    listener: (payload: ResponseEventPayload) => void
-  ): this;
-  on(
-    event: "RESPONSE_FINISH",
-    listener: (payload: ResponseEventPayload) => void
-  ): this;
-  on(
-    event: "RESPONSE_CLOSE",
-    listener: (payload: ResponseEventPayload) => void
-  ): this;
-  on(
-    event: "REQUEST_START",
-    listener: (payload: RequestEventPayload) => void
-  ): this;
-
-  once(
-    event: "DNS_LOOKUP_SUCCESS",
-    listener: (payload: string | dns.LookupAddress[]) => void
-  ): this;
-  once(
-    event: "DNS_LOOKUP_ERROR",
-    listener: (payload: NodeJS.ErrnoException) => void
-  ): this;
-  once(
-    event: "RESPONSE_START",
-    listener: (payload: ResponseEventPayload) => void
-  ): this;
-  once(
-    event: "RESPONSE_FINISH",
-    listener: (payload: ResponseEventPayload) => void
-  ): this;
-  once(
-    event: "RESPONSE_CLOSE",
-    listener: (payload: ResponseEventPayload) => void
-  ): this;
-  once(
-    event: "REQUEST_START",
-    listener: (payload: RequestEventPayload) => void
-  ): this;
-}
-
 export enum EVENT_LIST {
   DNS_LOOKUP_SUCCESS = "DNS_LOOKUP_SUCCESS",
   DNS_LOOKUP_ERROR = "DNS_LOOKUP_ERROR",
@@ -128,6 +51,83 @@ export enum EVENT_LIST {
    * Emitted when then http.Request coming
    */
   REQUEST_START = "REQUEST_START",
+}
+
+interface EventBus extends EventEmitter {
+  emit(
+    event: EVENT_LIST.DNS_LOOKUP_SUCCESS,
+    payload: string | dns.LookupAddress[]
+  ): boolean;
+  emit(
+    event: EVENT_LIST.DNS_LOOKUP_ERROR,
+    payload: NodeJS.ErrnoException
+  ): boolean;
+  emit(
+    event: EVENT_LIST.RESPONSE_START,
+    payload: ResponseEventPayload
+  ): boolean;
+  emit(
+    event: EVENT_LIST.RESPONSE_FINISH,
+    payload: ResponseEventPayload
+  ): boolean;
+  emit(
+    event: EVENT_LIST.RESPONSE_CLOSE,
+    payload: ResponseEventPayload
+  ): boolean;
+  emit(
+    event: EVENT_LIST.REQUEST_START,
+    payload: RequestEventPayload
+  ): boolean;
+
+  on(
+    event: EVENT_LIST.DNS_LOOKUP_SUCCESS,
+    listener: (payload: string | dns.LookupAddress[]) => void
+  ): this;
+  on(
+    event: EVENT_LIST.DNS_LOOKUP_ERROR,
+    listener: (payload: NodeJS.ErrnoException) => void
+  ): this;
+  on(
+    event: EVENT_LIST.RESPONSE_START,
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  on(
+    event: EVENT_LIST.RESPONSE_FINISH,
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  on(
+    event: EVENT_LIST.RESPONSE_CLOSE,
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  on(
+    event: EVENT_LIST.REQUEST_START,
+    listener: (payload: RequestEventPayload) => void
+  ): this;
+
+  once(
+    event: EVENT_LIST.DNS_LOOKUP_SUCCESS,
+    listener: (payload: string | dns.LookupAddress[]) => void
+  ): this;
+  once(
+    event: EVENT_LIST.DNS_LOOKUP_ERROR,
+    listener: (payload: NodeJS.ErrnoException) => void
+  ): this;
+  once(
+    event: EVENT_LIST.RESPONSE_START,
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  once(
+    event: EVENT_LIST.RESPONSE_FINISH,
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  once(
+    event: EVENT_LIST.RESPONSE_CLOSE,
+    listener: (payload: ResponseEventPayload) => void
+  ): this;
+  once(
+    event: EVENT_LIST.REQUEST_START,
+    listener: (payload: RequestEventPayload) => void
+  ): this;
 }
 
 let bus: EventBus | undefined;
