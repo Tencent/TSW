@@ -37,14 +37,16 @@ export default async (
   logger.setCleanLog(global.tswConfig.cleanLog);
   logger.setLogLevel(global.tswConfig.logLevel);
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const plugin of global.tswConfig.plugins) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      await plugin.init(eventBus, global.tswConfig);
-    } catch (e) {
-      console.error(`${plugin.name} 插件初始化失败: ${e.message}`);
-      process.exit(-1);
+  if (global.tswConfig.plugins) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const plugin of global.tswConfig.plugins) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await plugin.init(eventBus, global.tswConfig);
+      } catch (e) {
+        console.error(`${plugin.name} 插件初始化失败: ${e.message}`);
+        process.exit(-1);
+      }
     }
   }
 
