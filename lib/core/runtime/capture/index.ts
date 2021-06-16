@@ -48,228 +48,229 @@ const urlToOptions = (url: URL): http.RequestOptions => {
 export const hack = <T extends typeof http.request>(
   originRequest: T,
   protocol: requestProtocol
-): (...args: unknown[]) => http.ClientRequest => (
-    ...args
-  ): http.ClientRequest => {
-    let options: http.RequestOptions;
-    if (typeof args[1] === "undefined" || typeof args[1] === "function") {
+): ((...args: unknown[]) => http.ClientRequest) => (
+    (...args): http.ClientRequest => {
+      let options: http.RequestOptions;
+      if (typeof args[1] === "undefined" || typeof args[1] === "function") {
       // function request(options: RequestOptions | string | URL, callback?: (res: IncomingMessage) => void): ClientRequest;
-      if (typeof args[0] === "string") {
-        options = urlToOptions(new URL(args[0]));
-      } else if (args[0] instanceof URL) {
-        options = urlToOptions(args[0]);
+        if (typeof args[0] === "string") {
+          options = urlToOptions(new URL(args[0]));
+        } else if (args[0] instanceof URL) {
+          options = urlToOptions(args[0]);
+        } else {
+          options = args[0] as http.RequestOptions;
+        }
       } else {
-        options = args[0] as http.RequestOptions;
-      }
-    } else {
       // function request(url: string | URL, options: RequestOptions, callback?: (res: IncomingMessage) => void): ClientRequest;
-      if (typeof args[0] === "string") {
-        options = urlToOptions(new URL(args[0]));
-      } else {
-        options = urlToOptions(args[0] as URL);
+        if (typeof args[0] === "string") {
+          options = urlToOptions(new URL(args[0]));
+        } else {
+          options = urlToOptions(args[0] as URL);
+        }
+
+        options = Object.assign(options, args[1]);
       }
 
-      options = Object.assign(options, args[1]);
-    }
+      // Execute request
+      const request: http.ClientRequest = originRequest.apply(this, args);
+      // Execute capture
+      captureOutgoing(request);
 
-    // Execute request
-    const request: http.ClientRequest = originRequest.apply(this, args);
-    // Execute capture
-    captureOutgoing(request);
+      const context = currentContext() || new Context();
+      const logPre = `[${context.captureSN}]`;
 
-    const context = currentContext() || new Context();
-    const logPre = `[${context.captureSN}]`;
+      const {
+        method, hostname, path, port
+      } = options;
 
-    const {
-      method, hostname, path, port
-    } = options;
+      logger.debug(`${logPre} Request begin. ${
+        method} ${hostname}${port ? `:${port}` : ""} ~ ${path}`);
 
-    logger.debug(`${logPre} Request begin. ${
-      method} ${hostname}${port ? `:${port}` : ""} ~ ${path}`);
+      const requestLog: Partial<RequestLog> = {
+        SN: context.captureSN,
 
-    const requestLog: Partial<RequestLog> = {
-      SN: context.captureSN,
+        protocol: protocol === "http:" ? "HTTP" : "HTTPS",
+        host: hostname,
+        path,
 
-      protocol: protocol === "http:" ? "HTTP" : "HTTPS",
-      host: hostname,
-      path,
+        process: `TSW: ${process.pid}`,
+        timestamps: {} as RequestLog["timestamps"]
+      };
 
-      process: `TSW: ${process.pid}`,
-      timestamps: {} as RequestLog["timestamps"]
-    };
+      const { timestamps } = requestLog;
+      timestamps.requestStart = new Date();
 
-    const { timestamps } = requestLog;
-    timestamps.requestStart = new Date();
+      const clearDomain = (): void => {
+        const parser = (request.socket as any).parser as any;
+        if (parser && parser.domain) {
+          (parser.domain as domain.Domain).exit();
+          parser.domain = null;
+        }
+      };
 
-    const clearDomain = (): void => {
-      const parser = (request.socket as any).parser as any;
-      if (parser && parser.domain) {
-        (parser.domain as domain.Domain).exit();
-        parser.domain = null;
-      }
-    };
+      const finishRequest = (): void => {
+        context.captureRequests.push(requestLog as RequestLog);
 
-    const finishRequest = (): void => {
-      context.captureRequests.push(requestLog as RequestLog);
+        logger.debug(`${logPre} Record request info. Response body length: ${
+          requestLog.responseLength
+        }`);
+      };
 
-      logger.debug(`${logPre} Record request info. Response body length: ${
-        requestLog.responseLength
-      }`);
-    };
+      request.once("socket", (socket: Socket): void => {
+        timestamps.onSocket = new Date();
 
-    request.once("socket", (socket: Socket): void => {
-      timestamps.onSocket = new Date();
-
-      if (!isIP(hostname)) {
-        socket.once("lookup", (
-          err: Error,
-          address: string,
-          family: string | number,
-          host: string
-        ): void => {
-          timestamps.onLookUp = new Date();
-          timestamps.dnsTime = timestamps.onLookUp.getTime()
+        if (!isIP(hostname)) {
+          socket.once("lookup", (
+            err: Error,
+            address: string,
+            family: string | number,
+            host: string
+          ): void => {
+            timestamps.onLookUp = new Date();
+            timestamps.dnsTime = timestamps.onLookUp.getTime()
             - timestamps.onSocket.getTime();
 
-          logger.debug(`${logPre} Dns lookup ${host} -> ${
-            address || "null"}. Cost ${timestamps.dnsTime}ms`);
+            logger.debug(`${logPre} Dns lookup ${host} -> ${
+              address || "null"}. Cost ${timestamps.dnsTime}ms`);
 
-          if (err) {
-            if (logger.getCleanLog()) {
-              logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
+            if (err) {
+              if (logger.getCleanLog()) {
+                logger.error(`${logPre} Request: 
+                ${JSON.stringify(requestLog)}`);
+              }
+
+              logger.error(`${logPre} Lookup ${host} -> ${
+                address || "null"}, error ${err.stack}`);
+            }
+          });
+        }
+
+        socket.once("connect", (): void => {
+          timestamps.socketConnect = new Date();
+
+          logger.debug(`${logPre} Socket connected. Remote: ${
+            socket.remoteAddress
+          }:${socket.remotePort}. Cost ${
+            timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
+          } ms`);
+        });
+
+        if (socket.remoteAddress) {
+          timestamps.dnsTime = 0;
+
+          logger.debug(`${logPre} Socket reused. Remote: ${
+            socket.remoteAddress
+          }:${socket.remotePort}`);
+        }
+      });
+
+      request.once("error", (error: Error) => {
+        if (logger.getCleanLog()) {
+          logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
+        }
+
+        logger.error(`${logPre} Request error. Stack: ${error.stack}`);
+        finishRequest();
+        clearDomain();
+      });
+
+      request.once("close", clearDomain);
+      request.once("finish", () => {
+        timestamps.requestFinish = new Date();
+
+        context.captureSN += 1;
+
+        let requestBody: string;
+        const length = (request as any)._bodyLength;
+        const tooLarge = (request as any)._bodyTooLarge;
+        if (tooLarge) {
+          requestBody = Buffer.from(`body was too large too show, length: ${
+            length}`).toString("base64");
+        } else {
+          requestBody = (request as any)._body.toString("base64");
+        }
+
+        requestLog.requestHeader = (request as any)._header;
+        requestLog.requestBody = requestBody;
+        logger.debug(`${logPre} Request send finish. Body size ${
+          length
+        }. Cost: ${
+          timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
+        } ms`);
+
+        clearDomain();
+      });
+
+      request.once("response", (response: http.IncomingMessage): void => {
+        timestamps.onResponse = new Date();
+
+        const { socket } = response;
+        requestLog.serverIp = socket.remoteAddress;
+        requestLog.serverPort = socket.remotePort;
+        // This could be undefined
+        // https://stackoverflow.com/questions/16745745/nodejs-tcp-socket-does-not-show-client-hostname-information
+        requestLog.clientIp = socket.localAddress;
+        requestLog.clientPort = socket.localPort;
+
+        logger.debug(`${logPre} Request on response. Socket chain: ${
+          socket.localAddress
+        }:${socket.localPort} > ${
+          socket.remoteAddress
+        }:${socket.remotePort}. Response status code: ${
+          response.statusCode
+        }. Cost: ${
+          timestamps.onResponse.getTime()
+      - timestamps.onSocket.getTime()
+        } ms`);
+
+        // responseInfo can't retrieve data until response "end" event
+        const responseInfo = captureIncoming(response);
+
+        response.once("end", () => {
+          timestamps.responseClose = new Date();
+
+          requestLog.statusCode = response.statusCode;
+          requestLog.responseLength = responseInfo.bodyLength;
+          requestLog.responseType = response.headers["content-type"];
+          requestLog.responseHeader = ((): string => {
+            const result = [];
+            result.push(`HTTP/${response.httpVersion} ${
+              response.statusCode} ${response.statusMessage}`);
+
+            const cloneHeaders = cloneDeep(response.headers);
+            // Transfer a chunked response to a full response.
+            if (!cloneHeaders["content-length"]
+            && responseInfo.bodyLength >= 0) {
+              delete cloneHeaders["transfer-encoding"];
+              cloneHeaders["content-length"] = String(responseInfo.bodyLength);
             }
 
-            logger.error(`${logPre} Lookup ${host} -> ${
-              address || "null"}, error ${err.stack}`);
-          }
-        });
-      }
+            Object.keys(cloneHeaders).forEach((key) => {
+              result.push(`${key}: ${cloneHeaders[key]}`);
+            });
 
-      socket.once("connect", (): void => {
-        timestamps.socketConnect = new Date();
+            result.push("");
+            result.push("");
 
-        logger.debug(`${logPre} Socket connected. Remote: ${
-          socket.remoteAddress
-        }:${socket.remotePort}. Cost ${
-          timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
-        } ms`);
-      });
+            return result.join("\r\n");
+          })();
 
-      if (socket.remoteAddress) {
-        timestamps.dnsTime = 0;
+          requestLog.responseBody = responseInfo.body.toString("base64");
 
-        logger.debug(`${logPre} Socket reused. Remote: ${
-          socket.remoteAddress
-        }:${socket.remotePort}`);
-      }
-    });
-
-    request.once("error", (error: Error) => {
-      if (logger.getCleanLog()) {
-        logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
-      }
-
-      logger.error(`${logPre} Request error. Stack: ${error.stack}`);
-      finishRequest();
-      clearDomain();
-    });
-
-    request.once("close", clearDomain);
-    request.once("finish", () => {
-      timestamps.requestFinish = new Date();
-
-      context.captureSN += 1;
-
-      let requestBody: string;
-      const length = (request as any)._bodyLength;
-      const tooLarge = (request as any)._bodyTooLarge;
-      if (tooLarge) {
-        requestBody = Buffer.from(`body was too large too show, length: ${
-          length}`).toString("base64");
-      } else {
-        requestBody = (request as any)._body.toString("base64");
-      }
-
-      requestLog.requestHeader = (request as any)._header;
-      requestLog.requestBody = requestBody;
-      logger.debug(`${logPre} Request send finish. Body size ${
-        length
-      }. Cost: ${
-        timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
-      } ms`);
-
-      clearDomain();
-    });
-
-    request.once("response", (response: http.IncomingMessage): void => {
-      timestamps.onResponse = new Date();
-
-      const { socket } = response;
-      requestLog.serverIp = socket.remoteAddress;
-      requestLog.serverPort = socket.remotePort;
-      // This could be undefined
-      // https://stackoverflow.com/questions/16745745/nodejs-tcp-socket-does-not-show-client-hostname-information
-      requestLog.clientIp = socket.localAddress;
-      requestLog.clientPort = socket.localPort;
-
-      logger.debug(`${logPre} Request on response. Socket chain: ${
-        socket.localAddress
-      }:${socket.localPort} > ${
-        socket.remoteAddress
-      }:${socket.remotePort}. Response status code: ${
-        response.statusCode
-      }. Cost: ${
-        timestamps.onResponse.getTime()
-      - timestamps.onSocket.getTime()
-      } ms`);
-
-      // responseInfo can't retrieve data until response "end" event
-      const responseInfo = captureIncoming(response);
-
-      response.once("end", () => {
-        timestamps.responseClose = new Date();
-
-        requestLog.statusCode = response.statusCode;
-        requestLog.responseLength = responseInfo.bodyLength;
-        requestLog.responseType = response.headers["content-type"];
-        requestLog.responseHeader = ((): string => {
-          const result = [];
-          result.push(`HTTP/${response.httpVersion} ${
-            response.statusCode} ${response.statusMessage}`);
-
-          const cloneHeaders = cloneDeep(response.headers);
-          // Transfer a chunked response to a full response.
-          if (!cloneHeaders["content-length"]
-            && responseInfo.bodyLength >= 0) {
-            delete cloneHeaders["transfer-encoding"];
-            cloneHeaders["content-length"] = String(responseInfo.bodyLength);
-          }
-
-          Object.keys(cloneHeaders).forEach((key) => {
-            result.push(`${key}: ${cloneHeaders[key]}`);
-          });
-
-          result.push("");
-          result.push("");
-
-          return result.join("\r\n");
-        })();
-
-        requestLog.responseBody = responseInfo.body.toString("base64");
-
-        logger.debug(`${logPre} Response on end. Body size：${
-          requestLog.responseLength
-        }. Cost: ${
-          timestamps.responseClose.getTime()
+          logger.debug(`${logPre} Response on end. Body size：${
+            requestLog.responseLength
+          }. Cost: ${
+            timestamps.responseClose.getTime()
         - timestamps.onSocket.getTime()
-        } ms`);
+          } ms`);
 
-        finishRequest();
+          finishRequest();
+        });
       });
-    });
 
-    return request;
-  };
+      return request;
+    }
+  );
 
 let hacked = false;
 let originHttpRequest = null;
