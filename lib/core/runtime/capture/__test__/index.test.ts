@@ -38,4 +38,19 @@ describe("capture(request hack) test", () => {
       }).end();
     });
   });
+
+  test("http request", async () => {
+    await new Promise((resolve) => {
+      http.request({
+        protocol: "http:",
+        host: "127.0.0.1",
+        port
+      }, (res) => {
+        res.on("data", (d) => {
+          expect(d.toString("utf8")).toBe(RESPONSE_STRING);
+          resolve();
+        });
+      }).end();
+    });
+  });
 });
