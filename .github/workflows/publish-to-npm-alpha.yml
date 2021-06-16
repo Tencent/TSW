@@ -8,6 +8,9 @@ jobs:
   publish-to-npm:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
       - name: Pull code
         uses: actions/checkout@v1
       - name: Set up node.js
