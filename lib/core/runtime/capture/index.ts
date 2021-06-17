@@ -52,7 +52,7 @@ export const hack = <T extends typeof http.request>(
     (...args): http.ClientRequest => {
       let options: http.RequestOptions;
       if (typeof args[1] === "undefined" || typeof args[1] === "function") {
-      // function request(options: RequestOptions | string | URL, callback?: (res: IncomingMessage) => void): ClientRequest;
+        // function request(options: RequestOptions | string | URL, callback?: (res: IncomingMessage) => void): ClientRequest;
         if (typeof args[0] === "string") {
           options = urlToOptions(new URL(args[0]));
         } else if (args[0] instanceof URL) {
@@ -61,7 +61,7 @@ export const hack = <T extends typeof http.request>(
           options = args[0] as http.RequestOptions;
         }
       } else {
-      // function request(url: string | URL, options: RequestOptions, callback?: (res: IncomingMessage) => void): ClientRequest;
+        // function request(url: string | URL, options: RequestOptions, callback?: (res: IncomingMessage) => void): ClientRequest;
         if (typeof args[0] === "string") {
           options = urlToOptions(new URL(args[0]));
         } else {
@@ -73,7 +73,7 @@ export const hack = <T extends typeof http.request>(
 
       // Execute request
       const request: http.ClientRequest = originRequest.apply(this, args);
-      // Execute capture
+      // Execute capture，ClientRequest extends OutgoingMessage(extends Stream.Writable)
       captureOutgoing(request);
 
       const context = currentContext() || new Context();
@@ -128,7 +128,7 @@ export const hack = <T extends typeof http.request>(
           ): void => {
             timestamps.onLookUp = new Date();
             timestamps.dnsTime = timestamps.onLookUp.getTime()
-            - timestamps.onSocket.getTime();
+              - timestamps.onSocket.getTime();
 
             logger.debug(`${logPre} Dns lookup ${host} -> ${
               address || "null"}. Cost ${timestamps.dnsTime}ms`);
@@ -175,6 +175,7 @@ export const hack = <T extends typeof http.request>(
       });
 
       request.once("close", clearDomain);
+
       request.once("finish", () => {
         timestamps.requestFinish = new Date();
 
@@ -239,6 +240,7 @@ export const hack = <T extends typeof http.request>(
 
             const cloneHeaders = cloneDeep(response.headers);
             // Transfer a chunked response to a full response.
+            // https://imququ.com/post/transfer-encoding-header-in-http.html
             if (!cloneHeaders["content-length"]
             && responseInfo.bodyLength >= 0) {
               delete cloneHeaders["transfer-encoding"];
