@@ -34,10 +34,10 @@
     "@tswjs/open-platform-api" "^1.2.2"
     ip "^1.1.5"
 
-"@tswjs/tsw@^2.4.0":
-  version "2.4.0"
-  resolved "http://mirrors.tencent.com/npm/@tswjs%2ftsw/-/tsw-2.4.0.tgz#56a5d725581753a37bde614bc4948cb582762592"
-  integrity sha512-ePL2tQWl9m2enUn5Xcu28fPTl/5Gg0NAhSURQ/E0ndFbU6pX72ohZswKoELU72QzBG90M6zZ/+2zWYJ8XJAsLA==
+"@tswjs/tsw@^2.5.0":
+  version "2.5.0"
+  resolved "http://mirrors.tencent.com/npm/@tswjs%2ftsw/-/tsw-2.5.0.tgz#7fdb3d9d647466aa9727924ee5c03e4dd30ab052"
+  integrity sha512-tPVKtxUm0qdqJUGzRv1XJ8xNr9RbtXzRNCK2+3aIFSUuwel+/JZJ6YrfyxyW6wOdybNTzQKbm514r0CIchBQSg==
   dependencies:
     chalk "^3.0.0"
     ip "^1.1.5"
@@ -112,7 +112,7 @@ balanced-match@^1.0.0:
 
 brace-expansion@^1.1.7:
   version "1.1.11"
-  resolved "http://mirrors.tencent.com/npm/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"
+  resolved "https://mirrors.tencent.com/npm/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"
   integrity sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==
   dependencies:
     balanced-match "^1.0.0"
@@ -135,7 +135,7 @@ cache-content-type@^1.0.0:
 
 camelcase@^5.0.0:
   version "5.3.1"
-  resolved "http://mirrors.tencent.com/npm/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
+  resolved "https://mirrors.tencent.com/npm/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 chalk@^2.4.2:
@@ -400,7 +400,7 @@ fs-extra@^7.0.1:
 
 fs.realpath@^1.0.0:
   version "1.0.0"
-  resolved "http://mirrors.tencent.com/npm/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
+  resolved "https://mirrors.tencent.com/npm/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
 
 get-caller-file@^2.0.1:
@@ -711,7 +711,7 @@ negotiator@0.6.2:
 
 nice-try@^1.0.4:
   version "1.0.5"
-  resolved "http://mirrors.tencent.com/npm/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
+  resolved "https://mirrors.tencent.com/npm/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
 node-fetch@^2.6.0:
@@ -760,7 +760,7 @@ os-tmpdir@~1.0.2:
 
 p-limit@^2.2.0:
   version "2.3.0"
-  resolved "http://mirrors.tencent.com/npm/p-limit/-/p-limit-2.3.0.tgz#3dd33c647a214fdfffd835933eb086da0dc21db1"
+  resolved "https://mirrors.tencent.com/npm/p-limit/-/p-limit-2.3.0.tgz#3dd33c647a214fdfffd835933eb086da0dc21db1"
   integrity sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==
   dependencies:
     p-try "^2.0.0"
