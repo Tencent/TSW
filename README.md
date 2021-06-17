@@ -184,6 +184,34 @@ module.exports = {
 
 ![log](./static/images/winston-log.png)
 
+<h2 align="center">Users</h2>
+
+[![tsw](./static/images/user/01.png)](https://qzone.qq.com/ "QQ空间")　　　　![tsw](./static/images/user/02.png)　　　　[![tsw](./static/images/user/03.png)](https://www.weiyun.com/ "腾讯微云")　　　
+　  
+　  
+[![tsw](./static/images/user/04.png)](https://fm.qq.com/ "企鹅FM")　　　　[![tsw](./static/images/user/05.png)](https://www.weishi.com/ "微视")　　　　![tsw](./static/images/user/06.png)　　　　
+　  
+　  
+[![tsw](./static/images/user/07.png)](http://vip.qq.com/ "QQ会员")　　　　[![tsw](./static/images/user/08.png)](http://egame.qq.com/ "企鹅电竞")　　　　[![tsw](./static/images/user/09.png)](http://ac.qq.com/ "QQ动漫")　　　　
+　  
+　  
+[![tsw](./static/images/user/10.png)](https://buluo.qq.com/ "QQ兴趣部落")　　　　[![tsw](./static/images/user/11.png)](http://now.qq.com/ "NOW直播")　　　　![tsw](./static/images/user/12.png)　　　　
+　  
+　  
+![tsw](./static/images/user/13.png)　　　　[![tsw](./static/images/user/14.png)](http://yundong.qq.com/ "QQ运动")　　　　![tsw](./static/images/user/15.png)　　　　
+　  
+　  
+[![tsw](./static/images/user/16.png)](https://mp.qq.com/ "QQ公众平台")　　　　[![tsw](./static/images/user/17.png)](https://office.qq.com/ "TIM")　　　　[![tsw](./static/images/user/18.png)](http://tianqi.qq.com/index.htm "腾讯天气")　　　　
+　  
+　  
+[![tsw](./static/images/user/19.png)](https://ke.qq.com/ "腾讯课堂")　　　　[![tsw](./static/images/user/20.png)](https://cloud.tencent.com/ "腾讯云")　　　　[![tsw](./static/images/user/21.png)](https://y.qq.com/ "QQ音乐")　　　　
+　  
+　  
+[![tsw](./static/images/user/22.png)](https://kg.tencent.com/ "全民K歌")　　　　![tsw](./static/images/user/23.png)　　　　[![tsw](./static/images/user/24.png)](http://e.qq.com/ads/ "广点通")　　　　
+　  
+　  
+[![tsw](./static/images/user/25.png)](http://open.qq.com/ "腾讯开放平台")　　　　[![tsw](./static/images/user/26.png)](http://kk.qq.com/ "企鹅看看")　　　　[![tsw](./static/images/user/27.png)](http://sports.qq.com/ "腾讯体育") 
+
 <h2 align="center">License</h2>
 
 Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE) 。
