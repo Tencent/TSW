@@ -38,76 +38,80 @@ export const dnsHack = (): void => {
     // eslint-disable-next-line
     // @ts-ignore
     // By default, ts not allow us to rewrite original methods.
-    dns.lookup = ((lookup) => (
-      hostname: string,
-      optionsOrCallback: LookupSecondParam,
-      callbackOrUndefined?: LookupCallback
-    ): void => {
-      const start = Date.now();
+    dns.lookup = (
+      (lookup) => (
+        (
+          hostname: string,
+          optionsOrCallback: LookupSecondParam,
+          callbackOrUndefined?: LookupCallback
+        ): void => {
+          const start = Date.now();
 
-      const options = typeof optionsOrCallback === "function"
-        ? undefined
-        : optionsOrCallback;
-      const callback = typeof optionsOrCallback === "function"
-        ? optionsOrCallback
-        : callbackOrUndefined;
+          const options = typeof optionsOrCallback === "function"
+            ? undefined
+            : optionsOrCallback;
+          const callback = typeof optionsOrCallback === "function"
+            ? optionsOrCallback
+            : callbackOrUndefined;
 
-      logger.debug(`dns lookup for ${hostname}`);
+          logger.debug(`dns lookup for ${hostname}`);
 
-      // For http.request, if host is a ip
-      // It will not entry dns.lookup by default
-      // https://github.com/nodejs/node/blob/master/lib/net.js#L1002
-      // But still need this, in case use call dns.lookup directly
-      if (net.isIP(hostname)) {
-        logger.debug(`dns lookup: ${hostname} is a ip`);
-        if (options) {
-          return lookup.apply(this, [hostname, options, callback]);
+          // For http.request, if host is a ip
+          // It will not entry dns.lookup by default
+          // https://github.com/nodejs/node/blob/master/lib/net.js#L1002
+          // But still need this, in case use call dns.lookup directly
+          if (net.isIP(hostname)) {
+            logger.debug(`dns lookup: ${hostname} is a ip`);
+            if (options) {
+              return lookup.apply(this, [hostname, options, callback]);
+            }
+
+            return lookup.apply(this, [hostname, callback]);
+          }
+
+          let isCalled = false;
+          let timeoutError: Error;
+          let timer: NodeJS.Timeout | undefined;
+
+          const callbackWrap = (
+            err: NodeJS.ErrnoException,
+            address: string | dns.LookupAddress[],
+            family: number
+          ): void => {
+            if (isCalled) {
+              return;
+            }
+
+            isCalled = true;
+
+            const cost = Date.now() - start;
+            if (!err) {
+              logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
+              eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, address);
+            } else {
+              logger.error(`dns lookup [${cost}ms]: ${hostname} > ${address},
+                error: ${err.stack}`);
+
+              eventBus.emit(EVENT_LIST.DNS_LOOKUP_ERROR, err);
+            }
+
+            if (timer) clearTimeout(timer);
+            if (callback) callback(err, address, family);
+          };
+
+          timer = setTimeout(() => {
+            timeoutError = new Error("Dns Lookup Timeout");
+            callbackWrap(timeoutError, "", 0);
+          }, (config.timeout && config.timeout.dns) || 3000);
+
+          if (options) {
+            return lookup.apply(this, [hostname, options, callbackWrap]);
+          }
+
+          return lookup.apply(this, [hostname, callbackWrap]);
         }
-
-        return lookup.apply(this, [hostname, callback]);
-      }
-
-      let isCalled = false;
-      let timeoutError: Error;
-      let timer: NodeJS.Timeout | undefined;
-
-      const callbackWrap = (
-        err: NodeJS.ErrnoException,
-        address: string | dns.LookupAddress[],
-        family: number
-      ): void => {
-        if (isCalled) {
-          return;
-        }
-
-        isCalled = true;
-
-        const cost = Date.now() - start;
-        if (!err) {
-          logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
-          eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, address);
-        } else {
-          logger.error(`dns lookup [${cost}ms]: ${hostname} > ${address},
-           error: ${err.stack}`);
-
-          eventBus.emit(EVENT_LIST.DNS_LOOKUP_ERROR, err);
-        }
-
-        if (timer) clearTimeout(timer);
-        if (callback) callback(err, address, family);
-      };
-
-      timer = setTimeout(() => {
-        timeoutError = new Error("Dns Lookup Timeout");
-        callbackWrap(timeoutError, "", 0);
-      }, (config.timeout && config.timeout.dns) || 3000);
-
-      if (options) {
-        return lookup.apply(this, [hostname, options, callbackWrap]);
-      }
-
-      return lookup.apply(this, [hostname, callbackWrap]);
-    })(dns.lookup);
+      )
+    )(dns.lookup);
   }
 };
 
