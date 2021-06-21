@@ -18,7 +18,7 @@
 
 "@tswjs/open-platform-api@^1.2.2":
   version "1.2.2"
-  resolved "http://mirrors.tencent.com/npm/@tswjs%2fopen-platform-api/-/open-platform-api-1.2.2.tgz#8b0a874e2b448ca9a517cfc22916ca693eb535d1"
+  resolved "https://mirrors.tencent.com/npm/@tswjs%2fopen-platform-api/-/open-platform-api-1.2.2.tgz#8b0a874e2b448ca9a517cfc22916ca693eb535d1"
   integrity sha512-PkicdbN0PRRIX5VmsARk3PQp51+00M7U9X3XkupwwKbuxckxZKYTmwFxTs7Wl1NkS8q5HLSqB7OyLr8mZ8YySw==
   dependencies:
     http-proxy-agent "^4.0.1"
@@ -26,18 +26,18 @@
     node-fetch "^2.6.0"
     proxy-from-env "^1.1.0"
 
-"@tswjs/open-platform-plugin@^1.3.0":
-  version "1.3.0"
-  resolved "http://mirrors.tencent.com/npm/@tswjs%2fopen-platform-plugin/-/open-platform-plugin-1.3.0.tgz#8dd2a590cab18f46ee63cb48d51a6b74d7e3bd62"
-  integrity sha512-q0vLKphoO9PEYvjXBjpldvcp2+X0lv/ZnjJvP9pDAkMZjekF34L5+muTtdDgNXgyhQM9QWcUl4KgLRteFQzR+Q==
+"@tswjs/open-platform-plugin@^1.3.1":
+  version "1.3.1"
+  resolved "https://mirrors.tencent.com/npm/@tswjs%2fopen-platform-plugin/-/open-platform-plugin-1.3.1.tgz#e620e0f5bd4b3cb93bdea52e0893222fd5346bc9"
+  integrity sha512-w0CW2tjcSL8b+FGn4v/Dan2jSOo0pM4O+4UJsU16F/MajVeL3jjbxlyCko25b8ZMFAZRaAYSFoiKpMFnSJd0JA==
   dependencies:
     "@tswjs/open-platform-api" "^1.2.2"
     ip "^1.1.5"
 
-"@tswjs/tsw@^2.5.0":
-  version "2.5.0"
-  resolved "http://mirrors.tencent.com/npm/@tswjs%2ftsw/-/tsw-2.5.0.tgz#7fdb3d9d647466aa9727924ee5c03e4dd30ab052"
-  integrity sha512-tPVKtxUm0qdqJUGzRv1XJ8xNr9RbtXzRNCK2+3aIFSUuwel+/JZJ6YrfyxyW6wOdybNTzQKbm514r0CIchBQSg==
+"@tswjs/tsw@^2.5.3":
+  version "2.5.3"
+  resolved "https://mirrors.tencent.com/npm/@tswjs%2ftsw/-/tsw-2.5.3.tgz#4e1451f8ad56e4418166c01ff0720a33700f79c7"
+  integrity sha512-gwpkFUiQtioo3MvAnLMNPgTUAEbuXJnfH3q03PS6Fc1JIOK8Jl2VW1Pv+vI2FV+68ya9QILQIintwD2w+DVCFQ==
   dependencies:
     chalk "^3.0.0"
     ip "^1.1.5"
@@ -51,7 +51,7 @@
 
 "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
-  resolved "http://mirrors.tencent.com/npm/@yarnpkg%2flockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
+  resolved "https://mirrors.tencent.com/npm/@yarnpkg%2flockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
 
 accepts@^1.3.5:
@@ -135,7 +135,7 @@ cache-content-type@^1.0.0:
 
 camelcase@^5.0.0:
   version "5.3.1"
-  resolved "https://mirrors.tencent.com/npm/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
+  resolved "http://mirrors.tencent.com/npm/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 chalk@^2.4.2:
@@ -157,7 +157,7 @@ chalk@^3.0.0:
 
 ci-info@^2.0.0:
   version "2.0.0"
-  resolved "http://mirrors.tencent.com/npm/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
+  resolved "https://mirrors.tencent.com/npm/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
 cliui@^6.0.0:
@@ -229,7 +229,7 @@ colorspace@1.1.x:
 
 concat-map@0.0.1:
   version "0.0.1"
-  resolved "http://mirrors.tencent.com/npm/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
+  resolved "https://mirrors.tencent.com/npm/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
 content-disposition@~0.5.2:
@@ -270,7 +270,7 @@ cross-spawn@^6.0.5:
 
 debug@4:
   version "4.3.1"
-  resolved "http://mirrors.tencent.com/npm/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
+  resolved "https://mirrors.tencent.com/npm/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
   integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
   dependencies:
     ms "2.1.2"
@@ -369,7 +369,7 @@ find-up@^4.1.0:
 
 find-yarn-workspace-root@^2.0.0:
   version "2.0.0"
-  resolved "http://mirrors.tencent.com/npm/find-yarn-workspace-root/-/find-yarn-workspace-root-2.0.0.tgz#f47fb8d239c900eb78179aa81b66673eac88f7bd"
+  resolved "https://mirrors.tencent.com/npm/find-yarn-workspace-root/-/find-yarn-workspace-root-2.0.0.tgz#f47fb8d239c900eb78179aa81b66673eac88f7bd"
   integrity sha512-1IMnbjt4KzsQfnhnzNd8wUEgXZ44IzZaZmnLYx7D5FZlaHt2gW20Cri8Q+E/t5tIj4+epTBub+2Zxu/vNILzqQ==
   dependencies:
     micromatch "^4.0.2"
@@ -400,12 +400,12 @@ fs-extra@^7.0.1:
 
 fs.realpath@^1.0.0:
   version "1.0.0"
-  resolved "https://mirrors.tencent.com/npm/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
+  resolved "http://mirrors.tencent.com/npm/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
 
 get-caller-file@^2.0.1:
   version "2.0.5"
-  resolved "http://mirrors.tencent.com/npm/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
+  resolved "https://mirrors.tencent.com/npm/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
   integrity sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==
 
 glob@^7.1.3:
@@ -507,7 +507,7 @@ is-arrayish@^0.3.1:
 
 is-ci@^2.0.0:
   version "2.0.0"
-  resolved "http://mirrors.tencent.com/npm/is-ci/-/is-ci-2.0.0.tgz#6bc6334181810e04b5c22b3d589fdca55026404c"
+  resolved "https://mirrors.tencent.com/npm/is-ci/-/is-ci-2.0.0.tgz#6bc6334181810e04b5c22b3d589fdca55026404c"
   integrity sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==
   dependencies:
     ci-info "^2.0.0"
@@ -529,7 +529,7 @@ is-generator-function@^1.0.7:
 
 is-number@^7.0.0:
   version "7.0.0"
-  resolved "http://mirrors.tencent.com/npm/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
+  resolved "https://mirrors.tencent.com/npm/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
 
 is-stream@^2.0.0:
@@ -570,7 +570,7 @@ keygrip@~1.1.0:
 
 klaw-sync@^6.0.0:
   version "6.0.0"
-  resolved "http://mirrors.tencent.com/npm/klaw-sync/-/klaw-sync-6.0.0.tgz#1fd2cfd56ebb6250181114f0a581167099c2b28c"
+  resolved "https://mirrors.tencent.com/npm/klaw-sync/-/klaw-sync-6.0.0.tgz#1fd2cfd56ebb6250181114f0a581167099c2b28c"
   integrity sha512-nIeuVSzdCCs6TDPTqI8w1Yre34sSq7AkZ4B3sfOBbI2CgVSB4Du4aLQijFU2+lhAFCwt9+42Hel6lQNIv6AntQ==
   dependencies:
     graceful-fs "^4.1.11"
@@ -638,7 +638,7 @@ locate-path@^5.0.0:
 
 lodash@^4.17.15:
   version "4.17.21"
-  resolved "http://mirrors.tencent.com/npm/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  resolved "https://mirrors.tencent.com/npm/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 logform@^2.2.0:
@@ -711,7 +711,7 @@ negotiator@0.6.2:
 
 nice-try@^1.0.4:
   version "1.0.5"
-  resolved "https://mirrors.tencent.com/npm/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
+  resolved "http://mirrors.tencent.com/npm/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
 node-fetch@^2.6.0:
@@ -728,7 +728,7 @@ on-finished@^2.3.0:
 
 once@^1.3.0:
   version "1.4.0"
-  resolved "http://mirrors.tencent.com/npm/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
+  resolved "https://mirrors.tencent.com/npm/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   integrity sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
   dependencies:
     wrappy "1"
@@ -760,7 +760,7 @@ os-tmpdir@~1.0.2:
 
 p-limit@^2.2.0:
   version "2.3.0"
-  resolved "https://mirrors.tencent.com/npm/p-limit/-/p-limit-2.3.0.tgz#3dd33c647a214fdfffd835933eb086da0dc21db1"
+  resolved "http://mirrors.tencent.com/npm/p-limit/-/p-limit-2.3.0.tgz#3dd33c647a214fdfffd835933eb086da0dc21db1"
   integrity sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==
   dependencies:
     p-try "^2.0.0"
@@ -784,7 +784,7 @@ parseurl@^1.3.2:
 
 patch-package@^6.2.2:
   version "6.4.7"
-  resolved "http://mirrors.tencent.com/npm/patch-package/-/patch-package-6.4.7.tgz#2282d53c397909a0d9ef92dae3fdeb558382b148"
+  resolved "https://mirrors.tencent.com/npm/patch-package/-/patch-package-6.4.7.tgz#2282d53c397909a0d9ef92dae3fdeb558382b148"
   integrity sha512-S0vh/ZEafZ17hbhgqdnpunKDfzHQibQizx9g8yEf5dcVk3KOflOfdufRXQX8CSEkyOQwuM/bNz1GwKvFj54kaQ==
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -823,7 +823,7 @@ picomatch@^2.2.3:
 
 postinstall-postinstall@^2.1.0:
   version "2.1.0"
-  resolved "http://mirrors.tencent.com/npm/postinstall-postinstall/-/postinstall-postinstall-2.1.0.tgz#4f7f77441ef539d1512c40bd04c71b06a4704ca3"
+  resolved "https://mirrors.tencent.com/npm/postinstall-postinstall/-/postinstall-postinstall-2.1.0.tgz#4f7f77441ef539d1512c40bd04c71b06a4704ca3"
   integrity sha512-7hQX6ZlZXIoRiWNrbMQaLzUUfH+sSx39u8EJ9HYuDc1kLo9IXKWjM5RSquZN1ad5GnH8CGFM78fsAAQi3OKEEQ==
 
 process-nextick-args@~2.0.0:
@@ -1027,7 +1027,7 @@ type-is@^1.6.16:
 
 universalify@^0.1.0:
   version "0.1.2"
-  resolved "http://mirrors.tencent.com/npm/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
+  resolved "https://mirrors.tencent.com/npm/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
   integrity sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
@@ -1086,7 +1086,7 @@ wrap-ansi@^6.2.0:
 
 wrappy@1:
   version "1.0.2"
-  resolved "http://mirrors.tencent.com/npm/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
+  resolved "https://mirrors.tencent.com/npm/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
 y18n@^4.0.0:
