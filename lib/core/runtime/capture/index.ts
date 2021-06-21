@@ -101,7 +101,7 @@ export const hack = <T extends typeof http.request>(
       timestamps.requestStart = new Date();
 
       const clearDomain = (): void => {
-        const parser = (request.socket as any).parser as any;
+        const parser = (request.socket as any)?.parser as any;
         if (parser && parser.domain) {
           (parser.domain as domain.Domain).exit();
           parser.domain = null;
