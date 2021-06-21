@@ -58,7 +58,7 @@ export class Logger {
   public debug(str: string): void {
     if (this.isCleanLog) return;
     if (!currentContext()) {
-      console.debug(Logger.formatStr(str, "DEBUG", {
+      console.log(Logger.formatStr(str, "DEBUG", {
         levelLimit: this.logLevel
       }));
     } else {
