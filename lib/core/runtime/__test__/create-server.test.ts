@@ -9,16 +9,20 @@
 import { createServer, get as httpGet, request as httpRequest } from "http";
 import {
   httpCreateServerHack,
-  httpCreateServerRestore
+  httpsCreateServerHack,
+  httpCreateServerRestore,
+  httpsCreateServerRestore
 } from "../create-server.hack";
 import { eventBus, EVENT_LIST } from "../../bus";
 
 beforeAll(() => {
   httpCreateServerHack();
+  httpsCreateServerHack();
 });
 
 afterAll(() => {
   httpCreateServerRestore();
+  httpsCreateServerRestore();
 });
 
 /**
