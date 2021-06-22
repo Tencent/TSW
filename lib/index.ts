@@ -2,7 +2,9 @@ import * as path from "path";
 import { consoleHack, consoleRestore } from "./core/runtime/console.hack";
 import {
   httpCreateServerHack,
-  httpCreateServerRestore
+  httpsCreateServerHack,
+  httpCreateServerRestore,
+  httpsCreateServerRestore
 } from "./core/runtime/create-server.hack";
 import { dnsHack, dnsRestore } from "./core/runtime/dns.hack";
 import { requestHack, requestRestore } from "./core/runtime/capture/index";
@@ -12,6 +14,7 @@ import logger from "./core/logger";
 
 export const installHacks = (): void => {
   httpCreateServerHack();
+  httpsCreateServerHack();
   dnsHack();
   consoleHack();
   requestHack();
@@ -20,6 +23,7 @@ export const installHacks = (): void => {
 
 export const uninstallHacks = (): void => {
   httpCreateServerRestore();
+  httpsCreateServerRestore();
   dnsRestore();
   consoleRestore();
   requestRestore();

@@ -7,3 +7,4 @@ dist
 coverage
 *.log
 benchmark/metricsResult
+*.pem
