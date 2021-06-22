@@ -28,6 +28,6 @@ jobs:
       - name: Run ESLinter
         run: yarn lint
       - name: Run Tests
-        run: yarn test
+        run: yarn test --detectOpenHandles
       - name: codecov
         uses: codecov/codecov-action@v1
