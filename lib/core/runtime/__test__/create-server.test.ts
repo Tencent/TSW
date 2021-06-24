@@ -48,7 +48,7 @@ describe("http createServer hack test", () => {
         // Close server first
         server.close();
 
-        if (res.statusCode === 200) resolve();
+        if (res.statusCode === 200) resolve(0);
         else reject();
       });
     });
@@ -70,7 +70,7 @@ describe("http createServer hack test", () => {
         // Close server first
         server.close();
 
-        if (res.statusCode === 200) resolve();
+        if (res.statusCode === 200) resolve(0);
         else reject();
       });
     });
@@ -113,7 +113,7 @@ describe("http createServer hack test", () => {
 
         res.on("end", () => {
           expect(body).toBe("real server response");
-          resolve();
+          resolve(0);
         });
       });
     });
@@ -160,7 +160,7 @@ describe("http createServer hack test", () => {
 
         res.on("end", () => {
           expect(body).toBe("real server response");
-          resolve();
+          resolve(0);
         });
       }).end();
     });
@@ -200,7 +200,7 @@ describe("http createServer hack test", () => {
         res.on("end", () => {
           expect(res.statusCode).toBe(500);
           expect(body).toBe("");
-          resolve();
+          resolve(0);
         });
       });
     });
