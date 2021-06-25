@@ -27,7 +27,7 @@ describe("dns hack test", () => {
         expect(err).toBeNull();
         expect(isIP(address)).toBeTruthy();
         expect(family).toBeTruthy();
-        resolve();
+        resolve(0);
       });
     });
   });
@@ -55,7 +55,7 @@ describe("dns hack test", () => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
         expect(family).toBeTruthy();
-        resolve();
+        resolve(0);
       });
     });
   });
@@ -67,7 +67,7 @@ describe("dns hack test", () => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
         expect(family).toBeTruthy();
-        resolve();
+        resolve(0);
       });
     });
   });
@@ -79,7 +79,7 @@ describe("dns hack test", () => {
         // error could be "Dns Lookup Timeout"
         // or "getaddrinfo ENOTFOUND this is not a domain"
         expect(err).toBeTruthy();
-        resolve();
+        resolve(0);
       });
     });
   });
