@@ -33,7 +33,7 @@ describe("capture(request hack) test", () => {
       http.request(`http://127.0.0.1:${port}`, (res) => {
         res.on("data", (d) => {
           expect(d.toString("utf8")).toBe(RESPONSE_STRING);
-          resolve();
+          resolve(0);
         });
       }).end();
     });
@@ -48,7 +48,7 @@ describe("capture(request hack) test", () => {
       }, (res) => {
         res.on("data", (d) => {
           expect(d.toString("utf8")).toBe(RESPONSE_STRING);
-          resolve();
+          resolve(0);
         });
       }).end();
     });
