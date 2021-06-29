@@ -1,5 +1,5 @@
 import * as winston from "winston";
-import { winstonHack } from "../winston";
+import { winstonHack, winstonRestore } from "../winston";
 import logger from "../../core/logger/index";
 
 global.tswConfig = {
@@ -24,5 +24,11 @@ describe("test winstonHack env", () => {
 
     winstonHack();
     expect(logger.winstonLogger.transports.length).toBe(1);
+  });
+
+  test("test logger's winstonLogger when it has restored", () => {
+    winstonHack();
+    winstonRestore();
+    expect(logger.winstonLogger).toBe(undefined);
   });
 });
