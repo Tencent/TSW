@@ -19,8 +19,13 @@ const { log } = currentContext();
 
 describe("logger test", () => {
   test("log could be set by setLogLevel", async () => {
+    logger.setLogLevel("INFO");
+    expect(logger.logLevel).toBe(20);
+
+    logger.debug("TEST DROP LOG IN INFO LEVEL");
+    expect(log.INFO).toBe(0);
+
     logger.setLogLevel("DEBUG");
-    expect(logger.logLevel).toBe(10);
   });
 
   test("log could be set by setCleanLog", async () => {
