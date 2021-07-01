@@ -32,6 +32,18 @@ describe("dns hack test", () => {
     });
   });
 
+  test("dns could work with options normally", async () => {
+    await new Promise((resolve) => {
+      const options = { family: 4 };
+      lookup("qq.com", options, (err, address, family) => {
+        expect(err).toBeNull();
+        expect(isIP(address)).toBeTruthy();
+        expect(family).toBeTruthy();
+        resolve(0);
+      });
+    });
+  });
+
   test("eventBus was informed", async () => {
     await new Promise((resolve, reject) => {
       eventBus.on(EVENT_LIST.DNS_LOOKUP_SUCCESS, (data) => {
@@ -54,7 +66,20 @@ describe("dns hack test", () => {
       lookup(ip, (err, address, family) => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
-        expect(family).toBeTruthy();
+        expect(family).toEqual(4);
+        resolve(0);
+      });
+    });
+  });
+
+  test("ipv4 should return with options immediately", async () => {
+    await new Promise((resolve) => {
+      const ip = "1.2.3.4";
+      const options = { family: 4 };
+      lookup(ip, options, (err, address, family) => {
+        expect(err).toBeNull();
+        expect(address).toEqual(ip);
+        expect(family).toEqual(4);
         resolve(0);
       });
     });
