@@ -26,7 +26,7 @@ describe("dns hack test", () => {
       lookup("qq.com", (err, address, family) => {
         expect(err).toBeNull();
         expect(isIP(address)).toBeTruthy();
-        expect(family).toBeTruthy();
+        expect(family).toEqual(4);
         resolve(0);
       });
     });
@@ -38,7 +38,7 @@ describe("dns hack test", () => {
       lookup("qq.com", options, (err, address, family) => {
         expect(err).toBeNull();
         expect(isIP(address)).toBeTruthy();
-        expect(family).toBeTruthy();
+        expect(family).toEqual(4);
         resolve(0);
       });
     });
@@ -91,7 +91,7 @@ describe("dns hack test", () => {
       lookup(ip, (err, address, family) => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
-        expect(family).toBeTruthy();
+        expect(family).toEqual(6);
         resolve(0);
       });
     });
