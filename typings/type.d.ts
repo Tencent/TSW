@@ -26,7 +26,7 @@ declare namespace NodeJS {
   interface Global {
     tswConfig: {
       plugins: any[];
-      winstonTransports: any[];
+      winstonTransports?: any[];
       cleanLog?: boolean;
       logLevel?: "DEBUG" | "INFO" | "WARN" | "ERROR";
     };

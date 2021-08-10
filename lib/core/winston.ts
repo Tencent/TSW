@@ -7,12 +7,11 @@
  */
 
 import * as winston from "winston";
-import * as Transports from "winston-transport";
 import logger from "./logger/index";
 
 export const winstonHack = (): void => {
-  const transports: Array<Transports> = global.tswConfig.winstonTransports;
-  if (transports) {
+  const { winstonTransports: transports } = global.tswConfig;
+  if (Array.isArray(transports) && transports.length) {
     logger.winstonLogger = winston.createLogger({
       format: winston.format.simple(),
       transports
