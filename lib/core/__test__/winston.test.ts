@@ -17,6 +17,11 @@ describe("test winstonHack env", () => {
     expect(logger.winstonLogger).toBe(undefined);
   });
 
+  test("test winstonHack while the length of winstonTransports is 0", () => {
+    winstonHack();
+    expect(logger.winstonLogger).toBe(undefined);
+  });
+
   test("test winstonHack while config with Console Transports ", () => {
     global.tswConfig.winstonTransports = [
       new winston.transports.Console()
