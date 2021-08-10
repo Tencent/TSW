@@ -47,10 +47,10 @@ module.exports = {
 **参数列表**:
 |    Name     |     Type    |     default    |   Optional  |  Description  |
 | :-: | :-: | :-: | :-: | :-: |
-|   plugins   | [...[Plugin](#Plugins)] | - |  yes | [插件](#Plugins)列表 |
+|   plugins   | Array<[Plugin](#Plugins)>| - |  yes | [插件](#Plugins)列表 |
 |   cleanLog  | boolean |  `false` |  yes | 是否关闭默认打印 |
 |   logLevel  | `DEBUG/INFO/WARN/ERROR` |  `DEBUG` |  yes | 设置 log level |
-|   winstonTransports  | ...[winston.transports.File]	 |  - |  yes | [Winston](#winston-是什么)日志通道 |
+|   winstonTransports  | Array<[TransportStream](https://github.com/winstonjs/winston-transport/blob/master/index.d.ts)> |  - |  yes | [Winston](#winston-是什么)日志通道 |
 ### 3. 启动
 ```bash
 npx @tswjs/tsw ./index.js
