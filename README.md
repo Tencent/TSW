@@ -139,8 +139,9 @@ TSW 2.0 是面对容器化和云原生设计的，所以没有内置 Cluster 相
   "apps": [
     {
       "name": "app-name",
-      "script": "./node_modules/@tswjs/tsw/dist/cli.js",
-      "args": "built/index.js",
+      "script": "built/index.js",
+      "interpreter": "node",
+      "interpreter_args": "./node_modules/@tswjs/tsw/dist/cli.js",
       // other options
     }
   ]
