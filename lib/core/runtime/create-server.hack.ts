@@ -44,7 +44,7 @@ export const hack = <T extends typeof http.createServer>(
       }
 
       const requestListenerWrap: http.RequestListener = (req, res) => {
-        const start = new Date();
+        const start = new Date().getTime();
         const timestamps: RequestLog["timestamps"] = {
           dnsTime: 0,
           requestStart: start,
@@ -80,7 +80,7 @@ export const hack = <T extends typeof http.createServer>(
         res.writeHead = ((fn): typeof res.writeHead => (
           ...args: unknown[]
         ): ReturnType<typeof res.writeHead> => {
-          timestamps.onResponse = new Date();
+          timestamps.onResponse = new Date().getTime();
 
           const context = currentContext();
 
@@ -154,7 +154,7 @@ export const hack = <T extends typeof http.createServer>(
         });
 
         res.once("close", () => {
-          timestamps.responseClose = new Date();
+          timestamps.responseClose = new Date().getTime();
 
           const context = currentContext();
 

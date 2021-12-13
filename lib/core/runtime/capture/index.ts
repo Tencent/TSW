@@ -98,7 +98,7 @@ export const hack = <T extends typeof http.request>(
       };
 
       const { timestamps } = requestLog;
-      timestamps.requestStart = new Date();
+      timestamps.requestStart = new Date().getTime();
 
       const clearDomain = (): void => {
         const parser = (request.socket as any)?.parser as any;
@@ -117,7 +117,7 @@ export const hack = <T extends typeof http.request>(
       };
 
       request.once("socket", (socket: Socket): void => {
-        timestamps.onSocket = new Date();
+        timestamps.onSocket = new Date().getTime();
 
         if (!isIP(hostname)) {
           socket.once("lookup", (
@@ -126,9 +126,8 @@ export const hack = <T extends typeof http.request>(
             family: string | number,
             host: string
           ): void => {
-            timestamps.onLookUp = new Date();
-            timestamps.dnsTime = timestamps.onLookUp.getTime()
-              - timestamps.onSocket.getTime();
+            timestamps.onLookUp = new Date().getTime();
+            timestamps.dnsTime = timestamps.onLookUp - timestamps.onSocket;
 
             logger.debug(`${logPre} Dns lookup ${host} -> ${
               address || "null"}. Cost ${timestamps.dnsTime}ms`);
@@ -146,12 +145,12 @@ export const hack = <T extends typeof http.request>(
         }
 
         socket.once("connect", (): void => {
-          timestamps.socketConnect = new Date();
+          timestamps.socketConnect = new Date().getTime();
 
           logger.debug(`${logPre} Socket connected. Remote: ${
             socket.remoteAddress
           }:${socket.remotePort}. Cost ${
-            timestamps.socketConnect.getTime() - timestamps.onSocket.getTime()
+            timestamps.socketConnect - timestamps.onSocket
           } ms`);
         });
 
@@ -177,7 +176,7 @@ export const hack = <T extends typeof http.request>(
       request.once("close", clearDomain);
 
       request.once("finish", () => {
-        timestamps.requestFinish = new Date();
+        timestamps.requestFinish = new Date().getTime();
 
         context.captureSN += 1;
 
@@ -196,14 +195,14 @@ export const hack = <T extends typeof http.request>(
         logger.debug(`${logPre} Request send finish. Body size ${
           length
         }. Cost: ${
-          timestamps.requestFinish.getTime() - timestamps.onSocket.getTime()
+          timestamps.requestFinish - timestamps.onSocket
         } ms`);
 
         clearDomain();
       });
 
       request.once("response", (response: http.IncomingMessage): void => {
-        timestamps.onResponse = new Date();
+        timestamps.onResponse = new Date().getTime();
 
         const { socket } = response;
         requestLog.serverIp = socket.remoteAddress;
@@ -220,15 +219,14 @@ export const hack = <T extends typeof http.request>(
         }:${socket.remotePort}. Response status code: ${
           response.statusCode
         }. Cost: ${
-          timestamps.onResponse.getTime()
-      - timestamps.onSocket.getTime()
+          timestamps.onResponse - timestamps.onSocket
         } ms`);
 
         // responseInfo can't retrieve data until response "end" event
         const responseInfo = captureIncoming(response);
 
         response.once("end", () => {
-          timestamps.responseClose = new Date();
+          timestamps.responseClose = new Date().getTime();
 
           requestLog.statusCode = response.statusCode;
           requestLog.responseLength = responseInfo.bodyLength;
@@ -262,8 +260,7 @@ export const hack = <T extends typeof http.request>(
           logger.debug(`${logPre} Response on end. Body size：${
             requestLog.responseLength
           }. Cost: ${
-            timestamps.responseClose.getTime()
-        - timestamps.onSocket.getTime()
+            timestamps.responseClose - timestamps.onSocket
           } ms`);
 
           finishRequest();
