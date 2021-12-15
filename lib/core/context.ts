@@ -42,31 +42,31 @@ export interface RequestLog {
     /**
      * Request begin.
      */
-    requestStart: Date;
+    requestStart: number;
     /**
      * request.on("socket")
      */
-    onSocket: Date;
+    onSocket: number;
     /**
      * Exact time that dns look up done.
      */
-    onLookUp: Date;
+    onLookUp: number;
     /**
      * Exact time that client finished sending HTTP request to the server.
      */
-    requestFinish: Date;
+    requestFinish: number;
     /**
      * socket.on("connect")
      */
-    socketConnect: Date;
+    socketConnect: number;
     /**
      * request.on("response")
      */
-    onResponse: Date;
+    onResponse: number;
     /**
      * response.on("close")
      */
-    responseClose: Date;
+    responseClose: number;
     /**
      * milliseconds Fiddler spent in DNS looking up the server's IP address.
      */
