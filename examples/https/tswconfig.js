@@ -4,8 +4,6 @@ const OpenPlatformPlugin = require("@tswjs/open-platform-plugin");
 module.exports = {
   plugins: [
     new OpenPlatformPlugin({
-      appid: "tsw1844",
-      appkey: "fTctzeCnBHKJZyBYmBAB3H5R",
       reportStrategy: "proxied",
       // 只支持同步写法
       getUid: (request) => "xxx",
