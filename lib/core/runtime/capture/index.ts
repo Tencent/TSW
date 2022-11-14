@@ -80,7 +80,7 @@ export const hack = <T extends typeof http.request>(
       const logPre = `[${context.captureSN}]`;
 
       const {
-        method, hostname, path, port
+        method, host: reqHost, hostname = reqHost, path, port
       } = options;
 
       logger.debug(`${logPre} Request begin. ${
