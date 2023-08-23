@@ -64,6 +64,10 @@ export const hack = <T extends typeof http.createServer>(
           d.remove(req);
           d.remove(res);
 
+          if (process.domain.currentContext) {
+            process.domain.currentContext = null;
+          }
+
           const parser = (req.socket as any).parser as any;
           if (parser && parser.domain) {
             (parser.domain as domain.Domain).exit();
