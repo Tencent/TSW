@@ -40,9 +40,9 @@ npm install --save @tswjs/tsw
 // yarn add @tswjs/tsw
 ```
 ### 2. 添加配置文件  
-配置文件是 TSW 启动时加载进运行时的配置文件，主要声明需要使用的 [插件](#Plugins) 列表。**默认会加载项目根目录下的 `tswconfig.js` 文件，也可以通过启动参数 `-c` 或者 `--config` 来手动指定配置文件路径。**
+配置文件是 TSW 启动时加载进运行时的配置文件，主要声明需要使用的 [插件](#plugins) 列表。**默认会加载项目根目录下的 `tswconfig.js` 文件，也可以通过启动参数 `-c` 或者 `--config` 来手动指定配置文件路径。**
 
-**注意事项**: 2.0 中没有集成开放平台相关逻辑，而是封装成了一个插件让用户按需使用，详情见[插件](#Plugins)章节。
+**注意事项**: 2.0 中没有集成开放平台相关逻辑，而是封装成了一个插件让用户按需使用，详情见[插件](#plugins)章节。
 
 **配置文件示例：**
 ```js
@@ -55,7 +55,7 @@ module.exports = {
 **参数列表**:
 |    Name     |     Type    |     default    |   Optional  |  Description  |
 | :-: | :-: | :-: | :-: | :-: |
-|   plugins   | Array<[Plugin](#Plugins)>| - |  yes | [插件](#Plugins)列表 |
+|   plugins   | Array<[Plugin](#plugins)>| - |  yes | [插件](#plugins)列表 |
 |   cleanLog  | boolean |  `false` |  yes | 是否关闭默认打印 |
 |   logLevel  | `DEBUG/INFO/WARN/ERROR` |  `DEBUG` |  yes | 设置 log level |
 |   winstonTransports  | Array<[TransportStream](https://github.com/winstonjs/winston-transport/blob/master/index.d.ts)> |  - |  yes | [Winston](#winston-是什么)日志通道 |
@@ -130,7 +130,7 @@ export.modules = class MyPlugin() {
 <h2 align="center">Open Platform</h2>
 
 在默认的情况下，TSW 只是会把所有的日志和抓包内容抓取到并且送到事件总线上，以供 [插件](#插件是什么？) 消费。所以将日志和抓包内容落地查看一般需要用户自己编写插件以及提供存储，使用成本过于高昂。  
-因此，TSW 官方提供了公共的服务平台（https://tswjs.org），让用户低成本、更快、更方便地使用 TSW 的特性，详情见 [开放平台使用指引](./docs/use-open-platform.md)。
+因此，TSW 官方提供了公共的服务平台 [https://tswjs.org](https://tswjs.org)，让用户低成本、更快、更方便地使用 TSW 的特性，详情见 [开放平台使用指引](./docs/use-open-platform.md)。
 
 <h2 align="center">Cluster</h2>
 
