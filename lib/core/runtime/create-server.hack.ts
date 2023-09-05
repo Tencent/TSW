@@ -9,7 +9,7 @@
 import * as http from "http";
 import * as https from "https";
 import * as domain from "domain";
-import currentContext, { RequestLog } from "../context";
+import currentContext, { Context, RequestLog } from "../context";
 import { address } from "ip";
 import { AddressInfo, isIP } from "net";
 import { captureOutgoing } from "./capture/outgoing";
@@ -56,7 +56,7 @@ export const hack = <T extends typeof http.createServer>(
 
         // Creating a domain and wrapping the execution.
         const d = domain.create();
-
+        const context = new Context();
         d.add(req);
         d.add(res);
 
@@ -86,8 +86,6 @@ export const hack = <T extends typeof http.createServer>(
         ): ReturnType<typeof res.writeHead> => {
           timestamps.onResponse = new Date().getTime();
 
-          const context = currentContext();
-
           eventBus.emit(EVENT_LIST.RESPONSE_START, {
             req, res, context
           });
@@ -98,8 +96,6 @@ export const hack = <T extends typeof http.createServer>(
         })(res.writeHead);
 
         res.once("finish", () => {
-          const context = currentContext();
-
           context.currentRequest = {
             SN: context.SN,
 
@@ -159,9 +155,6 @@ export const hack = <T extends typeof http.createServer>(
 
         res.once("close", () => {
           timestamps.responseClose = new Date().getTime();
-
-          const context = currentContext();
-
           clearDomain();
 
           eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, {
@@ -170,7 +163,8 @@ export const hack = <T extends typeof http.createServer>(
         });
 
         d.run(() => {
-          const context = currentContext();
+          process.domain.currentContext = context;
+
           eventBus.emit(EVENT_LIST.REQUEST_START, {
             req, context
           });
