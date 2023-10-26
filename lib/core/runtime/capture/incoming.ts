@@ -29,10 +29,19 @@ export const captureReadableStream = (
     body: Buffer.alloc(0)
   };
 
+  Object.defineProperty(info, "body", {
+    // 需要用的时候才拼接buffer
+    get: () => Buffer.concat(info.bodyChunks)
+  });
+
   const handler = (chunk: any): void => {
     info.bodyLength += Buffer.byteLength(chunk);
+    // 到达最大限制后，不再记录回包内容
+    if (info.bodyTooLarge) {
+      return;
+    }
+
     info.bodyChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    info.body = Buffer.concat(info.bodyChunks);
     info.bodyTooLarge = info.bodyLength > maxBodySize;
   };
 

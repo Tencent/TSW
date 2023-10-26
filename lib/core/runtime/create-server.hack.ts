@@ -9,7 +9,7 @@
 import * as http from "http";
 import * as https from "https";
 import * as domain from "domain";
-import currentContext, { Context, RequestLog } from "../context";
+import { Context, RequestLog } from "../context";
 import { address } from "ip";
 import { AddressInfo, isIP } from "net";
 import { captureOutgoing } from "./capture/outgoing";
