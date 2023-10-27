@@ -30,6 +30,11 @@ export const captureOutgoing = (outgoing: http.OutgoingMessage): void => {
       callback = callbackOrUndefined;
     }
 
+    // 达到最大长度限制，不再收集包内容
+    if (bodyLength > maxBodySize) {
+      return fn.apply(outgoing, [data, encoding, callback]);
+    }
+
     const buffer = ((): Buffer => {
       if (Buffer.isBuffer(data)) {
         return data;
