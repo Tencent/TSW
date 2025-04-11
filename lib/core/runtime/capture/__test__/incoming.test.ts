@@ -46,6 +46,7 @@ describe("capture response function test", () => {
       path: "/",
       method: "POST",
       headers: {
+        Connection: "Close",
         "Content-Type": "application/x-www-form-urlencoded",
         "Content-Length": Buffer.byteLength(data)
       }

@@ -45,10 +45,17 @@ export const captureReadableStream = (
     info.bodyTooLarge = info.bodyLength > maxBodySize;
   };
 
-  let { head } = (stream as any).readableBuffer;
-  while (head) {
-    handler(head.data);
-    head = head.next;
+  const rb = (stream as any).readableBuffer;
+  let { head } = rb;
+  if (head !== undefined) {
+    while (head) {
+      handler(head.data);
+      head = head.next;
+    }
+  } else if (rb.forEach) {
+    rb.forEach((c) => {
+      handler(c);
+    });
   }
 
   (stream as any).push = (chunk: any, encoding?: string): boolean => {
