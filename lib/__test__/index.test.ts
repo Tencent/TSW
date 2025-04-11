@@ -26,6 +26,7 @@ beforeAll(() => {
 
 afterAll(() => {
   server.close();
+  uninstallHacks();
 });
 
 describe("tsw index", () => {
