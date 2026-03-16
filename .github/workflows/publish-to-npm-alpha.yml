@@ -24,6 +24,10 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@11.6.2
+      - name: Resolve trusted publishing npm
+        run: |
+          echo "TRUSTED_PUBLISH_NPM=$(command -v npm)" >> "$GITHUB_ENV"
+          "$(command -v npm)" --version
       - name: Show runtime versions
         run: node --version && npm --version
       - name: Install dependencies
