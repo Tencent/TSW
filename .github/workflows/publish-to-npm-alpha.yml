@@ -4,37 +4,42 @@ on:
   push:
     branches: ["master"]
 
-permissions: 
+permissions:
   id-token: write
   contents: write
+  issues: write
 
 jobs:
   publish-to-npm:
     runs-on: ubuntu-latest
     steps:
       - name: Pull code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Set up node.js
-        uses: actions/setup-node@master
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: "22.x"
+          registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
         run: yarn
-      - name: build
+      - name: Build
         run: yarn build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx 'semantic-release@^18.0.1'
+        run: npx -p @semantic-release/npm@latest -p @semantic-release/github@latest -p @semantic-release/commit-analyzer@latest -p @semantic-release/release-notes-generator@latest semantic-release@latest
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Pull code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+      - name: Set up node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
       - name: Install Dependencies
         run: yarn
       - name: Run Tests
         run: yarn test
       - name: codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4

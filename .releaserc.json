@@ -1,5 +1,5 @@
 {
-  "branch": ["master"],
+  "branches": ["master"],
   "tagFormat": "v${version}",
   "dryRun": false,
   "debug": true,
