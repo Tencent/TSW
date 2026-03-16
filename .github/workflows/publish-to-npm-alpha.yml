@@ -27,7 +27,7 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx -p @semantic-release/npm@latest -p @semantic-release/github@latest -p @semantic-release/commit-analyzer@latest -p @semantic-release/release-notes-generator@latest semantic-release@latest
+        run: npx semantic-release
   test:
     runs-on: ubuntu-latest
     steps:
