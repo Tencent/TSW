@@ -85,12 +85,14 @@ export const dnsHack = (): void => {
             isCalled = true;
 
             const cost = Date.now() - start;
+            const addressStr = Array.isArray(address)
+              ? address.map((a) => `${a.address}(IPv${a.family})`).join(", ")
+              : address;
             if (!err) {
-              logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${address}`);
+              logger.debug(`dns lookup [${cost}ms]: ${hostname} > ${addressStr}`);
               eventBus.emit(EVENT_LIST.DNS_LOOKUP_SUCCESS, address);
             } else {
-              logger.error(`dns lookup [${cost}ms]: ${hostname} > ${address},
-                error: ${err.stack}`);
+              logger.error(`dns lookup [${cost}ms]: ${hostname} > ${addressStr}, error: ${err.stack}`);
 
               eventBus.emit(EVENT_LIST.DNS_LOOKUP_ERROR, err);
             }
