@@ -4,6 +4,10 @@ on:
   push:
     branches: ["master"]
 
+permissions: 
+  id-token: write
+  contents: read
+
 jobs:
   publish-to-npm:
     runs-on: ubuntu-latest
