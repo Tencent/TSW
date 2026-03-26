@@ -20,6 +20,52 @@ import logger from "../../logger/index";
 
 type requestProtocol = "http:" | "https:";
 
+const SENSITIVE_HEADERS = new Set([
+  "authorization",
+  "proxy-authorization",
+  "x-api-key",
+  "cookie",
+  "set-cookie"
+]);
+
+/**
+ * Mask sensitive header values in a header string.
+ * e.g. "cookie: abc123" => "cookie: ***"
+ */
+const maskSensitiveHeaders = (headerStr: string): string => {
+  if (!headerStr) return headerStr;
+
+  return headerStr.replace(
+    /^([^:]+):\s*(.+)$/gm,
+    (match, key: string) => {
+      if (SENSITIVE_HEADERS.has(key.trim().toLowerCase())) {
+        return `${key}: ***`;
+      }
+
+      return match;
+    }
+  );
+};
+
+/**
+ * Create a sanitized copy of requestLog for safe logging.
+ */
+const sanitizeRequestLog = (
+  log: Partial<RequestLog>
+): Partial<RequestLog> => {
+  const sanitized = { ...log };
+
+  if (sanitized.requestHeader) {
+    sanitized.requestHeader = maskSensitiveHeaders(sanitized.requestHeader);
+  }
+
+  if (sanitized.responseHeader) {
+    sanitized.responseHeader = maskSensitiveHeaders(sanitized.responseHeader);
+  }
+
+  return sanitized;
+};
+
 /**
  * Convert a URL instance to a http.request options
  * https://github.com/nodejs/node/blob/afa9a7206c26a29a2af226696c145c924a6d3754/lib/internal/url.js#L1270
@@ -133,13 +179,9 @@ export const hack = <T extends typeof http.request>(
               address || "null"}. Cost ${timestamps.dnsTime}ms`);
 
             if (err) {
-              if (logger.getCleanLog()) {
-                logger.error(`${logPre} Request: 
-                ${JSON.stringify(requestLog)}`);
-              }
+              logger.error(`${logPre} Lookup ${host} -> ${address || "null"}, error ${err.stack}`);
 
-              logger.error(`${logPre} Lookup ${host} -> ${
-                address || "null"}, error ${err.stack}`);
+              logger.error(`${logPre} Request: ${JSON.stringify(sanitizeRequestLog(requestLog))}`);
             }
           });
         }
@@ -164,11 +206,10 @@ export const hack = <T extends typeof http.request>(
       });
 
       request.once("error", (error: Error) => {
-        if (logger.getCleanLog()) {
-          logger.error(`${logPre} Request: ${JSON.stringify(requestLog)}`);
-        }
-
         logger.error(`${logPre} Request error. Stack: ${error.stack}`);
+
+        logger.error(`${logPre} Request: ${JSON.stringify(sanitizeRequestLog(requestLog))}`);
+
         finishRequest();
         clearDomain();
       });
