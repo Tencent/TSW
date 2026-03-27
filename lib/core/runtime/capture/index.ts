@@ -29,41 +29,53 @@ const SENSITIVE_HEADERS = new Set([
 ]);
 
 /**
- * Mask sensitive header values in a header string.
- * e.g. "cookie: abc123" => "cookie: ***"
+ * Parse a raw HTTP header string into an object,
+ * masking sensitive header values with "***".
  */
-const maskSensitiveHeaders = (headerStr: string): string => {
-  if (!headerStr) return headerStr;
+const parseHeaders = (str: string): Record<string, string> | undefined => {
+  if (!str) return undefined;
+  const obj: Record<string, string> = {};
 
-  return headerStr.replace(
-    /^([^:]+):\s*(.+)$/gm,
-    (match, key: string) => {
-      if (SENSITIVE_HEADERS.has(key.trim().toLowerCase())) {
-        return `${key}: ***`;
-      }
-
-      return match;
+  str.trim().split(/\r?\n/).forEach((line) => {
+    const idx = line.indexOf(":");
+    if (idx === -1) {
+      obj._firstLine = line;
+    } else {
+      const key = line.slice(0, idx).trim();
+      obj[key] = SENSITIVE_HEADERS.has(key.toLowerCase())
+        ? "***"
+        : line.slice(idx + 1).trim();
     }
-  );
+  });
+
+  return obj;
 };
 
-/**
- * Create a sanitized copy of requestLog for safe logging.
- */
-const sanitizeRequestLog = (
-  log: Partial<RequestLog>
-): Partial<RequestLog> => {
-  const sanitized = { ...log };
+/** Decode a base64-encoded body, truncated to maxLen characters. */
+const decodeBody = (base64Str: string | undefined, maxLen = 2000): string | null => {
+  if (!base64Str) return null;
+  try {
+    const text = Buffer.from(base64Str, "base64").toString("utf-8");
 
-  if (sanitized.requestHeader) {
-    sanitized.requestHeader = maskSensitiveHeaders(sanitized.requestHeader);
+    return text.length > maxLen
+      ? `${text.slice(0, maxLen)}... (truncated, total ${text.length} chars)`
+      : text;
+  } catch {
+    return null;
   }
+};
 
-  if (sanitized.responseHeader) {
-    sanitized.responseHeader = maskSensitiveHeaders(sanitized.responseHeader);
-  }
+const formatRequestLog = (log: Partial<RequestLog>): string => {
+  const resBody = decodeBody(log.responseBody);
+  const info = JSON.stringify({
+    url: `${log.protocol} ${log.host}${log.path}`,
+    statusCode: log.statusCode,
+    requestHeader: parseHeaders(log.requestHeader),
+    responseHeader: parseHeaders(log.responseHeader),
+    responseLength: log.responseLength
+  }, null, 2);
 
-  return sanitized;
+  return resBody ? `${info}\nResponseBody: ${resBody}` : info;
 };
 
 /**
@@ -181,7 +193,7 @@ export const hack = <T extends typeof http.request>(
             if (err) {
               logger.error(`${logPre} Lookup ${host} -> ${address || "null"}, error ${err.stack}`);
 
-              logger.error(`${logPre} Request: ${JSON.stringify(sanitizeRequestLog(requestLog))}`);
+              logger.debug(`${logPre} Request: ${formatRequestLog(requestLog)}`);
             }
           });
         }
@@ -206,9 +218,21 @@ export const hack = <T extends typeof http.request>(
       });
 
       request.once("error", (error: Error) => {
+        // error may fire before finish — manually capture headers & body
+        if (!requestLog.requestHeader) {
+          requestLog.requestHeader = (request as any)._header;
+        }
+
+        if (!requestLog.requestBody) {
+          const body = (request as any)._body;
+          if (body) {
+            requestLog.requestBody = body.toString("base64");
+          }
+        }
+
         logger.error(`${logPre} Request error. Stack: ${error.stack}`);
 
-        logger.error(`${logPre} Request: ${JSON.stringify(sanitizeRequestLog(requestLog))}`);
+        logger.error(`${logPre} Request: ${formatRequestLog(requestLog)}`);
 
         finishRequest();
         clearDomain();
@@ -303,6 +327,11 @@ export const hack = <T extends typeof http.request>(
           }. Cost: ${
             timestamps.responseClose - timestamps.onSocket
           } ms`);
+
+          // Log full request/response details for non-2xx to aid debugging
+          if (response.statusCode >= 400) {
+            logger.debug(`${logPre} ❌ HTTP request failed [${response.statusCode}]: ${formatRequestLog(requestLog)}`);
+          }
 
           finishRequest();
         });
