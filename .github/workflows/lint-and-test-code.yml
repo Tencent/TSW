@@ -12,15 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pull Code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node.js
-        uses: actions/setup-node@master
+        uses: actions/setup-node@v4
         with:
           node-version: '22.x'
       - name: Install Dependencies
         run: yarn
       - name: Commit Linter
-        uses: wagoid/commitlint-github-action@v1.2.2
+        uses: wagoid/commitlint-github-action@v6
         with:
           configFile: '.commitlintrc.yml'
         env:
@@ -30,4 +32,4 @@ jobs:
       - name: Run Tests
         run: yarn test
       - name: codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v5

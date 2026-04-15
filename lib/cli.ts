@@ -3,7 +3,7 @@
 import * as yargs from "yargs";
 import tsw from "./index";
 
-const { argv } = yargs
+const args = yargs
   .alias("h", "help")
   .option("verbose", {
     alias: "v",
@@ -16,9 +16,10 @@ const { argv } = yargs
     type: "string",
     description: "Config file path",
     default: "tswconfig.js"
-  });
+  })
+  .argv as { _: (string | number)[]; config: string; verbose: boolean; $0: string };
 
-const { _, config } = argv;
+const { _, config } = args;
 const [main] = _;
 
-tsw(process.cwd(), main, config);
+tsw(process.cwd(), main as string, config);

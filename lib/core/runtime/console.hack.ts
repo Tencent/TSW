@@ -11,6 +11,8 @@ import * as util from "util";
 import logger from "../logger/index";
 import getCurrentContext from "../context";
 
+type InspectOptions = Parameters<typeof util.inspect>[1];
+
 let consoleHacked = false;
 
 export const consoleHack = (): void => {
@@ -68,7 +70,7 @@ export const consoleHack = (): void => {
 
     console.dir = (
       obj: any,
-      options?: NodeJS.InspectOptions
+      options?: InspectOptions
     ): void => {
       if (getCurrentContext() === null) {
         return console.originDir(obj, options);
