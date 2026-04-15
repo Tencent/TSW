@@ -52,4 +52,4 @@ jobs:
       - name: Run Tests
         run: yarn test
       - name: codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5

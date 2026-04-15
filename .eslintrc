@@ -9,9 +9,9 @@
   },
   "plugins": [
     "@typescript-eslint",
-    "eslint-plugin-import",
-    "eslint-plugin-eslint-comments",
-    "eslint-plugin-jsdoc"
+    "import",
+    "eslint-comments",
+    "jsdoc"
   ],
   "env": {
     "node": true,
@@ -76,6 +76,13 @@
     ],
 
     // 允许 import 文件时缺失后缀
-    "import/extensions": "off"
+    "import/extensions": "off",
+
+    // 允许混用 import 和 module.exports（测试 fixtures 中存在此模式）
+    "import/no-import-module-exports": "off",
+
+    // TS enum 会被 no-shadow 误报
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error"
   }
 }

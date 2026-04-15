@@ -38,9 +38,9 @@ type WinstonLogLevel = keyof typeof winstonConfig.syslog.levels;
 export class Logger {
   private isCleanLog = false;
 
-  public logLevel: number
+  public logLevel: number;
 
-  public winstonLogger: WinstonLogger
+  public winstonLogger: WinstonLogger;
 
   public setLogLevel(level: LogLevelStrings = "DEBUG"): number {
     this.logLevel = LOG_LEVEL[level];
@@ -254,11 +254,10 @@ export class Logger {
     if ((console as any)._stdout === process.stdout) {
       const empty = new Stream.Writable();
       empty.write = (): boolean => false;
-      empty.end = (): void => {};
+      empty.end = (() => {}) as typeof empty.end;
       (console as any)._stdout = empty;
       (console as any)._stderr = empty;
     }
-    /* eslint-enable */
 
     if (level <= 20) {
       (console.originLog || console.log)(str);
