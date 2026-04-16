@@ -1,6 +1,11 @@
-<h1 align="center">[Tencent Server Web 3.0](https://tswjs.org)</h1>
+<h1 align="center"><a href="https://tswjs.org">Tencent Server Web 3.0</a></h1>
 
-<p align="center">[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![Build Status](https://img.shields.io/github/actions/workflow/status/tencent/tsw/lint-and-test-code.yml?style=for-the-badge)](https://github.com/Tencent/TSW/actions?query=workflow%3Abuild) [![vitest](https://img.shields.io/badge/vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/) [![codecov](https://img.shields.io/codecov/c/github/tencent/tsw?style=for-the-badge)](https://codecov.io/gh/tencent/tsw)</p>
+<p align="center">
+  <a href="https://github.com/Tencent/TSW/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge" alt="license"></a>
+  <a href="https://github.com/Tencent/TSW/actions?query=workflow%3Abuild"><img src="https://img.shields.io/github/actions/workflow/status/tencent/tsw/lint-and-test-code.yml?style=for-the-badge" alt="Build Status"></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" alt="vitest"></a>
+  <a href="https://codecov.io/gh/tencent/tsw"><img src="https://img.shields.io/codecov/c/github/tencent/tsw?style=for-the-badge" alt="codecov"></a>
+</p>
 
 <h2 align="center">What is it</h2>
 
