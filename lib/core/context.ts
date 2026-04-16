@@ -133,14 +133,10 @@ export class Context {
   }
 }
 
+import { AsyncLocalStorage } from "node:async_hooks";
+
+export const contextStorage = new AsyncLocalStorage<Context>();
+
 export default (): Context | null => {
-  if (!process.domain) {
-    return null;
-  }
-
-  if (!process.domain.currentContext) {
-    process.domain.currentContext = new Context();
-  }
-
-  return process.domain.currentContext;
+  return contextStorage.getStore() ?? null;
 };

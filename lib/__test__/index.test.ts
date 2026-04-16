@@ -2,6 +2,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer, get as httpGet } from "node:http";
 import tsw, { uninstallHacks } from "../index.js";
+import currentContext from "../core/context.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -17,7 +18,7 @@ beforeAll(() => {
 
   port = randomPort();
   server = createServer((req, res) => {
-    expect(process.domain).toBeFalsy();
+    expect(currentContext()).toBeNull();
 
     res.statusCode = 200;
     res.end(RESPONSE_STRING);

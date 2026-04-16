@@ -9,13 +9,23 @@
 import { createRequire } from "node:module";
 import * as http from "node:http";
 import * as https from "node:https";
-import * as domain from "node:domain";
-import { Context, RequestLog } from "../context.js";
-import ip from "ip";
+import { networkInterfaces } from "node:os";
+import { Context, RequestLog, contextStorage } from "../context.js";
 import { AddressInfo, isIP } from "node:net";
 import { captureOutgoing } from "./capture/outgoing.js";
 import { captureIncoming } from "./capture/incoming.js";
 import { eventBus, EVENT_LIST } from "../bus.js";
+
+function localAddress(): string {
+  const nets = networkInterfaces();
+  for (const ifaces of Object.values(nets)) {
+    for (const iface of ifaces ?? []) {
+      if (!iface.internal && iface.family === "IPv4") return iface.address;
+    }
+  }
+
+  return "127.0.0.1";
+}
 
 const require = createRequire(import.meta.url);
 const httpMut = require("node:http") as typeof http;
@@ -59,30 +69,7 @@ export const hack = <T extends typeof http.createServer>(
           socketConnect: start
         } as RequestLog["timestamps"];
 
-        // Creating a domain and wrapping the execution.
-        const d = domain.create();
         const context = new Context();
-        d.add(req);
-        d.add(res);
-
-        const clearDomain = (): void => {
-          d.remove(req);
-          d.remove(res);
-
-          if (process.domain.currentContext) {
-            process.domain.currentContext = null;
-          }
-
-          const parser = (req.socket as any).parser as any;
-          if (parser && parser.domain) {
-            (parser.domain as domain.Domain).exit();
-            parser.domain = null;
-          }
-
-          while (process.domain) {
-            (process.domain as domain.Domain).exit();
-          }
-        };
 
         const requestInfo = captureIncoming(req);
 
@@ -112,7 +99,7 @@ export const hack = <T extends typeof http.createServer>(
 
             clientIp: req.socket.remoteAddress,
             clientPort: req.socket.remotePort,
-            serverIp: ip.address(),
+            serverIp: localAddress(),
             serverPort: (req.socket.address() as AddressInfo).port,
             requestHeader: ((): string => {
               const result = [];
@@ -151,8 +138,6 @@ export const hack = <T extends typeof http.createServer>(
             timestamps
           } as RequestLog;
 
-          clearDomain();
-
           eventBus.emit(EVENT_LIST.RESPONSE_FINISH, {
             req, res, context
           });
@@ -160,16 +145,13 @@ export const hack = <T extends typeof http.createServer>(
 
         res.once("close", () => {
           timestamps.responseClose = new Date().getTime();
-          clearDomain();
 
           eventBus.emit(EVENT_LIST.RESPONSE_CLOSE, {
             req, res, context
           });
         });
 
-        d.run(() => {
-          process.domain.currentContext = context;
-
+        contextStorage.run(context, () => {
           eventBus.emit(EVENT_LIST.REQUEST_START, {
             req, context
           });

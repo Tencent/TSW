@@ -9,7 +9,6 @@
 import { createRequire } from "node:module";
 import * as http from "node:http";
 import * as https from "node:https";
-import * as domain from "node:domain";
 import { URL } from "node:url";
 import { Socket, isIP } from "node:net";
 import lodash from "lodash";
@@ -164,14 +163,6 @@ export const hack = <T extends typeof http.request>(
       const { timestamps } = requestLog;
       timestamps.requestStart = new Date().getTime();
 
-      const clearDomain = (): void => {
-        const parser = (request.socket as any)?.parser as any;
-        if (parser && parser.domain) {
-          (parser.domain as domain.Domain).exit();
-          parser.domain = null;
-        }
-      };
-
       const finishRequest = (): void => {
         context.captureRequests.push(requestLog as RequestLog);
 
@@ -241,10 +232,7 @@ export const hack = <T extends typeof http.request>(
         logger.error(`${logPre} Request: ${formatRequestLog(requestLog)}`);
 
         finishRequest();
-        clearDomain();
       });
-
-      request.once("close", clearDomain);
 
       request.once("finish", () => {
         timestamps.requestFinish = new Date().getTime();
@@ -269,7 +257,6 @@ export const hack = <T extends typeof http.request>(
           timestamps.requestFinish - timestamps.onSocket
         } ms`);
 
-        clearDomain();
       });
 
       request.once("response", (response: http.IncomingMessage): void => {

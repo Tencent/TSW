@@ -15,6 +15,7 @@ import {
   httpsCreateServerRestore
 } from "../create-server.hack.js";
 import { eventBus, EVENT_LIST } from "../../bus.js";
+import currentContext from "../../context.js";
 
 const require = createRequire(import.meta.url);
 const http = require("node:http") as typeof httpTypes;
@@ -39,7 +40,7 @@ describe("http createServer hack test", () => {
     const path = randomString();
 
     const server = http.createServer((req, res) => {
-      expect(process.domain).not.toBeNull();
+      expect(currentContext()).not.toBeNull();
       res.statusCode = 200;
       res.end("success");
     }).listen(port);
@@ -59,7 +60,7 @@ describe("http createServer hack test", () => {
     const path = randomString();
 
     const server = http.createServer({}, (req, res) => {
-      expect(process.domain).not.toBeNull();
+      expect(currentContext()).not.toBeNull();
       res.setHeader("x-test-res", "test");
       res.statusCode = 200;
       res.end("success");

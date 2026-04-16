@@ -12,6 +12,7 @@ TSW 3.0 在 2.0 的基础上全面拥抱现代化 Node.js 生态：
 
 - **ESM 优先** — 包本身以 ESM 发布，同时完整支持 CJS 和 ESM 用户应用
 - **Node.js >= 24** — 利用最新的 V8 引擎和 Node.js 特性
+- 使用 AsyncLocalStorage 替代 Domain
 
 <h2 align="center">Highlights</h2>
 
