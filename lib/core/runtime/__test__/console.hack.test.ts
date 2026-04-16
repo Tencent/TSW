@@ -1,9 +1,31 @@
-import { consoleHack, consoleRestore } from "../console.hack";
-import logger from "../../logger/index";
-import getCurrentContext from "../../context";
+import type { Mock } from "vitest";
 
-jest.mock("../../logger/index");
-jest.mock("../../context");
+vi.mock("../../logger/index.js", () => ({
+  default: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    writeLog: vi.fn(),
+    setLogLevel: vi.fn(),
+    setCleanLog: vi.fn()
+  },
+  Logger: vi.fn()
+}));
+
+vi.mock("../../context.js", () => {
+  const mockFn = vi.fn();
+  return {
+    default: mockFn,
+    Context: vi.fn(),
+    Log: {},
+    RequestLog: {}
+  };
+});
+
+import { consoleHack, consoleRestore } from "../console.hack.js";
+import logger from "../../logger/index.js";
+import getCurrentContext from "../../context.js";
 
 beforeAll(() => {
   consoleHack();
@@ -14,7 +36,7 @@ afterAll(() => {
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe("console hack test", () => {
@@ -28,8 +50,8 @@ describe("console hack test", () => {
   });
 
   test("console.debug should be logged by logger", () => {
-    (getCurrentContext as jest.Mock).mockImplementation(() => true);
-    const mockedWriteLog = logger.writeLog as jest.Mock;
+    (getCurrentContext as Mock).mockImplementation(() => true);
+    const mockedWriteLog = logger.writeLog as Mock;
 
     expect(mockedWriteLog.mock.calls.length).toEqual(0);
     console.debug("test_log");
@@ -45,12 +67,12 @@ describe("console hack test", () => {
     console.error("test_log");
     expect(mockedWriteLog.mock.calls.length).toEqual(6);
 
-    (getCurrentContext as jest.Mock).mockClear();
+    (getCurrentContext as Mock).mockClear();
   });
 
   test("console.debug should be logged by log111ger", () => {
-    (getCurrentContext as jest.Mock).mockImplementation(() => true);
-    const mockedWriteLog = logger.writeLog as jest.Mock;
+    (getCurrentContext as Mock).mockImplementation(() => true);
+    const mockedWriteLog = logger.writeLog as Mock;
 
     expect(mockedWriteLog.mock.calls.length).toEqual(0);
     process.stdout.write("test_log");
@@ -58,7 +80,7 @@ describe("console hack test", () => {
     process.stderr.write("test_log");
     expect(mockedWriteLog.mock.calls.length).toEqual(2);
 
-    (getCurrentContext as jest.Mock).mockClear();
+    (getCurrentContext as Mock).mockClear();
   });
 
   test("multi consoleRestore() should not have side effect", () => {

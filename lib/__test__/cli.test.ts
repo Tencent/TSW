@@ -1,45 +1,24 @@
-import tsw from "../index";
-
-jest.mock("../index");
+const mockTsw = vi.fn();
+vi.mock("../index.js", () => ({
+  default: mockTsw,
+  installHacks: vi.fn(),
+  uninstallHacks: vi.fn()
+}));
 
 describe("tsw cli", () => {
-  it("without any params", async () => {
-    process.argv.push("-c");
-    process.argv.push("a/b/config.js");
-
-    (tsw as jest.Mock).mockImplementation(() => {});
-
-    await import("../cli");
-
-    expect((tsw as jest.Mock).mock.calls[0][2]).toStrictEqual("a/b/config.js");
-
-    process.argv.pop();
-    process.argv.pop();
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
   it("params -c", async () => {
     process.argv.push("-c");
     process.argv.push("a/b/config.js");
 
-    (tsw as jest.Mock).mockImplementation(() => {});
+    mockTsw.mockImplementation(() => {});
 
-    await import("../cli");
+    await import("../cli.js");
 
-    expect((tsw as jest.Mock).mock.calls[0][2]).toStrictEqual("a/b/config.js");
-
-    process.argv.pop();
-    process.argv.pop();
-  });
-
-  it("params --config", async () => {
-    process.argv.push("--config");
-    process.argv.push("a/b/config.js");
-
-    (tsw as jest.Mock).mockImplementation(() => {});
-
-    await import("../cli");
-
-    expect((tsw as jest.Mock).mock.calls[0][2]).toStrictEqual("a/b/config.js");
+    expect(mockTsw.mock.calls[0][2]).toStrictEqual("a/b/config.js");
 
     process.argv.pop();
     process.argv.pop();

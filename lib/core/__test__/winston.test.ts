@@ -1,6 +1,6 @@
-import * as winston from "winston";
-import { winstonHack, winstonRestore } from "../winston";
-import logger from "../../core/logger/index";
+import winston from "winston";
+import { winstonHack, winstonRestore } from "../winston.js";
+import logger from "../logger/index.js";
 
 global.tswConfig = {
   plugins: [],

@@ -10,10 +10,10 @@ module.exports = {
       getProxyInfo: () => {
         return {
           "port": 80,
-          "name": "2.0demo",
+          "name": "3.0demo",
           "group": "TSW",
           "groupName": "TSW团队",
-          "desc": "2.0demo测试环境",
+          "desc": "3.0demo测试环境",
           "order": 30,
           "owner": "demoUser",
           "alphaList": ["xxx"]
@@ -22,7 +22,7 @@ module.exports = {
     })
   ],
   winstonTransports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error'}),
-    new winston.transports.File({ filename: 'debug.log', level: 'debug'})
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "debug.log", level: "debug" })
   ]
 };

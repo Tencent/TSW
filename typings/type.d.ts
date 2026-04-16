@@ -18,7 +18,6 @@ declare interface Console {
 declare namespace NodeJS {
   interface Process {
     SN: number;
-    domain?: import("domain").Domain & { currentContext?: any } | null;
   }
 
   interface Global {

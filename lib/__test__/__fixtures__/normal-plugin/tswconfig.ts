@@ -1,6 +1,6 @@
-import { NormalPlugin } from "./plugin";
+import { NormalPlugin } from "./plugin.js";
 
-module.exports = {
+export default {
   plugins: [
     new NormalPlugin()
   ]

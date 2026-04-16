@@ -1,7 +1,11 @@
-const winston = require("winston");
+import { createRequire } from "node:module";
+import winston from "winston";
+
+// @tswjs/open-platform-plugin 是 CJS 包，ESM 项目中需通过 createRequire 导入
+const require = createRequire(import.meta.url);
 const OpenPlatformPlugin = require("@tswjs/open-platform-plugin");
 
-module.exports = {
+export default {
   plugins: [
     new OpenPlatformPlugin({
       reportStrategy: "proxied",

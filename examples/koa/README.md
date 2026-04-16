@@ -1,12 +1,21 @@
-## How to run demo
+## Koa Example
 
-### 1. Install Npm
+> Requires Node.js >= 24
+
+### 1. Install dependencies
+
 ```bash
-yarn
-// npm i
+npm install
 ```
 
 ### 2. Start the server
-```
+
+```bash
 npm run serve
+```
+
+### 3. Test
+
+```bash
+curl -v localhost:4443/path/to/foo -X POST -d "hello, server"
 ```

@@ -1,4 +1,4 @@
-import isInspect from "../isInspect";
+import isInspect from "../isInspect.js";
 
 describe("test inspect env", () => {
   test("test isInspect when NODE_OPTIONS === ''", () => {

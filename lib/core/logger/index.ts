@@ -6,15 +6,14 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as moment from "moment";
-import * as chalk from "chalk";
-import * as path from "path";
+import chalk from "chalk";
+import path from "node:path";
 
-import currentContext, { Log } from "../context";
-import isLinux from "../util/isLinux";
-import isInspect from "../util/isInspect";
-import getCallInfo from "./callInfo";
-import { Stream } from "stream";
+import currentContext, { Log } from "../context.js";
+import isLinux from "../util/isLinux.js";
+import isInspect from "../util/isInspect.js";
+import getCallInfo from "./callInfo.js";
+import { Stream } from "node:stream";
 import { config as winstonConfig, Logger as WinstonLogger } from "winston";
 
 enum LOG_LEVEL {
@@ -34,6 +33,13 @@ enum LOG_COLOR {
 type LogLevelStrings = keyof typeof LOG_LEVEL;
 
 type WinstonLogLevel = keyof typeof winstonConfig.syslog.levels;
+
+function formatTimestamp(date: Date): string {
+  const pad = (n: number, len = 2): string => String(n).padStart(len, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
+    + `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.`
+    + `${pad(date.getMilliseconds(), 3)}`;
+}
 
 export class Logger {
   private isCleanLog = false;
@@ -194,7 +200,7 @@ export class Logger {
       && showLineNumber)
       || !isLinux;
 
-    const timestamp = moment(new Date()).format("YYYY-MM-DD HH:mm:ss.SSS");
+    const timestamp = formatTimestamp(new Date());
     const logType = `[${type}]`;
     const pidInfo = `[${process.pid} ${SN}]`;
     const callInfo = ((): string => {
@@ -211,8 +217,8 @@ export class Logger {
     })();
 
     if (color) {
-      const typeColor = LOG_COLOR[type];
-      return `${chalk.whiteBright(timestamp)} ${chalk[typeColor](logType)} ${
+      const typeColor = LOG_COLOR[type] as string;
+      return `${chalk.whiteBright(timestamp)} ${(chalk as any)[typeColor](logType)} ${
         chalk.whiteBright(pidInfo)
       } ${chalk.blueBright(callInfo)} ${str}`;
     }
