@@ -1,9 +1,10 @@
-import tsw, { uninstallHacks } from "../index";
-import { createServer, get as httpGet } from "http";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createServer, get as httpGet } from "node:http";
+import tsw, { uninstallHacks } from "../index.js";
 
-/**
- * 4000 - 5000 random port
- */
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const randomPort = (): number => Math.floor(Math.random() * 1000 + 4000);
 
 let server;
@@ -16,7 +17,6 @@ beforeAll(() => {
 
   port = randomPort();
   server = createServer((req, res) => {
-    // process.domain in git pipeline is undefined
     expect(process.domain).toBeFalsy();
 
     res.statusCode = 200;
@@ -47,9 +47,9 @@ describe("tsw index", () => {
   });
 
   it("load error plugin", async () => {
-    const mockExit = jest
-      .spyOn<any, any>(process, "exit")
-      .mockImplementationOnce(() => {});
+    const mockExit = vi
+      .spyOn(process, "exit")
+      .mockImplementationOnce((() => {}) as any);
 
     await tsw(
       __dirname,

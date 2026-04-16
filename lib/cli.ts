@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import * as yargs from "yargs";
-import tsw from "./index";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+import tsw from "./index.js";
 
-const args = yargs
+const args = yargs(hideBin(process.argv))
   .alias("h", "help")
   .option("verbose", {
     alias: "v",
@@ -17,7 +18,7 @@ const args = yargs
     description: "Config file path",
     default: "tswconfig.js"
   })
-  .argv as { _: (string | number)[]; config: string; verbose: boolean; $0: string };
+  .parseSync() as { _: (string | number)[]; config: string; verbose: boolean; $0: string };
 
 const { _, config } = args;
 const [main] = _;

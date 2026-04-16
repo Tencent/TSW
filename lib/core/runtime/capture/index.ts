@@ -6,17 +6,23 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as http from "http";
-import * as https from "https";
-import * as domain from "domain";
-import { URL } from "url";
-import { Socket, isIP } from "net";
-import { cloneDeep } from "lodash";
-import { captureOutgoing } from "./outgoing";
-import { captureIncoming } from "./incoming";
+import { createRequire } from "node:module";
+import * as http from "node:http";
+import * as https from "node:https";
+import * as domain from "node:domain";
+import { URL } from "node:url";
+import { Socket, isIP } from "node:net";
+import lodash from "lodash";
+const { cloneDeep } = lodash;
+import { captureOutgoing } from "./outgoing.js";
+import { captureIncoming } from "./incoming.js";
 
-import currentContext, { RequestLog, Context } from "../../context";
-import logger from "../../logger/index";
+import currentContext, { RequestLog, Context } from "../../context.js";
+import logger from "../../logger/index.js";
+
+const require = createRequire(import.meta.url);
+const httpMut = require("node:http") as typeof http;
+const httpsMut = require("node:https") as typeof https;
 
 type requestProtocol = "http:" | "https:";
 
@@ -346,16 +352,10 @@ let originHttpRequest = null;
 let originHttpsRequest = null;
 export const requestHack = (): void => {
   if (!hacked) {
-    originHttpRequest = http.request;
-    originHttpsRequest = https.request;
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    http.request = hack(http.request, "http:");
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    https.request = hack(https.request, "https:");
+    originHttpRequest = httpMut.request;
+    originHttpsRequest = httpsMut.request;
+    httpMut.request = hack(httpMut.request, "http:") as any;
+    httpsMut.request = hack(httpsMut.request, "https:") as any;
 
     hacked = true;
   }
@@ -363,14 +363,8 @@ export const requestHack = (): void => {
 
 export const requestRestore = (): void => {
   if (hacked) {
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    http.request = originHttpRequest;
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    https.request = originHttpsRequest;
+    httpMut.request = originHttpRequest;
+    httpsMut.request = originHttpsRequest;
 
     hacked = false;
   }

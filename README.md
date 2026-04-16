@@ -1,75 +1,114 @@
-# [Tencent Server Web 2.0](https://tswjs.org)
+# [Tencent Server Web 3.0](https://tswjs.org)
 
+> Requires Node.js >= 24.0.0
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tencent/TSW/blob/master/LICENSE) [![Build Status](https://github.com/tencent/tsw/workflows/build/badge.svg)](https://github.com/Tencent/TSW/actions?query=workflow%3Abuild) [![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest) [![codecov](https://codecov.io/gh/tencent/tsw/branch/master/graph/badge.svg)](https://codecov.io/gh/tencent/tsw)
+[license](https://github.com/Tencent/TSW/blob/master/LICENSE) [Build Status](https://github.com/Tencent/TSW/actions?query=workflow%3Abuild) [vitest](https://vitest.dev/) [codecov](https://codecov.io/gh/tencent/tsw)
 
-<h2 align="center">What is it</h2>
+## What is it
 
 Tencent Server Web(TSW) 是一套面向 WEB 前端开发者，以提升问题定位效率为初衷，提供 **染色抓包** 和 **全息日志** 的 Node.js 基础设施。TSW 关注业务的运维监控能力，适用于 http、https 协议的业务场景，可无缝与现有应用（Koa、Express）进行整合。
 
 TSW 2.0 在 1.0 的基础上抽丝剥茧，辅以现代化的设计模式，去除了 1.0 中的大量糟粕，同时对容器化、云原生更加友好。做到了无侵入、低成本接入。
 
-<h2 align="center">Highlights</h2>
+TSW 3.0 在 2.0 的基础上全面拥抱现代化 Node.js 生态：
 
-<table>
-  <tr>
-    <th><h4 align="center">🚀<h4 align="center">0 侵入</h4 align="center"></th>
-    <th><h4 align="center">📒</h4 align="center"><h4 align="center">全息日志</h4 align="center"></th>
-    <th><h4 align="center">🛠</h4 align="center"><h4 align="center">请求抓包</h4 align="center"></th>
-  </tr>
-  <tr>
-    <td width="33%">通过 Hack NodeJS 底层代码实现功能。对原有业务代码 0 侵入。</td>
-    <td width="33%">按照请求聚类的显微镜级别的全息日志，给开发者完美的现场还原。</td>
-    <td width="33%">可抓取 Server 端向外部发送的所有请求的完整包体内容，与后台沟通再无障碍。</td>
-  </tr>
-</table>
+- **ESM 优先** — 包本身以 ESM 发布，同时完整支持 CJS 和 ESM 用户应用
+- **Node.js >= 24** — 利用最新的 V8 引擎和 Node.js 特性
 
-<h2 align="center">特别提醒</h2>
-
-### TSW 1.0 迁移到 2.0 需要注意的地方
-
- - TSW 1.0 服务包含进程管理，日志管理等多项内置模块，在进行往 2.0 迁移的时候，请选择其他组件完成替代，如引入 PM2 管理 Node 进程，使用 winston 进行日志管理
- - 另外 2.0 没有包含日志清理工具，建议选择 winston-rotating-file 类似工具来完成清理，避免日志存放过多，导致磁盘空间不足
+## Highlights
 
 
-<h2 align="center">Quick Start</h2>
+| 🚀0 侵入                               | 📒全息日志                        | 🛠请求抓包                                  |
+| ------------------------------------- | ------------------------------ | ---------------------------------------- |
+| 通过 Hack NodeJS 底层代码实现功能。对原有业务代码 0 侵入。 | 按照请求聚类的显微镜级别的全息日志，给开发者完美的现场还原。 | 可抓取 Server 端向外部发送的所有请求的完整包体内容，与后台沟通再无障碍。 |
+
+
+## 从 2.0 迁移到 3.0
+
+TSW 3.0 包含以下 **Breaking Changes**：
+
+- **Node.js >= 24** — 不再支持 Node.js 24 以下版本
+- **ESM 包** — `@tswjs/tsw` 现在以 ESM 格式发布（`"type": "module"`），但用户应用不受影响，CJS 和 ESM 均可正常加载
+- **配置文件** — 推荐使用 `export default` 语法（`.mjs` 或在 `"type": "module"` 项目中使用 `.js`）；传统的 `module.exports` 写法仍然兼容
+- **moment 移除** — 如果你的插件依赖了 TSW 内部的 moment，需要自行替换
+
+## Quick Start
 
 ### 1. 安装
+
 ```bash
 npm install --save @tswjs/tsw
-// yarn add @tswjs/tsw
+# yarn add @tswjs/tsw
 ```
-### 2. 添加配置文件  
+
+### 2. 添加配置文件
+
 配置文件是 TSW 启动时加载进运行时的配置文件，主要声明需要使用的 [插件](#plugins) 列表。**默认会加载项目根目录下的 `tswconfig.js` 文件，也可以通过启动参数 `-c` 或者 `--config` 来手动指定配置文件路径。**
 
-**注意事项**: 2.0 中没有集成开放平台相关逻辑，而是封装成了一个插件让用户按需使用，详情见[插件](#plugins)章节。
+TSW 3.0 同时支持 CJS 和 ESM 配置文件：
 
-**配置文件示例：**
+**ESM 配置（推荐）** — 使用 `.mjs` 扩展名，或在 `"type": "module"` 的项目中使用 `.js`：
+
 ```js
+// tswconfig.mjs
+export default {
+  plugins: [
+    new MyPlugin({})
+  ]
+}
+```
+
+**CJS 配置** — 传统写法仍然兼容：
+
+```js
+// tswconfig.js
 module.exports = {
   plugins: [
     new MyPlugin({})
   ]
 }
 ```
+
 **参数列表**:
-|    Name     |     Type    |     default    |   Optional  |  Description  |
-| :-: | :-: | :-: | :-: | :-: |
-|   plugins   | Array<[Plugin](#plugins)>| - |  yes | [插件](#plugins)列表 |
-|   cleanLog  | boolean |  `false` |  yes | 是否关闭默认打印 |
-|   logLevel  | `DEBUG/INFO/WARN/ERROR` |  `DEBUG` |  yes | 设置 log level |
-|   winstonTransports  | Array<[TransportStream](https://github.com/winstonjs/winston-transport/blob/master/index.d.ts)> |  - |  yes | [Winston](#winston-是什么)日志通道 |
+
+
+| Name              | Type                                                                                            | default | Optional | Description                 |
+| ----------------- | ----------------------------------------------------------------------------------------------- | ------- | -------- | --------------------------- |
+| plugins           | Array<[Plugin](#plugins)>                                                                       | -       | yes      | [插件](#plugins)列表            |
+| cleanLog          | boolean                                                                                         | `false` | yes      | 是否关闭默认打印                    |
+| logLevel          | `DEBUG/INFO/WARN/ERROR`                                                                         | `DEBUG` | yes      | 设置 log level                |
+| winstonTransports | Array<[TransportStream](https://github.com/winstonjs/winston-transport/blob/master/index.d.ts)> | -       | yes      | [Winston](#winston-是什么)日志通道 |
+
+
 ### 3. 启动
+
+TSW CLI 支持加载 CJS（`.js`）和 ESM（`.mjs`）入口文件：
+
 ```bash
+# CJS 入口
 npx @tswjs/tsw ./index.js
+
+# ESM 入口
+npx @tswjs/tsw ./index.mjs
+
+# 指定 ESM 配置文件
+npx @tswjs/tsw -c tswconfig.mjs ./index.mjs
 ```
 
 **注意事项**：原先 `node --inspect ./index.js` 中的 CLI 参数如 `--inspect` 需要转化为环境变量 `NODE_OPTIONS` 来执行，如 `NODE_OPTIONS="--inspect" npx @tswjs/tsw ./index.js`。
 
-**使用 ts**: 在保证项目有 [ts-node](https://www.npmjs.com/package/ts-node) 依赖包的情况下，按照如下方式执行即可直接加载 ts 文件。
+**使用 TypeScript**: 推荐使用 [tsx](https://www.npmjs.com/package/tsx)，它无需额外配置即可支持 ESM + TypeScript：
+
 ```bash
-NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts
+NODE_OPTIONS="--import=tsx" npx @tswjs/tsw ./index.ts
 ```
+
+也可以使用 [ts-node](https://www.npmjs.com/package/ts-node)（ESM 模式）：
+
+```bash
+NODE_OPTIONS="--import=ts-node/esm" npx @tswjs/tsw ./index.ts
+```
+
 ### CLI (Command Line Interface)
 
 使用 `npx @tswjs/tsw --help` 来获取 CLI 选项。
@@ -85,11 +124,11 @@ NODE_OPTIONS="--require=ts-node/register" npx @tswjs/tsw ./index.ts
 #### Koa
 
 1. `cd examples/koa`
-1. `yarn`
-1. `yarn serve` 或者 `npm run serve`
-1. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
+2. `yarn`
+3. `yarn serve` 或者 `npm run serve`
+4. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
 
-<h2 align="center">Plugins</h2>
+## Plugins
 
 ### 插件是什么？
 
@@ -98,7 +137,7 @@ TSW 核心的实现方式是 Hack NodeJS 自身的 `http.request` 以及 `http.c
 ### 一个最简单的插件
 
 ```js
-export.modules = class MyPlugin() {
+export class MyPlugin {
   constructor() {
     this.name = "MyPlugin"
   }
@@ -117,30 +156,31 @@ export.modules = class MyPlugin() {
 
 `eventBus` 是通过 `new EventEmitter()` 得到的。TSW 核心会在各个关键时机触发上面的事件。
 
-| key | 含义（触发时机） | payload |
-| -- | -- | -- |
-| `DNS_LOOKUP_SUCCESS` | 在每次 DNS 查询成功之后触发 | `string \| dns.LookupAddress[]` |
-| `DNS_LOOKUP_ERROR` | 在每次 DNS 查询失败之后触发 | `NodeJS.ErrorException` |
-| `RESPONSE_START` | 在每次服务器开始返回响应（执行 `writeHead`）时触发 | `ResponseEventPayload` |
-| `RESPONSE_FINISH` | 在响应结束时（`res.on("finish")`）触发 | `ResponseEventPayload` |
-| `RESPONSE_CLOSE` | 在底层链接关闭时 （`res.on("close")`）触发 | `ResponseEventPayload` |
-| `REQUEST_START` | 在每次服务器接受到新的请求时触发 | `RequestEventPayload` |
+
+| key                  | 含义（触发时机）                        | payload                        |
+| -------------------- | ------------------------------- | ------------------------------ |
+| `DNS_LOOKUP_SUCCESS` | 在每次 DNS 查询成功之后触发                | `string | dns.LookupAddress[]` |
+| `DNS_LOOKUP_ERROR`   | 在每次 DNS 查询失败之后触发                | `NodeJS.ErrorException`        |
+| `RESPONSE_START`     | 在每次服务器开始返回响应（执行 `writeHead`）时触发 | `ResponseEventPayload`         |
+| `RESPONSE_FINISH`    | 在响应结束时（`res.on("finish")`）触发    | `ResponseEventPayload`         |
+| `RESPONSE_CLOSE`     | 在底层链接关闭时 （`res.on("close")`）触发  | `ResponseEventPayload`         |
+| `REQUEST_START`      | 在每次服务器接受到新的请求时触发                | `RequestEventPayload`          |
 
 
-<h2 align="center">Open Platform</h2>
+## Open Platform
 
 在默认的情况下，TSW 只是会把所有的日志和抓包内容抓取到并且送到事件总线上，以供 [插件](#插件是什么？) 消费。所以将日志和抓包内容落地查看一般需要用户自己编写插件以及提供存储，使用成本过于高昂。  
 因此，TSW 官方提供了公共的服务平台 [https://tswjs.org](https://tswjs.org)，让用户低成本、更快、更方便地使用 TSW 的特性，详情见 [开放平台使用指引](./docs/use-open-platform.md)。
 
-<h2 align="center">Cluster</h2>
+## Cluster
 
-TSW 2.0 是面对容器化和云原生设计的，所以没有内置 Cluster 相关功能，推荐直接使用容器的健康检查来完成服务的无损重启和故障重启机制。对于没有使用容器化方案的场景来说，我们推荐使用 [pm2](https://github.com/Unitech/pm2) 类似工具来实现多进程模式。
+TSW 面对容器化和云原生设计，没有内置 Cluster 相关功能，推荐直接使用容器的健康检查来完成服务的无损重启和故障重启机制。对于没有使用容器化方案的场景来说，我们推荐使用 [pm2](https://github.com/Unitech/pm2) 类似工具来实现多进程模式。
 
 ### pm2
 
 #### 使用 Ecosystem File
 
-```js
+```json
 // ecosystem.config.json
 
 {
@@ -149,39 +189,38 @@ TSW 2.0 是面对容器化和云原生设计的，所以没有内置 Cluster 相
       "name": "app-name",
       "script": "built/index.js",
       "interpreter": "node",
-      "interpreter_args": "./node_modules/@tswjs/tsw/dist/cli.js",
-      // other options
+      "interpreter_args": "./node_modules/@tswjs/tsw/dist/cli.js"
     }
   ]
 }
 ```
 
-```js
+```json
 // package.json
 
 {
-  ...
   "scripts": {
     "start": "pm2 start ecosystem.config.json"
-  },
-  ...
+  }
 }
 ```
 
-<h2 align="center">Winston</h2>
+## Winston
 
 ### winston 是什么？
 
-`winston` 是一个通用且轻量的日志包。`winston` 支持多个日志通道，并且可以分别定义日志优先级。除了内置的三个日志传输通道[`Console`、 `File`、`HTTP`](https://github.com/winstonjs/winston#common-transport-options)，在 Winston 项目外部还会维护一些[传输模块](https://github.com/winstonjs)。查看 `winston` [官方文档](https://github.com/winstonjs/winston)。
+`winston` 是一个通用且轻量的日志包。`winston` 支持多个日志通道，并且可以分别定义日志优先级。除了内置的三个日志传输通道`[Console`、 `File`、`HTTP](https://github.com/winstonjs/winston#common-transport-options)`，在 Winston 项目外部还会维护一些[传输模块](https://github.com/winstonjs)。查看 `winston` [官方文档](https://github.com/winstonjs/winston)。
 
-TSW 2.0 支持使用 `winston` 传输通道记录日志信息，用户在配置文件中可以添加 `winston.transports` 实例，日志会落到对应配置中。
+TSW 支持使用 `winston` 传输通道记录日志信息，用户在配置文件中可以添加 `winston.transports` 实例，日志会落到对应配置中。
 
 ### 一个简单的示例
 
 使用 `winston` 记录 `error` 级别 以及 `debug` 级别以下的日志信息到对应文件中，当前 `config` 文件配置如下：
 
 ```js
-module.exports = {
+import winston from "winston";
+
+export default {
   winstonTransports: [
     new winston.transports.File({ filename: 'error.log', level: 'error'}),
     new winston.transports.File({ filename: 'debug.log', level: 'debug'})
@@ -191,36 +230,36 @@ module.exports = {
 
 **日志记录**
 
-![log](./static/images/winston-log.png)
+log
 
-<h2 align="center">Users</h2>
+## Users
 
-[![tsw](./static/images/user/01.png)](https://qzone.qq.com/ "QQ空间")　　　　![tsw](./static/images/user/02.png)　　　　[![tsw](./static/images/user/03.png)](https://www.weiyun.com/ "腾讯微云")　　　
+[tsw](https://qzone.qq.com/)　　　　tsw　　　　[tsw](https://www.weiyun.com/)　　　
 　  
 　  
-[![tsw](./static/images/user/04.png)](https://fm.qq.com/ "企鹅FM")　　　　[![tsw](./static/images/user/05.png)](https://www.weishi.com/ "微视")　　　　![tsw](./static/images/user/06.png)　　　　
+[tsw](https://fm.qq.com/)　　　　[tsw](https://www.weishi.com/)　　　　tsw　　　　
 　  
 　  
-[![tsw](./static/images/user/07.png)](http://vip.qq.com/ "QQ会员")　　　　[![tsw](./static/images/user/08.png)](http://egame.qq.com/ "企鹅电竞")　　　　[![tsw](./static/images/user/09.png)](http://ac.qq.com/ "QQ动漫")　　　　
+[tsw](http://vip.qq.com/)　　　　[tsw](http://egame.qq.com/)　　　　[tsw](http://ac.qq.com/)　　　　
 　  
 　  
-[![tsw](./static/images/user/10.png)](https://buluo.qq.com/ "QQ兴趣部落")　　　　[![tsw](./static/images/user/11.png)](http://now.qq.com/ "NOW直播")　　　　![tsw](./static/images/user/12.png)　　　　
+[tsw](https://buluo.qq.com/)　　　　[tsw](http://now.qq.com/)　　　　tsw　　　　
 　  
 　  
-![tsw](./static/images/user/13.png)　　　　[![tsw](./static/images/user/14.png)](http://yundong.qq.com/ "QQ运动")　　　　![tsw](./static/images/user/15.png)　　　　
+tsw　　　　[tsw](http://yundong.qq.com/)　　　　tsw　　　　
 　  
 　  
-[![tsw](./static/images/user/16.png)](https://mp.qq.com/ "QQ公众平台")　　　　[![tsw](./static/images/user/17.png)](https://office.qq.com/ "TIM")　　　　[![tsw](./static/images/user/18.png)](http://tianqi.qq.com/index.htm "腾讯天气")　　　　
+[tsw](https://mp.qq.com/)　　　　[tsw](https://office.qq.com/)　　　　[tsw](http://tianqi.qq.com/index.htm)　　　　
 　  
 　  
-[![tsw](./static/images/user/19.png)](https://ke.qq.com/ "腾讯课堂")　　　　[![tsw](./static/images/user/20.png)](https://cloud.tencent.com/ "腾讯云")　　　　[![tsw](./static/images/user/21.png)](https://y.qq.com/ "QQ音乐")　　　　
+[tsw](https://ke.qq.com/)　　　　[tsw](https://cloud.tencent.com/)　　　　[tsw](https://y.qq.com/)　　　　
 　  
 　  
-[![tsw](./static/images/user/22.png)](https://kg.tencent.com/ "全民K歌")　　　　![tsw](./static/images/user/23.png)　　　　[![tsw](./static/images/user/24.png)](http://e.qq.com/ads/ "广点通")　　　　
+[tsw](https://kg.tencent.com/)　　　　tsw　　　　[tsw](http://e.qq.com/ads/)　　　　
 　  
 　  
-[![tsw](./static/images/user/25.png)](http://open.qq.com/ "腾讯开放平台")　　　　[![tsw](./static/images/user/26.png)](http://kk.qq.com/ "企鹅看看")　　　　[![tsw](./static/images/user/27.png)](http://sports.qq.com/ "腾讯体育") 
+[tsw](http://open.qq.com/)　　　　[tsw](http://kk.qq.com/)　　　　[tsw](http://sports.qq.com/) 
 
-<h2 align="center">License</h2>
+## License
 
 Tencent Server Web 的开源协议为 MIT, 详情参见 [LICENSE](https://github.com/Tencent/TSW/blob/master/LICENSE) 。

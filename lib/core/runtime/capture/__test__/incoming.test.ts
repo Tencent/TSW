@@ -6,16 +6,13 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as http from "http";
+import * as http from "node:http";
 import {
   captureIncoming,
   captureReadableStream
-} from "../incoming";
-import { Readable } from "stream";
+} from "../incoming.js";
+import { Readable } from "node:stream";
 
-/**
- * 4000 - 5000 random port
- */
 const randomPort = (): number => Math.floor(Math.random() * 1000 + 4000);
 
 let server: http.Server;
@@ -36,7 +33,7 @@ afterAll(() => {
 });
 
 describe("capture response function test", () => {
-  test("response data should be captured", (done) => {
+  test("response data should be captured", () => new Promise<void>((resolve) => {
     const data = "a";
     let info: any;
 
@@ -59,11 +56,11 @@ describe("capture response function test", () => {
     req.once("close", () => {
       expect(info.body).toEqual(Buffer.from(responseData));
       expect(info.bodyLength).toEqual(Buffer.byteLength(responseData));
-      done();
+      resolve();
     });
-  });
+  }));
 
-  test("capture readableStream should be right", (done) => {
+  test("capture readableStream should be right", () => new Promise<void>((resolve) => {
     const stream = new Readable();
 
     stream.push("before");
@@ -76,7 +73,7 @@ describe("capture response function test", () => {
       expect(info.bodyLength).toEqual(Buffer.byteLength("beforeafter"));
       expect(info.body).toEqual(Buffer.from("beforeafter"));
       expect(info.bodyTooLarge).toEqual(false);
-      done();
+      resolve();
     });
-  });
+  }));
 });

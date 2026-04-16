@@ -6,10 +6,10 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as util from "util";
+import * as util from "node:util";
 
-import logger from "../logger/index";
-import getCurrentContext from "../context";
+import logger from "../logger/index.js";
+import getCurrentContext from "../context.js";
 
 type InspectOptions = Parameters<typeof util.inspect>[1];
 

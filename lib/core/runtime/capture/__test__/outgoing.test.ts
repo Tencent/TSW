@@ -6,12 +6,9 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as http from "http";
-import { captureOutgoing } from "../outgoing";
+import * as http from "node:http";
+import { captureOutgoing } from "../outgoing.js";
 
-/**
- * 4000 - 5000 random port
- */
 const randomPort = (): number => Math.floor(Math.random() * 1000 + 4000);
 
 let server: http.Server;
@@ -30,7 +27,7 @@ afterAll(() => {
 });
 
 describe("capture request function test", () => {
-  test("request should capture post data", (done) => {
+  test("request should capture post data", () => new Promise<void>((resolve) => {
     const firstData = "a";
     const secondData = "b";
     const thirdData = "c";
@@ -50,21 +47,16 @@ describe("capture request function test", () => {
       expect((req as any)._body.toString()).toEqual(data);
       expect((req as any)._bodyLength).toEqual(Buffer.byteLength(data));
       expect((req as any)._bodyTooLarge).toEqual(false);
-      done();
+      resolve();
     });
 
     captureOutgoing(req);
 
     req.write(firstData);
-    // Write data to request body
-    req.write(Buffer.from(secondData, "utf8"), "utf8", () => {
-      // do nothing
-    });
+    req.write(Buffer.from(secondData, "utf8"), "utf8", () => {});
 
-    req.write(Buffer.from(thirdData), () => {
-      // do nothing
-    });
+    req.write(Buffer.from(thirdData), () => {});
 
     req.end();
-  });
+  }));
 });

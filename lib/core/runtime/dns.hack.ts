@@ -6,12 +6,16 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as dns from "dns";
-import * as net from "net";
+import { createRequire } from "node:module";
+import * as dns from "node:dns";
+import * as net from "node:net";
 
-import { EVENT_LIST, eventBus } from "../bus";
-import config from "../config";
-import logger from "../logger";
+import { EVENT_LIST, eventBus } from "../bus.js";
+import config from "../config.js";
+import logger from "../logger/index.js";
+
+const require = createRequire(import.meta.url);
+const dnsMut = require("node:dns") as typeof dns;
 
 type LookupCallback = (
   err: NodeJS.ErrnoException | null,
@@ -33,12 +37,8 @@ export const dnsHack = (): void => {
   // Ensure hack can only be run once.
   if (!dnsHacked) {
     dnsHacked = true;
-    originDnsLookUp = dns.lookup;
-
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    dns.lookup = (
+    originDnsLookUp = dnsMut.lookup;
+    (dnsMut as any).lookup = (
       (lookup) => (
         (
           hostname: string,
@@ -71,7 +71,7 @@ export const dnsHack = (): void => {
 
           let isCalled = false;
           let timeoutError: Error;
-          let timer: NodeJS.Timeout | undefined;
+          let timer: NodeJS.Timeout | undefined; // eslint-disable-line prefer-const
 
           const callbackWrap = (
             err: NodeJS.ErrnoException,
@@ -119,10 +119,7 @@ export const dnsHack = (): void => {
 
 export const dnsRestore = (): void => {
   if (dnsHacked) {
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    dns.lookup = originDnsLookUp;
+    (dnsMut as any).lookup = originDnsLookUp;
     dnsHacked = false;
   }
 };

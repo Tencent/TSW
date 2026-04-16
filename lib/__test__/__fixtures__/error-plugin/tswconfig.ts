@@ -1,6 +1,6 @@
-import { ErrorPlugin } from "./plugin";
+import { ErrorPlugin } from "./plugin.js";
 
-module.exports = {
+export default {
   plugins: [
     new ErrorPlugin()
   ]

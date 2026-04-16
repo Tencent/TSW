@@ -6,14 +6,18 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import { createServer, get as httpGet, request as httpRequest } from "http";
+import { createRequire } from "node:module";
+import type * as httpTypes from "node:http";
 import {
   httpCreateServerHack,
   httpsCreateServerHack,
   httpCreateServerRestore,
   httpsCreateServerRestore
-} from "../create-server.hack";
-import { eventBus, EVENT_LIST } from "../../bus";
+} from "../create-server.hack.js";
+import { eventBus, EVENT_LIST } from "../../bus.js";
+
+const require = createRequire(import.meta.url);
+const http = require("node:http") as typeof httpTypes;
 
 beforeAll(() => {
   httpCreateServerHack();
@@ -25,9 +29,6 @@ afterAll(() => {
   httpsCreateServerRestore();
 });
 
-/**
- * 4000 - 5000 random port
- */
 const randomPort = (): number => Math.floor(Math.random() * 1000 + 4000);
 const randomString = (): string => Math.random().toString(36).substring(2, 15)
   + Math.random().toString(36).substring(2, 15);
@@ -37,15 +38,14 @@ describe("http createServer hack test", () => {
     const port = randomPort();
     const path = randomString();
 
-    const server = createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       expect(process.domain).not.toBeNull();
       res.statusCode = 200;
       res.end("success");
     }).listen(port);
 
     return new Promise((resolve, reject) => {
-      httpGet(`http://127.0.0.1:${port}/${path}`, (res) => {
-        // Close server first
+      http.get(`http://127.0.0.1:${port}/${path}`, (res) => {
         server.close();
 
         if (res.statusCode === 200) resolve(0);
@@ -58,7 +58,7 @@ describe("http createServer hack test", () => {
     const port = randomPort();
     const path = randomString();
 
-    const server = createServer({}, (req, res) => {
+    const server = http.createServer({}, (req, res) => {
       expect(process.domain).not.toBeNull();
       res.setHeader("x-test-res", "test");
       res.statusCode = 200;
@@ -66,8 +66,7 @@ describe("http createServer hack test", () => {
     }).listen(port);
 
     return new Promise((resolve, reject) => {
-      httpGet(`http://127.0.0.1:${port}/${path}`, (res) => {
-        // Close server first
+      http.get(`http://127.0.0.1:${port}/${path}`, (res) => {
         server.close();
 
         if (res.statusCode === 200) resolve(0);
@@ -89,19 +88,18 @@ describe("http createServer hack test", () => {
 
     eventBus.on(EVENT_LIST.REQUEST_START, requestStartListener);
 
-    const realServer = createServer((req, res) => {
+    const realServer = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end("real server response");
     }).listen(realServerPort);
 
-    const proxyServer = createServer((req, res) => {
+    const proxyServer = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end("proxy server response");
     }).listen(proxyServerPort);
 
     await new Promise((resolve) => {
-      httpGet(`http://127.0.0.1:${proxyServerPort}/${path}`, (res) => {
-        // Close server first
+      http.get(`http://127.0.0.1:${proxyServerPort}/${path}`, (res) => {
         proxyServer.close();
         realServer.close();
 
@@ -134,21 +132,20 @@ describe("http createServer hack test", () => {
 
     eventBus.on(EVENT_LIST.REQUEST_START, requestStartListener);
 
-    const realServer = createServer((req, res) => {
+    const realServer = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end("real server response");
     }).listen(realServerPort);
 
-    const proxyServer = createServer((req, res) => {
+    const proxyServer = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end("proxy server response");
     }).listen(proxyServerPort);
 
     await new Promise((resolve) => {
-      httpRequest(`http://127.0.0.1:${proxyServerPort}/${path}`, {
+      http.request(`http://127.0.0.1:${proxyServerPort}/${path}`, {
         method: "POST"
       }, (res) => {
-        // Close server first
         proxyServer.close();
         realServer.close();
 
@@ -175,20 +172,18 @@ describe("http createServer hack test", () => {
 
     const requestStartListener = ({ context }): void => {
       context.proxyIp = "127.0.0.1";
-      // A non-exists port
       context.proxyPort = 10;
     };
 
     eventBus.on(EVENT_LIST.REQUEST_START, requestStartListener);
 
-    const proxyServer = createServer((req, res) => {
+    const proxyServer = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end("proxy server response");
     }).listen(proxyServerPort);
 
     await new Promise((resolve) => {
-      httpGet(`http://127.0.0.1:${proxyServerPort}/${path}`, (res) => {
-        // Close server first
+      http.get(`http://127.0.0.1:${proxyServerPort}/${path}`, (res) => {
         proxyServer.close();
 
         let body = "";

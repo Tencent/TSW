@@ -1,16 +1,25 @@
-import { lookup } from "dns";
-import { isIP } from "net";
+import { createRequire } from "node:module";
+import type * as dnsTypes from "node:dns";
+import { isIP } from "node:net";
 
-import { eventBus, EVENT_LIST } from "../../bus";
-import { dnsHack, dnsRestore } from "../dns.hack";
-import logger from "../../logger/index";
+const require = createRequire(import.meta.url);
+const dns = require("node:dns") as typeof dnsTypes;
 
-jest.mock("../../logger/index");
+vi.mock("../../logger/index.js", () => ({
+  default: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    writeLog: vi.fn(),
+    setLogLevel: vi.fn(),
+    setCleanLog: vi.fn()
+  },
+  Logger: vi.fn()
+}));
 
-(logger.debug as jest.Mock).mockImplementation(() => {});
-(logger.info as jest.Mock).mockImplementation(() => {});
-(logger.warn as jest.Mock).mockImplementation(() => {});
-(logger.error as jest.Mock).mockImplementation(() => {});
+import { eventBus, EVENT_LIST } from "../../bus.js";
+import { dnsHack, dnsRestore } from "../dns.hack.js";
 
 beforeAll(() => {
   dnsHack();
@@ -23,7 +32,7 @@ afterAll(() => {
 describe("dns hack test", () => {
   test("dns could work normally", async () => {
     await new Promise((resolve) => {
-      lookup("qq.com", (err, address, family) => {
+      dns.lookup("qq.com", (err, address, family) => {
         expect(err).toBeNull();
         expect(isIP(address)).toBeTruthy();
         expect(family).toEqual(4);
@@ -35,7 +44,7 @@ describe("dns hack test", () => {
   test("dns could work with options normally", async () => {
     await new Promise((resolve) => {
       const options = { family: 4 };
-      lookup("qq.com", options, (err, address, family) => {
+      dns.lookup("qq.com", options, (err, address, family) => {
         expect(err).toBeNull();
         expect(isIP(address)).toBeTruthy();
         expect(family).toEqual(4);
@@ -54,7 +63,7 @@ describe("dns hack test", () => {
         reject(err);
       });
 
-      lookup("qq.com", () => {
+      dns.lookup("qq.com", () => {
         // nothing
       });
     });
@@ -63,7 +72,7 @@ describe("dns hack test", () => {
   test("ipv4 should return immediately", async () => {
     await new Promise((resolve) => {
       const ip = "1.2.3.4";
-      lookup(ip, (err, address, family) => {
+      dns.lookup(ip, (err, address, family) => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
         expect(family).toEqual(4);
@@ -76,7 +85,7 @@ describe("dns hack test", () => {
     await new Promise((resolve) => {
       const ip = "1.2.3.4";
       const options = { family: 4 };
-      lookup(ip, options, (err, address, family) => {
+      dns.lookup(ip, options, (err, address, family) => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
         expect(family).toEqual(4);
@@ -88,7 +97,7 @@ describe("dns hack test", () => {
   test("ipv6 should return immediately", async () => {
     await new Promise((resolve) => {
       const ip = "::ffff:192.0.2.128";
-      lookup(ip, (err, address, family) => {
+      dns.lookup(ip, (err, address, family) => {
         expect(err).toBeNull();
         expect(address).toEqual(ip);
         expect(family).toEqual(6);
@@ -100,9 +109,7 @@ describe("dns hack test", () => {
   test("a wrong domain should fail", async () => {
     await new Promise((resolve) => {
       const nullDomain = "this is not a domain";
-      lookup(nullDomain, (err) => {
-        // error could be "Dns Lookup Timeout"
-        // or "getaddrinfo ENOTFOUND this is not a domain"
+      dns.lookup(nullDomain, (err) => {
         expect(err).toBeTruthy();
         resolve(0);
       });

@@ -1,9 +1,6 @@
-import * as http from "http";
-import { requestHack, requestRestore } from "../index";
+import * as http from "node:http";
+import { requestHack, requestRestore } from "../index.js";
 
-/**
- * 4000 - 5000 random port
- */
 const randomPort = (): number => Math.floor(Math.random() * 1000 + 4000);
 
 let server: http.Server;

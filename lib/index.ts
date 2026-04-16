@@ -1,16 +1,17 @@
-import * as path from "path";
-import { consoleHack, consoleRestore } from "./core/runtime/console.hack";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { consoleHack, consoleRestore } from "./core/runtime/console.hack.js";
 import {
   httpCreateServerHack,
   httpsCreateServerHack,
   httpCreateServerRestore,
   httpsCreateServerRestore
-} from "./core/runtime/create-server.hack";
-import { dnsHack, dnsRestore } from "./core/runtime/dns.hack";
-import { requestHack, requestRestore } from "./core/runtime/capture/index";
-import { winstonHack, winstonRestore } from "./core/winston";
-import { eventBus } from "./core/bus";
-import logger from "./core/logger";
+} from "./core/runtime/create-server.hack.js";
+import { dnsHack, dnsRestore } from "./core/runtime/dns.hack.js";
+import { requestHack, requestRestore } from "./core/runtime/capture/index.js";
+import { winstonHack, winstonRestore } from "./core/winston.js";
+import { eventBus } from "./core/bus.js";
+import logger from "./core/logger/index.js";
 
 export const installHacks = (): void => {
   httpCreateServerHack();
@@ -36,16 +37,15 @@ export default async (
   configPath: string
 ): Promise<void> => {
   const configAbsolutePath = path.resolve(basePath, configPath);
-  global.tswConfig = await import(configAbsolutePath);
+  const configModule = await import(pathToFileURL(configAbsolutePath).href);
+  global.tswConfig = configModule.default || configModule;
 
   logger.setCleanLog(global.tswConfig.cleanLog);
   logger.setLogLevel(global.tswConfig.logLevel);
 
   if (global.tswConfig.plugins) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const plugin of global.tswConfig.plugins) {
       try {
-        // eslint-disable-next-line no-await-in-loop
         await plugin.init(eventBus, global.tswConfig);
       } catch (e) {
         console.error(`${plugin.name} 插件初始化失败: ${e.message}`);
@@ -55,5 +55,5 @@ export default async (
   }
 
   installHacks();
-  await import(path.resolve(basePath, mainPath));
+  await import(pathToFileURL(path.resolve(basePath, mainPath)).href);
 };

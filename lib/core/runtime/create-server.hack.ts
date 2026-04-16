@@ -6,15 +6,20 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-import * as http from "http";
-import * as https from "https";
-import * as domain from "domain";
-import { Context, RequestLog } from "../context";
-import { address } from "ip";
-import { AddressInfo, isIP } from "net";
-import { captureOutgoing } from "./capture/outgoing";
-import { captureIncoming } from "./capture/incoming";
-import { eventBus, EVENT_LIST } from "../bus";
+import { createRequire } from "node:module";
+import * as http from "node:http";
+import * as https from "node:https";
+import * as domain from "node:domain";
+import { Context, RequestLog } from "../context.js";
+import ip from "ip";
+import { AddressInfo, isIP } from "node:net";
+import { captureOutgoing } from "./capture/outgoing.js";
+import { captureIncoming } from "./capture/incoming.js";
+import { eventBus, EVENT_LIST } from "../bus.js";
+
+const require = createRequire(import.meta.url);
+const httpMut = require("node:http") as typeof http;
+const httpsMut = require("node:https") as typeof https;
 
 let httpCreateServerHacked = false;
 let httpsCreateServerHacked = false;
@@ -107,7 +112,7 @@ export const hack = <T extends typeof http.createServer>(
 
             clientIp: req.socket.remoteAddress,
             clientPort: req.socket.remotePort,
-            serverIp: address(),
+            serverIp: ip.address(),
             serverPort: (req.socket.address() as AddressInfo).port,
             requestHeader: ((): string => {
               const result = [];
@@ -231,43 +236,29 @@ export const hack = <T extends typeof http.createServer>(
 export const httpCreateServerHack = (): void => {
   if (!httpCreateServerHacked) {
     httpCreateServerHacked = true;
-    originHttpCreateServer = http.createServer;
-
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    http.createServer = hack(http.createServer);
+    originHttpCreateServer = httpMut.createServer;
+    httpMut.createServer = hack(httpMut.createServer) as any;
   }
 };
 
 export const httpsCreateServerHack = (): void => {
   if (!httpsCreateServerHacked) {
     httpsCreateServerHacked = true;
-    originHttpsCreateServer = https.createServer;
-
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    https.createServer = hack(https.createServer);
+    originHttpsCreateServer = httpsMut.createServer;
+    httpsMut.createServer = hack(httpsMut.createServer) as any;
   }
 };
 
 export const httpCreateServerRestore = (): void => {
   if (httpCreateServerHacked) {
     httpCreateServerHacked = false;
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    http.createServer = originHttpCreateServer;
+    httpMut.createServer = originHttpCreateServer;
   }
 };
 
 export const httpsCreateServerRestore = (): void => {
   if (httpsCreateServerHacked) {
     httpsCreateServerHacked = false;
-    // eslint-disable-next-line
-    // @ts-ignore
-    // By default, ts not allow us to rewrite original methods.
-    https.createServer = originHttpsCreateServer;
+    httpsMut.createServer = originHttpsCreateServer;
   }
 };

@@ -1,21 +1,29 @@
-import logger, { Logger } from "../index";
-import currentContext from "../../context";
+import type { Mock } from "vitest";
 
-jest.mock("../../context");
-
-(currentContext as jest.Mock).mockReturnValue({
-  log: {
-    showLineNumber: false,
-    arr: [],
-    ERROR: 0,
-    WARN: 0,
-    INFO: 0,
-    DEBUG: 0
-  },
-  SN: 0
+vi.mock("../../context.js", () => {
+  const mockContext = vi.fn().mockReturnValue({
+    log: {
+      showLineNumber: false,
+      arr: [],
+      ERROR: 0,
+      WARN: 0,
+      INFO: 0,
+      DEBUG: 0
+    },
+    SN: 0
+  });
+  return {
+    default: mockContext,
+    Log: {},
+    Context: vi.fn(),
+    RequestLog: {}
+  };
 });
 
-const { log } = currentContext();
+import logger, { Logger } from "../index.js";
+import currentContext from "../../context.js";
+
+const { log } = (currentContext as Mock)();
 
 describe("logger test", () => {
   test("log could be set by setLogLevel", async () => {
