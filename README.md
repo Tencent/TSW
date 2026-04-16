@@ -119,12 +119,27 @@ NODE_OPTIONS="--import=ts-node/esm" npx @tswjs/tsw ./index.ts
 2. `git clone https://github.com/Tencent/TSW.git`
 3. `cd TSW`
 
-#### Koa
+#### Koa (CJS)
 
 1. `cd examples/koa`
-1. `yarn`
-1. `yarn serve` 或者 `npm run serve`
-1. `curl -v localhost:4443/path/to/foo -X POST -d "hello, server"`
+2. `npm install`
+3. `npm run serve`
+4. `curl localhost:4443`
+
+#### ESM
+
+1. `cd examples/esm`
+2. `npm install`
+3. `npm run serve`
+4. `curl localhost:3000` 或 `curl localhost:3000/api`
+
+#### HTTPS
+
+1. `cd examples/https`
+2. 生成自签名证书（参考 `examples/https/README.md`）
+3. `npm install`
+4. `npm run serve`
+5. `curl -k https://localhost:8000`
 
 <h2 align="center">Plugins</h2>
 
